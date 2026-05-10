@@ -40,6 +40,24 @@ function redirectWithCookies(url: URL, from: NextResponse): NextResponse {
   return redirect;
 }
 
+/**
+ * Same idea as `redirectWithCookies` but for an internal URL rewrite —
+ * used on custom-domain requests so the downstream Next.js app router
+ * always sees the canonical `/{slug}/{section?}` path even though the
+ * browser URL is `/{section}` on `onicteam.id`.
+ */
+function rewriteWithCookies(
+  url: URL,
+  from: NextResponse,
+  request: NextRequest,
+): NextResponse {
+  const rewrite = NextResponse.rewrite(url, { request });
+  for (const cookie of from.cookies.getAll()) {
+    rewrite.cookies.set(cookie);
+  }
+  return rewrite;
+}
+
 function isMainDomain(hostname: string): boolean {
   if (
     hostname === MAIN_DOMAIN ||
@@ -113,18 +131,36 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  // 2b. On custom domains the URL `/foo/bar` actually means
+  // `/{hostOrgSlug}/foo/bar` once you account for the host. Build the
+  // canonical "internal" path now so all auth gating + the eventual
+  // rewrite use the same shape as a main-domain request.
+  const internalPathname = hostOrgSlug
+    ? pathname === "/"
+      ? `/${hostOrgSlug}`
+      : `/${hostOrgSlug}${pathname}`
+    : pathname;
+
   // 3. Parse path: /{team-slug}/{section?}
-  const segments = pathname.split("/").filter(Boolean);
+  const segments = internalPathname.split("/").filter(Boolean);
   const firstSegment = segments[0];
   const section = segments[1];
 
-  // Reserved global routes — let Next.js handle normally.
-  if (firstSegment && RESERVED_ROOT_SEGMENTS.has(firstSegment)) {
+  // Reserved global routes — let Next.js handle normally. Reserved
+  // segments shouldn't appear under a custom-domain rewrite anyway, but
+  // we double-check by gating on `!hostOrgSlug`.
+  if (
+    !hostOrgSlug &&
+    firstSegment &&
+    RESERVED_ROOT_SEGMENTS.has(firstSegment)
+  ) {
     return response;
   }
 
-  // Logged-in user hitting `/` → redirect to their first org workspace.
-  if (!firstSegment && user) {
+  // Logged-in user hitting the main-domain `/` → redirect to their first
+  // org workspace. (On a custom domain, `/` already maps to that org's
+  // workspace via the rewrite below, so this branch is main-domain only.)
+  if (!hostOrgSlug && !firstSegment && user) {
     const orgs =
       (user.app_metadata as AppMetadataWithOrgs | undefined)?.organizations ??
       [];
@@ -145,6 +181,12 @@ export async function middleware(request: NextRequest) {
 
   const resolvedSlug = hostOrgSlug ?? firstSegment;
 
+  // Public-team-page URL on the *current* host. On a custom domain that
+  // is just `/` (the slug is implicit in the hostname); on the main
+  // domain it is `/{slug}`. Used as the redirect target whenever a
+  // visitor / non-member tries to reach a workspace section.
+  const publicHomePath = hostOrgSlug ? "/" : `/${resolvedSlug}`;
+
   // 4. Authorization
   const orgs =
     (user?.app_metadata as AppMetadataWithOrgs | undefined)?.organizations ??
@@ -157,7 +199,7 @@ export async function middleware(request: NextRequest) {
   // it back to the browser.
   if (!user && section) {
     return redirectWithCookies(
-      new URL(`/${resolvedSlug}`, request.url),
+      new URL(publicHomePath, request.url),
       response,
     );
   }
@@ -165,7 +207,7 @@ export async function middleware(request: NextRequest) {
   // Logged in but not a member of this org → public profile only.
   if (user && !isMember && section) {
     return redirectWithCookies(
-      new URL(`/${resolvedSlug}`, request.url),
+      new URL(publicHomePath, request.url),
       response,
     );
   }
@@ -174,6 +216,20 @@ export async function middleware(request: NextRequest) {
   response.headers.set("x-org-slug", resolvedSlug);
   if (user) {
     response.headers.set("x-user-id", user.id);
+  }
+
+  // 6. On a custom domain, rewrite the URL internally so the Next.js
+  // app router matches `/{slug}/{section}` even though the browser is
+  // on `/{section}`. The browser URL stays unchanged.
+  if (hostOrgSlug && internalPathname !== pathname) {
+    const rewriteUrl = request.nextUrl.clone();
+    rewriteUrl.pathname = internalPathname;
+    const rewritten = rewriteWithCookies(rewriteUrl, response, request);
+    rewritten.headers.set("x-org-slug", resolvedSlug);
+    if (user) {
+      rewritten.headers.set("x-user-id", user.id);
+    }
+    return rewritten;
   }
 
   return response;
