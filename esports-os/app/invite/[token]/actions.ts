@@ -63,12 +63,37 @@ export async function acceptInviteAction(
     redirect(orgResp.data?.slug ? `/${orgResp.data.slug}` : "/");
   }
 
-  // team_members has UNIQUE (organization_id, user_id, division_id) so a user
-  // can hold seats across multiple divisions in the same org. We must scope
-  // the existing-row probe to the invite's specific division (or null) so we
-  // don't (a) get a multi-row error from .maybeSingle() when the user is
-  // already in another division, and (b) skip the insert thinking they're
-  // covered when in fact the invite is for a different division.
+  // Step 1 — Atomically claim the invite (pending → accepted).
+  // We do this BEFORE the membership insert so that a concurrent
+  // rejectInviteAction can't sneak in and flip the row to 'rejected'
+  // after we've already added the user to team_members. The .select()
+  // is what lets us see whether any row was actually updated; without
+  // it Supabase returns a no-op success and we can't distinguish "row
+  // claimed" from "someone else claimed it first".
+  const claim = await admin
+    .from("organization_invites")
+    .update({ status: "accepted" })
+    .eq("id", invite.id)
+    .in("status", ["pending"])
+    .select("id");
+
+  if (claim.error) {
+    return { error: claim.error.message };
+  }
+  if (!claim.data || claim.data.length === 0) {
+    return {
+      error:
+        "Undangan sudah tidak berlaku (mungkin sudah ditolak atau diterima dari sesi lain).",
+    };
+  }
+
+  // Step 2 — Insert team_members. team_members has UNIQUE
+  // (organization_id, user_id, division_id) so a user can hold seats
+  // across multiple divisions in the same org. We scope the existing
+  // probe to the invite's specific division (or null) to (a) avoid a
+  // multi-row error from .maybeSingle() when the user already holds
+  // a seat in another division, and (b) actually insert into the
+  // targeted division when they don't have one yet.
   const existingProbe = admin
     .from("team_members")
     .select("id")
@@ -80,6 +105,11 @@ export async function acceptInviteAction(
   ).maybeSingle();
 
   if (existing.error) {
+    // Roll back the claim so the invite can be retried.
+    await admin
+      .from("organization_invites")
+      .update({ status: "pending" })
+      .eq("id", invite.id);
     return { error: existing.error.message };
   }
 
@@ -91,19 +121,13 @@ export async function acceptInviteAction(
       role: invite.role,
     });
     if (insertErr) {
+      // Roll back the claim so the invite can be retried.
+      await admin
+        .from("organization_invites")
+        .update({ status: "pending" })
+        .eq("id", invite.id);
       return { error: insertErr.message };
     }
-  }
-
-  // Race-safe: only flip pending → accepted. If another request already
-  // rejected/expired this invite, leave it alone.
-  const { error: updateErr } = await admin
-    .from("organization_invites")
-    .update({ status: "accepted" })
-    .eq("id", invite.id)
-    .in("status", ["pending"]);
-  if (updateErr) {
-    return { error: updateErr.message };
   }
 
   await supabase.auth.refreshSession();
