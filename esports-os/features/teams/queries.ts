@@ -60,6 +60,7 @@ export async function isCurrentUserMember(orgId: string): Promise<boolean> {
     .select("id")
     .eq("organization_id", orgId)
     .eq("user_id", user.id)
+    .eq("is_active", true)
     .limit(1)
     .maybeSingle();
   if (error) return false;
@@ -80,9 +81,11 @@ export async function getTeamHomeData(
   const orgId = organization.id;
 
   // Run independent queries in parallel.
+  const nowIso = new Date().toISOString();
   const [
     divisionsRes,
-    nextScrimRes,
+    ongoingScrimRes,
+    scheduledScrimRes,
     pinnedRes,
     recentAnnouncementsRes,
     completedRes,
@@ -95,12 +98,23 @@ export async function getTeamHomeData(
       .eq("organization_id", orgId)
       .eq("is_active", true)
       .order("name", { ascending: true }),
+    // "Next scrim" prefers ongoing over upcoming-scheduled. We split into
+    // two queries because an ongoing scrim has scheduled_at in the past
+    // and would be filtered out by the gte() bound used for scheduled.
     supabase
       .from("scrims")
       .select("*")
       .eq("organization_id", orgId)
-      .in("status", ["scheduled", "ongoing"])
-      .gte("scheduled_at", new Date().toISOString())
+      .eq("status", "ongoing")
+      .order("scheduled_at", { ascending: false })
+      .limit(1)
+      .maybeSingle(),
+    supabase
+      .from("scrims")
+      .select("*")
+      .eq("organization_id", orgId)
+      .eq("status", "scheduled")
+      .gte("scheduled_at", nowIso)
       .order("scheduled_at", { ascending: true })
       .limit(1)
       .maybeSingle(),
@@ -129,10 +143,13 @@ export async function getTeamHomeData(
       .select("id", { count: "exact", head: true })
       .eq("organization_id", orgId)
       .eq("is_active", true),
+    // "Scrim bulan ini" excludes cancelled scrims — those didn't
+    // actually happen, so they shouldn't inflate the count.
     supabase
       .from("scrims")
       .select("id", { count: "exact", head: true })
       .eq("organization_id", orgId)
+      .in("status", ["scheduled", "ongoing", "completed"])
       .gte("scheduled_at", startOfMonthIso())
       .lt("scheduled_at", startOfNextMonthIso()),
   ]);
@@ -142,7 +159,7 @@ export async function getTeamHomeData(
   return {
     organization,
     divisions: divisionsRes.data ?? [],
-    nextScrim: nextScrimRes.data ?? null,
+    nextScrim: ongoingScrimRes.data ?? scheduledScrimRes.data ?? null,
     pinnedAnnouncements: pinnedRes.data ?? [],
     recentAnnouncements: recentAnnouncementsRes.data ?? [],
     recentCompletedScrims: completed.slice(0, 5),
