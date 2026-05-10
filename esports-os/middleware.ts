@@ -103,7 +103,13 @@ export async function middleware(request: NextRequest) {
   if (!isMainDomain(hostname)) {
     hostOrgSlug = await resolveCustomDomain(hostname);
     if (!hostOrgSlug) {
-      return NextResponse.redirect(new URL("/", `https://${MAIN_DOMAIN}`));
+      // Even though we're sending the user to a different host, the rotated
+      // auth cookies are scoped to the *request* host (e.g. onicteam.id) and
+      // must travel back so the next visit there isn't silently logged out.
+      return redirectWithCookies(
+        new URL("/", `https://${MAIN_DOMAIN}`),
+        response,
+      );
     }
   }
 
