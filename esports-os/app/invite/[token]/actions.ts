@@ -124,6 +124,18 @@ export async function rejectInviteAction(
     return { error: "Token undangan tidak valid." };
   }
 
+  // Server actions are HTTP endpoints, so we must auth-check here too
+  // (parity with acceptInviteAction). Without this, anyone who guesses
+  // or leaks a token could flip pending invites to rejected without
+  // being logged in.
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return { error: "Sesi kamu sudah berakhir. Silakan masuk lagi." };
+  }
+
   const admin = createAdminClient();
   const { error } = await admin
     .from("organization_invites")
