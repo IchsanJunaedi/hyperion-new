@@ -24,7 +24,7 @@ export function slugify(input: string): string {
  * Slug must be 3–32 chars, lowercase letters / digits / dashes,
  * and cannot start or end with a dash.
  */
-const SLUG_RE = /^[a-z0-9](?:[a-z0-9-]{1,30}[a-z0-9])?$/;
+const SLUG_RE = /^[a-z0-9][a-z0-9-]{1,30}[a-z0-9]$/;
 
 export function isValidSlug(slug: string): boolean {
   return SLUG_RE.test(slug);

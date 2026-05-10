@@ -24,6 +24,22 @@ const RESERVED_ROOT_SEGMENTS = new Set([
   "manifest.json",
 ]);
 
+/**
+ * Build a redirect response that carries forward any cookies the
+ * Supabase middleware client wrote onto `from` (notably the rotated
+ * access/refresh tokens after a session refresh). Without this,
+ * `NextResponse.redirect()` would return a fresh response object and
+ * the rotated tokens would never reach the browser, silently logging
+ * the user out on the next request.
+ */
+function redirectWithCookies(url: URL, from: NextResponse): NextResponse {
+  const redirect = NextResponse.redirect(url);
+  for (const cookie of from.cookies.getAll()) {
+    redirect.cookies.set(cookie);
+  }
+  return redirect;
+}
+
 function isMainDomain(hostname: string): boolean {
   if (
     hostname === MAIN_DOMAIN ||
@@ -108,7 +124,10 @@ export async function middleware(request: NextRequest) {
       [];
     const firstOrg = orgs[0];
     if (firstOrg?.slug) {
-      return NextResponse.redirect(new URL(`/${firstOrg.slug}`, request.url));
+      return redirectWithCookies(
+        new URL(`/${firstOrg.slug}`, request.url),
+        response,
+      );
     }
     return response;
   }
@@ -133,7 +152,10 @@ export async function middleware(request: NextRequest) {
 
   // Logged in but not a member of this org → public profile only.
   if (user && !isMember && section) {
-    return NextResponse.redirect(new URL(`/${resolvedSlug}`, request.url));
+    return redirectWithCookies(
+      new URL(`/${resolvedSlug}`, request.url),
+      response,
+    );
   }
 
   // 5. Inject org context for downstream Server Components.

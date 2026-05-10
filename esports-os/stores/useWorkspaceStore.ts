@@ -43,6 +43,9 @@ export const useWorkspaceStore = create<WorkspaceState>()(
                 activeOrgId: args.orgId,
                 activeOrgSlug: args.slug,
                 memberRole: args.role,
+                // Reset division when switching orgs — a division id from
+                // the previous org would not exist in the new one.
+                activeDivisionId: null,
               }
             : initialState,
         ),
