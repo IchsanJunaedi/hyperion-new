@@ -13,7 +13,8 @@ supabase/
 │   ├── 20260510000003_rls_policies.sql  ← RLS on every public table
 │   ├── 20260510000004_jwt_hook.sql      ← custom_access_token_hook → app_metadata.organizations
 │   ├── 20260510000005_storage_buckets.sql ← org-logos / org-private / avatars + policies
-│   └── 20260510000006_wa_queue_cron.sql ← pg_cron + pg_net → Edge Function trigger
+│   ├── 20260510000006_wa_queue_cron.sql ← pg_cron + pg_net → Edge Function trigger
+│   └── 20260510000007_notification_helpers.sql ← mark_notification_read / mark_all_notifications_read (SECURITY DEFINER)
 └── functions/
     └── process-wa-queue/
         ├── index.ts                      ← Deno Edge Function: drains pending WA notifications
