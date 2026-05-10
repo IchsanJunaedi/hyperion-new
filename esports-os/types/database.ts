@@ -106,6 +106,74 @@ type OrganizationInviteRow = {
   created_at: string;
 };
 
+type ScrimRow = {
+  id: string;
+  organization_id: string;
+  division_id: string;
+  created_by: string;
+  opponent_name: string;
+  opponent_contact: string | null;
+  scheduled_at: string;
+  format: MatchFormat;
+  status: ScrimStatus;
+  server_region: string | null;
+  room_info: string | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+type ScrimAttendanceRow = {
+  id: string;
+  scrim_id: string;
+  user_id: string;
+  status: AttendanceStatus;
+  note: string | null;
+  updated_at: string;
+};
+
+type ScrimResultRow = {
+  id: string;
+  scrim_id: string;
+  our_score: number;
+  opponent_score: number;
+  is_win: boolean | null;
+  notes: string | null;
+  performance_rating: number | null;
+  recorded_by: string;
+  recorded_at: string;
+};
+
+type AnnouncementRow = {
+  id: string;
+  organization_id: string;
+  division_id: string | null;
+  created_by: string;
+  title: string;
+  body: string;
+  is_pinned: boolean;
+  send_wa_blast: boolean;
+  published_at: string | null;
+  created_at: string;
+};
+
+type CalendarEventRow = {
+  id: string;
+  organization_id: string;
+  division_id: string | null;
+  created_by: string;
+  title: string;
+  description: string | null;
+  event_type: "scrim" | "tournament" | "practice" | "meeting" | "other";
+  starts_at: string;
+  ends_at: string | null;
+  is_all_day: boolean;
+  location: string | null;
+  ref_id: string | null;
+  ref_type: "scrim" | "tournament" | null;
+  created_at: string;
+};
+
 type WithoutGenerated<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
 export interface Database {
@@ -189,6 +257,79 @@ export interface Database {
           | "created_at"
         >;
         Update: Partial<OrganizationInviteRow>;
+        Relationships: [];
+      };
+      scrims: {
+        Row: ScrimRow;
+        Insert: WithoutGenerated<
+          ScrimRow,
+          | "id"
+          | "opponent_contact"
+          | "format"
+          | "status"
+          | "server_region"
+          | "room_info"
+          | "notes"
+          | "created_at"
+          | "updated_at"
+        >;
+        Update: Partial<ScrimRow>;
+        Relationships: [];
+      };
+      scrim_attendances: {
+        Row: ScrimAttendanceRow;
+        Insert: WithoutGenerated<
+          ScrimAttendanceRow,
+          "id" | "status" | "note" | "updated_at"
+        >;
+        Update: Partial<ScrimAttendanceRow>;
+        Relationships: [];
+      };
+      scrim_results: {
+        Row: ScrimResultRow;
+        Insert: WithoutGenerated<
+          ScrimResultRow,
+          | "id"
+          | "our_score"
+          | "opponent_score"
+          | "is_win"
+          | "notes"
+          | "performance_rating"
+          | "recorded_at"
+        >;
+        Update: Partial<ScrimResultRow>;
+        Relationships: [];
+      };
+      announcements: {
+        Row: AnnouncementRow;
+        Insert: WithoutGenerated<
+          AnnouncementRow,
+          | "id"
+          | "division_id"
+          | "is_pinned"
+          | "send_wa_blast"
+          | "published_at"
+          | "created_at"
+        >;
+        Update: Partial<AnnouncementRow>;
+        Relationships: [];
+      };
+      calendar_events: {
+        Row: CalendarEventRow;
+        Insert: WithoutGenerated<
+          CalendarEventRow,
+          | "id"
+          | "division_id"
+          | "description"
+          | "event_type"
+          | "ends_at"
+          | "is_all_day"
+          | "location"
+          | "ref_id"
+          | "ref_type"
+          | "created_at"
+        >;
+        Update: Partial<CalendarEventRow>;
         Relationships: [];
       };
     };
