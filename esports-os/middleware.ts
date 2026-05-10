@@ -169,15 +169,22 @@ export async function middleware(request: NextRequest) {
       return redirectWithCookies(loginUrl, response);
     }
     // Authenticated users shouldn't see /login or /register; send them
-    // to the post-auth destination (org workspace if they have one,
-    // onboarding otherwise).
+    // to the post-auth destination. Honor an internal `?next=` first (so
+    // logged-in users following an invite link `/login?next=/invite/...`
+    // land on the invite page instead of bouncing to their workspace),
+    // then fall back to org workspace, then onboarding.
     if (user && AUTH_ONLY_VISITOR_SEGMENTS.has(firstSegment)) {
+      const nextParam = request.nextUrl.searchParams.get("next");
+      const safeNext =
+        nextParam && nextParam.startsWith("/") && !nextParam.startsWith("//")
+          ? nextParam
+          : null;
       const orgs =
         (user.app_metadata as AppMetadataWithOrgs | undefined)
           ?.organizations ?? [];
-      const dest = orgs[0]?.slug
-        ? `/${orgs[0].slug}`
-        : "/onboarding/profile";
+      const dest =
+        safeNext ??
+        (orgs[0]?.slug ? `/${orgs[0].slug}` : "/onboarding/profile");
       return redirectWithCookies(new URL(dest, request.url), response);
     }
     return response;

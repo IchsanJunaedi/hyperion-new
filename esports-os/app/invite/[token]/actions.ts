@@ -63,12 +63,21 @@ export async function acceptInviteAction(
     redirect(orgResp.data?.slug ? `/${orgResp.data.slug}` : "/");
   }
 
-  const existing = await admin
+  // team_members has UNIQUE (organization_id, user_id, division_id) so a user
+  // can hold seats across multiple divisions in the same org. We must scope
+  // the existing-row probe to the invite's specific division (or null) so we
+  // don't (a) get a multi-row error from .maybeSingle() when the user is
+  // already in another division, and (b) skip the insert thinking they're
+  // covered when in fact the invite is for a different division.
+  const existingProbe = admin
     .from("team_members")
     .select("id")
     .eq("organization_id", invite.organization_id)
-    .eq("user_id", user.id)
-    .maybeSingle();
+    .eq("user_id", user.id);
+  const existing = await (invite.division_id
+    ? existingProbe.eq("division_id", invite.division_id)
+    : existingProbe.is("division_id", null)
+  ).maybeSingle();
 
   if (existing.error) {
     return { error: existing.error.message };
@@ -86,10 +95,13 @@ export async function acceptInviteAction(
     }
   }
 
+  // Race-safe: only flip pending → accepted. If another request already
+  // rejected/expired this invite, leave it alone.
   const { error: updateErr } = await admin
     .from("organization_invites")
     .update({ status: "accepted" })
-    .eq("id", invite.id);
+    .eq("id", invite.id)
+    .in("status", ["pending"]);
   if (updateErr) {
     return { error: updateErr.message };
   }
