@@ -12,9 +12,23 @@
 -- WhatsApp via Fonnte.
 --
 -- Instead, the only legitimate user-side operation (marking a
--- notification as read) goes through this SECURITY DEFINER function,
+-- notification as read) goes through these SECURITY DEFINER functions,
 -- which can only mutate `read_at` and `status` (to 'read') and only
 -- on rows the caller actually owns.
+--
+-- IMPORTANT: `status` is shared with the WA delivery state machine
+-- (pending → sent / failed). The WA queue Edge Function picks up rows
+-- by `status = 'pending'`, so naively flipping status to 'read' on a
+-- pending row would silently cancel the WhatsApp delivery. The helpers
+-- below therefore only transition status to 'read' when the row is
+-- already past the delivery stage:
+--
+--   * `status = 'sent'`  → safe to mark read; WA already delivered.
+--   * `wa_number IS NULL` → in-app-only notification, no delivery to
+--                            cancel; safe to mark read.
+--   * `status IN ('pending','failed')` with `wa_number` set → only
+--     `read_at` is stamped; status stays so the queue / retry logic
+--     keeps owning the row.
 -- =============================================================================
 
 CREATE OR REPLACE FUNCTION public.mark_notification_read(notification_id uuid)
@@ -27,8 +41,11 @@ DECLARE
   updated public.notifications;
 BEGIN
   UPDATE public.notifications
-     SET status  = 'read',
-         read_at = COALESCE(read_at, now())
+     SET read_at = COALESCE(read_at, now()),
+         status  = CASE
+                     WHEN status = 'sent' OR wa_number IS NULL THEN 'read'::notification_status
+                     ELSE status
+                   END
    WHERE id      = notification_id
      AND user_id = auth.uid()
    RETURNING * INTO updated;
@@ -48,7 +65,9 @@ REVOKE EXECUTE ON FUNCTION public.mark_notification_read(uuid) FROM anon;
 GRANT  EXECUTE ON FUNCTION public.mark_notification_read(uuid) TO authenticated;
 
 -- Convenience: mark every unread notification for the current user as read.
--- Same SECURITY DEFINER + scoping as the single-row variant.
+-- Same status-guard as the single-row variant — pending / failed rows that
+-- still have a `wa_number` get a `read_at` stamp but keep their delivery
+-- status so the WA queue can finish its job.
 CREATE OR REPLACE FUNCTION public.mark_all_notifications_read()
 RETURNS integer
 LANGUAGE plpgsql
@@ -60,8 +79,11 @@ DECLARE
 BEGIN
   WITH upd AS (
     UPDATE public.notifications
-       SET status  = 'read',
-           read_at = now()
+       SET read_at = now(),
+           status  = CASE
+                       WHEN status = 'sent' OR wa_number IS NULL THEN 'read'::notification_status
+                       ELSE status
+                     END
      WHERE user_id = auth.uid()
        AND read_at IS NULL
     RETURNING 1

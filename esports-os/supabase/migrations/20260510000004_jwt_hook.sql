@@ -11,10 +11,15 @@
 --   {
 --     "organizations": [
 --       { "org_id": "...", "slug": "hyperion-six", "role": "owner",
---         "divisions": [ { "id": "...", "slug": "mlbb" } ] },
+--         "divisions": [ "mlbb", "valorant" ] },
 --       ...
 --     ]
 --   }
+--
+-- We deliberately keep `divisions` as an array of slug strings (not
+-- {id, slug} objects). The middleware only needs the slug to gate
+-- routes, and a smaller JWT keeps the auth cookie under the 4 KB
+-- header budget.
 --
 -- After this migration runs, the hook still has to be flipped on in
 -- Supabase Auth → Hooks → Custom Access Token, OR by leaving the entry
@@ -57,17 +62,15 @@ BEGIN
         LIMIT 1
       ),
       'divisions', (
-        SELECT COALESCE(
-          jsonb_agg(
-            DISTINCT jsonb_build_object('id', d.id, 'slug', d.slug)
-          ),
-          '[]'::jsonb
-        )
-        FROM public.team_members tm3
-        JOIN public.divisions d ON d.id = tm3.division_id
-        WHERE tm3.user_id = uid
-          AND tm3.organization_id = tm.organization_id
-          AND tm3.is_active = true
+        SELECT COALESCE(jsonb_agg(slug ORDER BY slug), '[]'::jsonb)
+        FROM (
+          SELECT DISTINCT d.slug
+          FROM public.team_members tm3
+          JOIN public.divisions d ON d.id = tm3.division_id
+          WHERE tm3.user_id = uid
+            AND tm3.organization_id = tm.organization_id
+            AND tm3.is_active = true
+        ) divs
       )
     ) AS row_data
     FROM public.team_members tm

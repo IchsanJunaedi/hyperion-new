@@ -165,19 +165,50 @@ CREATE POLICY "att_select_member" ON scrim_attendances
     )
   );
 
--- A user can only insert/update/delete their own row.
+-- A user can only insert/update/delete their *own* row, AND only on a
+-- scrim that belongs to an org they're a member of. Without the
+-- membership check, any authenticated user who knows a scrim_id could
+-- pollute another team's roll-call list.
 CREATE POLICY "att_upsert_self" ON scrim_attendances
   FOR INSERT TO authenticated
-  WITH CHECK (user_id = auth.uid());
+  WITH CHECK (
+    user_id = auth.uid()
+    AND EXISTS (
+      SELECT 1 FROM scrims s
+      WHERE s.id = scrim_id
+        AND public.is_member_of(s.organization_id)
+    )
+  );
 
 CREATE POLICY "att_update_self" ON scrim_attendances
   FOR UPDATE TO authenticated
-  USING (user_id = auth.uid())
-  WITH CHECK (user_id = auth.uid());
+  USING (
+    user_id = auth.uid()
+    AND EXISTS (
+      SELECT 1 FROM scrims s
+      WHERE s.id = scrim_id
+        AND public.is_member_of(s.organization_id)
+    )
+  )
+  WITH CHECK (
+    user_id = auth.uid()
+    AND EXISTS (
+      SELECT 1 FROM scrims s
+      WHERE s.id = scrim_id
+        AND public.is_member_of(s.organization_id)
+    )
+  );
 
 CREATE POLICY "att_delete_self" ON scrim_attendances
   FOR DELETE TO authenticated
-  USING (user_id = auth.uid());
+  USING (
+    user_id = auth.uid()
+    AND EXISTS (
+      SELECT 1 FROM scrims s
+      WHERE s.id = scrim_id
+        AND public.is_member_of(s.organization_id)
+    )
+  );
 
 -- scrim_results ----------------------------------------------------------------
 ALTER TABLE scrim_results ENABLE ROW LEVEL SECURITY;
