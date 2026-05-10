@@ -1,0 +1,56 @@
+services:
+  app:
+    container_name: hyperion-app
+    build: .
+    volumes:
+      - ./:/var/www/html
+    networks:
+      - hyperion-network
+    depends_on:
+      - db
+
+  nginx:
+    container_name: hyperion-nginx
+    image: nginx:latest
+    ports:
+      - '8080:80'
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./:/var/www/html
+    networks:
+      - hyperion-network
+    depends_on:
+      - app
+
+  db:
+    container_name: hyperion-db
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+    ports:
+      - '3306:3306'
+    networks:
+      - hyperion-network
+    volumes:
+      - hyperion-db:/var/lib/mysql
+
+  phpmyadmin:
+    container_name: hyperion-phpmyadmin
+    image: phpmyadmin:latest
+    ports:
+      - '8081:80'
+    environment:
+      PMA_HOST: hyperion-db
+      PMA_PASSWORD: ${DB_PASSWORD}
+      PMA_USER: ${DB_USERNAME}
+    networks:
+      - hyperion-network
+
+networks:
+  hyperion-network:
+    driver: bridge
+
+volumes:
+  hyperion-db:
