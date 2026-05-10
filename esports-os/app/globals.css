@@ -72,8 +72,11 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+  /* Brand yellow used on the marketing landing — matches the "HYPERION TEAM"
+     wordmark on the live Laravel site (rgb(222, 179, 4)). */
+  --color-brand-yellow: oklch(0.781 0.149 86.78);
 }
 
 @layer base {
