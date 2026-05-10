@@ -146,8 +146,14 @@ export async function middleware(request: NextRequest) {
   const isMember = orgs.some((org) => org.slug === resolvedSlug);
 
   // Visitor (no auth) trying to access a protected workspace section.
+  // Use redirectWithCookies so any cookie-clearing instructions Supabase
+  // wrote during getUser() (e.g. expiring a stale session token) make
+  // it back to the browser.
   if (!user && section) {
-    return NextResponse.redirect(new URL(`/${resolvedSlug}`, request.url));
+    return redirectWithCookies(
+      new URL(`/${resolvedSlug}`, request.url),
+      response,
+    );
   }
 
   // Logged in but not a member of this org → public profile only.
