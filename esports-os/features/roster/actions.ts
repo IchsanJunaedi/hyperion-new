@@ -50,7 +50,7 @@ function buildAcceptUrl(token: string): string {
   // Prefer the public site URL when configured (used by WA messages /
   // emails that fly out from the worker). Falls back to a relative
   // path which is fine when surfaced inside the workspace.
-  const base = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ?? "";
+  const base = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ?? "";
   return `${base}/invite/${token}`;
 }
 
