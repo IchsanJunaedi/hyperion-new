@@ -290,10 +290,14 @@ export async function cancelScrimAction(
   const combinedNotes = existing?.notes
     ? `${marker}\n\n${existing.notes}`
     : marker;
+  // Only allow cancelling scrims that are still actionable — guard against
+  // reverting a completed scrim and against re-cancelling (which would
+  // accumulate duplicate [CANCELLED] markers in notes).
   const { error } = await supabase
     .from("scrims")
     .update({ status: "cancelled", notes: combinedNotes })
-    .eq("id", parsed.data.scrim_id);
+    .eq("id", parsed.data.scrim_id)
+    .in("status", ["scheduled", "ongoing"]);
   if (error) {
     return {
       ok: false,
