@@ -85,7 +85,9 @@ export function ScrimCountdown({ scrim, orgSlug }: ScrimCountdownProps) {
         <Clock className="h-4 w-4 text-white/55" />
         {parts.pastDue ? (
           <span className="text-sm text-white/70">
-            Sedang berlangsung — telat {parts.hours}j {parts.minutes}m
+            Sedang berlangsung — telat
+            {parts.days > 0 ? ` ${parts.days}h` : ""} {parts.hours}j{" "}
+            {parts.minutes}m
           </span>
         ) : (
           <div className="flex gap-2 text-sm tabular-nums">
