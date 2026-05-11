@@ -292,12 +292,15 @@ export async function cancelScrimAction(
     : marker;
   // Only allow cancelling scrims that are still actionable — guard against
   // reverting a completed scrim and against re-cancelling (which would
-  // accumulate duplicate [CANCELLED] markers in notes).
-  const { error } = await supabase
+  // accumulate duplicate [CANCELLED] markers in notes). .select() lets us
+  // detect a zero-row update so we can surface a clear error if the scrim
+  // was already finalized in another tab.
+  const { data: updated, error } = await supabase
     .from("scrims")
     .update({ status: "cancelled", notes: combinedNotes })
     .eq("id", parsed.data.scrim_id)
-    .in("status", ["scheduled", "ongoing"]);
+    .in("status", ["scheduled", "ongoing"])
+    .select("id");
   if (error) {
     return {
       ok: false,
@@ -305,6 +308,12 @@ export async function cancelScrimAction(
         error.code === "42501"
           ? "Hanya captain atau owner yang bisa membatalkan scrim"
           : error.message,
+    };
+  }
+  if (!updated || updated.length === 0) {
+    return {
+      ok: false,
+      message: "Scrim sudah selesai atau sudah dibatalkan",
     };
   }
   revalidatePath(`/${orgSlug}/scrim/${parsed.data.scrim_id}`);

@@ -33,7 +33,7 @@ BEGIN
      WHERE s.status = 'scheduled'
        AND s.reminder_sent_at IS NULL
        AND s.scheduled_at BETWEEN now() AND now() + interval '75 minutes'
-       AND s.scheduled_at > now() + interval '30 minutes'
+       AND s.scheduled_at > now() + interval '60 minutes'
   LOOP
     SELECT name INTO v_org_name FROM public.organizations
       WHERE id = v_scrim.organization_id;
