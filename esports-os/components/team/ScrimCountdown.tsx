@@ -46,12 +46,15 @@ export function ScrimCountdown({ scrim, orgSlug }: ScrimCountdownProps) {
     return () => clearInterval(id);
   }, [target]);
 
+  // Force WIB so the SSR-rendered string matches the client hydration
+  // (server tz on Vercel is UTC, client tz can be anywhere).
   const formatted = target.toLocaleString("id-ID", {
     weekday: "short",
     day: "numeric",
     month: "short",
     hour: "2-digit",
     minute: "2-digit",
+    timeZone: "Asia/Jakarta",
   });
 
   return (

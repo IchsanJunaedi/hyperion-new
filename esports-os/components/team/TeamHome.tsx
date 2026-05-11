@@ -190,10 +190,10 @@ function formatRelative(iso: string): string {
   const minutes = Math.round(ms / 60_000);
   if (minutes < 1) return "baru saja";
   if (minutes < 60) return `${minutes}m`;
-  const hours = Math.round(minutes / 60);
+  const hours = Math.floor(minutes / 60);
   if (hours < 24) return `${hours}j`;
-  const days = Math.round(hours / 24);
+  const days = Math.floor(hours / 24);
   if (days < 30) return `${days}h`;
-  const months = Math.round(days / 30);
+  const months = Math.floor(days / 30);
   return `${months}b`;
 }
