@@ -69,11 +69,14 @@ export function WorkspaceSidebar({
   const setActiveDivision = useWorkspaceStore((s) => s.setActiveDivision);
   const [divisionOpen, setDivisionOpen] = useState(false);
 
-  // If the persisted activeDivisionId isn't in the current division list
-  // (e.g. user switched orgs externally), default to the first division.
+  // Keep the persisted activeDivisionId in sync with the visible
+  // selection. If it's null (initial state or post-org-switch) or
+  // points at a division not in the current list, set it to the first
+  // division so downstream consumers (scrim/roster filters, etc.) read
+  // the same value the UI shows as active.
   useEffect(() => {
     if (
-      activeDivisionId &&
+      !activeDivisionId ||
       !divisions.some((d) => d.id === activeDivisionId)
     ) {
       setActiveDivision(divisions[0]?.id ?? null);
