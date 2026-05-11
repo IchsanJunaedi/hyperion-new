@@ -16,6 +16,7 @@ const RESERVED_ROOT_SEGMENTS = new Set([
   "callback",
   "invite",
   "auth",
+  "onboarding",
   "_next",
   "api",
   "favicon.ico",
@@ -23,6 +24,12 @@ const RESERVED_ROOT_SEGMENTS = new Set([
   "sitemap.xml",
   "manifest.json",
 ]);
+
+/** Reserved segments that require an authenticated session. */
+const AUTH_REQUIRED_SEGMENTS = new Set(["onboarding"]);
+
+/** Reserved segments that should redirect away if user IS authenticated. */
+const AUTH_ONLY_VISITOR_SEGMENTS = new Set(["login", "register"]);
 
 /**
  * Build a redirect response that carries forward any cookies the
@@ -154,12 +161,39 @@ export async function middleware(request: NextRequest) {
     firstSegment &&
     RESERVED_ROOT_SEGMENTS.has(firstSegment)
   ) {
+    // Onboarding requires auth. Bounce visitors to /login with a
+    // post-login redirect back to the originally requested path.
+    if (!user && AUTH_REQUIRED_SEGMENTS.has(firstSegment)) {
+      const loginUrl = new URL("/login", request.url);
+      loginUrl.searchParams.set("next", pathname);
+      return redirectWithCookies(loginUrl, response);
+    }
+    // Authenticated users shouldn't see /login or /register; send them
+    // to the post-auth destination. Honor an internal `?next=` first (so
+    // logged-in users following an invite link `/login?next=/invite/...`
+    // land on the invite page instead of bouncing to their workspace),
+    // then fall back to org workspace, then onboarding.
+    if (user && AUTH_ONLY_VISITOR_SEGMENTS.has(firstSegment)) {
+      const nextParam = request.nextUrl.searchParams.get("next");
+      const safeNext =
+        nextParam && nextParam.startsWith("/") && !nextParam.startsWith("//")
+          ? nextParam
+          : null;
+      const orgs =
+        (user.app_metadata as AppMetadataWithOrgs | undefined)
+          ?.organizations ?? [];
+      const dest =
+        safeNext ??
+        (orgs[0]?.slug ? `/${orgs[0].slug}` : "/onboarding/profile");
+      return redirectWithCookies(new URL(dest, request.url), response);
+    }
     return response;
   }
 
   // Logged-in user hitting the main-domain `/` → redirect to their first
-  // org workspace. (On a custom domain, `/` already maps to that org's
-  // workspace via the rewrite below, so this branch is main-domain only.)
+  // org workspace, OR /onboarding/profile if they haven't joined any org
+  // yet. (On a custom domain, `/` already maps to that org's workspace
+  // via the rewrite below, so this branch is main-domain only.)
   if (!hostOrgSlug && !firstSegment && user) {
     const orgs =
       (user.app_metadata as AppMetadataWithOrgs | undefined)?.organizations ??
@@ -171,7 +205,10 @@ export async function middleware(request: NextRequest) {
         response,
       );
     }
-    return response;
+    return redirectWithCookies(
+      new URL("/onboarding/profile", request.url),
+      response,
+    );
   }
 
   // No team-slug in the URL (root, marketing landing, etc.) → no auth gate.
