@@ -72,15 +72,18 @@ export const updateMemberRoleSchema = z.object({
 
 export const updateMemberPositionSchema = z.object({
   member_id: z.string().uuid("Member tidak valid"),
+  // Use .nullish() so the client can explicitly clear position/jersey by
+  // sending null (empty input). Without it Zod's .optional() only accepts
+  // undefined and parse fails before transform runs, breaking the form.
   position: z
     .string()
     .trim()
     .max(60, "Posisi maksimal 60 karakter")
-    .optional()
+    .nullish()
     .transform((v) => (v && v.length > 0 ? v : null)),
   jersey_number: z
     .union([z.number().int(), z.string()])
-    .optional()
+    .nullish()
     .transform((v) => {
       if (v === undefined || v === null || v === "") return null;
       const n = typeof v === "number" ? v : Number(v);
