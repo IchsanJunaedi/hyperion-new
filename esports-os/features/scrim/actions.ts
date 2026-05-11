@@ -272,6 +272,10 @@ export async function cancelScrimAction(
     return { ok: false, message: "Input tidak valid" };
   }
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, message: "Anda harus login" };
 
   // Preserve any existing notes (room info, strategic plans, etc.)
   // by prepending the cancellation marker rather than replacing.
