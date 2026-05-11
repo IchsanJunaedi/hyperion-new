@@ -157,6 +157,25 @@ type AnnouncementRow = {
   created_at: string;
 };
 
+type NotificationRow = {
+  id: string;
+  organization_id: string | null;
+  user_id: string;
+  type: NotificationType;
+  title: string;
+  body: string | null;
+  ref_id: string | null;
+  ref_type: string | null;
+  status: NotificationStatus;
+  wa_number: string | null;
+  wa_message: string | null;
+  attempts: number;
+  last_error: string | null;
+  sent_at: string | null;
+  read_at: string | null;
+  created_at: string;
+};
+
 type CalendarEventRow = {
   id: string;
   organization_id: string;
@@ -312,6 +331,27 @@ export interface Database {
           | "created_at"
         >;
         Update: Partial<AnnouncementRow>;
+        Relationships: [];
+      };
+      notifications: {
+        Row: NotificationRow;
+        Insert: WithoutGenerated<
+          NotificationRow,
+          | "id"
+          | "organization_id"
+          | "body"
+          | "ref_id"
+          | "ref_type"
+          | "status"
+          | "wa_number"
+          | "wa_message"
+          | "attempts"
+          | "last_error"
+          | "sent_at"
+          | "read_at"
+          | "created_at"
+        >;
+        Update: Partial<NotificationRow>;
         Relationships: [];
       };
       calendar_events: {
