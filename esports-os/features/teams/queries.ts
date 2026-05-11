@@ -208,12 +208,25 @@ function computeWinRate(scrims: Scrim[]): number | null {
   return null;
 }
 
+// "Scrim bulan ini" must use WIB month boundaries regardless of server tz.
+// On UTC servers, naively using `new Date(yr, mo, 1)` produces midnight UTC =
+// 7am WIB, so scrims at 00:00–06:59 WIB on the 1st would be attributed to
+// the previous month. Compute the boundary in WIB then convert to UTC ISO.
+const WIB_OFFSET_MS = 7 * 60 * 60 * 1000;
+
 function startOfMonthIso(): string {
-  const d = new Date();
-  return new Date(d.getFullYear(), d.getMonth(), 1).toISOString();
+  const now = new Date();
+  const wibNow = new Date(now.getTime() + WIB_OFFSET_MS);
+  const startUtcMs =
+    Date.UTC(wibNow.getUTCFullYear(), wibNow.getUTCMonth(), 1) - WIB_OFFSET_MS;
+  return new Date(startUtcMs).toISOString();
 }
 
 function startOfNextMonthIso(): string {
-  const d = new Date();
-  return new Date(d.getFullYear(), d.getMonth() + 1, 1).toISOString();
+  const now = new Date();
+  const wibNow = new Date(now.getTime() + WIB_OFFSET_MS);
+  const startUtcMs =
+    Date.UTC(wibNow.getUTCFullYear(), wibNow.getUTCMonth() + 1, 1) -
+    WIB_OFFSET_MS;
+  return new Date(startUtcMs).toISOString();
 }

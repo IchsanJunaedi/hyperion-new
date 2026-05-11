@@ -55,12 +55,17 @@ export function ScrimCountdown({ scrim, orgSlug }: ScrimCountdownProps) {
     () => new Date(scrim.scheduled_at),
     [scrim.scheduled_at],
   );
-  const [parts, setParts] = useState<CountdownParts>(() => diffParts(target));
+  // `parts` and `formatted` both depend on the current wall clock which
+  // differs between SSR and the first client render. Render a null/stable
+  // sentinel during SSR + the first client paint, then compute live values
+  // inside useEffect so React's hydration sees identical HTML on both sides.
+  const [parts, setParts] = useState<CountdownParts | null>(null);
   const [formatted, setFormatted] = useState<string>(() =>
     stableWibLabel(target),
   );
 
   useEffect(() => {
+    setParts(diffParts(target));
     const id = setInterval(() => setParts(diffParts(target)), 1000);
     return () => clearInterval(id);
   }, [target]);
@@ -110,7 +115,17 @@ export function ScrimCountdown({ scrim, orgSlug }: ScrimCountdownProps) {
 
       <div className="mt-5 flex items-center gap-2">
         <Clock className="h-4 w-4 text-white/55" />
-        {parts.pastDue ? (
+        {parts === null ? (
+          <div className="flex gap-2 text-sm tabular-nums">
+            <CountdownCell value={0} label="hari" />
+            <span className="text-white/35">:</span>
+            <CountdownCell value={0} label="jam" />
+            <span className="text-white/35">:</span>
+            <CountdownCell value={0} label="menit" />
+            <span className="text-white/35">:</span>
+            <CountdownCell value={0} label="detik" />
+          </div>
+        ) : parts.pastDue ? (
           <span className="text-sm text-white/70">
             Sedang berlangsung — telat
             {parts.days > 0 ? ` ${parts.days}h` : ""} {parts.hours}j{" "}
