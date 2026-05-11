@@ -225,13 +225,30 @@ export async function updateMemberPositionAction(
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, message: "Anda harus login" };
 
+  // Match the owner-protection pattern used by the role/status/remove
+  // actions: a captain calling this action directly with the owner's
+  // member_id shouldn't be able to mutate owner position/jersey.
+  const { data: target } = await supabase
+    .from("team_members")
+    .select("id, role")
+    .eq("id", parsed.data.member_id)
+    .maybeSingle();
+  if (!target) return { ok: false, message: "Member tidak ditemukan" };
+  if (target.role === "owner") {
+    return {
+      ok: false,
+      message: "Owner tidak bisa dikelola dari sini",
+    };
+  }
+
   const { error } = await supabase
     .from("team_members")
     .update({
       position: parsed.data.position,
       jersey_number: parsed.data.jersey_number,
     })
-    .eq("id", parsed.data.member_id);
+    .eq("id", parsed.data.member_id)
+    .neq("role", "owner");
   if (error) {
     return {
       ok: false,
