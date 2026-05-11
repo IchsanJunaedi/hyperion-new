@@ -114,12 +114,15 @@ async function fanOutScrimNotifications(
     (profiles ?? []).map((p) => [p.id, p.phone_wa]),
   );
 
+  // This string ends up in the WhatsApp message body. Pin WIB explicitly
+  // so cloud runtimes (UTC) don't push the displayed time 7 hours back.
   const scheduled = new Date(scrim.scheduled_at).toLocaleString("id-ID", {
     weekday: "short",
     day: "numeric",
     month: "short",
     hour: "2-digit",
     minute: "2-digit",
+    timeZone: "Asia/Jakarta",
   });
   const title = `Scrim baru: vs ${scrim.opponent_name}`;
   const body = `${orgName} menjadwalkan scrim ${scrim.format.toUpperCase()} pada ${scheduled}.`;

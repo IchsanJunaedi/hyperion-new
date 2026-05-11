@@ -27,6 +27,8 @@ export default async function ScrimDetailPage({
   const counts = summarizeAttendance(attendances);
   const locked = scrim.status === "completed" || scrim.status === "cancelled";
 
+  // Server component formats run in the deploy runtime (UTC on Vercel).
+  // Pin WIB so the detail header shows the correct local schedule time.
   const scheduled = new Date(scrim.scheduled_at).toLocaleString("id-ID", {
     weekday: "long",
     day: "numeric",
@@ -34,6 +36,7 @@ export default async function ScrimDetailPage({
     year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
+    timeZone: "Asia/Jakarta",
   });
 
   return (

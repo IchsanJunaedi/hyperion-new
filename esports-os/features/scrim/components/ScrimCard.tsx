@@ -11,12 +11,15 @@ export function ScrimCard({
   scrim: Scrim;
   orgSlug: string;
 }) {
+  // ScrimCard renders on the server; pin WIB or cloud runtimes (UTC)
+  // will display schedule times 7 hours behind.
   const scheduled = new Date(scrim.scheduled_at).toLocaleString("id-ID", {
     weekday: "short",
     day: "numeric",
     month: "short",
     hour: "2-digit",
     minute: "2-digit",
+    timeZone: "Asia/Jakarta",
   });
   return (
     <Link
