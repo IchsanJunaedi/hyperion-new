@@ -34,28 +34,52 @@ function diffParts(target: Date): CountdownParts {
   };
 }
 
+/**
+ * Stable, locale-independent fallback rendered on the server and during
+ * the first client render so SSR and hydration agree. Node ICU and
+ * browser ICU produce subtly different `toLocaleString` output even
+ * with an explicit timeZone, which causes a hydration warning. We swap
+ * in the localized version inside `useEffect` once we're past hydration.
+ */
+function stableWibLabel(target: Date): string {
+  const wib = new Date(target.getTime() + 7 * 60 * 60 * 1000);
+  const dd = String(wib.getUTCDate()).padStart(2, "0");
+  const mm = String(wib.getUTCMonth() + 1).padStart(2, "0");
+  const hh = String(wib.getUTCHours()).padStart(2, "0");
+  const mi = String(wib.getUTCMinutes()).padStart(2, "0");
+  return `${dd}/${mm} · ${hh}:${mi} WIB`;
+}
+
 export function ScrimCountdown({ scrim, orgSlug }: ScrimCountdownProps) {
   const target = useMemo(
     () => new Date(scrim.scheduled_at),
     [scrim.scheduled_at],
   );
   const [parts, setParts] = useState<CountdownParts>(() => diffParts(target));
+  const [formatted, setFormatted] = useState<string>(() =>
+    stableWibLabel(target),
+  );
 
   useEffect(() => {
     const id = setInterval(() => setParts(diffParts(target)), 1000);
     return () => clearInterval(id);
   }, [target]);
 
-  // Force WIB so the SSR-rendered string matches the client hydration
-  // (server tz on Vercel is UTC, client tz can be anywhere).
-  const formatted = target.toLocaleString("id-ID", {
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-    timeZone: "Asia/Jakarta",
-  });
+  useEffect(() => {
+    // After hydration, swap in the locale-formatted version. Pin to
+    // Asia/Jakarta so a user reading the page from another tz still
+    // sees the canonical scrim time.
+    setFormatted(
+      target.toLocaleString("id-ID", {
+        weekday: "short",
+        day: "numeric",
+        month: "short",
+        hour: "2-digit",
+        minute: "2-digit",
+        timeZone: "Asia/Jakarta",
+      }),
+    );
+  }, [target]);
 
   return (
     <article className="rounded-xl border border-white/10 bg-gradient-to-br from-yellow-500/[0.08] to-transparent p-5">
