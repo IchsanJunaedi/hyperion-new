@@ -242,10 +242,14 @@ export async function submitResultAction(
     };
   }
 
+  // Don't resurrect a cancelled scrim. If a captain submits a result
+  // on a row that was cancelled (e.g. via a stale tab), we keep the
+  // result row for audit but leave the scrim as cancelled.
   const { error: scrimError } = await supabase
     .from("scrims")
     .update({ status: "completed" })
-    .eq("id", parsed.data.scrim_id);
+    .eq("id", parsed.data.scrim_id)
+    .neq("status", "cancelled");
   if (scrimError) {
     return { ok: false, message: scrimError.message };
   }
@@ -268,12 +272,23 @@ export async function cancelScrimAction(
     return { ok: false, message: "Input tidak valid" };
   }
   const supabase = await createClient();
-  const note = parsed.data.reason
+
+  // Preserve any existing notes (room info, strategic plans, etc.)
+  // by prepending the cancellation marker rather than replacing.
+  const { data: existing } = await supabase
+    .from("scrims")
+    .select("notes")
+    .eq("id", parsed.data.scrim_id)
+    .maybeSingle();
+  const marker = parsed.data.reason
     ? `[CANCELLED] ${parsed.data.reason}`
     : "[CANCELLED]";
+  const combinedNotes = existing?.notes
+    ? `${marker}\n\n${existing.notes}`
+    : marker;
   const { error } = await supabase
     .from("scrims")
-    .update({ status: "cancelled", notes: note })
+    .update({ status: "cancelled", notes: combinedNotes })
     .eq("id", parsed.data.scrim_id);
   if (error) {
     return {
