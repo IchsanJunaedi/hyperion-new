@@ -121,6 +121,8 @@ type ScrimRow = {
   server_region: string | null;
   room_info: string | null;
   notes: string | null;
+  reminder_sent_at: string | null;
+  h24_reminder_sent_at: string | null;
   created_at: string;
   updated_at: string;
 };
