@@ -71,32 +71,30 @@ export const updateAttendanceSchema = z.object({
 
 export type UpdateAttendanceInput = z.infer<typeof updateAttendanceSchema>;
 
-export const submitResultSchema = z
-  .object({
-    scrim_id: z.string().uuid(),
-    our_score: z.coerce.number().int().min(0).max(999),
-    opponent_score: z.coerce.number().int().min(0).max(999),
-    notes: z
-      .string()
-      .trim()
-      .max(2000)
-      .optional()
-      .transform((v) => (v && v.length > 0 ? v : null)),
-    performance_rating: z.coerce
-      .number()
-      .int()
-      .min(1, "Rating 1–5")
-      .max(5, "Rating 1–5")
-      .optional()
-      .nullable(),
-  })
-  .transform((data) => ({
-    ...data,
-    is_win:
-      data.our_score === data.opponent_score
-        ? null
-        : data.our_score > data.opponent_score,
-  }));
+export const submitResultSchema = z.object({
+  scrim_id: z.string().uuid(),
+  our_score: z.coerce.number().int().min(0).max(5),
+  opponent_score: z.coerce.number().int().min(0).max(5),
+  is_win: z.boolean().nullable().optional(),
+  notes: z
+    .string()
+    .trim()
+    .max(2000)
+    .optional()
+    .transform((v) => (v && v.length > 0 ? v : null)),
+  performance_rating: z.coerce
+    .number()
+    .int()
+    .min(1, "Rating 1–5")
+    .max(5, "Rating 1–5")
+    .optional()
+    .nullable(),
+  result_image_path: z
+    .string()
+    .optional()
+    .nullable()
+    .transform((v) => (v && v.length > 0 ? v : null)),
+});
 
 export type SubmitResultInput = z.infer<typeof submitResultSchema>;
 

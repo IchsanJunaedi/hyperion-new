@@ -32,7 +32,11 @@ export default async function TeamSlugPage({ params }: TeamSlugPageProps) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const member = await isCurrentUserMember(organization.id);
+  // Check if user is owner (by email) — owner has access to all teams
+  const ownerEmail = process.env.OWNER_EMAIL;
+  const isOwner = user?.email === ownerEmail;
+
+  const member = isOwner || await isCurrentUserMember(organization.id);
 
   if (!member) {
     if (!user) {
@@ -48,17 +52,6 @@ export default async function TeamSlugPage({ params }: TeamSlugPageProps) {
   }
 
   if (!user) notFound();
-
-  // If the user was added to this org after their last login, the JWT
-  // app_metadata.organizations claim is stale and the middleware will block
-  // all workspace sub-routes (e.g. /scrim, /roster). Detect the mismatch
-  // and force a token refresh so the next navigation carries the correct claim.
-  const jwtOrgs =
-    (user.app_metadata as AppMetadataWithOrgs | undefined)?.organizations ?? [];
-  if (!jwtOrgs.some((o) => o.slug === organization.slug)) {
-    await supabase.auth.refreshSession();
-    redirect(`/${slug}`);
-  }
 
   const data = await getTeamHomeData(organization);
   const currentUserRole = await getCurrentUserRole(organization.id);

@@ -1,15 +1,13 @@
-import { Crown, Plus, Users } from "lucide-react";
 import Link from "next/link";
+import { Crown, Plus, Users, Tags, Settings, FileOutput, Shield, Building2 } from "lucide-react";
 
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { logoutAction } from "@/lib/actions/auth";
 import { DashboardLoginForm } from "@/features/dashboard/components/DashboardLoginForm";
 import { CreateTeamForm } from "@/features/dashboard/components/CreateTeamForm";
-import { OrgCard } from "@/features/dashboard/components/OrgCard";
-import { UserActiveTable } from "@/features/dashboard/components/UserActiveTable";
+import { HomeSection } from "@/features/dashboard/components/HomeSection";
+import { HomeOrgSection } from "@/features/dashboard/components/HomeOrgSection";
 import type { UserDetail } from "@/features/dashboard/components/UserDetailModal";
-import { ManagerAssignmentsTable } from "@/features/dashboard/components/ManagerAssignmentsTable";
 
 export const dynamic = "force-dynamic";
 
@@ -19,292 +17,201 @@ export default async function DashboardPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Not logged in → show owner login form
   if (!user) {
     return (
-      <div className="flex min-h-screen items-center justify-center px-4">
+      <main className="flex min-h-screen items-center justify-center px-4 bg-[#191919]">
         <div className="w-full max-w-sm space-y-6">
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-white">Owner Dashboard</h1>
-            <p className="mt-1 text-sm text-white/60">
-              Login untuk mengakses panel admin.
-            </p>
+            <Crown className="h-12 w-12 mx-auto text-[#9B9A97] mb-4" />
+            <h1 className="text-2xl font-bold text-[#E5E2E1]">Master Dashboard</h1>
+            <p className="mt-1 text-sm text-[#9B9A97]">Login untuk mengakses panel admin.</p>
           </div>
           <DashboardLoginForm />
         </div>
-      </div>
+      </main>
     );
   }
 
-  // Logged in but not owner → access denied
   const ownerEmail = process.env.OWNER_EMAIL;
   if (!ownerEmail || user.email !== ownerEmail) {
     return (
-      <div className="flex min-h-screen items-center justify-center px-4">
+      <main className="flex min-h-screen items-center justify-center px-4 bg-[#191919]">
         <div className="text-center">
-          <h1 className="text-xl font-bold text-white">Akses Ditolak</h1>
-          <p className="mt-2 text-sm text-white/60">
-            Halaman ini hanya untuk Owner.
-          </p>
-          <Link href="/" className="mt-4 inline-block text-sm text-yellow-400 hover:underline">
-            ← Kembali ke beranda
-          </Link>
+          <h1 className="text-xl font-bold text-[#E5E2E1]">Akses Ditolak</h1>
+          <p className="mt-2 text-sm text-[#9B9A97]">Halaman ini hanya untuk Owner.</p>
+          <Link href="/" className="mt-4 inline-block text-sm text-[#9B9A97] hover:text-[#D4D4D4]">← Kembali</Link>
         </div>
-      </div>
+      </main>
     );
   }
 
-  // Owner is logged in → show dashboard
   const admin = createAdminClient();
 
-  const { data: profiles, count: totalUsers } = await admin
-    .from("profiles")
-    .select("id, full_name, username, display_name, phone_wa, date_of_birth, bio, social_links, game_ids, created_at", {
-      count: "exact",
-    })
-    .order("created_at", { ascending: false })
-    .limit(50);
+  // Queries
+  const { count: totalUsers } = await admin.from("profiles").select("id", { count: "exact", head: true });
+  const { data: orgs } = await admin.from("organizations").select("id, name, slug").order("created_at", { ascending: false });
+  const { data: members } = await admin.from("team_members").select("id, user_id, organization_id, division_id, role, is_active").eq("is_active", true);
+  const { data: allDivisions } = await admin.from("divisions").select("id, name, organization_id").eq("is_active", true);
+  const { data: profiles } = await admin.from("profiles").select("id, full_name, username, display_name, phone_wa").order("created_at", { ascending: false }).limit(7);
 
-  // Get emails from auth.users
-  const { data: authUsers } = await admin.auth.admin.listUsers({ perPage: 50 });
+  // Emails
+  const { data: authUsers } = await admin.auth.admin.listUsers({ perPage: 100 });
   const emailMap = new Map<string, string>();
-  for (const u of authUsers?.users ?? []) {
-    if (u.email) emailMap.set(u.id, u.email);
-  }
+  for (const u of authUsers?.users ?? []) { if (u.email) emailMap.set(u.id, u.email); }
 
-  const { data: orgs } = await admin
-    .from("organizations")
-    .select("id, name, slug, tier, created_at")
-    .order("created_at", { ascending: false });
-
-  const { data: members } = await admin
-    .from("team_members")
-    .select("id, user_id, organization_id, division_id, role, is_active")
-    .eq("is_active", true);
-
-  // Get all divisions for manager section
-  const { data: allDivisions } = await admin
-    .from("divisions")
-    .select("id, name, organization_id")
-    .eq("is_active", true)
-    .order("name", { ascending: true });
-
-  // Build role map: user_id → highest role
+  // Role map
   const roleMap = new Map<string, string>();
   const rolePriority: Record<string, number> = { owner: 0, manager: 1, coach: 2, captain: 3, member: 4 };
   for (const m of members ?? []) {
     const existing = roleMap.get(m.user_id);
-    if (!existing || (rolePriority[m.role] ?? 99) < (rolePriority[existing] ?? 99)) {
-      roleMap.set(m.user_id, m.role);
-    }
+    if (!existing || (rolePriority[m.role] ?? 99) < (rolePriority[existing] ?? 99)) roleMap.set(m.user_id, m.role);
   }
+  for (const [uid, email] of emailMap.entries()) { if (email === ownerEmail) roleMap.set(uid, "owner"); }
 
-  // Owner by email — override roleMap
-  const ownerEmailForMap = process.env.OWNER_EMAIL;
-  if (ownerEmailForMap) {
-    for (const [uid, email] of emailMap.entries()) {
-      if (email === ownerEmailForMap) {
-        roleMap.set(uid, "owner");
-      }
-    }
-  }
+  // Managers
+  const managers = (members ?? []).filter((m) => m.role === "manager" && m.is_active).slice(0, 7);
 
   return (
     <>
-      <header className="border-b border-white/5">
-        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
-          <span className="text-sm font-bold text-yellow-400">Owner Dashboard</span>
-          <div className="flex items-center gap-3">
-            <span className="text-xs text-white/50">{user.email}</span>
-            <form action={logoutAction}>
-              <button
-                type="submit"
-                className="rounded-md px-2 py-1 text-xs text-white/50 transition hover:bg-white/10 hover:text-white"
-              >
-                Logout
-              </button>
-            </form>
-          </div>
+      <header className="h-12 flex items-center px-6 sticky top-0 bg-[#191919] z-40 border-b border-[#2D2D2D]">
+        <div className="flex items-center gap-2 text-[#9B9A97] text-sm">
+          <span>Hyperion Team</span>
+          <span className="text-[#6B6A68]">/</span>
+          <span className="text-[#D4D4D4]">Home</span>
         </div>
       </header>
-      <main className="mx-auto max-w-7xl px-4 py-6 space-y-8">
-        <header>
-          <h1 className="text-2xl font-bold text-white">Dashboard</h1>
-          <p className="mt-1 text-sm text-white/60">
-            Kelola semua user, tim, dan role dari sini.
-          </p>
-        </header>
 
-        {/* Stats */}
-        <div className="grid gap-4 sm:grid-cols-3">
-          <StatCard label="Total User" value={totalUsers ?? 0} />
-          <StatCard label="Total Tim" value={orgs?.length ?? 0} />
-          <StatCard label="Member Aktif" value={members?.length ?? 0} />
+      <main className="flex-1 max-w-[900px] w-full mx-auto px-8 py-12 flex flex-col gap-10">
+        {/* Title + Stats */}
+        <div>
+          <Crown className="h-8 w-8 text-[#9B9A97] mb-3" />
+          <h1 className="font-bold text-[36px] leading-tight text-[#E5E2E1]">Home</h1>
+          <p className="text-[#9B9A97] mt-1 mb-6">Workspace owner overview and controls.</p>
+          <div className="flex flex-wrap gap-x-12 gap-y-4 border-b border-[#2D2D2D] pb-6">
+            <Stat label="Total User" value={totalUsers ?? 0} />
+            <Stat label="Total Tim" value={orgs?.length ?? 0} />
+            <Stat label="Member Aktif" value={members?.length ?? 0} />
+            <Stat label="Divisi" value={allDivisions?.length ?? 0} />
+          </div>
         </div>
 
-        {/* Quick actions */}
-        <div className="flex flex-wrap gap-3">
-          <Link
-            href="/dashboard/assign"
-            className="inline-flex h-10 items-center gap-2 rounded-md bg-yellow-400 px-4 text-sm font-semibold text-black transition hover:bg-yellow-300"
-          >
-            <Plus className="h-4 w-4" />
-            Assign Role
+        {/* Action buttons */}
+        <div className="flex flex-wrap gap-2">
+          <Link href="/dashboard/assign" className="inline-flex h-9 items-center gap-2 rounded px-4 text-sm font-medium bg-[#E5E2E1] text-[#191919] hover:bg-white transition-colors">
+            <Plus className="h-4 w-4" /> Assign Role
           </Link>
-          <Link
-            href="/dashboard/users"
-            className="inline-flex h-10 items-center gap-2 rounded-md bg-white/5 px-4 text-sm font-medium text-white transition hover:bg-white/10"
-          >
-            <Users className="h-4 w-4" />
-            Kelola Anggota
+          <Link href="/dashboard/users" className="inline-flex h-9 items-center gap-2 rounded px-4 text-sm text-[#9B9A97] hover:bg-[#2C2C2C] transition-colors">
+            <Users className="h-4 w-4" /> Kelola Anggota
           </Link>
-          <Link
-            href="/dashboard/divisions"
-            className="inline-flex h-10 items-center gap-2 rounded-md bg-white/5 px-4 text-sm font-medium text-white transition hover:bg-white/10"
-          >
-            Kelola Divisi
+          <Link href="/dashboard/divisions" className="inline-flex h-9 items-center gap-2 rounded px-4 text-sm text-[#9B9A97] hover:bg-[#2C2C2C] transition-colors">
+            <Tags className="h-4 w-4" /> Kelola Divisi
           </Link>
-          <Link
-            href="/dashboard/teams"
-            className="inline-flex h-10 items-center gap-2 rounded-md bg-white/5 px-4 text-sm font-medium text-white transition hover:bg-white/10"
-          >
-            <Crown className="h-4 w-4" />
-            Setting Tim
+          <Link href="/dashboard/teams" className="inline-flex h-9 items-center gap-2 rounded px-4 text-sm text-[#9B9A97] hover:bg-[#2C2C2C] transition-colors">
+            <Settings className="h-4 w-4" /> Setting Tim
           </Link>
-          <Link
-            href="/dashboard/export"
-            className="inline-flex h-10 items-center gap-2 rounded-md bg-white/5 px-4 text-sm font-medium text-white transition hover:bg-white/10"
-          >
-            Export Data
-          </Link>
-          <Link
-            href="/dashboard/audit"
-            className="inline-flex h-10 items-center gap-2 rounded-md bg-white/5 px-4 text-sm font-medium text-white transition hover:bg-white/10"
-          >
-            Audit Log
+          <Link href="/dashboard/export" className="inline-flex h-9 items-center gap-2 rounded px-4 text-sm text-[#9B9A97] hover:bg-[#2C2C2C] transition-colors">
+            <FileOutput className="h-4 w-4" /> Export Data
           </Link>
         </div>
 
-        {/* Create Team */}
-        <section className="rounded-xl border border-white/10 bg-zinc-900/40 p-5">
-          <h2 className="mb-3 text-sm font-semibold text-white">Buat Tim Baru</h2>
+        {/* Buat Tim */}
+        <div className="border border-[#2D2D2D] rounded-lg p-6">
+          <h2 className="text-lg font-semibold text-[#E5E2E1] mb-4">Buat Tim Baru</h2>
           <CreateTeamForm existingDivisions={(allDivisions ?? []).map((d) => ({ id: d.id, name: d.name }))} />
-        </section>
+        </div>
 
-        {/* Manager — Tim & Divisi (preview) */}
-        <section>
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-semibold text-white">Manager — Tim & Divisi</h2>
-            <Link href="/dashboard/managers" className="text-xs text-yellow-400 hover:text-yellow-300">Lihat Semua →</Link>
-          </div>
-          <ManagerAssignmentsTable
-            members={members ?? []}
-            profiles={profiles ?? []}
-            orgs={(orgs ?? []).map((o) => ({ id: o.id, name: o.name, slug: o.slug, tier: o.tier }))}
-            allDivisions={(allDivisions ?? []).map((d) => ({
-              id: d.id,
-              name: d.name,
-              organization_id: d.organization_id,
-            }))}
-          />
-        </section>
+        {/* Manager — Tim & Divisi (max 7) */}
+        <HomeSection
+          title="Manager — Tim & Divisi"
+          icon={<Shield className="h-4 w-4 text-[#9B9A97]" />}
+          href="/dashboard/managers"
+          emptyText="Belum ada manager"
+          rows={managers.map((m) => {
+            const p = (profiles ?? []).find((pr) => pr.id === m.user_id);
+            const org = (orgs ?? []).find((o) => o.id === m.organization_id);
+            const divs = (allDivisions ?? []).filter((d) => d.organization_id === m.organization_id).map((d) => d.name).join(", ");
+            const detail: UserDetail = {
+              id: m.user_id,
+              fullName: p?.full_name ?? null,
+              username: p?.username ?? null,
+              email: emailMap.get(m.user_id) ?? null,
+              phoneWa: p?.phone_wa ?? null,
+              dateOfBirth: null,
+              bio: null,
+              socialLinks: null,
+              gameIds: null,
+              role: "manager",
+              division: divs || null,
+              orgName: org?.name ?? null,
+            };
+            return {
+              id: m.id,
+              cols: [p?.full_name ?? p?.display_name ?? "—", org?.name ?? "—", divs || "—"],
+              userDetail: detail,
+            };
+          })}
+        />
 
-        {/* User Active (preview 5) */}
-        <section>
-          <div className="flex items-center justify-between mb-3">
-            <div>
-              <h2 className="text-sm font-semibold text-white">User Active</h2>
-              <p className="text-xs text-white/50">Klik user untuk lihat detail</p>
-            </div>
-            <Link href="/dashboard/users" className="text-xs text-yellow-400 hover:text-yellow-300">Lihat Semua ({totalUsers ?? 0}) →</Link>
-          </div>
-          <UserActiveTable
-            users={sortByRoleHierarchy(profiles ?? [], roleMap).slice(0, 5).map((p): UserDetail => {
-              const userMembership = (members ?? []).find((m) => m.user_id === p.id);
-              const divName = userMembership?.division_id
-                ? (allDivisions ?? []).find((d) => d.id === userMembership.division_id)?.name ?? null
-                : null;
-              const orgName = userMembership
-                ? (orgs ?? []).find((o) => o.id === userMembership.organization_id)?.name ?? null
-                : null;
-              const ownerEmailEnv = process.env.OWNER_EMAIL;
-              const email = emailMap.get(p.id) ?? null;
-              const role = email === ownerEmailEnv ? "owner" : (roleMap.get(p.id) ?? null);
-              return {
-                id: p.id,
-                fullName: p.full_name,
-                username: p.username,
-                email,
-                phoneWa: p.phone_wa,
-                dateOfBirth: p.date_of_birth,
-                bio: p.bio,
-                socialLinks: (p.social_links as Record<string, string>) ?? null,
-                gameIds: (p.game_ids as Record<string, string>) ?? null,
-                role,
-                division: divName,
-                orgName,
-              };
-            })}
-          />
-        </section>
+        {/* User Active (max 7) */}
+        <HomeSection
+          title="User Active"
+          icon={<Users className="h-4 w-4 text-[#9B9A97]" />}
+          href="/dashboard/users"
+          emptyText="Belum ada user"
+          rows={(profiles ?? []).map((p) => {
+            const role = roleMap.get(p.id) ?? "none";
+            const email = emailMap.get(p.id) ?? "—";
+            const userMembership = (members ?? []).find((m) => m.user_id === p.id);
+            const divName = userMembership?.division_id
+              ? (allDivisions ?? []).find((d) => d.id === userMembership.division_id)?.name ?? null
+              : null;
+            const orgName = userMembership
+              ? (orgs ?? []).find((o) => o.id === userMembership.organization_id)?.name ?? null
+              : null;
+            const detail: UserDetail = {
+              id: p.id,
+              fullName: p.full_name,
+              username: p.username,
+              email,
+              phoneWa: p.phone_wa,
+              dateOfBirth: null,
+              bio: null,
+              socialLinks: null,
+              gameIds: null,
+              role,
+              division: divName,
+              orgName,
+            };
+            return {
+              id: p.id,
+              cols: [p.full_name ?? p.display_name ?? "—", email, role],
+              roleCol: 2,
+              userDetail: detail,
+            };
+          })}
+        />
 
-        {/* Tim / Organisasi (preview) */}
-        <section>
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-semibold text-white">Tim / Organisasi</h2>
-            <Link href="/dashboard/teams" className="text-xs text-yellow-400 hover:text-yellow-300">Lihat Semua →</Link>
-          </div>
-          {(!orgs || orgs.length === 0) ? (
-            <p className="text-sm text-white/40">Belum ada tim. Buat di atas.</p>
-          ) : (
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {(orgs ?? []).slice(0, 6).map((org) => {
-                const orgDivs = (allDivisions ?? [])
-                  .filter((d) => d.organization_id === org.id)
-                  .map((d) => ({ id: d.id, name: d.name }));
-                return (
-                  <OrgCard
-                    key={org.id}
-                    org={org}
-                    divisions={orgDivs}
-                    allDivisions={(allDivisions ?? []).map((d) => ({ id: d.id, name: d.name, organizationId: d.organization_id }))}
-                  />
-                );
-              })}
-            </div>
-          )}
-        </section>
+        {/* Tim / Organisasi (max 7) */}
+        <HomeOrgSection
+          orgs={(orgs ?? []).slice(0, 7).map((org) => ({
+            id: org.id,
+            name: org.name,
+            divisions: (allDivisions ?? []).filter((d) => d.organization_id === org.id).map((d) => d.name).join(", "),
+            memberCount: (members ?? []).filter((m) => m.organization_id === org.id).length,
+          }))}
+        />
       </main>
     </>
   );
 }
 
-function StatCard({ label, value }: { label: string; value: number }) {
+function Stat({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-lg border border-white/5 bg-white/[0.02] p-4">
-      <p className="text-xs text-white/50">{label}</p>
-      <p className="mt-1 text-2xl font-bold text-white">{value}</p>
+    <div className="flex flex-col gap-0.5">
+      <span className="text-[#9B9A97] text-sm">{label}</span>
+      <span className="text-[#E5E2E1] text-2xl font-semibold">{value}</span>
     </div>
   );
 }
 
 
-function sortByRoleHierarchy<T extends { id: string }>(
-  profiles: T[],
-  roleMap: Map<string, string>,
-): T[] {
-  const priority: Record<string, number> = {
-    owner: 0,
-    manager: 1,
-    coach: 2,
-    captain: 3,
-    member: 4,
-  };
-  return [...profiles].sort((a, b) => {
-    const roleA = roleMap.get(a.id) ?? "none";
-    const roleB = roleMap.get(b.id) ?? "none";
-    const pA = priority[roleA] ?? 99;
-    const pB = priority[roleB] ?? 99;
-    return pA - pB;
-  });
-}

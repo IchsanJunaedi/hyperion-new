@@ -14,7 +14,7 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[];
 
-export type OrgTier = "pelajar" | "komunitas" | "pro";
+export type OrgTier = "pelajar" | "komunitas" | "pro"; // deprecated, kept for backward compat
 export type MemberRole =
   | "owner"
   | "captain"
@@ -61,8 +61,11 @@ type ProfileRow = {
   id: string;
   username: string | null;
   display_name: string | null;
+  full_name: string | null;
   avatar_url: string | null;
   phone_wa: string | null;
+  date_of_birth: string | null;
+  social_links: Json;
   game_ids: Json;
   bio: string | null;
   created_at: string;
@@ -144,6 +147,7 @@ type ScrimResultRow = {
   is_win: boolean | null;
   notes: string | null;
   performance_rating: number | null;
+  result_image_path: string | null;
   recorded_by: string;
   recorded_at: string;
 };
@@ -210,6 +214,17 @@ type StrategyNoteRow = {
   updated_at: string;
 };
 
+type AuditLogRow = {
+  id: string;
+  actor_id: string | null;
+  action: string;
+  entity_type: string;
+  entity_id: string | null;
+  metadata: Json;
+  ip_address: string | null;
+  created_at: string;
+};
+
 type FileRow = {
   id: string;
   organization_id: string;
@@ -255,8 +270,11 @@ export interface Database {
           ProfileRow,
           | "username"
           | "display_name"
+          | "full_name"
           | "avatar_url"
           | "phone_wa"
+          | "date_of_birth"
+          | "social_links"
           | "game_ids"
           | "bio"
           | "created_at"
@@ -347,6 +365,7 @@ export interface Database {
           | "is_win"
           | "notes"
           | "performance_rating"
+          | "result_image_path"
           | "recorded_at"
         >;
         Update: Partial<ScrimResultRow>;
@@ -417,6 +436,15 @@ export interface Database {
           | "updated_at"
         >;
         Update: Partial<StrategyNoteRow>;
+        Relationships: [];
+      };
+      audit_logs: {
+        Row: AuditLogRow;
+        Insert: WithoutGenerated<
+          AuditLogRow,
+          "id" | "actor_id" | "entity_id" | "metadata" | "ip_address" | "created_at"
+        >;
+        Update: Partial<AuditLogRow>;
         Relationships: [];
       };
       files: {

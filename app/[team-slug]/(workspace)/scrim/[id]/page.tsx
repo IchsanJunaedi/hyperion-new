@@ -1,4 +1,4 @@
-import { Calendar, MapPin, MessageCircle, Trophy } from "lucide-react";
+import { Calendar, MapPin, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -6,7 +6,7 @@ import { ScrimCountdown } from "@/components/team/ScrimCountdown";
 import { AttendanceList } from "@/features/scrim/components/AttendanceList";
 import { AttendanceTracker } from "@/features/scrim/components/AttendanceTracker";
 import { CancelScrimButton } from "@/features/scrim/components/CancelScrimButton";
-import { ScrimResultForm } from "@/features/scrim/components/ScrimResultForm";
+import { FinishScrimSection } from "@/features/scrim/components/FinishScrimSection";
 import { ScrimStatusBadge } from "@/features/scrim/components/StatusBadge";
 import { getCurrentUserRole } from "@/features/roster/queries";
 import {
@@ -26,15 +26,13 @@ export default async function ScrimDetailPage({
   const { "team-slug": slug, id } = await params;
   const detail = await getScrimDetail(id);
   if (!detail) notFound();
-  const { scrim, attendances, result, divisionName, myAttendance } = detail;
+  const { scrim, attendances, result, resultImageUrl, divisionName, myAttendance } = detail;
   const counts = summarizeAttendance(attendances);
   const locked = scrim.status === "completed" || scrim.status === "cancelled";
 
   const currentUserRole = await getCurrentUserRole(scrim.organization_id);
   const canManageScrims = ["captain", "manager", "owner"].includes(currentUserRole ?? "");
 
-  // Server component formats run in the deploy runtime (UTC on Vercel).
-  // Pin WIB so the detail header shows the correct local schedule time.
   const scheduled = new Date(scrim.scheduled_at).toLocaleString("id-ID", {
     weekday: "long",
     day: "numeric",
@@ -91,7 +89,7 @@ export default async function ScrimDetailPage({
         <div className="flex flex-wrap items-center gap-3">
           {!locked && (
             <Link
-              href="edit"
+              href={`/${slug}/scrim/${scrim.id}/edit`}
               className="inline-flex h-9 items-center rounded-md border border-white/10 px-4 text-sm font-medium text-white/80 transition hover:bg-white/5"
             >
               Edit scrim
@@ -128,8 +126,8 @@ export default async function ScrimDetailPage({
                 Anggota divisi
               </h2>
               <p className="text-xs text-white/55">
-                {counts.confirmed} hadir · {counts.tentative} ragu ·{" "}
-                {counts.declined} tidak · {counts.pending} pending
+                {counts.confirmed} hadir · {counts.declined} tidak ·{" "}
+                {counts.pending} pending
               </p>
             </div>
             <div className="mt-4">
@@ -157,50 +155,13 @@ export default async function ScrimDetailPage({
         </section>
 
         <aside className="space-y-6">
-          <article className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
-            <h2 className="flex items-center gap-2 text-sm font-semibold text-white">
-              <Trophy className="h-4 w-4 text-yellow-400" />
-              Hasil pertandingan
-            </h2>
-            {result ? (
-              <div className="mt-4">
-                <p className="text-3xl font-bold text-white">
-                  {result.our_score} <span className="text-white/45">—</span>{" "}
-                  {result.opponent_score}
-                </p>
-                <p className="mt-1 text-xs uppercase tracking-wide text-white/55">
-                  {result.is_win === null
-                    ? "Imbang"
-                    : result.is_win
-                      ? "Menang"
-                      : "Kalah"}
-                </p>
-                {result.notes ? (
-                  <p className="mt-3 whitespace-pre-line text-sm text-white/80">
-                    {result.notes}
-                  </p>
-                ) : null}
-              </div>
-            ) : null}
-            {scrim.status !== "cancelled" ? (
-              <div className="mt-4">
-                <ScrimResultForm
-                  orgSlug={slug}
-                  scrimId={scrim.id}
-                  initial={
-                    result
-                      ? {
-                          our_score: result.our_score,
-                          opponent_score: result.opponent_score,
-                          notes: result.notes,
-                          performance_rating: result.performance_rating,
-                        }
-                      : null
-                  }
-                />
-              </div>
-            ) : null}
-          </article>
+          <FinishScrimSection
+            scrim={scrim}
+            orgSlug={slug}
+            canManage={canManageScrims}
+            initialResult={result}
+            resultImageUrl={resultImageUrl}
+          />
         </aside>
       </div>
     </div>

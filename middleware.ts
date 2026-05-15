@@ -17,6 +17,8 @@ const RESERVED_ROOT_SEGMENTS = new Set([
   "invite",
   "auth",
   "onboarding",
+  "dashboard",
+  "manage",
   "_next",
   "api",
   "favicon.ico",
@@ -26,7 +28,7 @@ const RESERVED_ROOT_SEGMENTS = new Set([
 ]);
 
 /** Reserved segments that require an authenticated session. */
-const AUTH_REQUIRED_SEGMENTS = new Set(["onboarding"]);
+const AUTH_REQUIRED_SEGMENTS = new Set(["onboarding", "manage"]);
 
 /** Reserved segments that should redirect away if user IS authenticated. */
 const AUTH_ONLY_VISITOR_SEGMENTS = new Set(["login", "register"]);
@@ -165,46 +167,25 @@ export async function middleware(request: NextRequest) {
       return redirectWithCookies(loginUrl, response);
     }
     // Authenticated users shouldn't see /login or /register; send them
-    // to the post-auth destination. Honor an internal `?next=` first (so
-    // logged-in users following an invite link `/login?next=/invite/...`
-    // land on the invite page instead of bouncing to their workspace),
-    // then fall back to org workspace, then onboarding.
+    // to their role-appropriate destination via DB query in the page/action.
     if (user && AUTH_ONLY_VISITOR_SEGMENTS.has(firstSegment)) {
       const nextParam = request.nextUrl.searchParams.get("next");
       const safeNext =
         nextParam && nextParam.startsWith("/") && !nextParam.startsWith("//")
           ? nextParam
           : null;
-      const orgs =
-        (user.app_metadata as AppMetadataWithOrgs | undefined)
-          ?.organizations ?? [];
-      const dest =
-        safeNext ??
-        (orgs[0]?.slug ? `/${orgs[0].slug}` : "/onboarding/profile");
+      // If there's an explicit next param, honor it; otherwise redirect to /
+      // which will do the DB-based role redirect in the page component.
+      const dest = safeNext ?? "/";
       return redirectWithCookies(new URL(dest, request.url), response);
     }
     return response;
   }
 
-  // Logged-in user hitting the main-domain `/` → redirect to their first
-  // org workspace, OR /onboarding/profile if they haven't joined any org
-  // yet. (On a custom domain, `/` already maps to that org's workspace
-  // via the rewrite below, so this branch is main-domain only.)
+  // Logged-in user hitting the main-domain `/` → let the page component
+  // handle role-based redirect via DB query.
   if (!hostOrgSlug && !firstSegment && user) {
-    const orgs =
-      (user.app_metadata as AppMetadataWithOrgs | undefined)?.organizations ??
-      [];
-    const firstOrg = orgs[0];
-    if (firstOrg?.slug) {
-      return redirectWithCookies(
-        new URL(`/${firstOrg.slug}`, request.url),
-        response,
-      );
-    }
-    return redirectWithCookies(
-      new URL("/onboarding/profile", request.url),
-      response,
-    );
+    return response;
   }
 
   // No team-slug in the URL (root, marketing landing, etc.) → no auth gate.
@@ -220,25 +201,11 @@ export async function middleware(request: NextRequest) {
   // visitor / non-member tries to reach a workspace section.
   const publicHomePath = hostOrgSlug ? "/" : `/${resolvedSlug}`;
 
-  // 4. Authorization
-  const orgs =
-    (user?.app_metadata as AppMetadataWithOrgs | undefined)?.organizations ??
-    [];
-  const isMember = orgs.some((org) => org.slug === resolvedSlug);
-
+  // 4. Authorization — let page-level components handle member checks via DB.
+  // Middleware only blocks unauthenticated users from workspace sub-routes.
+  
   // Visitor (no auth) trying to access a protected workspace section.
-  // Use redirectWithCookies so any cookie-clearing instructions Supabase
-  // wrote during getUser() (e.g. expiring a stale session token) make
-  // it back to the browser.
   if (!user && section) {
-    return redirectWithCookies(
-      new URL(publicHomePath, request.url),
-      response,
-    );
-  }
-
-  // Logged in but not a member of this org → public profile only.
-  if (user && !isMember && section) {
     return redirectWithCookies(
       new URL(publicHomePath, request.url),
       response,
