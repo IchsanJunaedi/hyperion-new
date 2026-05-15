@@ -42,6 +42,8 @@ export type Visibility = "public" | "division" | "private";
 export type FinanceType = "income" | "expense";
 export type ContentPlatform = "ig" | "tiktok" | "x";
 export type ContentStatus = "draft" | "scheduled" | "approved" | "published";
+export type ScrimRequestStatus = "pending" | "accepted" | "declined";
+export type TournamentStatus = "upcoming" | "ongoing" | "completed" | "cancelled";
 
 type OrganizationRow = {
   id: string;
@@ -280,6 +282,100 @@ export type ContentCalendarRow = {
   created_at: string;
 };
 
+type ScrimRequestRow = {
+  id: string;
+  from_org_id: string;
+  to_org_id: string;
+  division_id: string;
+  message: string | null;
+  status: ScrimRequestStatus;
+  created_by: string;
+  responded_by: string | null;
+  responded_at: string | null;
+  preferred_time: string | null;
+  format: MatchFormat;
+  created_at: string;
+};
+
+type OpponentProfileRow = {
+  id: string;
+  organization_id: string;
+  opponent_name: string;
+  data: Json;
+  created_by: string;
+  updated_at: string;
+  created_at: string;
+};
+
+type PollRow = {
+  id: string;
+  organization_id: string;
+  question: string;
+  options: Json;
+  created_by: string;
+  expires_at: string | null;
+  is_closed: boolean;
+  created_at: string;
+};
+
+type PollVoteRow = {
+  id: string;
+  poll_id: string;
+  user_id: string;
+  option_index: number;
+  created_at: string;
+};
+
+type PlayerTargetRow = {
+  id: string;
+  organization_id: string;
+  user_id: string;
+  skill_name: string;
+  target_level: number;
+  current_level: number;
+  notes: string | null;
+  created_by: string;
+  updated_at: string;
+  created_at: string;
+};
+
+type PlayerTargetHistoryRow = {
+  id: string;
+  target_id: string;
+  level: number;
+  recorded_at: string;
+};
+
+type TournamentRow = {
+  id: string;
+  organization_id: string;
+  division_id: string;
+  name: string;
+  organizer: string | null;
+  start_date: string;
+  end_date: string | null;
+  prize_pool: string | null;
+  registration_url: string | null;
+  status: TournamentStatus;
+  notes: string | null;
+  link: string | null;
+  registration_fee: string | null;
+  registration_deadline: string | null;
+  is_registered: boolean;
+  created_by: string | null;
+  created_at: string;
+};
+
+type TournamentStageRow = {
+  id: string;
+  tournament_id: string;
+  stage_name: string;
+  scheduled_at: string;
+  is_completed: boolean;
+  notes: string | null;
+  created_at: string;
+};
+
 type WithoutGenerated<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
 export interface Database {
@@ -513,6 +609,54 @@ export interface Database {
         Update: Partial<Omit<ContentCalendarRow, "id" | "created_at">>;
         Relationships: [];
       };
+      scrim_requests: {
+        Row: ScrimRequestRow;
+        Insert: WithoutGenerated<ScrimRequestRow, "id" | "status" | "responded_by" | "responded_at" | "preferred_time" | "format" | "created_at">;
+        Update: Partial<ScrimRequestRow>;
+        Relationships: [];
+      };
+      opponent_profiles: {
+        Row: OpponentProfileRow;
+        Insert: WithoutGenerated<OpponentProfileRow, "id" | "data" | "updated_at" | "created_at">;
+        Update: Partial<OpponentProfileRow>;
+        Relationships: [];
+      };
+      polls: {
+        Row: PollRow;
+        Insert: WithoutGenerated<PollRow, "id" | "options" | "expires_at" | "is_closed" | "created_at">;
+        Update: Partial<PollRow>;
+        Relationships: [];
+      };
+      poll_votes: {
+        Row: PollVoteRow;
+        Insert: WithoutGenerated<PollVoteRow, "id" | "created_at">;
+        Update: Partial<PollVoteRow>;
+        Relationships: [];
+      };
+      player_targets: {
+        Row: PlayerTargetRow;
+        Insert: WithoutGenerated<PlayerTargetRow, "id" | "current_level" | "notes" | "updated_at" | "created_at">;
+        Update: Partial<PlayerTargetRow>;
+        Relationships: [];
+      };
+      player_target_history: {
+        Row: PlayerTargetHistoryRow;
+        Insert: WithoutGenerated<PlayerTargetHistoryRow, "id" | "recorded_at">;
+        Update: Partial<PlayerTargetHistoryRow>;
+        Relationships: [];
+      };
+      tournaments: {
+        Row: TournamentRow;
+        Insert: WithoutGenerated<TournamentRow, "id" | "organizer" | "end_date" | "prize_pool" | "registration_url" | "status" | "notes" | "link" | "registration_fee" | "registration_deadline" | "is_registered" | "created_by" | "created_at">;
+        Update: Partial<TournamentRow>;
+        Relationships: [];
+      };
+      tournament_stages: {
+        Row: TournamentStageRow;
+        Insert: WithoutGenerated<TournamentStageRow, "id" | "is_completed" | "notes" | "created_at">;
+        Update: Partial<TournamentStageRow>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -551,6 +695,8 @@ export interface Database {
       finance_type: FinanceType;
       content_platform: ContentPlatform;
       content_status: ContentStatus;
+      scrim_request_status: ScrimRequestStatus;
+      tournament_status: TournamentStatus;
     };
     CompositeTypes: Record<string, never>;
   };
