@@ -13,6 +13,8 @@ import {
   getScrimDetail,
   summarizeAttendance,
 } from "@/features/scrim/queries";
+import { findOpponentByName } from "@/features/scouting/queries";
+import { ScoutingCard } from "@/features/scouting/components/ScoutingCard";
 
 export const dynamic = "force-dynamic";
 
@@ -33,6 +35,9 @@ export default async function ScrimDetailPage({
   const currentUserRole = await getCurrentUserRole(scrim.organization_id);
   const canManageScrims = ["captain", "manager", "owner"].includes(currentUserRole ?? "");
   const isCoach = currentUserRole === "coach";
+
+  // Auto-show scouting info if opponent profile exists
+  const opponentProfile = await findOpponentByName(scrim.organization_id, scrim.opponent_name);
 
   const scheduled = new Date(scrim.scheduled_at).toLocaleString("id-ID", {
     weekday: "long",
@@ -166,6 +171,14 @@ export default async function ScrimDetailPage({
             initialResult={result}
             resultImageUrl={resultImageUrl}
           />
+
+          {/* Scouting info (auto-shown if opponent profile exists) */}
+          {opponentProfile && (
+            <article className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
+              <h2 className="text-sm font-semibold text-white mb-3">Intel Lawan</h2>
+              <ScoutingCard profile={opponentProfile} />
+            </article>
+          )}
         </aside>
       </div>
     </div>
