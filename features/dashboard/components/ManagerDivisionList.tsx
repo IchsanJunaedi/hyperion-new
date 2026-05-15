@@ -1,0 +1,44 @@
+"use client";
+
+import { Users } from "lucide-react";
+
+interface ManagerDivisionListProps {
+  divisions: Array<{
+    id: string;
+    name: string;
+    isActive: boolean;
+    memberCount: number;
+  }>;
+}
+
+export function ManagerDivisionList({ divisions }: ManagerDivisionListProps) {
+  if (divisions.length === 0) {
+    return (
+      <p className="rounded-lg border border-white/5 bg-white/[0.02] px-4 py-8 text-center text-sm text-white/40">
+        Belum ada divisi di tim kamu.
+      </p>
+    );
+  }
+
+  return (
+    <div className="space-y-2">
+      {divisions.map((div) => (
+        <div
+          key={div.id}
+          className="flex items-center justify-between rounded-lg border border-white/5 bg-white/[0.02] px-4 py-3"
+        >
+          <div className="flex items-center gap-3">
+            <span className="text-sm font-medium text-white">{div.name}</span>
+            {!div.isActive && (
+              <span className="rounded-full bg-white/5 px-2 py-0.5 text-[10px] text-white/40">Arsip</span>
+            )}
+          </div>
+          <div className="flex items-center gap-1.5 text-xs text-white/50">
+            <Users className="h-3.5 w-3.5" />
+            {div.memberCount} member
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
