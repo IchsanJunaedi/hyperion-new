@@ -1,6 +1,6 @@
 "use client";
 
-import { Calendar, ExternalLink, Trophy } from "lucide-react";
+import { Calendar, Trophy } from "lucide-react";
 import Link from "next/link";
 
 import type { Tournament } from "@/features/tournaments/queries";
@@ -11,6 +11,7 @@ interface TournamentCardProps {
 }
 
 const STATUS_COLORS: Record<string, string> = {
+  scheduled: "bg-blue-500/10 text-blue-400",
   upcoming: "bg-blue-500/10 text-blue-400",
   ongoing: "bg-yellow-500/10 text-yellow-400",
   completed: "bg-green-500/10 text-green-400",
@@ -18,8 +19,9 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 const STATUS_LABELS: Record<string, string> = {
-  upcoming: "Upcoming",
-  ongoing: "Berlangsung",
+  scheduled: "Belum Daftar",
+  upcoming: "Belum Daftar",
+  ongoing: "Terdaftar",
   completed: "Selesai",
   cancelled: "Dibatalkan",
 };
@@ -43,7 +45,7 @@ export function TournamentCard({ tournament, orgSlug }: TournamentCardProps) {
             <p className="text-xs text-[#6B6A68] mt-0.5 truncate">{tournament.organizer}</p>
           )}
         </div>
-        <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium ${STATUS_COLORS[tournament.status] ?? STATUS_COLORS.upcoming}`}>
+        <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium ${STATUS_COLORS[tournament.status] ?? STATUS_COLORS.scheduled}`}>
           {STATUS_LABELS[tournament.status] ?? tournament.status}
         </span>
       </div>
@@ -56,30 +58,7 @@ export function TournamentCard({ tournament, orgSlug }: TournamentCardProps) {
         {tournament.prize_pool && (
           <span className="inline-flex items-center gap-1">
             <Trophy className="h-3 w-3 text-yellow-400" />
-            {tournament.prize_pool}
-          </span>
-        )}
-        {tournament.link && (
-          <span className="inline-flex items-center gap-1">
-            <ExternalLink className="h-3 w-3" />
-            Link
-          </span>
-        )}
-      </div>
-
-      <div className="mt-2 flex items-center gap-2">
-        {tournament.is_registered ? (
-          <span className="rounded-full bg-green-500/10 px-2 py-0.5 text-[10px] font-medium text-green-400">
-            Terdaftar
-          </span>
-        ) : (
-          <span className="rounded-full bg-white/5 px-2 py-0.5 text-[10px] font-medium text-[#6B6A68]">
-            Belum daftar
-          </span>
-        )}
-        {tournament.registration_fee && (
-          <span className="text-[10px] text-[#6B6A68]">
-            Biaya: {tournament.registration_fee}
+            Rp {tournament.prize_pool}
           </span>
         )}
       </div>

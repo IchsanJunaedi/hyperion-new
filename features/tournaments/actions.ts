@@ -53,15 +53,9 @@ export async function createTournamentAction(
       start_date: parsed.data.start_date,
       end_date: parsed.data.end_date,
       prize_pool: parsed.data.prize_pool,
-      registration_fee: parsed.data.registration_fee,
-      registration_deadline: parsed.data.registration_deadline
-        ? new Date(parsed.data.registration_deadline).toISOString()
-        : null,
       registration_url: parsed.data.registration_url,
-      link: parsed.data.link,
-      is_registered: parsed.data.is_registered,
       notes: parsed.data.notes,
-      status: "upcoming",
+      status: "scheduled",
     })
     .select("id")
     .single();
@@ -114,13 +108,7 @@ export async function updateTournamentAction(
       start_date: parsed.data.start_date,
       end_date: parsed.data.end_date,
       prize_pool: parsed.data.prize_pool,
-      registration_fee: parsed.data.registration_fee,
-      registration_deadline: parsed.data.registration_deadline
-        ? new Date(parsed.data.registration_deadline).toISOString()
-        : null,
       registration_url: parsed.data.registration_url,
-      link: parsed.data.link,
-      is_registered: parsed.data.is_registered,
       notes: parsed.data.notes,
     })
     .eq("id", parsed.data.tournament_id);
@@ -181,14 +169,18 @@ export async function updateTournamentStatusAction(
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, message: "Anda harus login" };
 
+  // Map display status to DB enum value (scrim_status: scheduled/ongoing/completed/cancelled)
+  const dbStatus = status === "upcoming" ? "scheduled" : status;
+
   const { error } = await supabase
     .from("tournaments")
-    .update({ status })
+    .update({ status: dbStatus as "scheduled" | "ongoing" | "completed" | "cancelled" })
     .eq("id", tournamentId);
 
   if (error) return { ok: false, message: error.message };
 
   revalidatePath(`/${orgSlug}/tournaments`);
+  revalidatePath(`/${orgSlug}/tournaments/${tournamentId}`);
   return { ok: true };
 }
 

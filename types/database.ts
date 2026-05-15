@@ -43,7 +43,7 @@ export type FinanceType = "income" | "expense";
 export type ContentPlatform = "ig" | "tiktok" | "x";
 export type ContentStatus = "draft" | "scheduled" | "approved" | "published";
 export type ScrimRequestStatus = "pending" | "accepted" | "declined";
-export type TournamentStatus = "upcoming" | "ongoing" | "completed" | "cancelled";
+export type TournamentStatus = "scheduled" | "upcoming" | "ongoing" | "completed" | "cancelled";
 
 type OrganizationRow = {
   id: string;
