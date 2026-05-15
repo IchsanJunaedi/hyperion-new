@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { AvailabilityBadge } from "@/features/roster/components/AvailabilityBadge";
 import { RemoveMemberButton } from "./RemoveMemberButton";
 import { UserDetailModal, type UserDetail } from "./UserDetailModal";
 
@@ -19,6 +20,7 @@ interface ManageMember {
   role: string;
   division: string | null;
   orgName: string | null;
+  availability: "active" | "hiatus" | "unavailable";
 }
 
 interface ManageMemberTableProps {
@@ -55,6 +57,7 @@ export function ManageMemberTable({ members, orgName }: ManageMemberTableProps) 
               <th className="px-4 py-3 text-left text-xs font-medium text-white/50">Divisi</th>
               <th className="px-4 py-3 text-left text-xs font-medium text-white/50">Role</th>
               <th className="px-4 py-3 text-left text-xs font-medium text-white/50">WA</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-white/50">Status</th>
               <th className="px-4 py-3 text-right text-xs font-medium text-white/50">Aksi</th>
             </tr>
           </thead>
@@ -88,6 +91,7 @@ export function ManageMemberTable({ members, orgName }: ManageMemberTableProps) 
                   <RoleBadge role={m.role} />
                 </td>
                 <td className="px-4 py-3 text-white/60">{m.phoneWa ?? "—"}</td>
+                <td className="px-4 py-3"><AvailabilityBadge availability={m.availability} /></td>
                 <td className="px-4 py-3 text-right">
                   {m.role !== "owner" && m.role !== "manager" && (
                     <RemoveMemberButton memberId={m.id} name={m.fullName ?? "member"} />
@@ -97,7 +101,7 @@ export function ManageMemberTable({ members, orgName }: ManageMemberTableProps) 
             ))}
             {members.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-6 text-center text-sm text-white/40">
+                <td colSpan={7} className="px-4 py-6 text-center text-sm text-white/40">
                   Belum ada member di tim ini.
                 </td>
               </tr>
