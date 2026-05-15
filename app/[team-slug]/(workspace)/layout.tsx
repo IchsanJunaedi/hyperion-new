@@ -53,6 +53,21 @@ export default async function WorkspaceLayout({
 
   const { divisions } = await getPublicTeamData(organization);
 
+  // Get user's role in this org
+  let userRole: string | undefined;
+  if (isOwner) {
+    userRole = "owner";
+  } else {
+    const { data: membership } = await supabase
+      .from("team_members")
+      .select("role")
+      .eq("user_id", user.id)
+      .eq("organization_id", organization.id)
+      .eq("is_active", true)
+      .maybeSingle();
+    userRole = membership?.role ?? undefined;
+  }
+
   return (
     <div className="flex min-h-screen flex-1">
       <WorkspaceSidebar
@@ -67,6 +82,8 @@ export default async function WorkspaceLayout({
             "Akun saya",
           avatarUrl: null,
           userId: user.id,
+          email: user.email ?? undefined,
+          role: userRole,
         }}
       />
       <div className="flex min-w-0 flex-1 flex-col pb-20 md:pb-0">

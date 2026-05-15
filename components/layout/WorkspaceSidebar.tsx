@@ -36,6 +36,8 @@ export interface WorkspaceSidebarProps {
     displayName: string;
     avatarUrl: string | null;
     userId: string;
+    email?: string;
+    role?: string;
   };
 }
 
@@ -119,7 +121,27 @@ export function WorkspaceSidebar({
             {orgName}
           </p>
         </div>
+        {user.role && (
+          <span className={`text-[10px] font-medium rounded-full px-1.5 py-0.5 ${
+            user.role === "manager" ? "bg-green-500/10 text-green-400" :
+            user.role === "captain" ? "bg-purple-500/10 text-purple-400" :
+            user.role === "coach" ? "bg-blue-500/10 text-blue-400" :
+            "bg-white/5 text-white/50"
+          }`}>
+            {user.role}
+          </span>
+        )}
       </Link>
+
+      {/* Back to panel link for manager */}
+      {user.role === "manager" && (
+        <Link
+          href="/manage"
+          className="flex items-center gap-2 mx-2 mt-2 px-3 py-1.5 text-xs text-[#9B9A97] hover:bg-[#2C2C2C] rounded transition-colors"
+        >
+          ← Manager Panel
+        </Link>
+      )}
 
       {/* Division switcher */}
       {divisions.length > 0 ? (
@@ -210,8 +232,8 @@ export function WorkspaceSidebar({
               {user.displayName.slice(0, 2).toUpperCase()}
             </div>
           )}
-          <p className="min-w-0 flex-1 truncate text-sm text-[#9B9A97]">
-            {user.displayName}
+          <p className="min-w-0 flex-1 truncate text-xs text-[#9B9A97]">
+            {user.email ?? user.displayName}
           </p>
           <form action={logoutAction}>
             <button
