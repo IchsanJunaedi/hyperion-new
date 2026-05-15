@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { CalendarGrid } from "@/features/calendar/components/CalendarGrid";
-import { listCalendarEvents } from "@/features/calendar/queries";
+import { listUnifiedCalendarEvents } from "@/features/calendar/unified";
 import { getOrgBySlug } from "@/features/teams/queries";
 
 export const dynamic = "force-dynamic";
@@ -32,7 +32,7 @@ export default async function CalendarPage({
   const from = new Date(startUtcMs).toISOString();
   const to = new Date(endUtcMs).toISOString();
 
-  const events = await listCalendarEvents(organization.id, from, to);
+  const events = await listUnifiedCalendarEvents(organization.id, from, to);
 
   return (
     <div className="space-y-6 px-4 py-6 sm:px-8">
