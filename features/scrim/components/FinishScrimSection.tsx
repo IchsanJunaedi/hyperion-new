@@ -44,7 +44,7 @@ export function FinishScrimSection({
 
   if (scrim.status === "completed") {
     if (!initialResult) return null;
-    return <ResultDisplay result={initialResult} imageUrl={resultImageUrl} />;
+    return <ResultDisplay result={initialResult} imageUrl={resultImageUrl} orgSlug={orgSlug} scrimId={scrim.id} />;
   }
 
   if (scrim.status === "cancelled") return null;
@@ -59,16 +59,15 @@ export function FinishScrimSection({
           Pertandingan selesai?
         </h2>
         <p className="mt-1 text-xs text-white/55">
-          Catat hasil dan tandai scrim sebagai selesai.
+          Catat hasil per game dan tandai scrim sebagai selesai.
         </p>
-        <button
-          type="button"
-          onClick={() => setShowForm(true)}
+        <a
+          href={`/${orgSlug}/scrim/${scrim.id}/finish`}
           className="mt-4 inline-flex h-10 items-center gap-2 rounded-md bg-yellow-400 px-4 text-sm font-semibold text-black transition hover:bg-yellow-300"
         >
           <Trophy className="h-4 w-4" />
           Selesai Pertandingan
-        </button>
+        </a>
       </article>
     );
   }
@@ -86,16 +85,30 @@ export function FinishScrimSection({
 function ResultDisplay({
   result,
   imageUrl,
+  orgSlug,
+  scrimId,
 }: {
   result: ScrimResult;
   imageUrl: string | null;
+  orgSlug?: string;
+  scrimId?: string;
 }) {
   return (
     <article className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
-      <h2 className="flex items-center gap-2 text-sm font-semibold text-white">
-        <Trophy className="h-4 w-4 text-yellow-400" />
-        Hasil pertandingan
-      </h2>
+      <div className="flex items-center justify-between">
+        <h2 className="flex items-center gap-2 text-sm font-semibold text-white">
+          <Trophy className="h-4 w-4 text-yellow-400" />
+          Hasil pertandingan
+        </h2>
+        {orgSlug && scrimId && (
+          <a
+            href={`/${orgSlug}/scrim/${scrimId}/results`}
+            className="text-xs text-white/50 hover:text-white transition-colors"
+          >
+            Lihat detail →
+          </a>
+        )}
+      </div>
       <div className="mt-4 space-y-3">
         <div>
           <p className="text-3xl font-bold text-white">

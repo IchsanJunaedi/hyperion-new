@@ -19,18 +19,23 @@ export async function submitCoachNotesAction(
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { ok: false, message: "Anda harus login." };
 
-  // Verify user is a coach in this org (app-level auth check)
-  const { data: membership } = await supabase
-    .from("team_members")
-    .select("role")
-    .eq("organization_id", orgId)
-    .eq("user_id", user.id)
-    .eq("role", "coach")
-    .eq("is_active", true)
-    .maybeSingle();
+  // Verify user is coach, manager, or owner in this org
+  const ownerEmail = process.env.OWNER_EMAIL;
+  const isOwnerByEmail = ownerEmail && user.email === ownerEmail;
 
-  if (!membership) {
-    return { ok: false, message: "Hanya coach yang bisa mengisi catatan coach." };
+  if (!isOwnerByEmail) {
+    const { data: membership } = await supabase
+      .from("team_members")
+      .select("role")
+      .eq("organization_id", orgId)
+      .eq("user_id", user.id)
+      .in("role", ["coach", "manager"])
+      .eq("is_active", true)
+      .maybeSingle();
+
+    if (!membership) {
+      return { ok: false, message: "Hanya Coach, Manager, atau Owner yang bisa mengisi catatan." };
+    }
   }
 
   // Use admin client to bypass RLS for the update

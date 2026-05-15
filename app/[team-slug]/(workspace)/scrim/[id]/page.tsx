@@ -6,7 +6,6 @@ import { ScrimCountdown } from "@/components/team/ScrimCountdown";
 import { AttendanceList } from "@/features/scrim/components/AttendanceList";
 import { AttendanceTracker } from "@/features/scrim/components/AttendanceTracker";
 import { CancelScrimButton } from "@/features/scrim/components/CancelScrimButton";
-import { CoachNotesSection } from "@/features/scrim/components/CoachNotesSection";
 import { FinishScrimSection } from "@/features/scrim/components/FinishScrimSection";
 import { ScrimStatusBadge } from "@/features/scrim/components/StatusBadge";
 import { getCurrentUserRole } from "@/features/roster/queries";
@@ -105,6 +104,8 @@ export default async function ScrimDetailPage({
 
       <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
         <section className="space-y-6">
+          {/* Only show attendance RSVP for captain and member (not manager/owner/coach) */}
+          {(currentUserRole === "captain" || currentUserRole === "member") && (
           <article className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
             <h2 className="text-sm font-semibold text-white">
               Konfirmasi kehadiran kamu
@@ -121,6 +122,7 @@ export default async function ScrimDetailPage({
               />
             </div>
           </article>
+          )}
 
           <article className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
             <div className="flex items-center justify-between">
@@ -163,13 +165,6 @@ export default async function ScrimDetailPage({
             canManage={canManageScrims}
             initialResult={result}
             resultImageUrl={resultImageUrl}
-          />
-          <CoachNotesSection
-            scrimId={scrim.id}
-            orgSlug={slug}
-            orgId={scrim.organization_id}
-            isCoach={isCoach}
-            existingNotes={result?.coach_notes ?? null}
           />
         </aside>
       </div>

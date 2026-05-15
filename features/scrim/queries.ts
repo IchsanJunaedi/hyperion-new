@@ -135,10 +135,11 @@ export async function getScrimDetail(
         .maybeSingle(),
       supabase
         .from("team_members")
-        .select("user_id, jersey_number, position")
+        .select("user_id, jersey_number, position, role")
         .eq("organization_id", scrim.organization_id)
         .eq("division_id", scrim.division_id)
-        .eq("is_active", true),
+        .eq("is_active", true)
+        .in("role", ["captain", "member"]),
     ]);
 
   const attendances = attendancesRes.data ?? [];

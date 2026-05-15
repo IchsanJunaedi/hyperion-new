@@ -14,8 +14,10 @@ interface ScrimFormProps {
 
 const FORMATS: Array<{ value: MatchFormat; label: string }> = [
   { value: "bo1", label: "BO1" },
+  { value: "bo2", label: "BO2" },
   { value: "bo3", label: "BO3" },
   { value: "bo5", label: "BO5" },
+  { value: "bo7", label: "BO7" },
 ];
 
 const ROOM_TYPES = [
