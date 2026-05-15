@@ -39,6 +39,9 @@ export type NotificationType =
   | "system";
 export type InviteStatus = "pending" | "accepted" | "rejected" | "expired";
 export type Visibility = "public" | "division" | "private";
+export type FinanceType = "income" | "expense";
+export type ContentPlatform = "ig" | "tiktok" | "x";
+export type ContentStatus = "draft" | "scheduled" | "approved" | "published";
 
 type OrganizationRow = {
   id: string;
@@ -146,6 +149,7 @@ type ScrimResultRow = {
   opponent_score: number;
   is_win: boolean | null;
   notes: string | null;
+  coach_notes: string | null;
   performance_rating: number | null;
   result_image_path: string | null;
   recorded_by: string;
@@ -237,6 +241,32 @@ type FileRow = {
   file_size: number;
   ref_id: string | null;
   ref_type: string | null;
+  created_at: string;
+};
+
+type FinanceRow = {
+  id: string;
+  organization_id: string;
+  type: FinanceType;
+  amount: number;
+  category: string;
+  description: string | null;
+  date: string;
+  created_by: string;
+  created_at: string;
+};
+
+type ContentCalendarRow = {
+  id: string;
+  organization_id: string;
+  platform: ContentPlatform;
+  title: string;
+  description: string | null;
+  scheduled_at: string;
+  status: ContentStatus;
+  created_by: string;
+  approved_by: string | null;
+  approved_at: string | null;
   created_at: string;
 };
 
@@ -364,6 +394,7 @@ export interface Database {
           | "opponent_score"
           | "is_win"
           | "notes"
+          | "coach_notes"
           | "performance_rating"
           | "result_image_path"
           | "recorded_at"
@@ -458,6 +489,18 @@ export interface Database {
           | "created_at"
         >;
         Update: Partial<FileRow>;
+        Relationships: [];
+      };
+      finances: {
+        Row: FinanceRow;
+        Insert: Omit<FinanceRow, "id" | "created_at">;
+        Update: Partial<Omit<FinanceRow, "id" | "created_at">>;
+        Relationships: [];
+      };
+      content_calendar: {
+        Row: ContentCalendarRow;
+        Insert: Omit<ContentCalendarRow, "id" | "created_at">;
+        Update: Partial<Omit<ContentCalendarRow, "id" | "created_at">>;
         Relationships: [];
       };
     };
