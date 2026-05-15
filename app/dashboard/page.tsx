@@ -7,6 +7,9 @@ import { DashboardLoginForm } from "@/features/dashboard/components/DashboardLog
 import { CreateTeamForm } from "@/features/dashboard/components/CreateTeamForm";
 import { HomeSection } from "@/features/dashboard/components/HomeSection";
 import { HomeOrgSection } from "@/features/dashboard/components/HomeOrgSection";
+import { ManagerTimDivisiTable } from "@/features/dashboard/components/ManagerTimDivisiTable";
+import { TeamHealthScore } from "@/features/dashboard/components/TeamHealthScore";
+import { getTeamHealthScore } from "@/features/dashboard/queries/healthScore";
 import type { UserDetail } from "@/features/dashboard/components/UserDetailModal";
 
 export const dynamic = "force-dynamic";
@@ -68,6 +71,10 @@ export default async function DashboardPage() {
   }
   for (const [uid, email] of emailMap.entries()) { if (email === ownerEmail) roleMap.set(uid, "owner"); }
 
+  // Team health score for first org
+  const healthOrgId = orgs?.[0]?.id ?? null;
+  const healthScore = healthOrgId ? await getTeamHealthScore(healthOrgId) : null;
+
   // Managers
   const managers = (members ?? []).filter((m) => m.role === "manager" && m.is_active).slice(0, 7);
 
@@ -121,36 +128,30 @@ export default async function DashboardPage() {
         </div>
 
         {/* Manager — Tim & Divisi (max 7) */}
-        <HomeSection
-          title="Manager — Tim & Divisi"
-          icon={<Shield className="h-4 w-4 text-[#9B9A97]" />}
-          href="/dashboard/managers"
-          emptyText="Belum ada manager"
-          rows={managers.map((m) => {
-            const p = (profiles ?? []).find((pr) => pr.id === m.user_id);
-            const org = (orgs ?? []).find((o) => o.id === m.organization_id);
-            const divs = (allDivisions ?? []).filter((d) => d.organization_id === m.organization_id).map((d) => d.name).join(", ");
-            const detail: UserDetail = {
-              id: m.user_id,
-              fullName: p?.full_name ?? null,
-              username: p?.username ?? null,
-              email: emailMap.get(m.user_id) ?? null,
-              phoneWa: p?.phone_wa ?? null,
-              dateOfBirth: null,
-              bio: null,
-              socialLinks: null,
-              gameIds: null,
-              role: "manager",
-              division: divs || null,
-              orgName: org?.name ?? null,
-            };
-            return {
-              id: m.id,
-              cols: [p?.full_name ?? p?.display_name ?? "—", org?.name ?? "—", divs || "—"],
-              userDetail: detail,
-            };
-          })}
-        />
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-[#E5E2E1] flex items-center gap-2">
+              <Shield className="h-4 w-4 text-[#9B9A97]" /> Manager — Tim & Divisi
+            </h2>
+            <Link href="/dashboard/managers" className="text-xs text-[#9B9A97] hover:text-[#D4D4D4] transition-colors">
+              Detail →
+            </Link>
+          </div>
+          <ManagerTimDivisiTable
+            rows={managers.map((m) => {
+              const p = (profiles ?? []).find((pr) => pr.id === m.user_id);
+              const org = (orgs ?? []).find((o) => o.id === m.organization_id);
+              const orgDivs = (allDivisions ?? []).filter((d) => d.organization_id === m.organization_id).map((d) => ({ id: d.id, name: d.name }));
+              return {
+                memberId: m.id,
+                managerName: p?.full_name ?? p?.display_name ?? p?.username ?? "—",
+                orgId: m.organization_id,
+                orgName: org?.name ?? "—",
+                divisions: orgDivs,
+              };
+            })}
+          />
+        </div>
 
         {/* User Active (max 7) */}
         <HomeSection
@@ -191,14 +192,36 @@ export default async function DashboardPage() {
           })}
         />
 
+        {/* Team Health Score */}
+        {healthScore && (
+          <TeamHealthScore score={healthScore} />
+        )}
+
         {/* Tim / Organisasi (max 7) */}
         <HomeOrgSection
-          orgs={(orgs ?? []).slice(0, 7).map((org) => ({
-            id: org.id,
-            name: org.name,
-            divisions: (allDivisions ?? []).filter((d) => d.organization_id === org.id).map((d) => d.name).join(", "),
-            memberCount: (members ?? []).filter((m) => m.organization_id === org.id).length,
-          }))}
+          orgs={(orgs ?? []).slice(0, 7).map((org) => {
+            // Get members for this org (exclude owner)
+            const orgMembers = (members ?? [])
+              .filter((m) => m.organization_id === org.id && m.role !== "owner")
+              .map((m) => {
+                const p = (profiles ?? []).find((pr) => pr.id === m.user_id);
+                const div = m.division_id
+                  ? (allDivisions ?? []).find((d) => d.id === m.division_id)?.name ?? null
+                  : null;
+                return {
+                  name: p?.full_name ?? p?.display_name ?? p?.username ?? "—",
+                  role: m.role,
+                  division: div,
+                };
+              });
+            return {
+              id: org.id,
+              name: org.name,
+              divisions: (allDivisions ?? []).filter((d) => d.organization_id === org.id).map((d) => d.name).join(", "),
+              memberCount: orgMembers.length,
+              members: orgMembers,
+            };
+          })}
         />
       </main>
     </>
