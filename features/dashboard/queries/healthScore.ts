@@ -52,36 +52,26 @@ export async function getTeamHealthScore(orgId: string): Promise<HealthScoreBrea
   // Activity score (10%)
   const activityScore = (recentActivityRes.data?.length ?? 0) > 0 ? 100 : 0;
 
-  // Attendance rate (30%) — fetch scrim IDs for this org then query attendances
+  // Attendance rate (30%) — fetch all scrim IDs for org then query attendances
   let attendanceRate = 0;
-  const scrimIds = [
-    ...scrims.map((s) => s.id),
-    ...(recentActivityRes.data ?? []).map((s) => s.id),
-  ];
-  // deduplicate
-  const uniqueScrimIds = [...new Set(scrimIds)];
+  const allScrimsRes = await admin
+    .from("scrims")
+    .select("id")
+    .eq("organization_id", orgId);
 
-  if (uniqueScrimIds.length > 0) {
-    // Fetch all scrims for org (completed + non-completed) to get full attendance picture
-    const allScrimsRes = await admin
-      .from("scrims")
-      .select("id")
-      .eq("organization_id", orgId);
+  const allScrimIds = (allScrimsRes.data ?? []).map((s) => s.id);
 
-    const allScrimIds = (allScrimsRes.data ?? []).map((s) => s.id);
+  if (allScrimIds.length > 0) {
+    const attendanceRes = await admin
+      .from("scrim_attendances")
+      .select("status")
+      .in("scrim_id", allScrimIds);
 
-    if (allScrimIds.length > 0) {
-      const attendanceRes = await admin
-        .from("scrim_attendances")
-        .select("status")
-        .in("scrim_id", allScrimIds);
-
-      const attendances = attendanceRes.data ?? [];
-      const confirmed = attendances.filter((a) => a.status === "confirmed").length;
-      attendanceRate = attendances.length > 0
-        ? Math.round((confirmed / attendances.length) * 100)
-        : 0;
-    }
+    const attendances = attendanceRes.data ?? [];
+    const confirmed = attendances.filter((a) => a.status === "confirmed").length;
+    attendanceRate = attendances.length > 0
+      ? Math.round((confirmed / attendances.length) * 100)
+      : 0;
   }
 
   // Weighted total

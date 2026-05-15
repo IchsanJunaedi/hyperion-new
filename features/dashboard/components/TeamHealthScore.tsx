@@ -29,7 +29,7 @@ export function TeamHealthScore({ score }: TeamHealthScoreProps) {
     { label: "Win Rate", value: score.winRate, weight: "40%", color: "bg-emerald-400" },
     { label: "Attendance", value: score.attendanceRate, weight: "30%", color: "bg-blue-400" },
     { label: "Availability", value: score.availabilityRatio, weight: "20%", color: "bg-purple-400" },
-    { label: "Aktivitas (30d)", value: score.activityScore, weight: "10%", color: "bg-orange-400" },
+    { label: "Activity (30d)", value: score.activityScore, weight: "10%", color: "bg-orange-400" },
   ];
 
   return (
