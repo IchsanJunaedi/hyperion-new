@@ -2,89 +2,105 @@
 
 import { Download, Loader2 } from "lucide-react";
 import { useState } from "react";
-import { toast } from "sonner";
 
 import { createClient } from "@/lib/supabase/client";
+import { useNotify } from "./NotifyModal";
 
 const EXPORTS = [
-  { key: "members", label: "Anggota Tim", table: "team_members", select: "user_id, organization_id, division_id, role, is_active, joined_at" },
-  { key: "scrims", label: "Semua Scrim", table: "scrims", select: "id, organization_id, division_id, opponent_name, scheduled_at, format, status, created_at" },
-  { key: "results", label: "Hasil Scrim", table: "scrim_results", select: "id, scrim_id, our_score, opponent_score, is_win, recorded_at" },
-  { key: "announcements", label: "Pengumuman", table: "announcements", select: "id, organization_id, title, body, is_pinned, created_at" },
-  { key: "profiles", label: "Profil User", table: "profiles", select: "id, full_name, username, display_name, phone_wa, date_of_birth, created_at" },
+  { key: "profiles", label: "Profil User", description: "Nama, username, WA, tanggal lahir" },
+  { key: "members", label: "Anggota Tim", description: "Member, tim, divisi, role" },
+  { key: "scrims", label: "Semua Scrim", description: "Lawan, jadwal, format, status" },
+  { key: "results", label: "Hasil Scrim", description: "Score, W/L, catatan" },
+  { key: "announcements", label: "Pengumuman", description: "Judul, isi, tanggal" },
 ] as const;
 
 export function ExportButtons() {
   const [loading, setLoading] = useState<string | null>(null);
+  const { success, error: notifyError } = useNotify();
 
-  async function handleExport(key: string, table: string, select: string, label: string) {
+  async function handleExport(key: string) {
     setLoading(key);
     try {
       const supabase = createClient();
-      const { data, error } = await supabase.from(table as "profiles").select(select);
+      let csv = "";
 
-      if (error) {
-        toast.error(`Gagal export: ${error.message}`);
-        return;
+      if (key === "profiles") {
+        const { data } = await supabase.from("profiles").select("full_name, username, display_name, phone_wa, date_of_birth, created_at");
+        if (!data || data.length === 0) { notifyError("Tidak ada data"); setLoading(null); return; }
+        csv = toCsv(data, ["Nama Lengkap", "Username", "Display Name", "WhatsApp", "Tanggal Lahir", "Terdaftar"]);
+      } else if (key === "members") {
+        const { data } = await supabase.from("team_members").select("user_id, organization_id, division_id, role, is_active, joined_at");
+        if (!data || data.length === 0) { notifyError("Tidak ada data"); setLoading(null); return; }
+        csv = toCsv(data, ["User ID", "Organization ID", "Division ID", "Role", "Aktif", "Bergabung"]);
+      } else if (key === "scrims") {
+        const { data } = await supabase.from("scrims").select("opponent_name, scheduled_at, format, status, notes, created_at");
+        if (!data || data.length === 0) { notifyError("Tidak ada data"); setLoading(null); return; }
+        csv = toCsv(data, ["Lawan", "Jadwal", "Format", "Status", "Catatan", "Dibuat"]);
+      } else if (key === "results") {
+        const { data } = await supabase.from("scrim_results").select("our_score, opponent_score, is_win, notes, performance_rating, recorded_at");
+        if (!data || data.length === 0) { notifyError("Tidak ada data"); setLoading(null); return; }
+        csv = toCsv(data, ["Skor Kita", "Skor Lawan", "Menang", "Catatan", "Rating", "Dicatat"]);
+      } else if (key === "announcements") {
+        const { data } = await supabase.from("announcements").select("title, body, is_pinned, created_at");
+        if (!data || data.length === 0) { notifyError("Tidak ada data"); setLoading(null); return; }
+        csv = toCsv(data, ["Judul", "Isi", "Pinned", "Dibuat"]);
       }
 
-      if (!data || data.length === 0) {
-        toast.error("Tidak ada data untuk di-export");
-        return;
-      }
+      if (!csv) { notifyError("Gagal export"); setLoading(null); return; }
 
-      // Convert to CSV
-      const headers = Object.keys(data[0] as Record<string, unknown>);
-      const rows = (data as Record<string, unknown>[]).map((row) =>
-        headers.map((h) => {
-          const val = row[h];
-          if (val === null || val === undefined) return "";
-          const str = String(val);
-          return str.includes(",") || str.includes('"') || str.includes("\n")
-            ? `"${str.replace(/"/g, '""')}"`
-            : str;
-        }).join(","),
-      );
-      const csv = [headers.join(","), ...rows].join("\n");
-
-      // Download
       const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `${key}_export_${new Date().toISOString().slice(0, 10)}.csv`;
+      a.download = `${key}_${new Date().toISOString().slice(0, 10)}.csv`;
       a.click();
       URL.revokeObjectURL(url);
 
-      toast.success(`${label} berhasil di-export`);
+      success(`${EXPORTS.find((e) => e.key === key)?.label} berhasil di-export`);
     } catch {
-      toast.error("Gagal export data");
+      notifyError("Gagal export data");
     } finally {
       setLoading(null);
     }
   }
 
   return (
-    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
       {EXPORTS.map((exp) => (
         <button
           key={exp.key}
           type="button"
           disabled={loading !== null}
-          onClick={() => handleExport(exp.key, exp.table, exp.select, exp.label)}
-          className="flex items-center gap-3 rounded-lg border border-white/10 bg-zinc-900/40 p-4 text-left transition hover:border-white/20 hover:bg-zinc-900/60 disabled:opacity-50"
+          onClick={() => handleExport(exp.key)}
+          className="flex items-center gap-3 rounded-lg border border-[#2D2D2D] bg-[#202020] p-4 text-left transition hover:bg-[#2C2C2C] disabled:opacity-50"
         >
           {loading === exp.key ? (
-            <Loader2 className="h-5 w-5 animate-spin text-yellow-400" />
+            <Loader2 className="h-5 w-5 animate-spin text-[#9B9A97]" />
           ) : (
-            <Download className="h-5 w-5 text-yellow-400" />
+            <Download className="h-5 w-5 text-[#9B9A97]" />
           )}
           <div>
-            <p className="text-sm font-medium text-white">{exp.label}</p>
-            <p className="text-xs text-white/40">Download CSV</p>
+            <p className="text-sm font-medium text-[#D4D4D4]">{exp.label}</p>
+            <p className="text-xs text-[#6B6A68]">{exp.description}</p>
           </div>
         </button>
       ))}
     </div>
   );
+}
+
+function toCsv(data: Record<string, unknown>[], headers: string[]): string {
+  const keys = Object.keys(data[0]!);
+  const rows = data.map((row) =>
+    keys.map((k) => {
+      const val = row[k];
+      if (val === null || val === undefined) return "";
+      if (typeof val === "boolean") return val ? "Ya" : "Tidak";
+      const str = String(val);
+      return str.includes(",") || str.includes('"') || str.includes("\n")
+        ? `"${str.replace(/"/g, '""')}"`
+        : str;
+    }).join(","),
+  );
+  return [headers.join(","), ...rows].join("\n");
 }

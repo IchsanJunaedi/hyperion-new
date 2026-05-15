@@ -2,11 +2,11 @@
 
 import { Loader2 } from "lucide-react";
 import { useMemo, useState, useTransition } from "react";
-import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
 import { managerAssignRoleAction } from "../actions";
 import type { MemberRole } from "@/types/database";
+import { useNotify } from "./NotifyModal";
 
 interface ManagerAssignFormProps {
   users: Array<{ id: string; label: string }>;
@@ -24,6 +24,7 @@ export function ManagerAssignForm({
 }: ManagerAssignFormProps) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
+  const { success, error: notifyError } = useNotify();
   const [selectedUser, setSelectedUser] = useState("");
   const [selectedOrg, setSelectedOrg] = useState("");
   const [selectedDiv, setSelectedDiv] = useState("");
@@ -80,10 +81,10 @@ export function ManagerAssignForm({
         role: selectedRole as MemberRole,
       });
       if (res.ok) {
-        toast.success("Member berhasil ditambahkan");
+        success("Member berhasil ditambahkan");
         router.push("/manage");
       } else {
-        setError(res.message);
+        notifyError(res.message);
       }
     });
   }

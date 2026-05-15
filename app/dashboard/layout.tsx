@@ -1,6 +1,8 @@
 import Link from "next/link";
 import {
   Building2,
+  CalendarClock,
+  DollarSign,
   FileOutput,
   Home,
   ListChecks,
@@ -46,6 +48,8 @@ export default async function DashboardLayout({
             <NavItem href="/dashboard/managers" Icon={Shield} label="Manager — Tim & Divisi" />
             <NavItem href="/dashboard/users" Icon={Users} label="User Active" />
             <NavItem href="/dashboard/teams" Icon={Building2} label="Tim / Organisasi" />
+            <NavItem href="/dashboard/finances" Icon={DollarSign} label="Kas Tim" />
+            <NavItem href="/dashboard/content" Icon={CalendarClock} label="Konten" />
             <NavItem href="/dashboard/audit" Icon={ListChecks} label="Audit Log" />
             <NavItem href="/dashboard/export" Icon={FileOutput} label="Export Data" />
           </nav>

@@ -19,7 +19,7 @@ export function CreateTeamForm({ existingDivisions }: CreateTeamFormProps) {
   const [selectedDivisionIds, setSelectedDivisionIds] = useState<string[]>([]);
   const { success, error: notifyError } = useNotify();
 
-  // Deduplicate divisions by name (show only unique names)
+  // Deduplicate divisions by name
   const uniqueDivisions = useMemo(() => {
     const seen = new Set<string>();
     return existingDivisions.filter((d) => {
@@ -28,6 +28,8 @@ export function CreateTeamForm({ existingDivisions }: CreateTeamFormProps) {
       return true;
     });
   }, [existingDivisions]);
+
+  const noDivisions = uniqueDivisions.length === 0;
 
   function toggleDivision(divId: string) {
     setSelectedDivisionIds((prev) =>
@@ -40,6 +42,10 @@ export function CreateTeamForm({ existingDivisions }: CreateTeamFormProps) {
     if (pending) return;
     if (!teamName.trim()) {
       setError("Nama tim wajib diisi");
+      return;
+    }
+    if (selectedDivisionIds.length === 0) {
+      notifyError("Pilih minimal 1 divisi untuk membuat tim");
       return;
     }
 
@@ -62,14 +68,21 @@ export function CreateTeamForm({ existingDivisions }: CreateTeamFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {noDivisions && (
+        <p className="rounded border border-[#2D2D2D] bg-[#2C2C2C] px-3 py-2 text-sm text-[#9B9A97]">
+          Buat divisi terlebih dahulu di halaman "Kelola Divisi" sebelum membuat tim.
+        </p>
+      )}
+
       <div className="space-y-1">
         <label className="text-xs font-medium text-[#9B9A97]">Nama Tim</label>
         <input
           value={teamName}
           onChange={(e) => setTeamName(e.target.value)}
           required
+          disabled={noDivisions}
           maxLength={80}
-          className="h-10 w-full rounded border border-[#2D2D2D] bg-[#191919] px-3 text-sm text-[#E5E2E1] focus:border-[#D4D4D4] focus:outline-none"
+          className="h-10 w-full rounded border border-[#2D2D2D] bg-[#191919] px-3 text-sm text-[#E5E2E1] focus:border-[#D4D4D4] focus:outline-none disabled:opacity-40"
         />
       </div>
 
@@ -109,8 +122,8 @@ export function CreateTeamForm({ existingDivisions }: CreateTeamFormProps) {
 
       <button
         type="submit"
-        disabled={pending}
-        className="inline-flex h-9 items-center gap-2 rounded px-4 text-sm font-medium bg-[#E5E2E1] text-[#191919] hover:bg-white transition-colors disabled:opacity-50"
+        disabled={pending || noDivisions || selectedDivisionIds.length === 0}
+        className="inline-flex h-9 items-center gap-2 rounded px-4 text-sm font-medium bg-[#E5E2E1] text-[#191919] hover:bg-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
       >
         {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
         Buat Tim

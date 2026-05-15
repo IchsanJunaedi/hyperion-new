@@ -20,6 +20,7 @@ export default async function DashboardDivisionsPage() {
   const { data: divisions } = await admin
     .from("divisions")
     .select("id, name, slug, is_active, organization_id, created_at")
+    .is("organization_id", null)
     .order("name", { ascending: true });
 
   return (

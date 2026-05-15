@@ -62,17 +62,17 @@ export async function assignRoleAction(input: {
 
   // Enforce: only 1 captain per team
   const adminForCheck = createAdminClient();
-  if (input.role === "captain") {
-    const { data: existingCaptain } = await adminForCheck
+  if (input.role === "captain" || input.role === "manager" || input.role === "coach") {
+    const { data: existingRole } = await adminForCheck
       .from("team_members")
       .select("id, user_id")
       .eq("organization_id", input.organizationId)
-      .eq("role", "captain")
+      .eq("role", input.role)
       .eq("is_active", true)
       .maybeSingle();
 
-    if (existingCaptain && existingCaptain.user_id !== input.userId) {
-      return { ok: false, message: "Tim ini sudah punya Captain. Hanya 1 Captain per tim." };
+    if (existingRole && existingRole.user_id !== input.userId) {
+      return { ok: false, message: `Tim ini sudah punya ${input.role}. Hanya 1 per tim.` };
     }
   }
 
@@ -132,17 +132,9 @@ export async function createTeamAction(input: {
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, message: "Anda harus login" };
 
-  // Verify caller is owner of at least one org
-  const { data: ownerCheck } = await supabase
-    .from("team_members")
-    .select("id")
-    .eq("user_id", user.id)
-    .eq("role", "owner")
-    .eq("is_active", true)
-    .limit(1)
-    .maybeSingle();
-
-  if (!ownerCheck) {
+  // Verify caller is owner by email
+  const ownerEmailCheck = process.env.OWNER_EMAIL;
+  if (!ownerEmailCheck || user.email !== ownerEmailCheck) {
     return { ok: false, message: "Hanya Owner yang bisa membuat tim baru" };
   }
 
@@ -496,31 +488,36 @@ export async function createDivisionAction(
     return { ok: false, message: "Nama divisi minimal 2 karakter" };
   }
 
-  // Get the first org this owner belongs to (divisions need an org_id)
-  const { data: ownerMembership } = await supabase
-    .from("team_members")
-    .select("organization_id")
-    .eq("user_id", user.id)
-    .eq("role", "owner")
-    .eq("is_active", true)
-    .limit(1)
-    .maybeSingle();
-
-  if (!ownerMembership) {
+  // Verify owner by email
+  const ownerEmail = process.env.OWNER_EMAIL;
+  if (!ownerEmail || user.email !== ownerEmail) {
     return { ok: false, message: "Hanya Owner yang bisa membuat divisi" };
   }
 
   const admin = createAdminClient();
+
   const slug = name
     .trim()
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
 
+  // Check duplicate name (case-insensitive)
+  const { data: existing } = await admin
+    .from("divisions")
+    .select("id")
+    .ilike("name", name.trim())
+    .limit(1)
+    .maybeSingle();
+
+  if (existing) {
+    return { ok: false, message: "Divisi dengan nama ini sudah ada. Gunakan nama lain." };
+  }
+
   const { error } = await admin
     .from("divisions")
     .insert({
-      organization_id: ownerMembership.organization_id,
+      organization_id: null,
       name: name.trim(),
       slug,
       game: name.trim(),
@@ -607,17 +604,9 @@ export async function createTeamWithDivisionsAction(input: {
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, message: "Anda harus login" };
 
-  // Verify caller is owner
-  const { data: ownerCheck } = await supabase
-    .from("team_members")
-    .select("id")
-    .eq("user_id", user.id)
-    .eq("role", "owner")
-    .eq("is_active", true)
-    .limit(1)
-    .maybeSingle();
-
-  if (!ownerCheck) {
+  // Verify caller is owner by email
+  const ownerEmail = process.env.OWNER_EMAIL;
+  if (!ownerEmail || user.email !== ownerEmail) {
     return { ok: false, message: "Hanya Owner yang bisa membuat tim baru" };
   }
 
@@ -649,9 +638,8 @@ export async function createTeamWithDivisionsAction(input: {
     return { ok: false, message: orgErr?.message ?? "Gagal membuat tim" };
   }
 
-  // Copy selected divisions to this new org (create new rows, don't move)
+  // Copy selected divisions to this new org (standalone originals stay untouched)
   if (input.divisionIds.length > 0) {
-    // Get the source division details
     const { data: sourceDivs } = await admin
       .from("divisions")
       .select("name, slug, game")
@@ -710,8 +698,10 @@ export async function deleteOrgAction(
   const admin = createAdminClient();
   // Delete members first (FK constraint)
   await admin.from("team_members").delete().eq("organization_id", orgId);
-  // Delete divisions
-  await admin.from("divisions").delete().eq("organization_id", orgId);
+
+  // Move divisions back to standalone (unlink from org)
+  await admin.from("divisions").update({ organization_id: null }).eq("organization_id", orgId);
+
   // Delete org
   const { error } = await admin.from("organizations").delete().eq("id", orgId);
 

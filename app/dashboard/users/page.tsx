@@ -1,9 +1,10 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { Users } from "lucide-react";
 
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { MemberManageRow } from "@/features/dashboard/components/MemberManageRow";
+import { RemoveMemberButton } from "@/features/dashboard/components/RemoveMemberButton";
 
 export const dynamic = "force-dynamic";
 
@@ -16,7 +17,7 @@ export default async function DashboardUsersPage() {
 
   const admin = createAdminClient();
 
-  // Get ALL profiles (not just those with memberships)
+  // Get ALL profiles
   const { data: allProfiles } = await admin
     .from("profiles")
     .select("id, full_name, username, display_name, phone_wa")
@@ -28,134 +29,133 @@ export default async function DashboardUsersPage() {
     .select("id, user_id, organization_id, division_id, role, is_active")
     .order("role", { ascending: true });
 
-  // Get orgs
-  const { data: orgs } = await admin
-    .from("organizations")
-    .select("id, name, slug");
-
+  // Get orgs + divisions
+  const { data: orgs } = await admin.from("organizations").select("id, name");
+  const { data: divisions } = await admin.from("divisions").select("id, name, organization_id").eq("is_active", true);
   const orgMap = new Map((orgs ?? []).map((o) => [o.id, o]));
+  const divMap = new Map((divisions ?? []).map((d) => [d.id, d]));
 
   // Get emails
   const { data: authUsers } = await admin.auth.admin.listUsers({ perPage: 500 });
   const emailMap = new Map<string, string>();
-  for (const u of authUsers?.users ?? []) {
-    if (u.email) emailMap.set(u.id, u.email);
-  }
+  for (const u of authUsers?.users ?? []) { if (u.email) emailMap.set(u.id, u.email); }
 
-  // Build: for each profile, find their memberships
-  // Users with memberships show as rows per membership
-  // Users WITHOUT memberships show as a single "none" row
   const ownerEmail = process.env.OWNER_EMAIL;
-
-  // Role priority for sorting
   const rolePriority: Record<string, number> = { owner: 0, manager: 1, coach: 2, captain: 3, member: 4 };
 
-  // Build combined list: memberships + unassigned users
+  // Build rows: membership rows + unassigned users
   type RowData = {
     key: string;
     memberId: string | null;
+    userId: string;
     name: string;
+    email: string;
+    phoneWa: string;
     orgName: string;
+    divName: string;
     role: string;
     isActive: boolean;
   };
 
   const rows: RowData[] = [];
 
-  // Add all membership rows
   for (const m of members ?? []) {
     const p = (allProfiles ?? []).find((pr) => pr.id === m.user_id);
     const org = orgMap.get(m.organization_id);
+    const div = m.division_id ? divMap.get(m.division_id) : null;
     rows.push({
       key: m.id,
       memberId: m.id,
-      name: p?.full_name ?? p?.display_name ?? p?.username ?? emailMap.get(m.user_id) ?? "—",
+      userId: m.user_id,
+      name: p?.full_name ?? p?.display_name ?? p?.username ?? "—",
+      email: emailMap.get(m.user_id) ?? "—",
+      phoneWa: p?.phone_wa ?? "—",
       orgName: org?.name ?? "—",
+      divName: div?.name ?? "—",
       role: m.role,
       isActive: m.is_active,
     });
   }
 
-  // Add unassigned users (those with no membership at all)
+  // Unassigned users
   const assignedUserIds = new Set((members ?? []).map((m) => m.user_id));
   for (const p of allProfiles ?? []) {
     if (assignedUserIds.has(p.id)) continue;
     const email = emailMap.get(p.id);
-    // Skip owner (they're shown via membership rows or identified by email)
     if (email === ownerEmail) continue;
     rows.push({
       key: `unassigned-${p.id}`,
       memberId: null,
-      name: p.full_name ?? p.display_name ?? p.username ?? email ?? "—",
+      userId: p.id,
+      name: p.full_name ?? p.display_name ?? p.username ?? "—",
+      email: email ?? "—",
+      phoneWa: p.phone_wa ?? "—",
       orgName: "—",
+      divName: "—",
       role: "none",
       isActive: true,
     });
   }
 
-  // Sort: owner first, then manager, captain, member, none last
-  rows.sort((a, b) => {
-    const pA = rolePriority[a.role] ?? 99;
-    const pB = rolePriority[b.role] ?? 99;
-    return pA - pB;
-  });
+  rows.sort((a, b) => (rolePriority[a.role] ?? 99) - (rolePriority[b.role] ?? 99));
 
   return (
     <>
-      <header className="border-b border-white/5">
-        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
-          <div className="flex items-center gap-3">
-            <Link href="/dashboard" className="text-xs text-white/50 hover:text-white">← Dashboard</Link>
-            <span className="text-sm font-bold text-yellow-400">Kelola Anggota</span>
-          </div>
+      <header className="h-12 flex items-center px-6 sticky top-0 bg-[#191919] z-40 border-b border-[#2D2D2D]">
+        <div className="flex items-center gap-2 text-[#9B9A97] text-sm">
+          <Link href="/dashboard" className="hover:text-[#D4D4D4]">Home</Link>
+          <span className="text-[#6B6A68]">/</span>
+          <span className="text-[#D4D4D4]">User Active</span>
         </div>
       </header>
-      <main className="mx-auto max-w-7xl px-4 py-6 space-y-6">
-        <header>
-          <h1 className="text-2xl font-bold text-white">Semua User</h1>
-          <p className="mt-1 text-sm text-white/60">
-            Semua user terdaftar. Ubah role atau hapus dari tim. User "none" belum di-assign ke tim manapun.
-          </p>
-        </header>
 
-        <div className="overflow-x-auto rounded-lg border border-white/5">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-white/5 bg-white/[0.02]">
-                <th className="px-4 py-3 text-left text-xs font-medium text-white/50">Nama</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-white/50">Tim</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-white/50">Role</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-white/50">Status</th>
-                <th className="px-4 py-3 text-right text-xs font-medium text-white/50">Aksi</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-white/5">
-              {rows.map((r) =>
-                r.memberId ? (
-                  <MemberManageRow
-                    key={r.key}
-                    memberId={r.memberId}
-                    name={r.name}
-                    orgName={r.orgName}
-                    role={r.role}
-                    isActive={r.isActive}
-                  />
-                ) : (
-                  <tr key={r.key} className="transition hover:bg-white/[0.02]">
-                    <td className="px-4 py-3 text-white/80">{r.name}</td>
-                    <td className="px-4 py-3 text-white/40">—</td>
-                    <td className="px-4 py-3">
-                      <span className="text-xs text-white/30">none</span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className="text-xs text-white/40">Belum di-assign</span>
-                    </td>
-                    <td className="px-4 py-3 text-right" />
-                  </tr>
-                ),
-              )}
-            </tbody>
-          </table>
+      <main className="flex-1 max-w-[1100px] w-full mx-auto px-8 py-12">
+        <div className="mb-8">
+          <Users className="h-8 w-8 text-[#9B9A97] mb-3" />
+          <h1 className="font-bold text-[28px] text-[#E5E2E1]">Semua User</h1>
+          <p className="text-[#9B9A97] mt-1 text-sm">
+            Semua user terdaftar. User "none" belum di-assign ke tim.
+          </p>
+        </div>
+
+        <div className="flex flex-col">
+          {/* Header */}
+          <div className="grid grid-cols-[1fr_1fr_120px_120px_80px_80px_40px] gap-3 px-3 py-2 text-xs font-medium text-[#6B6A68] border-b border-[#2D2D2D]">
+            <span>Nama</span>
+            <span>Email</span>
+            <span>WA</span>
+            <span>Tim</span>
+            <span>Divisi</span>
+            <span>Role</span>
+            <span></span>
+          </div>
+
+          {/* Rows */}
+          {rows.map((r) => (
+            <div
+              key={r.key}
+              className="grid grid-cols-[1fr_1fr_120px_120px_80px_80px_40px] gap-3 px-3 py-2 items-center hover:bg-[#2C2C2C] rounded transition-colors text-sm"
+            >
+              <span className="text-[#D4D4D4] truncate">{r.name}</span>
+              <span className="text-[#9B9A97] truncate">{r.email}</span>
+              <span className="text-[#9B9A97] truncate text-xs">{r.phoneWa}</span>
+              <span className="text-[#9B9A97] truncate text-xs">{r.orgName}</span>
+              <span className="text-[#9B9A97] truncate text-xs">{r.divName}</span>
+              <span className={`text-xs font-medium ${
+                r.role === "owner" ? "text-yellow-400" :
+                r.role === "manager" ? "text-green-400" :
+                r.role === "coach" ? "text-blue-400" :
+                r.role === "captain" ? "text-purple-400" :
+                r.role === "member" ? "text-[#9B9A97]" :
+                "text-[#6B6A68]"
+              }`}>{r.role}</span>
+              <span>
+                {r.memberId && r.role !== "owner" && (
+                  <RemoveMemberButton memberId={r.memberId} name={r.name} />
+                )}
+              </span>
+            </div>
+          ))}
         </div>
       </main>
     </>

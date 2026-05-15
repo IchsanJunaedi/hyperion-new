@@ -49,15 +49,15 @@ export function HomeSection({ title, icon, href, rows, emptyText = "Belum ada da
               <div
                 key={row.id}
                 onClick={() => row.userDetail && setSelected(row.userDetail)}
-                className={`flex items-center py-2 px-3 -mx-3 hover:bg-[#2C2C2C] rounded transition-colors gap-4 ${row.userDetail ? "cursor-pointer" : ""}`}
+                className={`grid grid-cols-[200px_1fr_100px] items-center py-2 px-3 -mx-3 hover:bg-[#2C2C2C] rounded transition-colors gap-4 ${row.userDetail ? "cursor-pointer" : ""}`}
               >
                 {row.cols.map((col, i) => (
                   <span
                     key={i}
                     className={`text-sm truncate ${
-                      i === 0 ? "flex-[2] text-[#D4D4D4]" :
-                      i === row.roleCol ? `flex-1 font-medium ${roleColors[col] ?? "text-[#9B9A97]"}` :
-                      "flex-1 text-[#9B9A97]"
+                      i === 0 ? "text-[#D4D4D4]" :
+                      i === row.roleCol ? `font-medium ${roleColors[col] ?? "text-[#9B9A97]"}` :
+                      "text-[#9B9A97]"
                     }`}
                   >
                     {col}

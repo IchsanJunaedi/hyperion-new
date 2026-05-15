@@ -12,7 +12,7 @@ interface AssignRoleFormProps {
   users: Array<{ id: string; label: string }>;
   organizations: Array<{ id: string; name: string; slug: string }>;
   divisions: Array<{ id: string; organizationId: string; name: string }>;
-  orgHasCaptain: Record<string, boolean>;
+  orgFilledRoles: Record<string, string[]>; // org_id → list of roles already filled
 }
 
 const ALL_ROLES: Array<{ value: MemberRole; label: string }> = [
@@ -26,7 +26,7 @@ export function AssignRoleForm({
   users,
   organizations,
   divisions,
-  orgHasCaptain,
+  orgFilledRoles,
 }: AssignRoleFormProps) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -44,12 +44,10 @@ export function AssignRoleForm({
   const filteredDivisions = divisions.filter((d) => d.organizationId === selectedOrg);
 
   const availableRoles: Array<{ value: MemberRole; label: string }> = useMemo(() => {
-    const hasCaptain = selectedOrg ? orgHasCaptain[selectedOrg] : false;
-    if (hasCaptain) {
-      return ALL_ROLES.filter((r) => r.value !== "captain");
-    }
-    return ALL_ROLES;
-  }, [selectedOrg, orgHasCaptain]);
+    const filled = selectedOrg ? (orgFilledRoles[selectedOrg] ?? []) : [];
+    // Filter out roles that are already filled (except member which can be many)
+    return ALL_ROLES.filter((r) => r.value === "member" || !filled.includes(r.value));
+  }, [selectedOrg, orgFilledRoles]);
 
   function handleUserChange(v: string) {
     setSelectedUser(v);
@@ -156,9 +154,9 @@ export function AssignRoleForm({
               <option key={r.value} value={r.value}>{r.label}</option>
             ))}
           </select>
-          {orgHasCaptain[selectedOrg] && (
-            <p className="mt-1 text-xs text-white/40">
-              Tim ini sudah punya Captain.
+          {orgFilledRoles[selectedOrg]?.length > 0 && (
+            <p className="mt-1 text-xs text-[#6B6A68]">
+              Role yang sudah terisi: {orgFilledRoles[selectedOrg]?.join(", ")}
             </p>
           )}
         </Field>

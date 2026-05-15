@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { Building2 } from "lucide-react";
 
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -28,34 +29,41 @@ export default async function DashboardTeamsPage() {
 
   return (
     <>
-      <header className="border-b border-white/5">
-        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
-          <div className="flex items-center gap-3">
-            <Link href="/dashboard" className="text-xs text-white/50 hover:text-white">← Dashboard</Link>
-            <span className="text-sm font-bold text-yellow-400">Kelola Tim</span>
-          </div>
+      <header className="h-12 flex items-center px-6 sticky top-0 bg-[#191919] z-40 border-b border-[#2D2D2D]">
+        <div className="flex items-center gap-2 text-[#9B9A97] text-sm">
+          <Link href="/dashboard" className="hover:text-[#D4D4D4]">Home</Link>
+          <span className="text-[#6B6A68]">/</span>
+          <span className="text-[#D4D4D4]">Tim / Organisasi</span>
         </div>
       </header>
-      <main className="mx-auto max-w-7xl px-4 py-6 space-y-6">
-        <header>
-          <h1 className="text-2xl font-bold text-white">Setting Tim & Divisi</h1>
-          <p className="mt-1 text-sm text-white/60">
-            Edit nama, logo, paket tim. Arsipkan atau hapus divisi.
-          </p>
-        </header>
 
-        {(orgs ?? []).map((org) => {
-          const orgDivisions = (divisions ?? []).filter(
-            (d) => d.organization_id === org.id,
-          );
-          return (
-            <OrgSettingsCard
-              key={org.id}
-              org={org}
-              divisions={orgDivisions}
-            />
-          );
-        })}
+      <main className="flex-1 max-w-[900px] w-full mx-auto px-8 py-12">
+        <div className="mb-8">
+          <Building2 className="h-8 w-8 text-[#9B9A97] mb-3" />
+          <h1 className="font-bold text-[28px] text-[#E5E2E1]">Setting Tim</h1>
+          <p className="text-[#9B9A97] mt-1 text-sm">
+            Edit nama tim dan kelola divisi per tim.
+          </p>
+        </div>
+
+        {(!orgs || orgs.length === 0) ? (
+          <p className="text-sm text-[#6B6A68] py-8">Belum ada tim.</p>
+        ) : (
+          <div className="flex flex-col gap-4">
+            {orgs.map((org) => {
+              const orgDivisions = (divisions ?? []).filter(
+                (d) => d.organization_id === org.id,
+              );
+              return (
+                <OrgSettingsCard
+                  key={org.id}
+                  org={org}
+                  divisions={orgDivisions}
+                />
+              );
+            })}
+          </div>
+        )}
       </main>
     </>
   );

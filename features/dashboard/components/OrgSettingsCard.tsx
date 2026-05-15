@@ -1,17 +1,17 @@
 "use client";
 
-import { Archive, Loader2, Save, Trash2 } from "lucide-react";
+import { Loader2, Pencil, Save, X } from "lucide-react";
 import { useState, useTransition } from "react";
-import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
-import { updateOrgAction, archiveDivisionAction, deleteDivisionAction } from "../actions";
+import { updateOrgAction } from "../actions";
+import { useNotify } from "./NotifyModal";
 
 interface OrgSettingsCardProps {
   org: {
     id: string;
     name: string;
     slug: string;
-    tier: string;
     logo_url: string | null;
   };
   divisions: Array<{
@@ -24,130 +24,80 @@ interface OrgSettingsCardProps {
 }
 
 export function OrgSettingsCard({ org, divisions }: OrgSettingsCardProps) {
+  const router = useRouter();
   const [pending, startTransition] = useTransition();
-  const [name, setName] = useState(org.name);
-  const [logoUrl, setLogoUrl] = useState(org.logo_url ?? "");
+  const [editing, setEditing] = useState(false);
+  const [editName, setEditName] = useState(org.name);
+  const { success, error: notifyError } = useNotify();
 
-  function handleSaveOrg() {
+  function handleSave() {
+    if (!editName.trim() || editName.trim() === org.name) {
+      setEditing(false);
+      return;
+    }
     startTransition(async () => {
-      const res = await updateOrgAction(org.id, { name, tier: "komunitas", logo_url: logoUrl || null });
+      const res = await updateOrgAction(org.id, { name: editName.trim(), tier: "komunitas", logo_url: org.logo_url });
       if (res.ok) {
-        toast.success("Tim berhasil diupdate");
+        success("Nama tim diubah");
+        setEditing(false);
+        router.refresh();
       } else {
-        toast.error(res.message);
+        notifyError(res.message);
       }
     });
   }
 
   return (
-    <div className="rounded-xl border border-white/10 bg-zinc-900/40 p-5 space-y-5">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-white">{org.name}</h3>
-        <span className="text-xs text-white/40">/{org.slug}</span>
+    <div className="border border-[#2D2D2D] rounded-lg p-5">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-4">
+        {editing ? (
+          <div className="flex items-center gap-2 flex-1 mr-4">
+            <input
+              value={editName}
+              onChange={(e) => setEditName(e.target.value)}
+              className="h-8 flex-1 rounded border border-[#2D2D2D] bg-[#191919] px-3 text-sm font-semibold text-[#E5E2E1] focus:border-[#D4D4D4] focus:outline-none"
+              autoFocus
+              onKeyDown={(e) => { if (e.key === "Enter") handleSave(); if (e.key === "Escape") setEditing(false); }}
+            />
+            <button onClick={handleSave} disabled={pending} className="p-1.5 text-green-400 hover:bg-[#2C2C2C] rounded">
+              {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+            </button>
+            <button onClick={() => { setEditing(false); setEditName(org.name); }} className="p-1.5 text-[#9B9A97] hover:bg-[#2C2C2C] rounded">
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        ) : (
+          <div className="flex items-center gap-3">
+            <h3 className="text-lg font-semibold text-[#E5E2E1]">{org.name}</h3>
+            <span className="text-xs text-[#6B6A68]">/{org.slug}</span>
+            <button onClick={() => setEditing(true)} className="p-1 text-[#9B9A97] hover:text-[#D4D4D4] hover:bg-[#2C2C2C] rounded">
+              <Pencil className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        )}
       </div>
-
-      {/* Org settings */}
-      <div className="grid gap-3 sm:grid-cols-2">
-        <div className="space-y-1">
-          <label className="text-xs text-white/60">Nama Tim</label>
-          <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="h-9 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
-          />
-        </div>
-        <div className="space-y-1">
-          <label className="text-xs text-white/60">Logo URL</label>
-          <input
-            value={logoUrl}
-            onChange={(e) => setLogoUrl(e.target.value)}
-            placeholder="https://..."
-            className="h-9 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
-          />
-        </div>
-      </div>
-      <button
-        type="button"
-        disabled={pending}
-        onClick={handleSaveOrg}
-        className="inline-flex h-9 items-center gap-2 rounded-md bg-yellow-400 px-4 text-xs font-semibold text-black transition hover:bg-yellow-300 disabled:opacity-50"
-      >
-        {pending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
-        Simpan
-      </button>
 
       {/* Divisions */}
-      <div className="border-t border-white/5 pt-4">
-        <h4 className="mb-2 text-sm font-medium text-white">Divisi</h4>
-        <div className="space-y-2">
-          {divisions.map((div) => (
-            <DivisionRow key={div.id} division={div} orgId={org.id} />
-          ))}
-          {divisions.length === 0 && (
-            <p className="text-xs text-white/40">Belum ada divisi.</p>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function DivisionRow({
-  division,
-  orgId,
-}: {
-  division: { id: string; name: string; slug: string; game: string; is_active: boolean };
-  orgId: string;
-}) {
-  const [pending, startTransition] = useTransition();
-
-  function handleArchive() {
-    startTransition(async () => {
-      const res = await archiveDivisionAction(division.id);
-      if (res.ok) toast.success(`${division.name} diarsipkan`);
-      else toast.error(res.message);
-    });
-  }
-
-  function handleDelete() {
-    if (!confirm(`Yakin hapus divisi "${division.name}"? Ini tidak bisa dibatalkan.`)) return;
-    startTransition(async () => {
-      const res = await deleteDivisionAction(division.id);
-      if (res.ok) toast.success(`${division.name} dihapus`);
-      else toast.error(res.message);
-    });
-  }
-
-  return (
-    <div className="flex items-center justify-between rounded-md border border-white/5 bg-white/[0.02] px-3 py-2">
       <div>
-        <span className="text-sm text-white/80">{division.name}</span>
-        <span className="ml-2 text-xs text-white/40">{division.game}</span>
-        {!division.is_active && (
-          <span className="ml-2 rounded-full bg-white/5 px-2 py-0.5 text-[10px] text-white/40">Arsip</span>
+        <p className="text-xs text-[#6B6A68] mb-2">Divisi</p>
+        {divisions.length === 0 ? (
+          <p className="text-sm text-[#6B6A68]">Belum ada divisi</p>
+        ) : (
+          <div className="flex flex-col gap-1">
+            {divisions.map((div) => (
+              <div
+                key={div.id}
+                className="flex items-center justify-between py-1.5 px-3 -mx-3 hover:bg-[#2C2C2C] rounded transition-colors"
+              >
+                <span className="text-sm text-[#D4D4D4]">{div.name}</span>
+                {!div.is_active && (
+                  <span className="text-[10px] text-[#6B6A68] bg-[#2C2C2C] px-1.5 py-0.5 rounded">Arsip</span>
+                )}
+              </div>
+            ))}
+          </div>
         )}
-      </div>
-      <div className="flex gap-1">
-        {division.is_active && (
-          <button
-            type="button"
-            disabled={pending}
-            onClick={handleArchive}
-            className="rounded-md p-1.5 text-white/40 hover:bg-white/10 hover:text-amber-400 disabled:opacity-40"
-            title="Arsipkan"
-          >
-            <Archive className="h-3.5 w-3.5" />
-          </button>
-        )}
-        <button
-          type="button"
-          disabled={pending}
-          onClick={handleDelete}
-          className="rounded-md p-1.5 text-white/40 hover:bg-white/10 hover:text-red-400 disabled:opacity-40"
-          title="Hapus"
-        >
-          <Trash2 className="h-3.5 w-3.5" />
-        </button>
       </div>
     </div>
   );

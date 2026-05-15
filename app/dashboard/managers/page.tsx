@@ -1,8 +1,10 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { Shield } from "lucide-react";
 
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { ManagerTimDivisiTable } from "@/features/dashboard/components/ManagerTimDivisiTable";
 
 export const dynamic = "force-dynamic";
 
@@ -17,7 +19,7 @@ export default async function DashboardManagersPage() {
 
   const { data: managers } = await admin
     .from("team_members")
-    .select("id, user_id, organization_id, division_id, role")
+    .select("id, user_id, organization_id, role")
     .eq("role", "manager")
     .eq("is_active", true);
 
@@ -34,50 +36,40 @@ export default async function DashboardManagersPage() {
 
   return (
     <>
-      <header className="border-b border-white/5">
-        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
-          <div className="flex items-center gap-3">
-            <Link href="/dashboard" className="text-xs text-white/50 hover:text-white">← Dashboard</Link>
-            <span className="text-sm font-bold text-yellow-400">Semua Manager</span>
-          </div>
+      <header className="h-12 flex items-center px-6 sticky top-0 bg-[#191919] z-40 border-b border-[#2D2D2D]">
+        <div className="flex items-center gap-2 text-[#9B9A97] text-sm">
+          <Link href="/dashboard" className="hover:text-[#D4D4D4]">Home</Link>
+          <span className="text-[#6B6A68]">/</span>
+          <span className="text-[#D4D4D4]">Manager — Tim & Divisi</span>
         </div>
       </header>
-      <main className="mx-auto max-w-7xl px-4 py-6 space-y-6">
-        <h1 className="text-2xl font-bold text-white">Manager — Tim & Divisi</h1>
 
-        {(!managers || managers.length === 0) ? (
-          <p className="text-sm text-white/40">Belum ada Manager.</p>
-        ) : (
-          <div className="overflow-x-auto rounded-lg border border-white/5">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-white/5 bg-white/[0.02]">
-                  <th className="px-4 py-3 text-left text-xs font-medium text-white/50">Manager</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-white/50">Tim</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-white/50">Divisi Tim</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-white/50">WA</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/5">
-                {managers.map((m) => {
-                  const p = profileMap.get(m.user_id);
-                  const org = orgMap.get(m.organization_id);
-                  const orgDivs = (divisions ?? []).filter((d) => d.organization_id === m.organization_id);
-                  return (
-                    <tr key={m.id} className="transition hover:bg-white/[0.02]">
-                      <td className="px-4 py-3 text-white/80">{p?.full_name ?? p?.display_name ?? "—"}</td>
-                      <td className="px-4 py-3 text-white/60">{org?.name ?? "—"}</td>
-                      <td className="px-4 py-3 text-white/60">
-                        {orgDivs.length > 0 ? orgDivs.map((d) => d.name).join(", ") : "—"}
-                      </td>
-                      <td className="px-4 py-3 text-white/60">{p?.phone_wa ?? "—"}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
+      <main className="flex-1 max-w-[900px] w-full mx-auto px-8 py-12">
+        <div className="mb-8">
+          <Shield className="h-8 w-8 text-[#9B9A97] mb-3" />
+          <h1 className="font-bold text-[28px] text-[#E5E2E1]">Manager — Tim & Divisi</h1>
+          <p className="text-[#9B9A97] mt-1 text-sm">
+            Kelola manager, edit nama tim, dan edit/hapus divisi.
+          </p>
+        </div>
+
+        <ManagerTimDivisiTable
+          rows={(managers ?? []).map((m) => {
+            const p = profileMap.get(m.user_id);
+            const org = orgMap.get(m.organization_id);
+            const orgDivs = (divisions ?? [])
+              .filter((d) => d.organization_id === m.organization_id)
+              .map((d) => ({ id: d.id, name: d.name }));
+            return {
+              memberId: m.id,
+              managerName: p?.full_name ?? p?.display_name ?? p?.username ?? "—",
+              orgId: m.organization_id,
+              orgName: org?.name ?? "—",
+              divisions: orgDivs,
+            };
+          })}
+          allDivisions={(divisions ?? []).map((d) => ({ id: d.id, name: d.name, organizationId: d.organization_id }))}
+        />
       </main>
     </>
   );

@@ -1,3 +1,6 @@
+import Link from "next/link";
+import { Plus } from "lucide-react";
+
 import { createAdminClient } from "@/lib/supabase/admin";
 import { AssignRoleForm } from "@/features/dashboard/components/AssignRoleForm";
 
@@ -6,13 +9,11 @@ export const dynamic = "force-dynamic";
 export default async function AssignRolePage() {
   const admin = createAdminClient();
 
-  // Get all users
   const { data: profiles } = await admin
     .from("profiles")
     .select("id, full_name, username, display_name")
     .order("full_name", { ascending: true });
 
-  // Get emails to identify and filter out owner
   const { data: authUsers } = await admin.auth.admin.listUsers({ perPage: 500 });
   const emailMap = new Map<string, string>();
   for (const u of authUsers?.users ?? []) {
@@ -25,7 +26,6 @@ export default async function AssignRolePage() {
     return email !== ownerEmail;
   });
 
-  // Get organizations
   const { data: orgs } = await admin
     .from("organizations")
     .select("id, name, slug")
@@ -37,29 +37,40 @@ export default async function AssignRolePage() {
     .eq("is_active", true)
     .order("name", { ascending: true });
 
-  // Determine which orgs already have a captain
-  const { data: captains } = await admin
+  // Determine which roles are already filled per org (manager, captain, coach = max 1 each)
+  const { data: allMembers } = await admin
     .from("team_members")
-    .select("organization_id")
-    .eq("role", "captain")
+    .select("organization_id, role")
+    .in("role", ["manager", "captain", "coach"])
     .eq("is_active", true);
 
-  const orgHasCaptain: Record<string, boolean> = {};
-  for (const c of captains ?? []) {
-    orgHasCaptain[c.organization_id] = true;
+  const orgFilledRoles: Record<string, string[]> = {};
+  for (const m of allMembers ?? []) {
+    if (!orgFilledRoles[m.organization_id]) orgFilledRoles[m.organization_id] = [];
+    if (!orgFilledRoles[m.organization_id].includes(m.role)) {
+      orgFilledRoles[m.organization_id].push(m.role);
+    }
   }
 
   return (
-    <div className="space-y-6">
-      <header>
-        <h1 className="text-2xl font-bold text-white">Assign Role</h1>
-        <p className="mt-1 text-sm text-white/60">
-          Tambahkan user ke tim dan assign role mereka. Owner tidak ditampilkan
-          karena sudah ada di semua tim otomatis.
-        </p>
+    <>
+      <header className="h-12 flex items-center px-6 sticky top-0 bg-[#191919] z-40 border-b border-[#2D2D2D]">
+        <div className="flex items-center gap-2 text-[#9B9A97] text-sm">
+          <Link href="/dashboard" className="hover:text-[#D4D4D4]">Home</Link>
+          <span className="text-[#6B6A68]">/</span>
+          <span className="text-[#D4D4D4]">Assign Role</span>
+        </div>
       </header>
 
-      <div className="max-w-2xl rounded-2xl border border-white/10 bg-zinc-900/40 p-5 sm:p-6">
+      <main className="flex-1 max-w-[600px] w-full mx-auto px-8 py-12">
+        <div className="mb-8">
+          <Plus className="h-8 w-8 text-[#9B9A97] mb-3" />
+          <h1 className="font-bold text-[28px] text-[#E5E2E1]">Assign Role</h1>
+          <p className="text-[#9B9A97] mt-1 text-sm">
+            Tambahkan user ke tim dan assign role. Owner tidak ditampilkan.
+          </p>
+        </div>
+
         <AssignRoleForm
           users={filteredProfiles.map((p) => ({
             id: p.id,
@@ -75,9 +86,9 @@ export default async function AssignRolePage() {
             organizationId: d.organization_id,
             name: d.name,
           }))}
-          orgHasCaptain={orgHasCaptain}
+          orgFilledRoles={orgFilledRoles}
         />
-      </div>
-    </div>
+      </main>
+    </>
   );
 }

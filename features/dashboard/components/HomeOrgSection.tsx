@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Building2, Loader2, Trash2 } from "lucide-react";
+import { Building2, Loader2, Trash2, X } from "lucide-react";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
@@ -9,21 +9,36 @@ import { deleteOrgAction } from "../actions";
 import { ConfirmDeleteDialog } from "./ConfirmDeleteDialog";
 import { useNotify } from "./NotifyModal";
 
+interface OrgMember {
+  name: string;
+  role: string;
+  division: string | null;
+}
+
 interface OrgRow {
   id: string;
   name: string;
   divisions: string;
   memberCount: number;
+  members: OrgMember[];
 }
 
 interface HomeOrgSectionProps {
   orgs: OrgRow[];
 }
 
+const roleColors: Record<string, string> = {
+  manager: "text-green-400",
+  coach: "text-blue-400",
+  captain: "text-purple-400",
+  member: "text-[#9B9A97]",
+};
+
 export function HomeOrgSection({ orgs }: HomeOrgSectionProps) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [deleteTarget, setDeleteTarget] = useState<OrgRow | null>(null);
+  const [viewTarget, setViewTarget] = useState<OrgRow | null>(null);
   const { success, error: notifyError } = useNotify();
 
   function handleConfirmDelete() {
@@ -58,15 +73,20 @@ export function HomeOrgSection({ orgs }: HomeOrgSectionProps) {
             orgs.map((org) => (
               <div
                 key={org.id}
-                className="flex items-center py-2 px-3 -mx-3 hover:bg-[#2C2C2C] rounded transition-colors gap-4 group"
+                className="grid grid-cols-[200px_1fr_100px_32px] items-center py-2 px-3 -mx-3 hover:bg-[#2C2C2C] rounded transition-colors gap-4 group"
               >
-                <span className="flex-[2] text-sm text-[#D4D4D4] truncate">{org.name}</span>
-                <span className="flex-1 text-sm text-[#9B9A97] truncate">{org.divisions || "—"}</span>
-                <span className="flex-1 text-sm text-[#9B9A97]">{org.memberCount} member</span>
+                <span
+                  className="text-sm text-[#D4D4D4] truncate cursor-pointer hover:text-white"
+                  onClick={() => setViewTarget(org)}
+                >
+                  {org.name}
+                </span>
+                <span className="text-sm text-[#9B9A97] truncate">{org.divisions || "—"}</span>
+                <span className="text-sm text-[#9B9A97]">{org.memberCount} member</span>
                 <button
                   type="button"
                   disabled={pending}
-                  onClick={() => setDeleteTarget(org)}
+                  onClick={(e) => { e.stopPropagation(); setDeleteTarget(org); }}
                   className="opacity-0 group-hover:opacity-100 rounded p-1 text-[#9B9A97] hover:text-red-400 hover:bg-[#353434] transition-all disabled:opacity-40"
                   title="Hapus tim"
                 >
@@ -77,6 +97,50 @@ export function HomeOrgSection({ orgs }: HomeOrgSectionProps) {
           )}
         </div>
       </div>
+
+      {/* Team members popup */}
+      {viewTarget && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm"
+          onClick={() => setViewTarget(null)}
+        >
+          <div
+            className="bg-[#202020] border border-[#2D2D2D] rounded-xl p-6 shadow-2xl max-w-md w-full mx-4 max-h-[80vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between mb-4">
+              <div>
+                <h3 className="text-lg font-bold text-[#E5E2E1]">{viewTarget.name}</h3>
+                <p className="text-xs text-[#9B9A97] mt-0.5">{viewTarget.members.length} anggota</p>
+              </div>
+              <button onClick={() => setViewTarget(null)} className="rounded p-1 text-[#9B9A97] hover:bg-[#2C2C2C] hover:text-white">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            {viewTarget.members.length === 0 ? (
+              <p className="text-sm text-[#6B6A68] py-4">Belum ada anggota di tim ini.</p>
+            ) : (
+              <div className="flex flex-col gap-1">
+                {viewTarget.members.map((m, i) => (
+                  <div key={i} className="flex items-center justify-between py-2 px-3 -mx-3 hover:bg-[#2C2C2C] rounded">
+                    <span className="text-sm text-[#D4D4D4]">{m.name}</span>
+                    <div className="flex items-center gap-2">
+                      {m.division && (
+                        <span className="text-[11px] text-[#6B6A68]">{m.division}</span>
+                      )}
+                      <span className={`text-xs font-medium ${roleColors[m.role] ?? "text-[#9B9A97]"}`}>
+                        {m.role}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       <ConfirmDeleteDialog
         open={deleteTarget !== null}
         title="Hapus Tim"

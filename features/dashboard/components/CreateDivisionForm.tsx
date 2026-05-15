@@ -47,7 +47,7 @@ export function CreateDivisionForm() {
         <button
           type="submit"
           disabled={pending || !name.trim()}
-          className="inline-flex h-9 items-center gap-1 rounded-md bg-yellow-400 px-3 text-xs font-semibold text-black transition hover:bg-yellow-300 disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex h-9 items-center gap-1 rounded-md bg-yellow-400 px-3 text-xs font-semibold text-black transition hover:bg-yellow-300 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
         >
           {pending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Plus className="h-3.5 w-3.5" />}
           Buat
