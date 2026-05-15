@@ -10,6 +10,7 @@ import {
   createScrimSchema,
   submitResultSchema,
   updateAttendanceSchema,
+  updateScrimSchema,
 } from "@/lib/validations/scrim";
 import type { Database } from "@/types/database";
 
@@ -323,6 +324,62 @@ export async function cancelScrimAction(
   }
   revalidatePath(`/${orgSlug}/scrim/${parsed.data.scrim_id}`);
   revalidatePath(`/${orgSlug}/scrim`);
+  return { ok: true };
+}
+
+export interface UpdateScrimResult {
+  ok: true;
+}
+
+/**
+ * Update an existing scrim's details. Captain+ only (RLS enforced).
+ * `scheduled_at` arrives as a WIB datetime-local string and is converted to
+ * UTC ISO before storage.
+ */
+export async function updateScrimAction(
+  orgSlug: string,
+  raw: unknown,
+): Promise<ActionError | UpdateScrimResult> {
+  const parsed = updateScrimSchema.safeParse(raw);
+  if (!parsed.success) {
+    return {
+      ok: false,
+      message: "Form belum lengkap",
+      fieldErrors: z.flattenError(parsed.error).fieldErrors,
+    };
+  }
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, message: "Anda harus login" };
+
+  const { error } = await supabase
+    .from("scrims")
+    .update({
+      scheduled_at: new Date(parsed.data.scheduled_at).toISOString(),
+      opponent_name: parsed.data.opponent_name,
+      opponent_contact: parsed.data.opponent_contact,
+      format: parsed.data.format,
+      server_region: parsed.data.server_region,
+      room_info: parsed.data.room_info,
+      notes: parsed.data.notes,
+    })
+    .eq("id", parsed.data.scrim_id);
+
+  if (error) {
+    return {
+      ok: false,
+      message:
+        error.code === "42501"
+          ? "Hanya captain atau owner yang bisa mengedit scrim"
+          : error.message,
+    };
+  }
+
+  revalidatePath(`/${orgSlug}/scrim/${parsed.data.scrim_id}`);
+  revalidatePath(`/${orgSlug}/scrim`);
+  revalidatePath(`/${orgSlug}`);
   return { ok: true };
 }
 
