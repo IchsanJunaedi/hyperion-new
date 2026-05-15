@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  BarChart3,
   Calendar,
   ChevronDown,
   FolderOpen,
@@ -64,6 +65,12 @@ const NAV_ITEMS = [
     href: "/tournaments",
     label: "Turnamen",
     Icon: Trophy,
+  },
+  {
+    key: "polls",
+    href: "/polls",
+    label: "Polling",
+    Icon: BarChart3,
   },
   { key: "settings", href: "/settings", label: "Settings", Icon: Settings },
 ] as const;
