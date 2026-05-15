@@ -6,6 +6,7 @@ import { ScrimCountdown } from "@/components/team/ScrimCountdown";
 import { AttendanceList } from "@/features/scrim/components/AttendanceList";
 import { AttendanceTracker } from "@/features/scrim/components/AttendanceTracker";
 import { CancelScrimButton } from "@/features/scrim/components/CancelScrimButton";
+import { CoachNotesSection } from "@/features/scrim/components/CoachNotesSection";
 import { FinishScrimSection } from "@/features/scrim/components/FinishScrimSection";
 import { ScrimStatusBadge } from "@/features/scrim/components/StatusBadge";
 import { getCurrentUserRole } from "@/features/roster/queries";
@@ -32,6 +33,7 @@ export default async function ScrimDetailPage({
 
   const currentUserRole = await getCurrentUserRole(scrim.organization_id);
   const canManageScrims = ["captain", "manager", "owner"].includes(currentUserRole ?? "");
+  const isCoach = currentUserRole === "coach";
 
   const scheduled = new Date(scrim.scheduled_at).toLocaleString("id-ID", {
     weekday: "long",
@@ -161,6 +163,13 @@ export default async function ScrimDetailPage({
             canManage={canManageScrims}
             initialResult={result}
             resultImageUrl={resultImageUrl}
+          />
+          <CoachNotesSection
+            scrimId={scrim.id}
+            orgSlug={slug}
+            orgId={scrim.organization_id}
+            isCoach={isCoach}
+            existingNotes={result?.coach_notes ?? null}
           />
         </aside>
       </div>
