@@ -357,6 +357,7 @@ export async function updateScrimAction(
   const { error } = await supabase
     .from("scrims")
     .update({
+      division_id: parsed.data.division_id,
       scheduled_at: new Date(parsed.data.scheduled_at).toISOString(),
       opponent_name: parsed.data.opponent_name,
       opponent_contact: parsed.data.opponent_contact,
