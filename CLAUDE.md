@@ -98,6 +98,10 @@ supabase/
 - Push to `main` branch (this is a solo dev project)
 - Stage specific files, not `git add .` blindly
 - Check `git status` before committing
+- Use RTK (git shorthand commands) for token efficiency:
+  - `git add -A && git commit -m "msg" && git push` in one line when possible
+  - Batch related files in one commit, don't commit file-by-file
+  - Keep commit messages short and descriptive (max 72 chars)
 
 ### Code Quality
 - Run `getDiagnostics` after every file change to verify no errors
