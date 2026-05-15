@@ -21,6 +21,7 @@ export default async function NewTournamentPage({ params }: NewTournamentPagePro
   if (!canManage) redirect(`/${slug}/tournaments`);
 
   const { divisions } = await getPublicTeamData(organization);
+  const divisionId = divisions[0]?.id;
 
   return (
     <div className="space-y-6 px-4 py-6 sm:px-8">
@@ -35,14 +36,14 @@ export default async function NewTournamentPage({ params }: NewTournamentPagePro
       </header>
 
       <div className="max-w-2xl rounded-2xl border border-white/10 bg-zinc-900/40 p-5 sm:p-6">
-        {divisions.length === 0 ? (
+        {!divisionId ? (
           <p className="text-sm text-white/65">
             Tim belum punya divisi aktif. Tambah divisi terlebih dahulu.
           </p>
         ) : (
           <TournamentForm
             orgSlug={slug}
-            divisions={divisions.map((d) => ({ id: d.id, name: d.name }))}
+            divisionId={divisionId}
           />
         )}
       </div>

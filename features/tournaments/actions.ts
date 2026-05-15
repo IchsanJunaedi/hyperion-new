@@ -61,7 +61,6 @@ export async function createTournamentAction(
       link: parsed.data.link,
       is_registered: parsed.data.is_registered,
       notes: parsed.data.notes,
-      created_by: user.id,
       status: "upcoming",
     })
     .select("id")

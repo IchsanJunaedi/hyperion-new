@@ -3,26 +3,34 @@
 import { Loader2 } from "lucide-react";
 import { useState, useTransition } from "react";
 
-import { CustomSelect } from "@/features/dashboard/components/CustomSelect";
 import { useNotify } from "@/features/dashboard/components/NotifyModal";
 import { createTournamentAction, updateTournamentAction } from "@/features/tournaments/actions";
 import type { Tournament } from "@/features/tournaments/queries";
 
 interface TournamentFormProps {
   orgSlug: string;
-  divisions: Array<{ id: string; name: string }>;
+  divisionId: string;
   tournament?: Tournament;
   onSuccess?: () => void;
 }
 
-export function TournamentForm({ orgSlug, divisions, tournament, onSuccess }: TournamentFormProps) {
+function formatNumber(value: string): string {
+  const num = value.replace(/\D/g, "");
+  if (!num) return "";
+  return Number(num).toLocaleString("id-ID");
+}
+
+function parseNumber(formatted: string): string {
+  return formatted.replace(/\./g, "");
+}
+
+export function TournamentForm({ orgSlug, divisionId, tournament, onSuccess }: TournamentFormProps) {
   const isEdit = !!tournament;
   const [pending, startTransition] = useTransition();
   const { success, error } = useNotify();
 
   const [name, setName] = useState(tournament?.name ?? "");
   const [organizer, setOrganizer] = useState(tournament?.organizer ?? "");
-  const [divisionId, setDivisionId] = useState(tournament?.division_id ?? divisions[0]?.id ?? "");
   const [startDate, setStartDate] = useState(tournament?.start_date ?? "");
   const [endDate, setEndDate] = useState(tournament?.end_date ?? "");
   const [prizePool, setPrizePool] = useState(tournament?.prize_pool ?? "");
@@ -67,33 +75,21 @@ export function TournamentForm({ orgSlug, divisions, tournament, onSuccess }: To
 
   return (
     <div className="space-y-4">
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div>
-          <label className="text-xs text-[#9B9A97] mb-1 block">Nama Turnamen *</label>
-          <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="h-9 w-full rounded-md border border-[#2D2D2D] bg-[#202020] px-3 text-sm text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none"
-            placeholder="Nama turnamen"
-          />
-        </div>
-        <div>
-          <label className="text-xs text-[#9B9A97] mb-1 block">Penyelenggara</label>
-          <input
-            value={organizer}
-            onChange={(e) => setOrganizer(e.target.value)}
-            className="h-9 w-full rounded-md border border-[#2D2D2D] bg-[#202020] px-3 text-sm text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none"
-            placeholder="Nama penyelenggara"
-          />
-        </div>
+      <div>
+        <label className="text-xs text-[#9B9A97] mb-1 block">Nama Turnamen *</label>
+        <input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="h-9 w-full rounded-md border border-[#2D2D2D] bg-[#202020] px-3 text-sm text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none"
+        />
       </div>
 
       <div>
-        <label className="text-xs text-[#9B9A97] mb-1 block">Divisi *</label>
-        <CustomSelect
-          value={divisionId}
-          options={divisions.map((d) => ({ value: d.id, label: d.name }))}
-          onChange={setDivisionId}
+        <label className="text-xs text-[#9B9A97] mb-1 block">Penyelenggara</label>
+        <input
+          value={organizer}
+          onChange={(e) => setOrganizer(e.target.value)}
+          className="h-9 w-full rounded-md border border-[#2D2D2D] bg-[#202020] px-3 text-sm text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none"
         />
       </div>
 
@@ -120,21 +116,21 @@ export function TournamentForm({ orgSlug, divisions, tournament, onSuccess }: To
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label className="text-xs text-[#9B9A97] mb-1 block">Prize Pool</label>
+          <label className="text-xs text-[#9B9A97] mb-1 block">Prize Pool (Rp)</label>
           <input
             value={prizePool}
-            onChange={(e) => setPrizePool(e.target.value)}
+            onChange={(e) => setPrizePool(formatNumber(e.target.value))}
+            inputMode="numeric"
             className="h-9 w-full rounded-md border border-[#2D2D2D] bg-[#202020] px-3 text-sm text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none"
-            placeholder="Rp 1.000.000"
           />
         </div>
         <div>
-          <label className="text-xs text-[#9B9A97] mb-1 block">Biaya Registrasi</label>
+          <label className="text-xs text-[#9B9A97] mb-1 block">Biaya Registrasi (Rp)</label>
           <input
             value={registrationFee}
-            onChange={(e) => setRegistrationFee(e.target.value)}
+            onChange={(e) => setRegistrationFee(formatNumber(e.target.value))}
+            inputMode="numeric"
             className="h-9 w-full rounded-md border border-[#2D2D2D] bg-[#202020] px-3 text-sm text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none"
-            placeholder="Gratis / Rp 50.000"
           />
         </div>
       </div>
@@ -155,7 +151,6 @@ export function TournamentForm({ orgSlug, divisions, tournament, onSuccess }: To
             value={link}
             onChange={(e) => setLink(e.target.value)}
             className="h-9 w-full rounded-md border border-[#2D2D2D] bg-[#202020] px-3 text-sm text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none"
-            placeholder="https://..."
           />
         </div>
       </div>
@@ -166,21 +161,7 @@ export function TournamentForm({ orgSlug, divisions, tournament, onSuccess }: To
           value={registrationUrl}
           onChange={(e) => setRegistrationUrl(e.target.value)}
           className="h-9 w-full rounded-md border border-[#2D2D2D] bg-[#202020] px-3 text-sm text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none"
-          placeholder="https://..."
         />
-      </div>
-
-      <div className="flex items-center gap-2">
-        <input
-          type="checkbox"
-          id="is_registered"
-          checked={isRegistered}
-          onChange={(e) => setIsRegistered(e.target.checked)}
-          className="h-4 w-4 rounded border-[#2D2D2D] bg-[#202020] accent-yellow-400"
-        />
-        <label htmlFor="is_registered" className="text-sm text-[#E5E2E1]">
-          Sudah terdaftar
-        </label>
       </div>
 
       <div>
@@ -193,9 +174,25 @@ export function TournamentForm({ orgSlug, divisions, tournament, onSuccess }: To
         />
       </div>
 
+      {/* Status registrasi - hanya muncul setelah form terisi */}
+      {(registrationUrl || link) && (
+        <div className="flex items-center gap-2 pt-2 border-t border-[#2D2D2D]">
+          <input
+            type="checkbox"
+            id="is_registered"
+            checked={isRegistered}
+            onChange={(e) => setIsRegistered(e.target.checked)}
+            className="h-4 w-4 rounded border-[#2D2D2D] bg-[#202020] accent-yellow-400"
+          />
+          <label htmlFor="is_registered" className="text-sm text-[#E5E2E1]">
+            Sudah terdaftar
+          </label>
+        </div>
+      )}
+
       <button
         type="button"
-        disabled={pending || !name || !startDate || !divisionId}
+        disabled={pending || !name || !startDate}
         onClick={handleSubmit}
         className="inline-flex h-9 items-center gap-1.5 rounded-md bg-yellow-400 px-4 text-xs font-semibold text-black hover:bg-yellow-300 disabled:opacity-50 cursor-pointer"
       >

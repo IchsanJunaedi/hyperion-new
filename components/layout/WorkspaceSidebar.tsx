@@ -150,8 +150,8 @@ export function WorkspaceSidebar({
         </Link>
       )}
 
-      {/* Division switcher */}
-      {divisions.length > 0 ? (
+      {/* Division switcher — only show if multiple divisions */}
+      {divisions.length > 1 ? (
         <div className="px-3 pt-3">
           <button
             type="button"
