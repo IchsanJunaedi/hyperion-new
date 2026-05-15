@@ -4,6 +4,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { ManageMemberTable } from "@/features/dashboard/components/ManageMemberTable";
+import { InviteSection } from "@/features/manage/components/InviteSection";
 
 export const dynamic = "force-dynamic";
 
@@ -53,6 +54,17 @@ export default async function ManagePage() {
 
   const profileMap = new Map((profiles ?? []).map((p) => [p.id, p]));
   const divisionMap = new Map((divisions ?? []).map((d) => [d.id, d]));
+
+  // Get pending invites for manager's orgs
+  const { data: pendingInvites } = orgIds.length > 0
+    ? await admin
+        .from("organization_invites")
+        .select("id, organization_id, division_id, role, expires_at, created_at")
+        .in("organization_id", orgIds)
+        .eq("status", "pending")
+        .gt("expires_at", new Date().toISOString())
+        .order("created_at", { ascending: false })
+    : { data: [] };
 
   // Get total registered users
   const { count: totalRegistered } = await admin
@@ -105,12 +117,31 @@ export default async function ManagePage() {
           const orgMembers = (members ?? [])
             .filter((m) => m.organization_id === org.id)
             .sort((a, b) => (ROLE_ORDER[a.role] ?? 99) - (ROLE_ORDER[b.role] ?? 99));
+          const orgDivisions = (divisions ?? [])
+            .filter((d) => d.organization_id === org.id)
+            .map((d) => ({ id: d.id, name: d.name }));
           return (
-            <section key={org.id}>
-              <h2 className="mb-3 text-sm font-semibold text-white">
+            <section key={org.id} className="space-y-4">
+              <h2 className="text-sm font-semibold text-white">
                 {org.name}{" "}
                 <span className="text-white/40">({orgMembers.length} member)</span>
               </h2>
+              <InviteSection
+                orgId={org.id}
+                orgSlug={org.slug}
+                divisions={orgDivisions}
+                pendingInvites={(pendingInvites ?? [])
+                  .filter((inv) => inv.organization_id === org.id)
+                  .map((inv) => ({
+                    id: inv.id,
+                    role: inv.role,
+                    division: inv.division_id
+                      ? (divisions ?? []).find((d) => d.id === inv.division_id)?.name ?? null
+                      : null,
+                    expiresAt: inv.expires_at,
+                    createdAt: inv.created_at,
+                  }))}
+              />
               <ManageMemberTable
                 orgName={org.name}
                 members={orgMembers.map((m) => {
