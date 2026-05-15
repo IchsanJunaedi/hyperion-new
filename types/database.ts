@@ -493,13 +493,13 @@ export interface Database {
       };
       finances: {
         Row: FinanceRow;
-        Insert: Omit<FinanceRow, "id" | "created_at">;
+        Insert: WithoutGenerated<FinanceRow, "id" | "created_at">;
         Update: Partial<Omit<FinanceRow, "id" | "created_at">>;
         Relationships: [];
       };
       content_calendar: {
         Row: ContentCalendarRow;
-        Insert: Omit<ContentCalendarRow, "id" | "created_at">;
+        Insert: WithoutGenerated<ContentCalendarRow, "id" | "created_at">;
         Update: Partial<Omit<ContentCalendarRow, "id" | "created_at">>;
         Relationships: [];
       };
@@ -538,6 +538,9 @@ export interface Database {
       notification_type: NotificationType;
       invite_status: InviteStatus;
       visibility: Visibility;
+      finance_type: FinanceType;
+      content_platform: ContentPlatform;
+      content_status: ContentStatus;
     };
     CompositeTypes: Record<string, never>;
   };
