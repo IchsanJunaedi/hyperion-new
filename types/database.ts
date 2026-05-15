@@ -244,7 +244,7 @@ type FileRow = {
   created_at: string;
 };
 
-type FinanceRow = {
+export type FinanceRow = {
   id: string;
   organization_id: string;
   type: FinanceType;
