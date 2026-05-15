@@ -6,7 +6,10 @@ import { ScrimCard } from "@/features/scrim/components/ScrimCard";
 import { WinLossRecordBadge } from "@/features/scrim/components/WinLossRecord";
 import { listScrims, getScrimWinLossRecord, type ScrimListFilter } from "@/features/scrim/queries";
 import { getCurrentUserRole } from "@/features/roster/queries";
-import { getOrgBySlug } from "@/features/teams/queries";
+import { getOrgBySlug, getPublicTeamData } from "@/features/teams/queries";
+import { FindOpponentButton } from "@/features/matchmaking/components/FindOpponentButton";
+import { MatchmakingSection } from "@/features/matchmaking/components/MatchmakingSection";
+import { listMatchableTeams } from "@/features/matchmaking/queries";
 
 export const dynamic = "force-dynamic";
 
@@ -43,6 +46,12 @@ export default async function ScrimListPage({
     getScrimWinLossRecord(organization.id),
   ]);
 
+  const { divisions } = await getPublicTeamData(organization);
+  const activeDivisionId = divisions[0]?.id ?? null;
+  const matchableTeams = activeDivisionId
+    ? await listMatchableTeams(organization.id, activeDivisionId)
+    : [];
+
   return (
     <div className="space-y-6 px-4 py-6 sm:px-8">
       <header className="flex items-center justify-between gap-4">
@@ -54,13 +63,21 @@ export default async function ScrimListPage({
           </div>
         </div>
         {canManageScrims && (
-          <Link
-            href={`/${slug}/scrim/new`}
-            className="inline-flex h-10 items-center gap-2 rounded-md bg-yellow-400 px-4 text-sm font-semibold text-black transition hover:bg-yellow-300"
-          >
-            <Plus className="h-4 w-4" />
-            Buat scrim
-          </Link>
+          <div className="flex items-center gap-2">
+            <FindOpponentButton
+              orgSlug={slug}
+              divisions={divisions.map((d) => ({ id: d.id, name: d.name }))}
+              matchableTeams={matchableTeams}
+              activeDivisionId={activeDivisionId}
+            />
+            <Link
+              href={`/${slug}/scrim/new`}
+              className="inline-flex h-10 items-center gap-2 rounded-md bg-yellow-400 px-4 text-sm font-semibold text-black transition hover:bg-yellow-300"
+            >
+              <Plus className="h-4 w-4" />
+              Buat scrim
+            </Link>
+          </div>
         )}
       </header>
 
@@ -113,6 +130,11 @@ export default async function ScrimListPage({
             </li>
           ))}
         </ul>
+      )}
+
+      {/* Matchmaking section */}
+      {canManageScrims && (
+        <MatchmakingSection orgId={organization.id} orgSlug={slug} />
       )}
     </div>
   );
