@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 import { WorkspaceSidebar } from "@/components/layout/WorkspaceSidebar";
 import { WorkspaceTopbar } from "@/components/layout/WorkspaceTopbar";
+import { NotifyProvider } from "@/features/dashboard/components/NotifyModal";
 import { NotificationRealtimeProvider } from "@/features/notifications/components/NotificationRealtimeProvider";
 import {
   getOrgBySlug,
@@ -89,7 +90,9 @@ export default async function WorkspaceLayout({
       <div className="flex min-w-0 flex-1 flex-col pb-20 md:pb-0">
         <WorkspaceTopbar organization={organization} userId={user.id} />
         <NotificationRealtimeProvider userId={user.id}>
-          <main className="flex-1">{children}</main>
+          <NotifyProvider>
+            <main className="flex-1">{children}</main>
+          </NotifyProvider>
         </NotificationRealtimeProvider>
         <MobileBottomNav orgSlug={organization.slug} />
       </div>

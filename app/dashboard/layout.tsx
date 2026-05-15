@@ -1,5 +1,6 @@
 import Link from "next/link";
 import {
+  BarChart3,
   Building2,
   CalendarClock,
   DollarSign,
@@ -8,6 +9,7 @@ import {
   ListChecks,
   LogOut,
   Shield,
+  Trophy,
   Users,
 } from "lucide-react";
 
@@ -51,6 +53,8 @@ export default async function DashboardLayout({
             <NavItem href="/dashboard/finances" Icon={DollarSign} label="Kas Tim" />
             <NavItem href="/dashboard/content" Icon={CalendarClock} label="Konten" />
             <NavItem href="/dashboard/audit" Icon={ListChecks} label="Audit Log" />
+            <NavItem href="/dashboard/reports" Icon={BarChart3} label="Laporan" />
+            <NavItem href="/dashboard/tournaments" Icon={Trophy} label="Turnamen" />
             <NavItem href="/dashboard/export" Icon={FileOutput} label="Export Data" />
           </nav>
         </div>
