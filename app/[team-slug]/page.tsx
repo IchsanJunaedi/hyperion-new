@@ -12,6 +12,7 @@ import {
   getTeamHomeData,
   isCurrentUserMember,
 } from "@/features/teams/queries";
+import { getCurrentUserRole } from "@/features/roster/queries";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -48,6 +49,8 @@ export default async function TeamSlugPage({ params }: TeamSlugPageProps) {
   if (!user) notFound();
 
   const data = await getTeamHomeData(organization);
+  const currentUserRole = await getCurrentUserRole(organization.id);
+  const canManageScrims = ["captain", "manager", "owner"].includes(currentUserRole ?? "");
 
   return (
     <div className="flex min-h-screen flex-1">
@@ -68,7 +71,7 @@ export default async function TeamSlugPage({ params }: TeamSlugPageProps) {
       <div className="flex min-w-0 flex-1 flex-col pb-20 md:pb-0">
         <WorkspaceTopbar organization={organization} userId={user.id} />
         <main className="flex-1">
-          <TeamHome data={data} />
+          <TeamHome data={data} canManageScrims={canManageScrims} />
         </main>
         <MobileBottomNav orgSlug={organization.slug} />
       </div>
