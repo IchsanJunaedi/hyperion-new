@@ -36,7 +36,7 @@ export async function createContentAction(
     .in("role", ["manager", "owner"])
     .maybeSingle();
 
-  if (!membership) return { ok: false, message: "Hanya manager yang bisa membuat konten." };
+  if (!membership) return { ok: false, message: "Hanya manager/owner yang bisa membuat konten." };
 
   const { error } = await admin.from("content_calendar").insert({
     organization_id: orgId,
@@ -123,6 +123,18 @@ export async function deleteContentAction(
   const isOwnerByEmail = ownerEmail && user.email === ownerEmail;
 
   if (!isOwnerByEmail) {
+    // Verify the caller is a member of this org before any further checks
+    const { data: membership } = await admin
+      .from("team_members")
+      .select("role")
+      .eq("organization_id", orgId)
+      .eq("user_id", user.id)
+      .eq("is_active", true)
+      .in("role", ["manager", "owner"])
+      .maybeSingle();
+
+    if (!membership) return { ok: false, message: "Akses ditolak." };
+
     const { data: content } = await admin
       .from("content_calendar")
       .select("created_by, status")
