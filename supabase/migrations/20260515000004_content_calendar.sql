@@ -1,7 +1,14 @@
-CREATE TYPE public.content_platform AS ENUM ('ig', 'tiktok', 'x');
-CREATE TYPE public.content_status AS ENUM ('draft', 'scheduled', 'approved', 'published');
+DO $$ BEGIN
+  CREATE TYPE public.content_platform AS ENUM ('ig', 'tiktok', 'x');
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
-CREATE TABLE public.content_calendar (
+DO $$ BEGIN
+  CREATE TYPE public.content_status AS ENUM ('draft', 'scheduled', 'approved', 'published');
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+
+CREATE TABLE IF NOT EXISTS public.content_calendar (
   id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
   platform        content_platform NOT NULL,
@@ -15,5 +22,5 @@ CREATE TABLE public.content_calendar (
   created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE INDEX idx_content_calendar_org ON content_calendar(organization_id);
-CREATE INDEX idx_content_calendar_status ON content_calendar(organization_id, status);
+CREATE INDEX IF NOT EXISTS idx_content_calendar_org ON content_calendar(organization_id);
+CREATE INDEX IF NOT EXISTS idx_content_calendar_status ON content_calendar(organization_id, status);

@@ -1,6 +1,9 @@
-CREATE TYPE public.finance_type AS ENUM ('income', 'expense');
+DO $$ BEGIN
+  CREATE TYPE public.finance_type AS ENUM ('income', 'expense');
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
-CREATE TABLE public.finances (
+CREATE TABLE IF NOT EXISTS public.finances (
   id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
   type            finance_type NOT NULL,
@@ -12,5 +15,5 @@ CREATE TABLE public.finances (
   created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE INDEX idx_finances_org ON finances(organization_id);
-CREATE INDEX idx_finances_date ON finances(organization_id, date DESC);
+CREATE INDEX IF NOT EXISTS idx_finances_org ON finances(organization_id);
+CREATE INDEX IF NOT EXISTS idx_finances_date ON finances(organization_id, date DESC);
