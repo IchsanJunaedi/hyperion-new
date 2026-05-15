@@ -34,7 +34,7 @@ export default async function TeamSlugPage({ params }: TeamSlugPageProps) {
 
   if (!member) {
     if (!user) {
-      redirect(`/login?next=/${slug}`);
+      redirect(`/login?next=/${encodeURIComponent(slug)}`);
     }
     const publicData = await getPublicTeamData(organization);
     return (
