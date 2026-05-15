@@ -256,7 +256,7 @@ export type FinanceRow = {
   created_at: string;
 };
 
-type ContentCalendarRow = {
+export type ContentCalendarRow = {
   id: string;
   organization_id: string;
   platform: ContentPlatform;
