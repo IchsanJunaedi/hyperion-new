@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle2, Loader2, Trash2, XCircle } from "lucide-react";
+import { Loader2, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
@@ -12,19 +12,18 @@ import type { Tournament } from "@/features/tournaments/queries";
 interface TournamentDetailActionsProps {
   tournament: Tournament;
   orgSlug: string;
-  canManage: boolean;
 }
 
-export function TournamentDetailActions({ tournament, orgSlug, canManage }: TournamentDetailActionsProps) {
+export function TournamentDetailActions({ tournament, orgSlug }: TournamentDetailActionsProps) {
   const router = useRouter();
   const { success, error } = useNotify();
   const [pending, startTransition] = useTransition();
   const [deleteOpen, setDeleteOpen] = useState(false);
 
-  function handleRegister() {
+  function handleStart() {
     startTransition(async () => {
       const res = await updateTournamentStatusAction(orgSlug, tournament.id, "ongoing");
-      if (res.ok) success("Turnamen ditandai sebagai terdaftar!");
+      if (res.ok) success("Turnamen dimulai!");
       else error(res.message);
     });
   }
@@ -40,8 +39,12 @@ export function TournamentDetailActions({ tournament, orgSlug, canManage }: Tour
   function handleCancel() {
     startTransition(async () => {
       const res = await updateTournamentStatusAction(orgSlug, tournament.id, "cancelled");
-      if (res.ok) success("Turnamen dibatalkan.");
-      else error(res.message);
+      if (res.ok) {
+        success("Turnamen dibatalkan.");
+        router.push(`/${orgSlug}/tournaments`);
+      } else {
+        error(res.message);
+      }
     });
   }
 
@@ -57,58 +60,57 @@ export function TournamentDetailActions({ tournament, orgSlug, canManage }: Tour
     });
   }
 
-  if (!canManage) return null;
-
   return (
-    <div className="space-y-3">
-      {/* Register button — only when upcoming/scheduled */}
-      {(tournament.status === "upcoming" || tournament.status === "scheduled") && (
+    <>
+      <div className="flex flex-wrap items-center gap-3">
+        {/* Start — when scheduled and past start date */}
+        {tournament.status === "scheduled" && (
+          <button
+            type="button"
+            disabled={pending}
+            onClick={handleStart}
+            className="inline-flex h-9 items-center gap-2 rounded-md border border-white/10 px-4 text-sm font-medium text-white/80 transition hover:bg-white/5 disabled:opacity-50 cursor-pointer"
+          >
+            {pending && <Loader2 className="h-3 w-3 animate-spin" />}
+            Mulai Turnamen
+          </button>
+        )}
+
+        {/* Complete — when ongoing */}
+        {tournament.status === "ongoing" && (
+          <button
+            type="button"
+            disabled={pending}
+            onClick={handleComplete}
+            className="inline-flex h-9 items-center gap-2 rounded-md border border-white/10 px-4 text-sm font-medium text-white/80 transition hover:bg-white/5 disabled:opacity-50 cursor-pointer"
+          >
+            {pending && <Loader2 className="h-3 w-3 animate-spin" />}
+            Turnamen Selesai
+          </button>
+        )}
+
+        {/* Cancel — when not completed */}
+        {(tournament.status === "scheduled" || tournament.status === "ongoing") && (
+          <button
+            type="button"
+            disabled={pending}
+            onClick={handleCancel}
+            className="inline-flex h-9 items-center gap-2 rounded-md border border-white/10 px-4 text-sm font-medium text-white/80 transition hover:bg-white/5 disabled:opacity-50 cursor-pointer"
+          >
+            Batalkan
+          </button>
+        )}
+
+        {/* Delete */}
         <button
           type="button"
-          disabled={pending}
-          onClick={handleRegister}
-          className="flex w-full h-10 items-center justify-center gap-2 rounded-md bg-yellow-400 text-sm font-semibold text-black hover:bg-yellow-300 disabled:opacity-50 cursor-pointer"
+          onClick={() => setDeleteOpen(true)}
+          className="inline-flex h-9 items-center gap-1.5 rounded-md border border-red-500/20 px-4 text-sm font-medium text-red-400 transition hover:bg-red-500/10 cursor-pointer"
         >
-          {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
-          Daftar Turnamen
+          <Trash2 className="h-3.5 w-3.5" />
+          Hapus
         </button>
-      )}
-
-      {/* Complete button — only when ongoing */}
-      {tournament.status === "ongoing" && (
-        <button
-          type="button"
-          disabled={pending}
-          onClick={handleComplete}
-          className="flex w-full h-10 items-center justify-center gap-2 rounded-md bg-green-500 text-sm font-semibold text-white hover:bg-green-400 disabled:opacity-50 cursor-pointer"
-        >
-          {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
-          Turnamen Selesai
-        </button>
-      )}
-
-      {/* Cancel button — when upcoming/scheduled or ongoing */}
-      {(tournament.status === "upcoming" || tournament.status === "scheduled" || tournament.status === "ongoing") && (
-        <button
-          type="button"
-          disabled={pending}
-          onClick={handleCancel}
-          className="flex w-full h-9 items-center justify-center gap-2 rounded-md border border-white/10 text-xs font-medium text-[#9B9A97] hover:bg-white/5 disabled:opacity-50 cursor-pointer"
-        >
-          <XCircle className="h-3.5 w-3.5" />
-          Batalkan
-        </button>
-      )}
-
-      {/* Delete — always available */}
-      <button
-        type="button"
-        onClick={() => setDeleteOpen(true)}
-        className="flex w-full h-9 items-center justify-center gap-1.5 rounded-md border border-red-500/20 text-xs font-medium text-red-400 hover:bg-red-500/10 cursor-pointer"
-      >
-        <Trash2 className="h-3 w-3" />
-        Hapus Turnamen
-      </button>
+      </div>
 
       <ConfirmDeleteDialog
         open={deleteOpen}
@@ -119,6 +121,6 @@ export function TournamentDetailActions({ tournament, orgSlug, canManage }: Tour
         onConfirm={handleDelete}
         onCancel={() => setDeleteOpen(false)}
       />
-    </div>
+    </>
   );
 }

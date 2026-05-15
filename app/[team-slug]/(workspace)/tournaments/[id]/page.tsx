@@ -1,10 +1,11 @@
-import { Calendar, Clock, ExternalLink, MapPin, Trophy } from "lucide-react";
+import { Calendar, ExternalLink, Trophy } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { getCurrentUserRole } from "@/features/roster/queries";
 import { getOrgBySlug } from "@/features/teams/queries";
 import { getTournamentDetail } from "@/features/tournaments/queries";
+import { TournamentCountdown } from "@/features/tournaments/components/TournamentCountdown";
 import { TournamentTimeline } from "@/features/tournaments/components/TournamentTimeline";
 import { TournamentDetailActions } from "@/features/tournaments/components/TournamentDetailActions";
 
@@ -14,20 +15,11 @@ interface TournamentDetailPageProps {
   params: Promise<{ "team-slug": string; id: string }>;
 }
 
-const STATUS_COLORS: Record<string, string> = {
-  scheduled: "bg-blue-500/10 text-blue-400 border-blue-500/20",
-  upcoming: "bg-blue-500/10 text-blue-400 border-blue-500/20",
-  ongoing: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20",
-  completed: "bg-green-500/10 text-green-400 border-green-500/20",
-  cancelled: "bg-red-500/10 text-red-400 border-red-500/20",
-};
-
-const STATUS_LABELS: Record<string, string> = {
-  scheduled: "Belum Daftar",
-  upcoming: "Belum Daftar",
-  ongoing: "Terdaftar",
-  completed: "Selesai",
-  cancelled: "Dibatalkan",
+const STATUS_BADGE: Record<string, { color: string; label: string }> = {
+  scheduled: { color: "bg-blue-500/10 text-blue-400 border-blue-500/20", label: "TERDAFTAR" },
+  ongoing: { color: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20", label: "BERLANGSUNG" },
+  completed: { color: "bg-green-500/10 text-green-400 border-green-500/20", label: "SELESAI" },
+  cancelled: { color: "bg-red-500/10 text-red-400 border-red-500/20", label: "DIBATALKAN" },
 };
 
 export default async function TournamentDetailPage({ params }: TournamentDetailPageProps) {
@@ -41,7 +33,9 @@ export default async function TournamentDetailPage({ params }: TournamentDetailP
   const currentUserRole = await getCurrentUserRole(organization.id);
   const canManage = ["captain", "manager", "owner"].includes(currentUserRole ?? "");
 
-  const startDate = new Date(detail.start_date).toLocaleString("id-ID", {
+  const badge = STATUS_BADGE[detail.status] ?? STATUS_BADGE.scheduled;
+
+  const scheduled = new Date(detail.start_date).toLocaleString("id-ID", {
     weekday: "long",
     day: "numeric",
     month: "long",
@@ -49,14 +43,8 @@ export default async function TournamentDetailPage({ params }: TournamentDetailP
     timeZone: "Asia/Jakarta",
   });
 
-  // Calculate days until tournament
-  const now = new Date();
-  const tournamentDate = new Date(detail.start_date);
-  const daysUntil = Math.ceil((tournamentDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-
   return (
     <div className="space-y-6 px-4 py-6 sm:px-8">
-      {/* Header like scrim */}
       <header className="space-y-2">
         <Link
           href={`/${slug}/tournaments`}
@@ -65,8 +53,8 @@ export default async function TournamentDetailPage({ params }: TournamentDetailP
           ← Daftar turnamen
         </Link>
         <div className="flex items-center gap-2">
-          <span className={`rounded-full border px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${STATUS_COLORS[detail.status] ?? STATUS_COLORS.upcoming}`}>
-            {STATUS_LABELS[detail.status] ?? detail.status}
+          <span className={`rounded-full border px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${badge.color}`}>
+            {badge.label}
           </span>
           {detail.division_name && (
             <span className="text-xs uppercase tracking-wide text-white/55">
@@ -79,35 +67,22 @@ export default async function TournamentDetailPage({ params }: TournamentDetailP
           <p className="text-sm text-white/65">oleh {detail.organizer}</p>
         )}
 
-        {/* Countdown / date info */}
-        {(detail.status === "upcoming" || detail.status === "scheduled") && daysUntil > 0 && (
-          <div className="mt-3 rounded-xl border border-white/10 bg-zinc-900/60 p-4">
-            <div className="flex items-center gap-3">
-              <Clock className="h-5 w-5 text-yellow-400" />
-              <div>
-                <p className="text-lg font-bold text-white">{daysUntil} hari lagi</p>
-                <p className="text-xs text-white/55">menuju hari pertandingan</p>
-              </div>
-            </div>
+        {/* Countdown — show when scheduled (registered, waiting for day) */}
+        {detail.status === "scheduled" && (
+          <div className="mt-3">
+            <TournamentCountdown
+              name={detail.name}
+              startDate={detail.start_date}
+              prizePool={detail.prize_pool}
+              organizer={detail.organizer}
+            />
           </div>
         )}
 
-        {detail.status === "ongoing" && (
-          <div className="mt-3 rounded-xl border border-yellow-500/20 bg-yellow-500/5 p-4">
-            <div className="flex items-center gap-3">
-              <Trophy className="h-5 w-5 text-yellow-400" />
-              <div>
-                <p className="text-sm font-semibold text-yellow-400">Turnamen sedang berlangsung</p>
-                <p className="text-xs text-white/55">Tim sudah terdaftar</p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        <dl className="grid gap-1 text-sm text-white/70 sm:grid-cols-2 mt-2">
+        <dl className="grid gap-1 text-sm text-white/70 sm:grid-cols-2">
           <div className="inline-flex items-center gap-2">
             <Calendar className="h-3.5 w-3.5 text-white/55" />
-            {startDate}
+            {scheduled}
             {detail.end_date && ` — ${new Date(detail.end_date).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}`}
           </div>
           {detail.prize_pool && (
@@ -119,57 +94,20 @@ export default async function TournamentDetailPage({ params }: TournamentDetailP
         </dl>
       </header>
 
-      {/* Action buttons for captain+ */}
+      {/* Action buttons — inline like scrim */}
       {canManage && (
-        <TournamentDetailActions
-          tournament={detail}
-          orgSlug={slug}
-          canManage={canManage}
-        />
+        <TournamentDetailActions tournament={detail} orgSlug={slug} />
       )}
 
       <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
-        <div className="space-y-6">
-          {/* Detail info */}
-          <article className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5 space-y-3">
-            <h2 className="text-sm font-semibold text-[#E5E2E1]">Informasi</h2>
-            <dl className="grid gap-3 text-sm sm:grid-cols-2">
-              {detail.registration_fee && (
-                <div>
-                  <dt className="text-xs text-[#6B6A68]">Biaya Registrasi</dt>
-                  <dd className="text-[#E5E2E1]">Rp {detail.registration_fee}</dd>
-                </div>
-              )}
-              {detail.registration_deadline && (
-                <div>
-                  <dt className="text-xs text-[#6B6A68]">Deadline Registrasi</dt>
-                  <dd className="text-[#E5E2E1]">
-                    {new Date(detail.registration_deadline).toLocaleDateString("id-ID", {
-                      day: "numeric",
-                      month: "short",
-                      year: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </dd>
-                </div>
-              )}
-            </dl>
+        <section className="space-y-6">
+          {/* Detail info card */}
+          {(detail.registration_url || detail.notes) && (
+            <article className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
+              <h2 className="text-sm font-semibold text-white">Detail tambahan</h2>
 
-            {(detail.link || detail.registration_url) && (
-              <div className="flex flex-wrap gap-3 pt-3 border-t border-[#2D2D2D]">
-                {detail.link && (
-                  <a
-                    href={detail.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 rounded-md border border-white/10 px-3 py-1.5 text-xs text-blue-400 hover:bg-white/5 transition"
-                  >
-                    <ExternalLink className="h-3 w-3" />
-                    Link Turnamen
-                  </a>
-                )}
-                {detail.registration_url && (
+              {detail.registration_url && (
+                <div className="mt-3 flex flex-wrap gap-2">
                   <a
                     href={detail.registration_url}
                     target="_blank"
@@ -179,20 +117,20 @@ export default async function TournamentDetailPage({ params }: TournamentDetailP
                     <ExternalLink className="h-3 w-3" />
                     Link Registrasi
                   </a>
-                )}
-              </div>
-            )}
+                </div>
+              )}
 
-            {detail.notes && (
-              <p className="text-sm text-[#9B9A97] whitespace-pre-line pt-3 border-t border-[#2D2D2D]">
-                {detail.notes}
-              </p>
-            )}
-          </article>
-        </div>
+              {detail.notes && (
+                <p className="mt-3 whitespace-pre-line text-sm text-white/80">
+                  {detail.notes}
+                </p>
+              )}
+            </article>
+          )}
+        </section>
 
         <aside className="space-y-6">
-          {/* Timeline — show when registered (ongoing/completed) */}
+          {/* Timeline — show when ongoing or completed */}
           {(detail.status === "ongoing" || detail.status === "completed") && (
             <article className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
               <TournamentTimeline
