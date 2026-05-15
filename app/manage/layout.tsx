@@ -10,6 +10,7 @@ import {
   LayoutDashboard,
   LogOut,
   Megaphone,
+  MessageSquare,
   Plus,
   Swords,
   Tags,
@@ -107,6 +108,7 @@ export default async function ManageLayout({
                 <NavItem href={`/${orgSlug}/strategy`} Icon={FileText} label="Strategy" />
                 <NavItem href={`/${orgSlug}/files`} Icon={FolderOpen} label="Files" />
                 <NavItem href={`/${orgSlug}/tournaments`} Icon={Trophy} label="Turnamen" />
+                <NavItem href={`/${orgSlug}/polls`} Icon={MessageSquare} label="Polling" />
               </nav>
             </>
           )}
