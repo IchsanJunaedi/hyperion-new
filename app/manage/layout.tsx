@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import {
+  BarChart3,
   Calendar,
   CalendarClock,
   DollarSign,
@@ -12,6 +13,7 @@ import {
   Plus,
   Swords,
   Tags,
+  TrendingUp,
   Trophy,
   Users,
 } from "lucide-react";
@@ -87,6 +89,8 @@ export default async function ManageLayout({
             <NavItem href="/manage/captains" Icon={Swords} label="Edit Captain" />
             <NavItem href="/manage/finances" Icon={DollarSign} label="Kas Tim" />
             <NavItem href="/manage/content" Icon={CalendarClock} label="Konten" />
+            <NavItem href="/manage/development" Icon={TrendingUp} label="Player Dev" />
+            <NavItem href="/manage/reports" Icon={BarChart3} label="Laporan" />
           </nav>
 
           {/* Workspace features (linked to team workspace) */}
