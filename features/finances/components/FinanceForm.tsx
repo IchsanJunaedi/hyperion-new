@@ -94,6 +94,7 @@ export function FinanceForm({ orgId, revalidatePaths, onClose }: FinanceFormProp
           <div>
             <label className="block text-xs text-[#9B9A97] mb-1">Kategori</label>
             <select
+              key={type}
               name="category"
               required
               className="h-10 w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-sm text-[#E5E2E1] focus:border-[#E5E2E1] focus:outline-none"
