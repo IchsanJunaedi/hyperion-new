@@ -46,7 +46,7 @@ export function ManagerAssignmentsTable({
       .filter((d) => d.organization_id === orgId)
       .map((d) => ({ id: d.id, name: d.name }));
     const memberCount = members.filter(
-      (m) => m.organization_id === orgId,
+      (m) => m.organization_id === orgId && m.is_active,
     ).length;
     return { id: org.id, name: org.name, slug: org.slug, tier: org.tier, divisions, memberCount };
   }
