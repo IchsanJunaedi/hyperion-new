@@ -23,7 +23,7 @@ export type MemberRole =
   | "manager";
 export type MemberAvailability = "active" | "hiatus" | "unavailable";
 export type ScrimStatus = "scheduled" | "ongoing" | "completed" | "cancelled";
-export type MatchFormat = "bo1" | "bo3" | "bo5" | "scrimmage";
+export type MatchFormat = "bo1" | "bo2" | "bo3" | "bo5" | "bo7" | "scrimmage";
 export type AttendanceStatus =
   | "confirmed"
   | "declined"
@@ -77,7 +77,7 @@ type ProfileRow = {
 
 type DivisionRow = {
   id: string;
-  organization_id: string;
+  organization_id: string | null;
   name: string;
   slug: string;
   game: string;
@@ -154,6 +154,16 @@ type ScrimResultRow = {
   result_image_path: string | null;
   recorded_by: string;
   recorded_at: string;
+};
+
+type ScrimGameResultRow = {
+  id: string;
+  scrim_id: string;
+  game_number: number;
+  is_win: boolean;
+  notes: string | null;
+  image_url: string | null;
+  created_at: string;
 };
 
 type AnnouncementRow = {
