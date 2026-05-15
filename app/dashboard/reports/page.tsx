@@ -55,37 +55,47 @@ export default async function DashboardReportsPage({ searchParams }: ReportsPage
   }));
 
   return (
-    <div className="max-w-[900px] mx-auto px-12 py-10 space-y-6">
-      <header>
-        <div className="flex items-center gap-2">
-          <FileText className="h-5 w-5 text-purple-400" />
-          <h1 className="text-xl font-bold text-[#E5E2E1]">Laporan Bulanan</h1>
+    <>
+      <header className="h-12 flex items-center px-6 sticky top-0 bg-[#191919] z-40 border-b border-[#2D2D2D]">
+        <div className="flex items-center gap-2 text-[#9B9A97] text-sm">
+          <span>Hyperion Team</span>
+          <span className="text-[#6B6A68]">/</span>
+          <span className="text-[#D4D4D4]">Laporan</span>
         </div>
-        <p className="text-sm text-[#9B9A97] mt-1">
-          Ringkasan performa tim per bulan.
-        </p>
       </header>
 
-      <nav className="flex flex-wrap gap-1">
-        {months.map((m) => {
-          const active = m.value === month;
-          return (
-            <a
-              key={m.value}
-              href={`/dashboard/reports?year=${year}&month=${m.value}`}
-              className={`inline-flex h-8 items-center rounded-full px-3 text-xs font-medium transition ${
-                active
-                  ? "bg-white text-black"
-                  : "bg-[#202020] text-[#9B9A97] hover:bg-[#2C2C2C] hover:text-[#E5E2E1]"
-              }`}
-            >
-              {m.label}
-            </a>
-          );
-        })}
-      </nav>
+      <main className="flex-1 max-w-[900px] w-full mx-auto px-8 py-12 space-y-6">
+        <header>
+          <div className="flex items-center gap-2">
+            <FileText className="h-5 w-5 text-purple-400" />
+            <h1 className="text-xl font-bold text-[#E5E2E1]">Laporan Bulanan</h1>
+          </div>
+          <p className="text-sm text-[#9B9A97] mt-1">
+            Ringkasan performa tim per bulan.
+          </p>
+        </header>
 
-      <ReportView report={report} />
-    </div>
+        <nav className="flex flex-wrap gap-1">
+          {months.map((m) => {
+            const active = m.value === month;
+            return (
+              <a
+                key={m.value}
+                href={`/dashboard/reports?year=${year}&month=${m.value}`}
+                className={`inline-flex h-8 items-center rounded-full px-3 text-xs font-medium transition ${
+                  active
+                    ? "bg-white text-black"
+                    : "bg-[#202020] text-[#9B9A97] hover:bg-[#2C2C2C] hover:text-[#E5E2E1]"
+                }`}
+              >
+                {m.label}
+              </a>
+            );
+          })}
+        </nav>
+
+        <ReportView report={report} />
+      </main>
+    </>
   );
 }
