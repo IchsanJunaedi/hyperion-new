@@ -46,7 +46,7 @@ export default async function ManageFinancesPage({ searchParams }: FinancesPageP
         year={year}
         month={month}
         canDelete={true}
-        revalidatePaths={["/manage/finances"]}
+        revalidatePaths={["/manage/finances", "/dashboard/finances"]}
       />
     </div>
   );
