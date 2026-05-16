@@ -50,9 +50,11 @@ export default async function AssignRolePage() {
   const orgFilledRoles: Record<string, string[]> = {};
   for (const m of allActiveMembers ?? []) {
     if (m.organization_id && ["manager", "captain", "coach"].includes(m.role)) {
-      if (!orgFilledRoles[m.organization_id]) orgFilledRoles[m.organization_id] = [];
-      if (!orgFilledRoles[m.organization_id].includes(m.role)) {
-        orgFilledRoles[m.organization_id].push(m.role);
+      const orgId = m.organization_id;
+      if (!orgFilledRoles[orgId]) orgFilledRoles[orgId] = [];
+      const roles = orgFilledRoles[orgId]!; // Use non-null assertion or local var
+      if (!roles.includes(m.role)) {
+        roles.push(m.role);
       }
     }
   }
