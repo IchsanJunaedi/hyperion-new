@@ -13,6 +13,8 @@ const MAIN_DOMAIN = process.env.NEXT_PUBLIC_MAIN_DOMAIN ?? "hyperionteam.id";
 const RESERVED_ROOT_SEGMENTS = new Set([
   "login",
   "register",
+  "forgot-password",
+  "reset-password",
   "callback",
   "invite",
   "auth",
