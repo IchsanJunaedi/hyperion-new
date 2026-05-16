@@ -25,15 +25,23 @@ export default async function DashboardCalendarPage({
 
   const ownerEmail = process.env.OWNER_EMAIL;
   const isOwner = Boolean(ownerEmail && user.email === ownerEmail);
-
   const admin = createAdminClient();
 
-  // Non-owner: check if they're a manager
-  let managerOrgSlug: string | null = null;
-  let managerOrgId: string | null = null;
-  let managerDivisions: Array<{ id: string; name: string }> = [];
+  // Determine which orgs this user can see & act on
+  let orgsToLoad: Array<{ id: string; slug: string }> = [];
+  let activeOrgId: string | null = null;
+  let activeOrgSlug: string | null = null;
 
-  if (!isOwner) {
+  if (isOwner) {
+    const { data } = await admin
+      .from("organizations")
+      .select("id, slug")
+      .order("created_at", { ascending: false });
+    orgsToLoad = data ?? [];
+    // First org is the "active" org for creating events
+    activeOrgId = orgsToLoad[0]?.id ?? null;
+    activeOrgSlug = orgsToLoad[0]?.slug ?? null;
+  } else {
     const { data: membership } = await supabase
       .from("team_members")
       .select("organization_id, organizations(id, slug)")
@@ -45,50 +53,24 @@ export default async function DashboardCalendarPage({
 
     if (!membership) redirect("/dashboard");
 
-    const orgJoin = membership.organizations as unknown as {
-      id: string;
-      slug: string;
-    } | null;
-    managerOrgId = orgJoin?.id ?? null;
-    managerOrgSlug = orgJoin?.slug ?? null;
-  }
-
-  // Owner: find their primary org (where owner_id = user.id)
-  let ownerOrgSlug: string | null = null;
-  let ownerOrgId: string | null = null;
-  let ownerDivisions: Array<{ id: string; name: string }> = [];
-
-  if (isOwner) {
-    const { data: ownerOrg } = await admin
-      .from("organizations")
-      .select("id, slug")
-      .eq("owner_id", user.id)
-      .limit(1)
-      .maybeSingle();
-
-    ownerOrgId = ownerOrg?.id ?? null;
-    ownerOrgSlug = ownerOrg?.slug ?? null;
-
-    if (ownerOrgId) {
-      const { data: divs } = await admin
-        .from("divisions")
-        .select("id, name")
-        .eq("organization_id", ownerOrgId)
-        .eq("is_active", true)
-        .order("name");
-      ownerDivisions = divs ?? [];
+    const orgJoin = membership.organizations as unknown as { id: string; slug: string } | null;
+    activeOrgId = orgJoin?.id ?? null;
+    activeOrgSlug = orgJoin?.slug ?? null;
+    if (activeOrgId && activeOrgSlug) {
+      orgsToLoad = [{ id: activeOrgId, slug: activeOrgSlug }];
     }
   }
 
-  // Load divisions for manager
-  if (managerOrgId) {
-    const { data: divs } = await supabase
+  // Load divisions for the active org (used in quick-add modal)
+  let activeDivisions: Array<{ id: string; name: string }> = [];
+  if (activeOrgId) {
+    const { data: divs } = await admin
       .from("divisions")
       .select("id, name")
-      .eq("organization_id", managerOrgId)
+      .eq("organization_id", activeOrgId)
       .eq("is_active", true)
       .order("name");
-    managerDivisions = divs ?? [];
+    activeDivisions = divs ?? [];
   }
 
   const sp = await searchParams;
@@ -102,21 +84,8 @@ export default async function DashboardCalendarPage({
   const from = new Date(startUtcMs).toISOString();
   const to = new Date(endUtcMs).toISOString();
 
-  // Which orgs to show events from
+  // Load all events from relevant orgs
   const allEvents: CalendarEvent[] = [];
-
-  let orgsToLoad: Array<{ id: string; slug: string }> = [];
-
-  if (isOwner) {
-    // Owner sees all orgs
-    const { data } = await admin
-      .from("organizations")
-      .select("id, slug")
-      .order("created_at", { ascending: false });
-    orgsToLoad = data ?? [];
-  } else if (managerOrgId && managerOrgSlug) {
-    orgsToLoad = [{ id: managerOrgId, slug: managerOrgSlug }];
-  }
 
   for (const org of orgsToLoad) {
     const { data: manualEvents } = await admin
@@ -201,29 +170,19 @@ export default async function DashboardCalendarPage({
     (a, b) => new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime(),
   );
 
-  // Active org slug for the QuickAdd modal
-  const activeOrgSlug = isOwner ? ownerOrgSlug : managerOrgSlug;
-  const activeDivisions = isOwner ? ownerDivisions : managerDivisions;
   const canCreate = Boolean(activeOrgSlug);
-
-  const pageTitle = isOwner ? "Kalender Terpadu" : "Kalender Tim";
-  const subtitle = isOwner
-    ? ownerOrgSlug
-      ? `Klik tanggal untuk tambah event`
-      : "Kalender terpadu semua tim"
-    : "Klik tanggal untuk tambah event";
 
   return (
     <div className="space-y-6 px-4 py-6 sm:px-8">
       <header className="flex items-center justify-between gap-4">
         <div>
-          <p className="text-xs uppercase tracking-wide text-white/55">
-            Calendar
-          </p>
+          <p className="text-xs uppercase tracking-wide text-white/55">Calendar</p>
           <h1 className="mt-1 text-2xl font-bold text-white sm:text-3xl">
-            {pageTitle}
+            {isOwner ? "Kalender Terpadu" : "Kalender Tim"}
           </h1>
-          <p className="mt-0.5 text-xs text-white/40">{subtitle}</p>
+          <p className="mt-0.5 text-xs text-white/40">
+            {canCreate ? "Klik tanggal untuk tambah event" : "Kalender terpadu semua tim"}
+          </p>
         </div>
         {canCreate && activeOrgSlug && (
           <Link
