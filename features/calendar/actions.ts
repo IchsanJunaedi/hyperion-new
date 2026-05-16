@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import {
   createCalendarEventSchema,
   updateCalendarEventSchema,
@@ -25,7 +26,32 @@ export interface CreateEventResult {
 }
 
 /**
- * Create a calendar event. Captain+ only (RLS enforced).
+ * Returns { user, db } where db = admin client if user is owner (bypasses RLS),
+ * or regular supabase client otherwise.
+ * Owner is determined by OWNER_EMAIL env var — never by team_members table.
+ */
+async function getAuthContext() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { user: null, db: supabase, isOwner: false };
+
+  const ownerEmail = process.env.OWNER_EMAIL;
+  const isOwner = Boolean(ownerEmail && user.email === ownerEmail);
+
+  // Owner uses admin client to bypass RLS (owner may not be in team_members)
+  const db = isOwner ? createAdminClient() : supabase;
+
+  return { user, db, isOwner };
+}
+
+/**
+ * Create a calendar event.
+ * Owner: always allowed (uses admin client).
+ * Captain / Manager: allowed via RLS.
+ * Member / Coach: blocked.
  */
 export async function createCalendarEventAction(
   orgSlug: string,
@@ -40,13 +66,10 @@ export async function createCalendarEventAction(
     };
   }
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user, db } = await getAuthContext();
   if (!user) return { ok: false, message: "Anda harus login" };
 
-  const { data: org, error: orgError } = await supabase
+  const { data: org, error: orgError } = await db
     .from("organizations")
     .select("id")
     .eq("slug", orgSlug)
@@ -54,7 +77,7 @@ export async function createCalendarEventAction(
   if (orgError || !org)
     return { ok: false, message: "Organisasi tidak ditemukan" };
 
-  const { data: event, error } = await supabase
+  const { data: event, error } = await db
     .from("calendar_events")
     .insert({
       organization_id: org.id,
@@ -84,11 +107,12 @@ export async function createCalendarEventAction(
   }
 
   revalidatePath(`/${orgSlug}/calendar`);
+  revalidatePath(`/dashboard/calendar`);
   return { ok: true, event };
 }
 
 /**
- * Update calendar event (full or partial)
+ * Update calendar event (full or partial).
  */
 export async function updateCalendarEventAction(
   orgSlug: string,
@@ -103,10 +127,7 @@ export async function updateCalendarEventAction(
     };
   }
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user, db } = await getAuthContext();
   if (!user) return { ok: false, message: "Anda harus login" };
 
   const { id, ...updates } = parsed.data;
@@ -120,7 +141,7 @@ export async function updateCalendarEventAction(
     return { ok: true };
   }
 
-  const { error } = await supabase
+  const { error } = await db
     .from("calendar_events")
     .update({
       ...updateData,
@@ -144,7 +165,7 @@ export async function updateCalendarEventAction(
 }
 
 /**
- * Update single property of event with autosave
+ * Update single property of event with autosave.
  */
 export async function updateEventPropertyAction(
   orgSlug: string,
@@ -158,15 +179,12 @@ export async function updateEventPropertyAction(
     };
   }
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user, db } = await getAuthContext();
   if (!user) return { ok: false, message: "Anda harus login" };
 
   const { id, field, value } = parsed.data;
 
-  const { error } = await supabase
+  const { error } = await db
     .from("calendar_events")
     .update({
       [field]: value,
@@ -189,22 +207,17 @@ export async function updateEventPropertyAction(
 }
 
 /**
- * Delete a calendar event. Captain+ or creator only (RLS enforced).
+ * Delete a calendar event. Captain+ or creator only.
+ * Owner always allowed.
  */
 export async function deleteCalendarEventAction(
   orgSlug: string,
   eventId: string,
 ): Promise<ActionError | { ok: true }> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user, db } = await getAuthContext();
   if (!user) return { ok: false, message: "Anda harus login" };
 
-  const { error } = await supabase
-    .from("calendar_events")
-    .delete()
-    .eq("id", eventId);
+  const { error } = await db.from("calendar_events").delete().eq("id", eventId);
 
   if (error) {
     return {
@@ -217,11 +230,12 @@ export async function deleteCalendarEventAction(
   }
 
   revalidatePath(`/${orgSlug}/calendar`);
+  revalidatePath(`/dashboard/calendar`);
   return { ok: true };
 }
 
 /**
- * Add comment to event
+ * Add comment to event.
  */
 export async function addEventCommentAction(
   orgSlug: string,
@@ -232,13 +246,10 @@ export async function addEventCommentAction(
     return { ok: false, message: "Komentar tidak boleh kosong" };
   }
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user, db } = await getAuthContext();
   if (!user) return { ok: false, message: "Anda harus login" };
 
-  const { data: comment, error } = await supabase
+  const { data: comment, error } = await db
     .from("calendar_event_comments")
     .insert({
       event_id: eventId,
@@ -263,23 +274,20 @@ export async function addEventCommentAction(
 }
 
 /**
- * Delete comment
+ * Delete comment. Users can only delete their own (or owner can delete any).
  */
 export async function deleteEventCommentAction(
   orgSlug: string,
   eventId: string,
   commentId: string,
 ): Promise<ActionError | { ok: true }> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user, db, isOwner } = await getAuthContext();
   if (!user) return { ok: false, message: "Anda harus login" };
 
-  const { error } = await supabase
-    .from("calendar_event_comments")
-    .delete()
-    .eq("id", commentId);
+  const query = db.from("calendar_event_comments").delete().eq("id", commentId);
+
+  // Non-owner can only delete their own comments
+  const { error } = isOwner ? await query : await query.eq("user_id", user.id);
 
   if (error) {
     return {
@@ -296,21 +304,18 @@ export async function deleteEventCommentAction(
 }
 
 /**
- * Reschedule event via drag & drop
+ * Reschedule event via drag & drop. Captain+ or owner.
  */
 export async function dragRescheduleEventAction(
   orgSlug: string,
   eventId: string,
   newStartsAt: string,
 ): Promise<ActionError | { ok: true }> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user, db } = await getAuthContext();
   if (!user) return { ok: false, message: "Anda harus login" };
 
   // Get original event to calculate duration
-  const { data: event } = await supabase
+  const { data: event } = await db
     .from("calendar_events")
     .select("starts_at, ends_at")
     .eq("id", eventId)
@@ -329,7 +334,7 @@ export async function dragRescheduleEventAction(
     ).toISOString();
   }
 
-  const { error } = await supabase
+  const { error } = await db
     .from("calendar_events")
     .update({
       starts_at: newStartsAt,

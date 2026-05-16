@@ -23,80 +23,101 @@ export default async function DashboardCalendarPage({
   if (!user) redirect("/login?next=/dashboard/calendar");
 
   const ownerEmail = process.env.OWNER_EMAIL;
-  const isOwner = ownerEmail && user.email === ownerEmail;
+  const isOwner = Boolean(ownerEmail && user.email === ownerEmail);
 
-  // Determine if user is manager in any org (non-owner access)
+  const admin = createAdminClient();
+
+  // Non-owner: check if they're a manager
   let managerOrgSlug: string | null = null;
   let managerOrgId: string | null = null;
   let managerDivisions: Array<{ id: string; name: string }> = [];
 
   if (!isOwner) {
-    // Check if user is manager in some org
-    const { data: managerMembership } = await supabase
+    const { data: membership } = await supabase
       .from("team_members")
-      .select("organization_id, role, organizations(id, slug)")
+      .select("organization_id, organizations(id, slug)")
       .eq("user_id", user.id)
       .eq("role", "manager")
       .eq("is_active", true)
       .limit(1)
       .maybeSingle();
 
-    if (!managerMembership) {
-      // Not owner, not manager — redirect to dashboard
-      redirect("/dashboard");
-    }
+    if (!membership) redirect("/dashboard");
 
-    // managerMembership.organizations is an object (join)
-    const orgJoin = managerMembership.organizations as unknown as {
+    const orgJoin = membership.organizations as unknown as {
       id: string;
       slug: string;
     } | null;
     managerOrgId = orgJoin?.id ?? null;
     managerOrgSlug = orgJoin?.slug ?? null;
+  }
 
-    if (managerOrgId && managerOrgSlug) {
-      const { data: divs } = await supabase
+  // Owner: find their primary org (where owner_id = user.id)
+  let ownerOrgSlug: string | null = null;
+  let ownerOrgId: string | null = null;
+  let ownerDivisions: Array<{ id: string; name: string }> = [];
+
+  if (isOwner) {
+    const { data: ownerOrg } = await admin
+      .from("organizations")
+      .select("id, slug")
+      .eq("owner_id", user.id)
+      .limit(1)
+      .maybeSingle();
+
+    ownerOrgId = ownerOrg?.id ?? null;
+    ownerOrgSlug = ownerOrg?.slug ?? null;
+
+    if (ownerOrgId) {
+      const { data: divs } = await admin
         .from("divisions")
         .select("id, name")
-        .eq("organization_id", managerOrgId)
+        .eq("organization_id", ownerOrgId)
         .eq("is_active", true)
         .order("name");
-      managerDivisions = divs ?? [];
+      ownerDivisions = divs ?? [];
     }
+  }
+
+  // Load divisions for manager
+  if (managerOrgId) {
+    const { data: divs } = await supabase
+      .from("divisions")
+      .select("id, name")
+      .eq("organization_id", managerOrgId)
+      .eq("is_active", true)
+      .order("name");
+    managerDivisions = divs ?? [];
   }
 
   const sp = await searchParams;
   const now = new Date();
   const year = sp.y ? parseInt(sp.y, 10) : now.getFullYear();
-  const month = sp.m ? parseInt(sp.m, 10) : now.getMonth(); // 0-indexed
+  const month = sp.m ? parseInt(sp.m, 10) : now.getMonth();
 
-  // Compute WIB-aware month boundaries
   const WIB_OFFSET_MS = 7 * 60 * 60 * 1000;
   const startUtcMs = Date.UTC(year, month, 1) - WIB_OFFSET_MS;
   const endUtcMs = Date.UTC(year, month + 1, 0, 23, 59, 59) - WIB_OFFSET_MS;
   const from = new Date(startUtcMs).toISOString();
   const to = new Date(endUtcMs).toISOString();
 
-  const admin = createAdminClient();
-
-  // Collect all events
+  // Which orgs to show events from
   const allEvents: CalendarEvent[] = [];
 
-  // Which orgs to fetch — owner sees all, manager sees only theirs
-  let orgs: Array<{ id: string; slug: string; name: string }> = [];
+  let orgsToLoad: Array<{ id: string; slug: string }> = [];
 
   if (isOwner) {
+    // Owner sees all orgs
     const { data } = await admin
       .from("organizations")
-      .select("id, slug, name")
+      .select("id, slug")
       .order("created_at", { ascending: false });
-    orgs = data ?? [];
+    orgsToLoad = data ?? [];
   } else if (managerOrgId && managerOrgSlug) {
-    orgs = [{ id: managerOrgId, slug: managerOrgSlug, name: "" }];
+    orgsToLoad = [{ id: managerOrgId, slug: managerOrgSlug }];
   }
 
-  for (const org of orgs) {
-    // 1. Manual calendar events
+  for (const org of orgsToLoad) {
     const { data: manualEvents } = await admin
       .from("calendar_events")
       .select("*")
@@ -105,11 +126,8 @@ export default async function DashboardCalendarPage({
       .lte("starts_at", to)
       .order("starts_at", { ascending: true });
 
-    if (manualEvents) {
-      allEvents.push(...manualEvents);
-    }
+    if (manualEvents) allEvents.push(...manualEvents);
 
-    // 2. Scrims not already linked
     const linkedScrimIds = new Set(
       manualEvents
         ?.filter((e) => e.ref_type === "scrim" && e.ref_id)
@@ -144,7 +162,6 @@ export default async function DashboardCalendarPage({
       } as CalendarEvent);
     }
 
-    // 3. Tournaments not already linked
     const linkedTournamentIds = new Set(
       manualEvents
         ?.filter((e) => e.ref_type === "tournament" && e.ref_id)
@@ -179,14 +196,21 @@ export default async function DashboardCalendarPage({
     }
   }
 
-  // Sort by starts_at
   allEvents.sort(
     (a, b) => new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime(),
   );
 
-  // Owner: sees all orgs, readOnly for the unified view
-  // Manager: can add events to their own org via QuickAddModal
-  const isManager = !isOwner && !!managerOrgSlug;
+  // Active org slug for the QuickAdd modal
+  const activeOrgSlug = isOwner ? ownerOrgSlug : managerOrgSlug;
+  const activeDivisions = isOwner ? ownerDivisions : managerDivisions;
+  const canCreate = Boolean(activeOrgSlug);
+
+  const pageTitle = isOwner ? "Kalender Terpadu" : "Kalender Tim";
+  const subtitle = isOwner
+    ? ownerOrgSlug
+      ? `Klik tanggal untuk tambah event`
+      : "Kalender terpadu semua tim"
+    : "Klik tanggal untuk tambah event";
 
   return (
     <div className="space-y-6 px-4 py-6 sm:px-8">
@@ -196,29 +220,23 @@ export default async function DashboardCalendarPage({
             Calendar
           </p>
           <h1 className="mt-1 text-2xl font-bold text-white sm:text-3xl">
-            {isOwner ? "Kalender Terpadu" : "Kalender Tim"}
+            {pageTitle}
           </h1>
-          {isManager && (
-            <p className="mt-0.5 text-xs text-white/40">
-              Klik tanggal untuk tambah event ke tim kamu
-            </p>
-          )}
+          <p className="mt-0.5 text-xs text-white/40">{subtitle}</p>
         </div>
       </header>
 
       <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-4 sm:p-6">
-        {isManager && managerOrgSlug ? (
-          // Manager: clickable dates with QuickAdd modal
+        {canCreate && activeOrgSlug ? (
           <CalendarWithQuickAdd
-            orgSlug={managerOrgSlug}
+            orgSlug={activeOrgSlug}
             events={allEvents}
             year={year}
             month={month}
-            divisions={managerDivisions}
+            divisions={activeDivisions}
             canCreate
           />
         ) : (
-          // Owner: read-only unified view
           <CalendarGrid
             orgSlug="dashboard"
             events={allEvents}
@@ -228,13 +246,6 @@ export default async function DashboardCalendarPage({
           />
         )}
       </div>
-
-      {isOwner && (
-        <p className="text-center text-xs text-white/30">
-          Kalender terpadu — semua tim, semua event. Untuk menambah event masuk
-          ke workspace tim.
-        </p>
-      )}
     </div>
   );
 }
