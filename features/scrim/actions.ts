@@ -106,7 +106,6 @@ async function fanOutScrimNotifications(
     .from("team_members")
     .select("user_id")
     .eq("organization_id", scrim.organization_id)
-    .eq("division_id", scrim.division_id)
     .eq("is_active", true);
   if (!members || members.length === 0) return;
 
