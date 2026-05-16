@@ -52,6 +52,18 @@ export default function RootLayout({
               fontSize: "13px",
               fontFamily: "var(--font-sans)",
             },
+            classNames: {
+              toast: "!bg-[#1C1C1C] !border-[#2D2D2D] !text-[#E5E2E1] !rounded-[10px] !shadow-xl",
+              title: "!text-[#E5E2E1] !font-medium",
+              description: "!text-[#9B9A97]",
+              actionButton: "!bg-[#252525] !text-[#E5E2E1]",
+              cancelButton: "!bg-[#252525] !text-[#9B9A97]",
+              closeButton: "!bg-[#252525] !border-[#2D2D2D] !text-[#9B9A97]",
+              success: "!border-l-2 !border-l-[#4ade80]/60",
+              error: "!border-l-2 !border-l-[#f87171]/60",
+              warning: "!border-l-2 !border-l-[#facc15]/60",
+              info: "!border-l-2 !border-l-[#60a5fa]/60",
+            },
           }}
         />
       </body>
