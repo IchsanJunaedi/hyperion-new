@@ -46,7 +46,7 @@ export default async function DashboardLayout({
           </div>
 
           {/* Nav */}
-          <div className="px-2 flex-1 overflow-y-auto">
+          <div className="sidebar-scroll px-2 flex-1 overflow-y-auto">
             <div className="px-3 py-1 text-xs font-semibold text-[#6B6A68] mb-1">
               Workspace
             </div>

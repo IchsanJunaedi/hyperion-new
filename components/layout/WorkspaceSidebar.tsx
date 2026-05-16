@@ -305,7 +305,7 @@ export function WorkspaceSidebar({
       {/* Nav groups */}
       <nav
         aria-label="Workspace"
-        className="flex-1 overflow-y-auto px-2 pt-4 space-y-5"
+        className="sidebar-scroll flex-1 overflow-y-auto px-2 pt-4 space-y-5"
       >
         {allGroups.map((group) => (
           <div key={group.label}>
