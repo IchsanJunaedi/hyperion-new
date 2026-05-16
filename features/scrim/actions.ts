@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { blastWaMessage } from "@/lib/utils/fonnte";
 import { buildScrimWaMessage } from "@/lib/utils/wa-templates";
 import {
@@ -102,7 +103,10 @@ async function fanOutScrimNotifications(
   scrim: Scrim,
   orgName: string,
 ) {
-  const { data: members } = await supabase
+  // Use admin client to bypass RLS — we need to read all members & profiles
+  const admin = createAdminClient();
+
+  const { data: members } = await admin
     .from("team_members")
     .select("user_id")
     .eq("organization_id", scrim.organization_id)
@@ -110,7 +114,7 @@ async function fanOutScrimNotifications(
   if (!members || members.length === 0) return;
 
   const userIds = members.map((m) => m.user_id);
-  const { data: profiles } = await supabase
+  const { data: profiles } = await admin
     .from("profiles")
     .select("id, phone_wa")
     .in("id", userIds);
@@ -159,7 +163,7 @@ async function fanOutScrimNotifications(
 
   // Best-effort: the scrim insert is the source of truth; notification
   // failures shouldn't block the captain.
-  await supabase.from("notifications").insert(rows);
+  await admin.from("notifications").insert(rows);
 
   // Real-time WA blast — send immediately to members with phone numbers
   const recipients = members
@@ -178,7 +182,8 @@ async function getOrgSlugById(
   supabase: Awaited<ReturnType<typeof createClient>>,
   orgId: string,
 ): Promise<string> {
-  const { data } = await supabase
+  const admin = createAdminClient();
+  const { data } = await admin
     .from("organizations")
     .select("slug")
     .eq("id", orgId)

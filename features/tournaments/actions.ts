@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { logAudit } from "@/lib/audit";
 import { blastWaMessage } from "@/lib/utils/fonnte";
 import { buildTournamentWaMessage } from "@/lib/utils/wa-templates";
@@ -307,30 +308,27 @@ async function fanOutTournamentNotifications(
   supabase: Awaited<ReturnType<typeof createClient>>,
   data: TournamentNotifData,
 ) {
+  // Use admin client to bypass RLS — we need to read all members & profiles
+  const admin = createAdminClient();
+
   // Get org name
-  const { data: org } = await supabase
+  const { data: org } = await admin
     .from("organizations")
     .select("name")
     .eq("id", data.orgId)
     .maybeSingle();
   const orgName = org?.name ?? "Tim";
 
-  // Get members — if division specified, only that division; otherwise all active members
-  let membersQuery = supabase
+  // Get members — all active members in the org
+  const { data: members } = await admin
     .from("team_members")
     .select("user_id")
     .eq("organization_id", data.orgId)
     .eq("is_active", true);
-
-  if (data.divisionId) {
-    membersQuery = membersQuery.eq("division_id", data.divisionId);
-  }
-
-  const { data: members } = await membersQuery;
   if (!members || members.length === 0) return;
 
   const userIds = members.map((m) => m.user_id);
-  const { data: profiles } = await supabase
+  const { data: profiles } = await admin
     .from("profiles")
     .select("id, phone_wa")
     .in("id", userIds);
@@ -369,7 +367,7 @@ async function fanOutTournamentNotifications(
     wa_message: phoneMap.get(m.user_id) ? waMessage : null,
   }));
 
-  await supabase.from("notifications").insert(rows);
+  await admin.from("notifications").insert(rows);
 
   // Real-time WA blast
   const recipients = members
