@@ -15,12 +15,7 @@ export type Json =
   | Json[];
 
 export type OrgTier = "pelajar" | "komunitas" | "pro"; // deprecated, kept for backward compat
-export type MemberRole =
-  | "owner"
-  | "captain"
-  | "member"
-  | "coach"
-  | "manager";
+export type MemberRole = "owner" | "captain" | "member" | "coach" | "manager";
 export type MemberAvailability = "active" | "hiatus" | "unavailable";
 export type ScrimStatus = "scheduled" | "ongoing" | "completed" | "cancelled";
 export type MatchFormat = "bo1" | "bo2" | "bo3" | "bo5" | "bo7" | "scrimmage";
@@ -43,7 +38,12 @@ export type FinanceType = "income" | "expense";
 export type ContentPlatform = "ig" | "tiktok" | "x";
 export type ContentStatus = "draft" | "scheduled" | "approved" | "published";
 export type ScrimRequestStatus = "pending" | "accepted" | "declined";
-export type TournamentStatus = "scheduled" | "upcoming" | "ongoing" | "completed" | "cancelled";
+export type TournamentStatus =
+  | "scheduled"
+  | "upcoming"
+  | "ongoing"
+  | "completed"
+  | "cancelled";
 
 type OrganizationRow = {
   id: string;
@@ -376,6 +376,93 @@ type TournamentStageRow = {
   created_at: string;
 };
 
+type CalendarConfigRow = {
+  id: string;
+  organization_id: string;
+  division_id: string | null;
+  created_by: string;
+  title: string;
+  description: string | null;
+  visibility:
+    | "private"
+    | "management-only"
+    | "captain-only"
+    | "team-only"
+    | "selected-members"
+    | "public-workspace";
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+  updated_by: string | null;
+};
+
+type CalendarVisibilityRuleRow = {
+  id: string;
+  organization_id: string;
+  visibility:
+    | "private"
+    | "management-only"
+    | "captain-only"
+    | "team-only"
+    | "selected-members"
+    | "public-workspace";
+  permissions: Json;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+  updated_by: string | null;
+};
+
+type CalendarMemberPermissionRow = {
+  id: string;
+  organization_id: string;
+  calendar_id: string;
+  member_user_id: string;
+  can_view: boolean;
+  can_create_event: boolean;
+  can_edit_event: boolean;
+  can_delete_event: boolean;
+  can_manage_permissions: boolean;
+  created_at: string;
+  updated_at: string;
+  created_by: string;
+  updated_by: string | null;
+  deleted_at: string | null;
+};
+
+type EventVisibilityRow = {
+  id: string;
+  organization_id: string;
+  event_id: string;
+  calendar_id: string | null;
+  visibility:
+    | "private"
+    | "management-only"
+    | "captain-only"
+    | "team-only"
+    | "selected-members"
+    | "public-workspace";
+  allowed_member_ids: string[];
+  created_at: string;
+  updated_at: string;
+  created_by: string;
+  updated_by: string | null;
+};
+
+type CalendarAuditLogRow = {
+  id: string;
+  organization_id: string;
+  calendar_id: string | null;
+  event_id: string | null;
+  actor_id: string | null;
+  action: string;
+  entity_type: string;
+  changes: Json;
+  metadata: Json;
+  created_at: string;
+};
+
 type WithoutGenerated<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
 export interface Database {
@@ -423,11 +510,7 @@ export interface Database {
         Row: DivisionRow;
         Insert: WithoutGenerated<
           DivisionRow,
-          | "id"
-          | "description"
-          | "logo_url"
-          | "is_active"
-          | "created_at"
+          "id" | "description" | "logo_url" | "is_active" | "created_at"
         >;
         Update: Partial<DivisionRow>;
         Relationships: [];
@@ -579,7 +662,12 @@ export interface Database {
         Row: AuditLogRow;
         Insert: WithoutGenerated<
           AuditLogRow,
-          "id" | "actor_id" | "entity_id" | "metadata" | "ip_address" | "created_at"
+          | "id"
+          | "actor_id"
+          | "entity_id"
+          | "metadata"
+          | "ip_address"
+          | "created_at"
         >;
         Update: Partial<AuditLogRow>;
         Relationships: [];
@@ -588,11 +676,7 @@ export interface Database {
         Row: FileRow;
         Insert: WithoutGenerated<
           FileRow,
-          | "id"
-          | "division_id"
-          | "ref_id"
-          | "ref_type"
-          | "created_at"
+          "id" | "division_id" | "ref_id" | "ref_type" | "created_at"
         >;
         Update: Partial<FileRow>;
         Relationships: [];
@@ -611,19 +695,34 @@ export interface Database {
       };
       scrim_requests: {
         Row: ScrimRequestRow;
-        Insert: WithoutGenerated<ScrimRequestRow, "id" | "status" | "responded_by" | "responded_at" | "preferred_time" | "format" | "created_at">;
+        Insert: WithoutGenerated<
+          ScrimRequestRow,
+          | "id"
+          | "status"
+          | "responded_by"
+          | "responded_at"
+          | "preferred_time"
+          | "format"
+          | "created_at"
+        >;
         Update: Partial<ScrimRequestRow>;
         Relationships: [];
       };
       opponent_profiles: {
         Row: OpponentProfileRow;
-        Insert: WithoutGenerated<OpponentProfileRow, "id" | "data" | "updated_at" | "created_at">;
+        Insert: WithoutGenerated<
+          OpponentProfileRow,
+          "id" | "data" | "updated_at" | "created_at"
+        >;
         Update: Partial<OpponentProfileRow>;
         Relationships: [];
       };
       polls: {
         Row: PollRow;
-        Insert: WithoutGenerated<PollRow, "id" | "options" | "expires_at" | "is_closed" | "created_at">;
+        Insert: WithoutGenerated<
+          PollRow,
+          "id" | "options" | "expires_at" | "is_closed" | "created_at"
+        >;
         Update: Partial<PollRow>;
         Relationships: [];
       };
@@ -635,7 +734,10 @@ export interface Database {
       };
       player_targets: {
         Row: PlayerTargetRow;
-        Insert: WithoutGenerated<PlayerTargetRow, "id" | "current_level" | "notes" | "updated_at" | "created_at">;
+        Insert: WithoutGenerated<
+          PlayerTargetRow,
+          "id" | "current_level" | "notes" | "updated_at" | "created_at"
+        >;
         Update: Partial<PlayerTargetRow>;
         Relationships: [];
       };
@@ -647,14 +749,79 @@ export interface Database {
       };
       tournaments: {
         Row: TournamentRow;
-        Insert: WithoutGenerated<TournamentRow, "id" | "organizer" | "end_date" | "prize_pool" | "registration_url" | "status" | "notes" | "link" | "registration_fee" | "registration_deadline" | "is_registered" | "created_by" | "created_at">;
+        Insert: WithoutGenerated<
+          TournamentRow,
+          | "id"
+          | "organizer"
+          | "end_date"
+          | "prize_pool"
+          | "registration_url"
+          | "status"
+          | "notes"
+          | "link"
+          | "registration_fee"
+          | "registration_deadline"
+          | "is_registered"
+          | "created_by"
+          | "created_at"
+        >;
         Update: Partial<TournamentRow>;
         Relationships: [];
       };
       tournament_stages: {
         Row: TournamentStageRow;
-        Insert: WithoutGenerated<TournamentStageRow, "id" | "is_completed" | "notes" | "created_at">;
+        Insert: WithoutGenerated<
+          TournamentStageRow,
+          "id" | "is_completed" | "notes" | "created_at"
+        >;
         Update: Partial<TournamentStageRow>;
+        Relationships: [];
+      };
+      calendar_configs: {
+        Row: CalendarConfigRow;
+        Insert: WithoutGenerated<
+          CalendarConfigRow,
+          | "id"
+          | "is_active"
+          | "created_at"
+          | "updated_at"
+          | "deleted_at"
+          | "updated_by"
+        >;
+        Update: Partial<CalendarConfigRow>;
+        Relationships: [];
+      };
+      calendar_visibility_rules: {
+        Row: CalendarVisibilityRuleRow;
+        Insert: WithoutGenerated<
+          CalendarVisibilityRuleRow,
+          "id" | "is_active" | "created_at" | "updated_at" | "updated_by"
+        >;
+        Update: Partial<CalendarVisibilityRuleRow>;
+        Relationships: [];
+      };
+      calendar_member_permissions: {
+        Row: CalendarMemberPermissionRow;
+        Insert: WithoutGenerated<
+          CalendarMemberPermissionRow,
+          "id" | "created_at" | "updated_at" | "updated_by" | "deleted_at"
+        >;
+        Update: Partial<CalendarMemberPermissionRow>;
+        Relationships: [];
+      };
+      event_visibility: {
+        Row: EventVisibilityRow;
+        Insert: WithoutGenerated<
+          EventVisibilityRow,
+          "id" | "created_at" | "updated_at" | "updated_by"
+        >;
+        Update: Partial<EventVisibilityRow>;
+        Relationships: [];
+      };
+      calendar_audit_logs: {
+        Row: CalendarAuditLogRow;
+        Insert: WithoutGenerated<CalendarAuditLogRow, "id" | "created_at">;
+        Update: Partial<CalendarAuditLogRow>;
         Relationships: [];
       };
     };
