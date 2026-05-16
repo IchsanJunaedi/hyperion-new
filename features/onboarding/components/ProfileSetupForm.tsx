@@ -1,7 +1,7 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect, useRef } from "react";
 
 import { saveProfileAction } from "@/app/onboarding/profile/actions";
 import type { ProfileSetupInput } from "@/lib/validations/onboarding";
@@ -23,6 +23,43 @@ interface ProfileSetupFormProps {
 export function ProfileSetupForm({ lockedValues, defaultValues }: ProfileSetupFormProps) {
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+
+  const [mlbbId, setMlbbId] = useState(defaultValues.game_ids?.mlbb ?? "");
+  const [mlbbServer, setMlbbServer] = useState(defaultValues.game_ids?.mlbb_server ?? "");
+  const [mlbbNickname, setMlbbNickname] = useState<string | null>(null);
+  const [mlbbChecking, setMlbbChecking] = useState(false);
+  const [mlbbError, setMlbbError] = useState<string | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    setMlbbNickname(null);
+    setMlbbError(null);
+    if (!mlbbId.trim() || !mlbbServer.trim()) return;
+
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(async () => {
+      setMlbbChecking(true);
+      try {
+        const res = await fetch(
+          `https://api.isan.eu.org/nickname/ml?id=${encodeURIComponent(mlbbId.trim())}&server=${encodeURIComponent(mlbbServer.trim())}`,
+        );
+        const json = await res.json() as { success: boolean; name?: string };
+        if (json.success && json.name) {
+          setMlbbNickname(json.name);
+        } else {
+          setMlbbError("ID atau Server tidak ditemukan");
+        }
+      } catch {
+        setMlbbError("Gagal cek nickname, coba lagi");
+      } finally {
+        setMlbbChecking(false);
+      }
+    }, 700);
+
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, [mlbbId, mlbbServer]);
 
   return (
     <form
@@ -147,7 +184,8 @@ export function ProfileSetupForm({ lockedValues, defaultValues }: ProfileSetupFo
           <Field label="Mobile Legends ID" name="game_mlbb">
             <input
               name="game_mlbb"
-              defaultValue={defaultValues.game_ids?.mlbb}
+              value={mlbbId}
+              onChange={(e) => setMlbbId(e.target.value)}
               placeholder="123456789"
               className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm focus:border-primary focus:outline-none"
             />
@@ -155,18 +193,29 @@ export function ProfileSetupForm({ lockedValues, defaultValues }: ProfileSetupFo
           <Field label="Server" name="game_mlbb_server">
             <input
               name="game_mlbb_server"
-              defaultValue={defaultValues.game_ids?.mlbb_server}
+              value={mlbbServer}
+              onChange={(e) => setMlbbServer(e.target.value.replace(/[^0-9]/g, ""))}
               placeholder="1234"
               inputMode="numeric"
               pattern="[0-9]*"
-              onInput={(e) => {
-                const el = e.currentTarget;
-                el.value = el.value.replace(/[^0-9]/g, "");
-              }}
               className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm focus:border-primary focus:outline-none"
             />
           </Field>
         </div>
+        {mlbbChecking && (
+          <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <Loader2 className="h-3 w-3 animate-spin" />
+            Mengecek nickname...
+          </p>
+        )}
+        {mlbbNickname && !mlbbChecking && (
+          <p className="text-xs text-green-500">
+            ✓ Nickname: <span className="font-semibold">{mlbbNickname}</span>
+          </p>
+        )}
+        {mlbbError && !mlbbChecking && (
+          <p className="text-xs text-destructive">{mlbbError}</p>
+        )}
       </section>
 
       {error ? (
