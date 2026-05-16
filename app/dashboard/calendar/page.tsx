@@ -1,7 +1,8 @@
+import { Plus } from "lucide-react";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { CalendarWithQuickAdd } from "@/features/calendar/components/CalendarWithQuickAdd";
-import { CalendarGrid } from "@/features/calendar/components/CalendarGrid";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { CalendarEvent } from "@/features/calendar/queries";
@@ -224,27 +225,27 @@ export default async function DashboardCalendarPage({
           </h1>
           <p className="mt-0.5 text-xs text-white/40">{subtitle}</p>
         </div>
+        {canCreate && activeOrgSlug && (
+          <Link
+            href={`/${activeOrgSlug}/calendar/new`}
+            className="inline-flex h-10 items-center gap-2 rounded-md bg-yellow-400 px-4 text-sm font-semibold text-black transition hover:bg-yellow-300"
+          >
+            <Plus className="h-4 w-4" />
+            Tambah event
+          </Link>
+        )}
       </header>
 
       <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-4 sm:p-6">
-        {canCreate && activeOrgSlug ? (
-          <CalendarWithQuickAdd
-            orgSlug={activeOrgSlug}
-            events={allEvents}
-            year={year}
-            month={month}
-            divisions={activeDivisions}
-            canCreate
-          />
-        ) : (
-          <CalendarGrid
-            orgSlug="dashboard"
-            events={allEvents}
-            year={year}
-            month={month}
-            readOnly
-          />
-        )}
+        <CalendarWithQuickAdd
+          orgSlug={activeOrgSlug ?? "dashboard"}
+          events={allEvents}
+          year={year}
+          month={month}
+          divisions={activeDivisions}
+          canCreate={canCreate}
+          navBasePath="/dashboard/calendar"
+        />
       </div>
     </div>
   );

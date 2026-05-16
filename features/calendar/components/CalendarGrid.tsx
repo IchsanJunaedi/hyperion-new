@@ -14,6 +14,8 @@ interface CalendarGridProps {
   year: number;
   month: number; // 0-indexed
   readOnly?: boolean;
+  /** Overrides the base path used for month navigation */
+  navBasePath?: string;
   /** If true, clicking a date cell triggers onDayClick */
   canCreate?: boolean;
   /** Called when user clicks a day cell (when canCreate=true) */
@@ -36,6 +38,7 @@ export function CalendarGrid({
   year,
   month,
   readOnly = false,
+  navBasePath,
   canCreate = false,
   onDayClick,
 }: CalendarGridProps) {
@@ -74,7 +77,7 @@ export function CalendarGrid({
     const params = new URLSearchParams();
     params.set("y", String(newDate.getFullYear()));
     params.set("m", String(newDate.getMonth()));
-    const basePath = readOnly ? "/dashboard/calendar" : `/${orgSlug}/calendar`;
+    const basePath = navBasePath ?? (readOnly ? "/dashboard/calendar" : `/${orgSlug}/calendar`);
     router.push(`${basePath}?${params.toString()}`);
   }
 

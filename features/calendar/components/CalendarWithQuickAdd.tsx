@@ -16,6 +16,8 @@ interface CalendarWithQuickAddProps {
   divisions?: Array<{ id: string; name: string }>;
   /** If false, calendar is view-only (no click-to-create) */
   canCreate?: boolean;
+  /** Overrides the base path used for month navigation */
+  navBasePath?: string;
 }
 
 export function CalendarWithQuickAdd({
@@ -25,6 +27,7 @@ export function CalendarWithQuickAdd({
   month,
   divisions = [],
   canCreate = true,
+  navBasePath,
 }: CalendarWithQuickAddProps) {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
@@ -44,6 +47,7 @@ export function CalendarWithQuickAdd({
         year={year}
         month={month}
         canCreate={canCreate}
+        navBasePath={navBasePath}
         onDayClick={canCreate ? handleDayClick : undefined}
       />
 
