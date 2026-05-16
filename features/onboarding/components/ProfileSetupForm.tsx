@@ -152,7 +152,7 @@ export function ProfileSetupForm({ lockedValues, defaultValues }: ProfileSetupFo
               className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm focus:border-primary focus:outline-none"
             />
           </Field>
-          <Field label="Server" name="game_mlbb_server" required>
+          <Field label="Server" name="game_mlbb_server">
             <input
               name="game_mlbb_server"
               defaultValue={defaultValues.game_ids?.mlbb_server}
