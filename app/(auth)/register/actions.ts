@@ -54,6 +54,21 @@ export async function signUpAction(
     return { needsEmailConfirmation: true };
   }
 
+  // Audit Log: User Registered
+  const { logAudit } = await import("@/lib/audit");
+  if (data.user) {
+    await logAudit({
+      actorId: data.user.id,
+      action: "user_registered",
+      entityType: "profile",
+      entityId: data.user.id,
+      metadata: {
+        email: parsed.data.email,
+        displayName: parsed.data.display_name,
+      },
+    });
+  }
+
   redirect(next);
 }
 

@@ -134,9 +134,23 @@ export async function acceptInviteAction(
 
   const orgResp = await admin
     .from("organizations")
-    .select("slug")
+    .select("name, slug")
     .eq("id", invite.organization_id)
     .maybeSingle();
+
+  // Audit Log: Member Joined
+  const { logAudit } = await import("@/lib/audit");
+  await logAudit({
+    actorId: user.id,
+    action: "member_joined",
+    entityType: "organization",
+    entityId: invite.organization_id,
+    metadata: {
+      orgName: orgResp.data?.name,
+      role: invite.role,
+      divisionId: invite.division_id,
+    },
+  });
 
   redirect(orgResp.data?.slug ? `/${orgResp.data.slug}` : "/");
 }
