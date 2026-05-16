@@ -60,7 +60,7 @@ export function HomeOrgSection({ orgs }: HomeOrgSectionProps) {
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-[#E5E2E1] flex items-center gap-2">
-            <Building2 className="h-4 w-4 text-[#9B9A97]" /> Tim / Organisasi
+            <Building2 className="h-4 w-4 text-[#9B9A97]" /> Tim
           </h2>
           <Link href="/dashboard/teams" className="text-xs text-[#9B9A97] hover:text-[#D4D4D4] transition-colors">
             Detail →

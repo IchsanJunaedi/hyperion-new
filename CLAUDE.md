@@ -6,13 +6,15 @@ Hyperion Team — OS untuk Tim Esports. Next.js 15 (App Router) + Supabase + Typ
 ## Tech Stack
 - **Framework**: Next.js 15.5 App Router (Server Components + Server Actions)
 - **Database**: Supabase (Postgres + RLS + Edge Functions)
-- **Auth**: Supabase Auth (email/password, JWT hook for custom claims)
+- **Auth**: Supabase Auth (email/password, OAuth via Google, JWT hook for custom claims)
 - **Styling**: Tailwind CSS v4, dark Notion-style theme
 - **State**: TanStack Query v5 (server data), Zustand v5 (client state)
-- **Validation**: Zod
+- **Forms**: React Hook Form v7 + @hookform/resolvers (Zod resolver)
+- **Validation**: Zod v4 (note: v4 API differs from v3 — use `z.object()`, `z.string()` etc.)
 - **Icons**: Lucide React (NEVER use emojis for icons)
-- **Notifications**: Custom NotifyModal (centered popup with backdrop blur) — NOT Sonner toast
-- **Font**: Inter (sans-serif)
+- **Notifications**: Dual system — see "Notification Pattern" section below
+- **Font**: Instrument Sans (sans-serif) + Geist Mono (monospace)
+- **Utilities**: clsx, tailwind-merge (via `cn()` helper), class-variance-authority, date-fns v4
 
 ## Architecture & Role System
 ```
@@ -41,7 +43,19 @@ NEVER check `team_members` for owner role. Owner has access to everything by ema
 2. **1 Captain per team** — enforced server-side in assign actions.
 3. **1 team max per creation** — but multiple teams can exist (created one at a time).
 4. **Auto-redirect after login** — based on DB role query (not JWT claims).
-5. **Middleware is minimal** — only blocks unauthenticated users from workspace sub-routes. All member/role checks happen at page/layout level via DB queries.
+5. **Middleware handles custom domains** — maps custom domain hostnames to org slugs, rewrites paths internally.
+6. **Middleware is minimal for auth** — only blocks unauthenticated users from workspace sub-routes. All member/role checks happen at page/layout level via DB queries.
+
+## Notification Pattern (IMPORTANT)
+The project uses TWO notification systems — use the right one for the context:
+
+1. **Sonner toast** (`import { toast } from "sonner"`) — for quick inline feedback in workspace/feature components. Toaster is mounted in root layout.
+2. **NotifyModal** (`import { useNotify } from "@/features/dashboard/components/NotifyModal"`) — centered popup with backdrop blur, used in dashboard/manage panel components.
+
+**Rule of thumb:**
+- Workspace features (roster, calendar, files, announcements, etc.) → use `toast` from sonner
+- Dashboard/manage panel components → use `useNotify()` hook (NotifyModal)
+- Match the pattern of the file you're editing — look at existing imports
 
 ## UI Style Guide (Notion Dark Theme)
 ```
@@ -56,32 +70,82 @@ Active item:    #2C2C2C with #D4D4D4 text
 ```
 - All buttons: `cursor-pointer` on hover
 - Delete actions: 2-step confirmation (ConfirmDeleteDialog, type "HAPUS")
-- Success/error feedback: NotifyModal (centered, backdrop blur, auto-close 2.5s)
 - Tables: use CSS Grid (`grid-cols-[...]`) not `<table>` for alignment consistency
 - No horizontal scroll — truncate text instead
 - Role colors: owner=yellow, manager=green, coach=blue, captain=purple, member=gray
+- Use `cn()` from `@/lib/utils/cn` for conditional class merging
 
 ## File Structure
 ```
 app/
-  dashboard/          → Owner panel
-  manage/             → Manager panel
-  [team-slug]/        → Workspace (captain/member/coach)
-    (workspace)/      → Protected workspace routes
+  (auth)/               → Login, register pages
+  api/                  → API routes (calendar permissions, events, audit)
+  auth/callback/        → OAuth callback handler
+  dashboard/            → Owner panel
+  invite/[token]/       → Invite acceptance flow
+  manage/               → Manager panel
+  onboarding/           → Org + profile setup
+  [team-slug]/          → Workspace (captain/member/coach)
+    (workspace)/        → Protected workspace routes
+components/
+  landing/              → Landing page components
+  layout/               → Layout components (sidebar, nav)
+  providers/            → React context providers (QueryProvider)
+  team/                 → Team-related shared components
+  ui/                   → Reusable UI primitives (button, card, input, label, alert)
 features/
-  dashboard/          → Owner/Manager actions, components, queries
-  scrim/              → Scrim CRUD
-  announcements/      → Announcements CRUD
-  calendar/           → Calendar events
-  strategy/           → Strategy notes
-  notifications/      → Bell, realtime, WA delivery
-  roster/             → Roster management
+  announcements/        → Announcements CRUD
+  auth/                 → Auth forms (login, register, OAuth)
+  calendar/             → Calendar events + permissions
+  content/              → Content calendar
+  dashboard/            → Owner/Manager actions, components, queries
+  files/                → File upload/management
+  finances/             → Finance tracking
+  invite/               → Invite system
+  manage/               → Manager-specific actions
+  matchmaking/          → Scrim matchmaking between orgs
+  notifications/        → Bell, realtime, WA delivery
+  onboarding/           → Onboarding forms
+  player-development/   → Player targets & progress tracking
+  polls/                → Team polls/voting
+  reports/              → Reports & analytics
+  roster/               → Roster management
+  scouting/             → Player scouting
+  scrim/                → Scrim CRUD
+  strategy/             → Strategy notes
+  teams/                → Team management
+  tournaments/          → Tournament brackets & stages
 lib/
-  supabase/           → Client configs (server, client, admin, middleware)
-  validations/        → Zod schemas
-  audit.ts            → Audit logging (await logAudit(...))
+  actions/              → Shared server action utilities
+  api/                  → API helpers (permission-middleware, response utils)
+  permissions/          → Calendar permission system (access, audit, rules, types)
+  supabase/             → Client configs (server, client, admin, middleware)
+  utils/                → Utility functions (cn, format, etc.)
+  validations/          → Zod schemas
+  audit.ts              → Audit logging (await logAudit(...))
+stores/                 → Zustand stores (useWorkspaceStore, calendar-preferences)
+types/                  → TypeScript types (database.ts, jwt.ts)
 supabase/
-  migrations/         → SQL migrations (push with `npx supabase db push`)
+  migrations/           → SQL migrations (push with `npx supabase db push`)
+  functions/            → Edge Functions (process-wa-queue)
+middleware.ts           → Auth gating + custom domain routing
+```
+
+## Environment Variables
+```bash
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+
+# App
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_MAIN_DOMAIN=hyperionteam.id
+OWNER_EMAIL=                    # Determines who is the owner
+
+# WhatsApp (Fonnte)
+FONNTE_API_TOKEN=
+FONNTE_WEBHOOK_SECRET=
 ```
 
 ## Rules for Claude Code
@@ -98,43 +162,48 @@ supabase/
 - Push to `main` branch (this is a solo dev project)
 - Stage specific files, not `git add .` blindly
 - Check `git status` before committing
-- Use RTK (git shorthand commands) for token efficiency:
-  - `git add -A && git commit -m "msg" && git push` in one line when possible
-  - Batch related files in one commit, don't commit file-by-file
-  - Keep commit messages short and descriptive (max 72 chars)
+- Batch related files in one commit, don't commit file-by-file
+- Keep commit messages short and descriptive (max 72 chars)
 
 ### Code Quality
 - Run `getDiagnostics` after every file change to verify no errors
 - Never leave broken imports or unused variables
 - Match existing patterns — look at similar files before creating new ones
 - All server actions must validate auth and return `{ ok: true }` or `{ ok: false, message: string }`
+- Use `cn()` for conditional Tailwind classes, not string concatenation
 
 ### What NOT to Do
 - Don't use emojis as icons (use Lucide React)
-- Don't use Sonner toast (use NotifyModal via `useNotify()` hook)
 - Don't check `team_members` for owner verification (use OWNER_EMAIL env)
-- Don't use native `<select>` dropdowns (use CustomSelect component)
+- Don't use native `<select>` dropdowns (use CustomSelect component from `@/features/dashboard/components/CustomSelect`)
 - Don't create "placeholder" or "pool" orgs as workarounds
 - Don't add horizontal scroll to tables
 - Don't modify files unrelated to the current task
-- Don't use `font-[Inter]` class (font is already set globally)
+- Don't use `font-[Inter]` or `font-[Instrument_Sans]` class (font is already set globally via CSS variable)
 
 ### Database
-- Migrations go in `supabase/migrations/` with timestamp prefix
+- Migrations go in `supabase/migrations/` with timestamp prefix (format: `YYYYMMDDHHMMSS_description.sql`)
 - Push with: `npx supabase db push`
 - If conflict: `npx supabase migration repair --status applied <version>`
-- Always use `createAdminClient()` for cross-user operations
-- Always use `createClient()` (server) for user-scoped operations
+- Always use `createAdminClient()` for cross-user operations (bypasses RLS)
+- Always use `createClient()` (server) for user-scoped operations (respects RLS)
 - RLS is enabled on all tables — admin client bypasses RLS
+- Generate types: `npx supabase gen types typescript --project-id tbuxtlbtjpoholcflmoy --schema public > types/database.ts`
+
+### API Routes
+- Permission middleware at `lib/api/permission-middleware.ts` — use `validateRequest()`, `isOwner()`, `getUserRole()`, `requireRole()`
+- Response helpers at `lib/api/response.ts` — use `success()`, `error()`, `forbidden()`, `notFound()`, `internalError()`
+- Calendar permission system at `lib/permissions/` — handles visibility levels, member permissions, audit logging
 
 ### Testing Changes
 - After UI changes: verify the page loads without errors in browser
 - After action changes: test the action works (create, update, delete)
 - After migration: run `npx supabase db push` to apply
 
-## Current State (as of 2026-05-15)
+## Current State (as of 2026-05-16)
 - Owner dashboard: fully functional with Notion-style UI
-- Manager panel: functional with assign, divisions, captains
-- Workspace: scrim CRUD, roster, calendar, announcements, strategy, files
-- Auth: register, login, role-based redirect
-- New features being added: finances, content calendar, invite system, team health score
+- Manager panel: functional with assign, divisions, captains, invite system
+- Workspace: scrim CRUD, roster, calendar (v2 with permissions), announcements, strategy, files, polls
+- Auth: register, login, Google OAuth, role-based redirect
+- Features: finances, content calendar, invite system, tournaments, matchmaking, player development, scouting, notifications (bell + WA delivery)
+- Infrastructure: custom domain support, audit logging, calendar permission system
