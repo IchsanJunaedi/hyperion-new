@@ -20,10 +20,19 @@ export default async function AssignRolePage() {
     if (u.email) emailMap.set(u.id, u.email);
   }
 
+  const { data: allActiveMembers } = await admin
+    .from("team_members")
+    .select("user_id, organization_id, role")
+    .eq("is_active", true);
+
+  const assignedUserIds = new Set(allActiveMembers?.map((m) => m.user_id) ?? []);
+
   const ownerEmail = process.env.OWNER_EMAIL;
   const filteredProfiles = (profiles ?? []).filter((p) => {
     const email = emailMap.get(p.id);
-    return email !== ownerEmail;
+    if (email === ownerEmail) return false;
+    if (assignedUserIds.has(p.id)) return false;
+    return true;
   });
 
   const { data: orgs } = await admin
@@ -38,17 +47,13 @@ export default async function AssignRolePage() {
     .order("name", { ascending: true });
 
   // Determine which roles are already filled per org (manager, captain, coach = max 1 each)
-  const { data: allMembers } = await admin
-    .from("team_members")
-    .select("organization_id, role")
-    .in("role", ["manager", "captain", "coach"])
-    .eq("is_active", true);
-
   const orgFilledRoles: Record<string, string[]> = {};
-  for (const m of allMembers ?? []) {
-    if (!orgFilledRoles[m.organization_id]) orgFilledRoles[m.organization_id] = [];
-    if (!orgFilledRoles[m.organization_id].includes(m.role)) {
-      orgFilledRoles[m.organization_id].push(m.role);
+  for (const m of allActiveMembers ?? []) {
+    if (["manager", "captain", "coach"].includes(m.role)) {
+      if (!orgFilledRoles[m.organization_id]) orgFilledRoles[m.organization_id] = [];
+      if (!orgFilledRoles[m.organization_id].includes(m.role)) {
+        orgFilledRoles[m.organization_id].push(m.role);
+      }
     }
   }
 
