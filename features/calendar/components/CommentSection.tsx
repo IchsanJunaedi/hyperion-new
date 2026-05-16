@@ -2,15 +2,10 @@
 
 import { MessageSquare, Send, Trash2, Loader2 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
-
-import { formatRelative } from "@/lib/utils/format";
-import type { CalendarEventComment } from "@/features/calendar/types";
-import type { Database } from "@/types/database";
-
-type Profile = Database["public"]["Tables"]["profiles"]["Row"];
+import type { CalendarEventComment } from "../types";
 
 interface CommentSectionProps {
-  comments: (CalendarEventComment & { commenter?: Profile })[];
+  comments: CalendarEventComment[];
   onAddComment: (body: string) => Promise<void>;
   onDeleteComment: (commentId: string) => Promise<void>;
   currentUserId: string;
@@ -62,114 +57,104 @@ export function CommentSection({
     }
   };
 
-  const canDeleteComment = (comment: CalendarEventComment) => {
-    return comment.created_by === currentUserId;
+  const formatRelativeTime = (date: string) => {
+    const now = new Date();
+    const commentDate = new Date(date);
+    const diffMs = now.getTime() - commentDate.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return "baru saja";
+    if (diffMins < 60) return `${diffMins} menit lalu`;
+    if (diffHours < 24) return `${diffHours} jam lalu`;
+    if (diffDays < 7) return `${diffDays} hari lalu`;
+
+    return commentDate.toLocaleDateString("id-ID");
   };
 
   return (
-    <div className="bg-[#202020] rounded-lg border border-[#2D2D2D] p-6 flex flex-col h-full">
+    <div className="space-y-4 rounded-xl border border-white/10 bg-zinc-900/40 p-4 sm:p-6">
       {/* Header */}
-      <div className="flex items-center gap-2 mb-6 pb-4 border-b border-[#2D2D2D]">
-        <MessageSquare className="w-5 h-5 text-[#9B9A97]" />
-        <h3 className="text-base font-semibold text-[#E5E2E1]">
+      <div className="flex items-center gap-2">
+        <MessageSquare className="h-5 w-5 text-white/70" />
+        <h3 className="text-sm font-semibold text-white/80">
           Komentar ({comments.length})
         </h3>
       </div>
 
-      {/* Comments List */}
-      <div className="flex-1 overflow-y-auto space-y-4 mb-6 pr-2 [scrollbar-width:thin] [scrollbar-color:#2D2D2D_#191919]">
+      {/* Comments list */}
+      <div className="max-h-96 space-y-3 overflow-y-auto">
         {comments.length === 0 ? (
-          <div className="flex items-center justify-center h-32 text-[#6B6A68]">
-            <p className="text-sm">Belum ada komentar</p>
-          </div>
+          <p className="py-6 text-center text-sm text-white/40">
+            Belum ada komentar. Jadilah yang pertama!
+          </p>
         ) : (
           comments.map((comment) => (
             <div
               key={comment.id}
-              className="group bg-[#191919] rounded-lg border border-[#2D2D2D] p-4 hover:border-[#3D3D3D] transition-colors"
+              className="group rounded-lg border border-white/5 bg-white/2.5 p-3 transition hover:bg-white/5"
             >
-              {/* Commenter Info */}
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex items-center gap-3 flex-1">
-                  {comment.commenter?.avatar_url ? (
-                    <img
-                      src={comment.commenter.avatar_url}
-                      alt={comment.commenter.display_name || ""}
-                      className="w-8 h-8 rounded-full bg-[#2C2C2C] object-cover"
-                    />
-                  ) : (
-                    <div className="w-8 h-8 rounded-full bg-[#2C2C2C] flex items-center justify-center text-xs font-medium text-[#9B9A97]">
-                      {(
-                        comment.commenter?.display_name ||
-                        comment.commenter?.username ||
-                        "?"
-                      )[0].toUpperCase()}
-                    </div>
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <p className="font-medium text-sm text-[#E5E2E1]">
-                        {comment.commenter?.display_name ||
-                          comment.commenter?.username ||
-                          "Unknown"}
-                      </p>
-                      <span className="text-xs text-[#6B6A68]">
-                        {formatRelative(comment.created_at)}
-                      </span>
-                    </div>
+              <div className="mb-1.5 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-yellow-400/20 text-xs font-semibold text-yellow-300">
+                    {comment.user_id.substring(0, 1).toUpperCase()}
                   </div>
+                  <span className="text-xs font-medium text-white/70">
+                    {comment.user_id}
+                  </span>
                 </div>
-
-                {/* Delete Button */}
-                {canDeleteComment(comment) && (
+                {comment.user_id === currentUserId && !readOnly && (
                   <button
+                    type="button"
                     onClick={() => handleDeleteComment(comment.id)}
                     disabled={deletingId === comment.id}
-                    className="opacity-0 group-hover:opacity-100 transition-opacity ml-2 p-1.5 text-[#9B9A97] hover:text-red-400 hover:bg-red-500/10 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="cursor-pointer opacity-0 transition group-hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-50"
                     title="Hapus komentar"
                   >
                     {deletingId === comment.id ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <Loader2 className="h-4 w-4 animate-spin text-white/40" />
                     ) : (
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="h-4 w-4 text-white/40 hover:text-rose-400" />
                     )}
                   </button>
                 )}
               </div>
-
-              {/* Comment Body */}
-              <p className="text-sm text-[#D4D4D4] whitespace-pre-wrap break-words leading-relaxed">
-                {comment.body}
+              <p className="mb-2 text-sm text-white/85">{comment.body}</p>
+              <p className="text-xs text-white/40">
+                {formatRelativeTime(comment.created_at)}
               </p>
             </div>
           ))
         )}
       </div>
 
-      {/* Comment Input */}
+      {/* Comment input */}
       {!readOnly && (
-        <form onSubmit={handleAddComment} className="border-t border-[#2D2D2D] pt-4">
-          <div className="flex gap-3">
-            <textarea
-              ref={textareaRef}
-              value={commentBody}
-              onChange={(e) => setCommentBody(e.target.value)}
-              disabled={isLoading}
-              placeholder="Tambahkan komentar..."
-              rows={1}
-              className="flex-1 bg-[#191919] border border-[#2D2D2D] rounded-lg px-3 py-2 text-sm text-[#E5E2E1] placeholder:text-[#6B6A68] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none disabled:opacity-50 disabled:cursor-not-allowed transition-colors hover:border-[#3D3D3D]"
-            />
+        <form
+          onSubmit={handleAddComment}
+          className="space-y-2 border-t border-white/5 pt-4"
+        >
+          <textarea
+            ref={textareaRef}
+            value={commentBody}
+            onChange={(e) => setCommentBody(e.target.value)}
+            placeholder="Tambahkan komentar..."
+            rows={2}
+            className="w-full resize-none rounded-lg border border-white/10 bg-zinc-950 p-3 text-sm text-white placeholder:text-white/40 focus:border-yellow-400 focus:outline-none focus:ring-1 focus:ring-yellow-400/20"
+          />
+          <div className="flex justify-end">
             <button
               type="submit"
               disabled={!commentBody.trim() || isLoading}
-              className="flex items-center justify-center w-10 h-10 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors disabled:bg-[#2D2D2D] disabled:text-[#6B6A68] disabled:cursor-not-allowed"
-              title="Kirim komentar"
+              className="inline-flex items-center gap-2 rounded-md bg-yellow-400 px-3 py-2 text-sm font-semibold text-black transition hover:bg-yellow-300 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isLoading ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
+                <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
-                <Send className="w-4 h-4" />
+                <Send className="h-4 w-4" />
               )}
+              Kirim
             </button>
           </div>
         </form>
