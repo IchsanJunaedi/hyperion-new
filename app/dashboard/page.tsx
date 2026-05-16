@@ -55,7 +55,7 @@ export default async function DashboardPage() {
   const { data: orgs } = await admin.from("organizations").select("id, name, slug").order("created_at", { ascending: false });
   const { data: members } = await admin.from("team_members").select("id, user_id, organization_id, division_id, role, is_active").eq("is_active", true);
   const { data: allDivisions } = await admin.from("divisions").select("id, name, organization_id").eq("is_active", true);
-  const { data: profiles } = await admin.from("profiles").select("id, full_name, username, display_name, phone_wa").order("created_at", { ascending: false }).limit(7);
+  const { data: profiles } = await admin.from("profiles").select("id, full_name, username, display_name, phone_wa").order("created_at", { ascending: false });
 
   // Emails
   const { data: authUsers } = await admin.auth.admin.listUsers({ perPage: 100 });
