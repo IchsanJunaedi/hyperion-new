@@ -71,11 +71,11 @@ export function ContentList({ rows, orgId, currentUserId, isOwner, canCreate }: 
       </nav>
 
       {filtered.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-[#2D2D2D] p-10 text-center">
+        <div className="mt-4 rounded-lg border border-dashed border-[#2D2D2D] p-10 text-center">
           <p className="text-sm text-[#9B9A97]">Belum ada konten.</p>
         </div>
       ) : (
-        <div className="space-y-2">
+        <div className="mt-4 space-y-2">
           {filtered.map((item) => (
             <div
               key={item.id}
