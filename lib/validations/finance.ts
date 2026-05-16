@@ -3,6 +3,7 @@ import { z } from "zod";
 export const financeTypeSchema = z.enum(["income", "expense"]);
 
 export const INCOME_CATEGORIES = [
+  "Saldo Awal",
   "Iuran Member",
   "Prize Money",
   "Sponsor",

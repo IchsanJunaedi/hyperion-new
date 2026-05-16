@@ -5,6 +5,7 @@ import type { FinanceRow } from "@/types/database";
 export type { FinanceRow };
 
 export interface FinanceSummary {
+  openingBalance: number;
   totalIncome: number;
   totalExpense: number;
   balance: number;
@@ -30,12 +31,40 @@ export async function listFinances(
   return data ?? [];
 }
 
-export function summarizeFinances(rows: FinanceRow[]): FinanceSummary {
+export async function getFinanceSummary(
+  orgId: string,
+  year: number,
+  month: number,
+  currentRows: FinanceRow[]
+): Promise<FinanceSummary> {
+  const admin = createAdminClient();
+  const startOfCurrentMonth = `${year}-${String(month).padStart(2, "0")}-01`;
+
+  // 1. Calculate opening balance (all transactions before this month)
+  const { data: previousData } = await admin
+    .from("finances")
+    .select("type, amount")
+    .eq("organization_id", orgId)
+    .lt("date", startOfCurrentMonth);
+
+  let openingBalance = 0;
+  for (const r of previousData ?? []) {
+    if (r.type === "income") openingBalance += r.amount;
+    else openingBalance -= r.amount;
+  }
+
+  // 2. Calculate current month totals
   let totalIncome = 0;
   let totalExpense = 0;
-  for (const r of rows) {
+  for (const r of currentRows) {
     if (r.type === "income") totalIncome += r.amount;
     else totalExpense += r.amount;
   }
-  return { totalIncome, totalExpense, balance: totalIncome - totalExpense };
+
+  return {
+    openingBalance,
+    totalIncome,
+    totalExpense,
+    balance: openingBalance + totalIncome - totalExpense,
+  };
 }
