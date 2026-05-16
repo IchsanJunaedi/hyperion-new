@@ -125,6 +125,53 @@ export function ProfileSetupForm({ lockedValues, defaultValues }: ProfileSetupFo
       <section className="space-y-4">
         <h3 className="text-sm font-semibold text-foreground">Data Wajib</h3>
 
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Field label="Mobile Legends ID" name="game_mlbb">
+            <input
+              name="game_mlbb"
+              value={mlbbId}
+              onChange={(e) => setMlbbId(e.target.value)}
+              placeholder="123456789"
+              className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm focus:border-primary focus:outline-none"
+            />
+          </Field>
+          <Field label="Server" name="game_mlbb_server">
+            <input
+              name="game_mlbb_server"
+              value={mlbbServer}
+              onChange={(e) => setMlbbServer(e.target.value.replace(/[^0-9]/g, ""))}
+              placeholder="1234"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm focus:border-primary focus:outline-none"
+            />
+          </Field>
+        </div>
+
+        <Field label="Mobile Legends" name="mlbb_nickname_display">
+          <div className="relative">
+            <input
+              readOnly
+              disabled
+              value={mlbbChecking ? "" : (mlbbNickname ?? "")}
+              placeholder="Otomatis terisi setelah ID & Server diisi"
+              className="h-9 w-full rounded-md border border-input bg-muted px-3 text-sm text-muted-foreground cursor-not-allowed"
+            />
+            {mlbbChecking && (
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5 text-xs text-muted-foreground">
+                <Loader2 className="h-3 w-3 animate-spin" />
+                Mengecek...
+              </span>
+            )}
+          </div>
+        </Field>
+        {mlbbNickname && !mlbbChecking && (
+          <p className="text-xs text-green-500">✓ Nickname ditemukan</p>
+        )}
+        {mlbbError && !mlbbChecking && (
+          <p className="text-xs text-destructive">{mlbbError}</p>
+        )}
+
         <Field label="Nickname" name="username" required>
           <input
             name="username"
@@ -159,7 +206,6 @@ export function ProfileSetupForm({ lockedValues, defaultValues }: ProfileSetupFo
             <input
               name="social_instagram"
               defaultValue={defaultValues.social_links?.instagram}
-              placeholder="https://instagram.com/..."
               className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm focus:border-primary focus:outline-none"
             />
           </Field>
@@ -167,55 +213,10 @@ export function ProfileSetupForm({ lockedValues, defaultValues }: ProfileSetupFo
             <input
               name="social_tiktok"
               defaultValue={defaultValues.social_links?.tiktok}
-              placeholder="https://tiktok.com/@..."
               className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm focus:border-primary focus:outline-none"
             />
           </Field>
         </div>
-      </section>
-
-      {/* Game IDs (optional) */}
-      <section className="space-y-4">
-        <h3 className="text-sm font-semibold text-foreground">
-          Game ID <span className="font-normal text-muted-foreground">(opsional)</span>
-        </h3>
-
-        <div className="grid gap-3 sm:grid-cols-2">
-          <Field label="Mobile Legends ID" name="game_mlbb">
-            <input
-              name="game_mlbb"
-              value={mlbbId}
-              onChange={(e) => setMlbbId(e.target.value)}
-              placeholder="123456789"
-              className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm focus:border-primary focus:outline-none"
-            />
-          </Field>
-          <Field label="Server" name="game_mlbb_server">
-            <input
-              name="game_mlbb_server"
-              value={mlbbServer}
-              onChange={(e) => setMlbbServer(e.target.value.replace(/[^0-9]/g, ""))}
-              placeholder="1234"
-              inputMode="numeric"
-              pattern="[0-9]*"
-              className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm focus:border-primary focus:outline-none"
-            />
-          </Field>
-        </div>
-        {mlbbChecking && (
-          <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <Loader2 className="h-3 w-3 animate-spin" />
-            Mengecek nickname...
-          </p>
-        )}
-        {mlbbNickname && !mlbbChecking && (
-          <p className="text-xs text-green-500">
-            ✓ Nickname: <span className="font-semibold">{mlbbNickname}</span>
-          </p>
-        )}
-        {mlbbError && !mlbbChecking && (
-          <p className="text-xs text-destructive">{mlbbError}</p>
-        )}
       </section>
 
       {error ? (
