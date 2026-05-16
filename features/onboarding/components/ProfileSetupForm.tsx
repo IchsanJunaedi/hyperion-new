@@ -131,7 +131,6 @@ export function ProfileSetupForm({ lockedValues, defaultValues }: ProfileSetupFo
               name="game_mlbb"
               value={mlbbId}
               onChange={(e) => setMlbbId(e.target.value)}
-              placeholder="123456789"
               className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm focus:border-primary focus:outline-none"
             />
           </Field>
@@ -140,7 +139,6 @@ export function ProfileSetupForm({ lockedValues, defaultValues }: ProfileSetupFo
               name="game_mlbb_server"
               value={mlbbServer}
               onChange={(e) => setMlbbServer(e.target.value.replace(/[^0-9]/g, ""))}
-              placeholder="1234"
               inputMode="numeric"
               pattern="[0-9]*"
               className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm focus:border-primary focus:outline-none"
@@ -149,22 +147,20 @@ export function ProfileSetupForm({ lockedValues, defaultValues }: ProfileSetupFo
         </div>
 
         <Field label="Mobile Legends" name="mlbb_nickname_display">
-          <div className="relative">
-            <input
-              readOnly
-              disabled
-              value={mlbbChecking ? "" : (mlbbNickname ?? "")}
-              placeholder="Otomatis terisi setelah ID & Server diisi"
-              className="h-9 w-full rounded-md border border-input bg-muted px-3 text-sm text-muted-foreground cursor-not-allowed"
-            />
-            {mlbbChecking && (
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5 text-xs text-muted-foreground">
-                <Loader2 className="h-3 w-3 animate-spin" />
-                Mengecek...
-              </span>
-            )}
-          </div>
+          <input
+            readOnly
+            disabled
+            value={mlbbNickname ?? ""}
+            placeholder="Otomatis terisi setelah ID & Server diisi"
+            className="h-9 w-full rounded-md border border-input bg-muted px-3 text-sm text-muted-foreground cursor-not-allowed"
+          />
         </Field>
+        {mlbbChecking && (
+          <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <Loader2 className="h-3 w-3 animate-spin" />
+            Mengecek nickname...
+          </p>
+        )}
         {mlbbNickname && !mlbbChecking && (
           <p className="text-xs text-green-500">✓ Nickname ditemukan</p>
         )}
