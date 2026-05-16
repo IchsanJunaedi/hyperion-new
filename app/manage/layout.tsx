@@ -41,6 +41,7 @@ export default async function ManageLayout({
   let orgSlug = "";
   let orgName = "Tim";
   let orgLogoUrl: string | null = null;
+  let resolvedOrgId = "";
   let divisions: Array<{ id: string; name: string }> = [];
 
   const orgId = membership?.organization_id;
@@ -53,6 +54,7 @@ export default async function ManageLayout({
       .maybeSingle();
 
     if (org) {
+      resolvedOrgId = org.id;
       orgSlug = org.slug;
       orgName = org.name;
       orgLogoUrl = org.logo_url;
@@ -75,6 +77,7 @@ export default async function ManageLayout({
       .maybeSingle();
 
     if (org) {
+      resolvedOrgId = org.id;
       orgSlug = org.slug;
       orgName = org.name;
       orgLogoUrl = org.logo_url;
@@ -110,6 +113,7 @@ export default async function ManageLayout({
         {/* Unified sidebar — same as workspace */}
         <WorkspaceSidebar
           orgSlug={orgSlug}
+          orgId={resolvedOrgId}
           orgName={orgName}
           orgLogoUrl={orgLogoUrl}
           divisions={divisions}

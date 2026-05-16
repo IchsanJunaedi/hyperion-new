@@ -73,6 +73,7 @@ export default async function WorkspaceLayout({
     <div className="flex min-h-screen flex-1">
       <WorkspaceSidebar
         orgSlug={organization.slug}
+        orgId={organization.id}
         orgName={organization.name}
         orgLogoUrl={organization.logo_url}
         divisions={divisions.map((d) => ({ id: d.id, name: d.name }))}

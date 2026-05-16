@@ -27,6 +27,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { NotificationBell } from "@/features/notifications/components/NotificationBell";
+import { SettingsModal } from "@/features/settings/components/SettingsModal";
 import { logoutAction } from "@/lib/actions/auth";
 import { useWorkspaceStore } from "@/stores/useWorkspaceStore";
 
@@ -37,6 +38,7 @@ interface SidebarDivision {
 
 export interface WorkspaceSidebarProps {
   orgSlug: string;
+  orgId: string;
   orgName: string;
   orgLogoUrl: string | null;
   divisions: SidebarDivision[];
@@ -187,6 +189,7 @@ const ROLE_BADGE: Record<string, string> = {
 
 export function WorkspaceSidebar({
   orgSlug,
+  orgId,
   orgName,
   orgLogoUrl,
   divisions,
@@ -196,6 +199,7 @@ export function WorkspaceSidebar({
   const activeDivisionId = useWorkspaceStore((s) => s.activeDivisionId);
   const setActiveDivision = useWorkspaceStore((s) => s.setActiveDivision);
   const [divisionOpen, setDivisionOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   useEffect(() => {
     if (
@@ -343,18 +347,23 @@ export function WorkspaceSidebar({
 
       {/* Settings — separated */}
       <div className="border-t border-[#2D2D2D] px-2 py-3">
-        <Link
-          href={`/${orgSlug}/settings`}
-          className={`flex items-center gap-3 rounded px-3 py-1.5 text-sm transition ${
-            pathname?.startsWith(`/${orgSlug}/settings`)
-              ? "bg-[#2C2C2C] font-medium text-[#D4D4D4]"
-              : "text-[#9B9A97] hover:bg-[#2C2C2C] hover:text-[#D4D4D4]"
-          }`}
+        <button
+          type="button"
+          onClick={() => setSettingsOpen(true)}
+          className="flex w-full cursor-pointer items-center gap-3 rounded px-3 py-1.5 text-sm text-[#9B9A97] transition hover:bg-[#2C2C2C] hover:text-[#D4D4D4]"
         >
           <Settings className="h-[18px] w-[18px] shrink-0" />
           Settings
-        </Link>
+        </button>
       </div>
+
+      <SettingsModal
+        open={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+        userId={user.userId}
+        orgId={orgId}
+        role={user.role ?? "member"}
+      />
 
       {/* User footer */}
       <div className="border-t border-[#2D2D2D] px-3 py-3">

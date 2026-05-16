@@ -18,7 +18,7 @@ export type OrgTier = "pelajar" | "komunitas" | "pro"; // deprecated, kept for b
 export type MemberRole = "owner" | "captain" | "member" | "coach" | "manager";
 export type MemberAvailability = "active" | "hiatus" | "unavailable";
 export type ScrimStatus = "scheduled" | "ongoing" | "completed" | "cancelled";
-export type MatchFormat = "bo1" | "bo2" | "bo3" | "bo5" | "bo7" | "scrimmage";
+export type MatchFormat = "bo1" | "bo2" | "bo3" | "bo5" | "bo7" | "4match" | "scrimmage";
 export type AttendanceStatus =
   | "confirmed"
   | "declined"

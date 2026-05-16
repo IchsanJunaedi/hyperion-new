@@ -18,6 +18,8 @@ const FORMATS: Array<{ value: MatchFormat; label: string }> = [
   { value: "bo3", label: "BO3" },
   { value: "bo5", label: "BO5" },
   { value: "bo7", label: "BO7" },
+  { value: "4match", label: "4 Match" },
+  { value: "scrimmage", label: "Scrimmage" },
 ];
 
 const ROOM_TYPES = [

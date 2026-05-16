@@ -4,7 +4,10 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { logAudit } from "@/lib/audit";
+import { blastWaMessage } from "@/lib/utils/fonnte";
+import { buildTournamentWaMessage } from "@/lib/utils/wa-templates";
 import {
   createTournamentSchema,
   updateTournamentSchema,
@@ -75,6 +78,21 @@ export async function createTournamentAction(
     action: "tournament.create",
     entityType: "tournament",
     entityId: tournament.id,
+  });
+
+  // WA blast to all active members of the org (or division if specified)
+  await fanOutTournamentNotifications(supabase, {
+    tournamentId: tournament.id,
+    orgId: org.id,
+    orgSlug,
+    divisionId: parsed.data.division_id ?? null,
+    name: parsed.data.name,
+    organizer: parsed.data.organizer ?? null,
+    startDate: parsed.data.start_date,
+    endDate: parsed.data.end_date ?? null,
+    prizePool: parsed.data.prize_pool ?? null,
+    registrationFee: parsed.data.registration_fee ?? null,
+    registrationUrl: parsed.data.registration_url ?? null,
   });
 
   revalidatePath(`/${orgSlug}/tournaments`);
@@ -265,4 +283,100 @@ export async function toggleStageCompleteAction(
 
   revalidatePath(`/${orgSlug}/tournaments`);
   return { ok: true };
+}
+
+
+// ---------------------------------------------------------------------------
+// WA Blast for Tournament Creation
+// ---------------------------------------------------------------------------
+
+interface TournamentNotifData {
+  tournamentId: string;
+  orgId: string;
+  orgSlug: string;
+  divisionId: string | null;
+  name: string;
+  organizer: string | null;
+  startDate: string;
+  endDate: string | null;
+  prizePool: string | null;
+  registrationFee: string | null;
+  registrationUrl: string | null;
+}
+
+async function fanOutTournamentNotifications(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  data: TournamentNotifData,
+) {
+  // Use admin client to bypass RLS — we need to read all members & profiles
+  const admin = createAdminClient();
+
+  // Get org name
+  const { data: org } = await admin
+    .from("organizations")
+    .select("name")
+    .eq("id", data.orgId)
+    .maybeSingle();
+  const orgName = org?.name ?? "Tim";
+
+  // Get members — all active members in the org
+  const { data: members } = await admin
+    .from("team_members")
+    .select("user_id")
+    .eq("organization_id", data.orgId)
+    .eq("is_active", true);
+  if (!members || members.length === 0) return;
+
+  const userIds = members.map((m) => m.user_id);
+  const { data: profiles } = await admin
+    .from("profiles")
+    .select("id, phone_wa")
+    .in("id", userIds);
+  const phoneMap = new Map(
+    (profiles ?? []).map((p) => [p.id, p.phone_wa]),
+  );
+
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  const tournamentUrl = `${appUrl}/${data.orgSlug}/tournaments/${data.tournamentId}`;
+
+  const waMessage = buildTournamentWaMessage({
+    orgName,
+    tournamentName: data.name,
+    organizer: data.organizer,
+    startDate: data.startDate,
+    endDate: data.endDate,
+    prizePool: data.prizePool,
+    registrationFee: data.registrationFee,
+    registrationUrl: data.registrationUrl,
+    tournamentUrl,
+  });
+
+  // Insert notification rows for in-app bell
+  const title = `Turnamen baru: ${data.name}`;
+  const body = `${orgName} mendaftarkan turnamen ${data.name} mulai ${data.startDate}.`;
+
+  const rows = members.map((m) => ({
+    organization_id: data.orgId,
+    user_id: m.user_id,
+    type: "system" as const,
+    title,
+    body,
+    ref_id: data.tournamentId,
+    ref_type: "tournament",
+    wa_number: phoneMap.get(m.user_id) ?? null,
+    wa_message: phoneMap.get(m.user_id) ? waMessage : null,
+  }));
+
+  await admin.from("notifications").insert(rows);
+
+  // Real-time WA blast
+  const recipients = members
+    .map((m) => ({ phone: phoneMap.get(m.user_id), message: waMessage }))
+    .filter((r): r is { phone: string; message: string } => Boolean(r.phone));
+
+  if (recipients.length > 0) {
+    blastWaMessage(recipients).catch((err) =>
+      console.error("[WA Blast] Tournament notification error:", err),
+    );
+  }
 }
