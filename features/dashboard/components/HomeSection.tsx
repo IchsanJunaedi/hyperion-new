@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { ChevronRight } from "lucide-react";
 
 import { UserDetailModal, type UserDetail } from "./UserDetailModal";
 
@@ -34,11 +35,13 @@ export function HomeSection({ title, icon, href, rows, emptyText = "Belum ada da
     <>
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-[#E5E2E1] flex items-center gap-2">
-            {icon} {title}
-          </h2>
-          <Link href={href} className="text-xs text-[#9B9A97] hover:text-[#D4D4D4] transition-colors">
-            Detail →
+          <Link
+            href={href}
+            className="group flex items-center gap-2 text-lg font-semibold text-[#E5E2E1] hover:text-white transition-colors"
+          >
+            {icon}
+            <span>{title}</span>
+            <ChevronRight className="h-4 w-4 text-[#9B9A97] transition-transform group-hover:translate-x-0.5" />
           </Link>
         </div>
         <div className="flex flex-col">
@@ -72,3 +75,4 @@ export function HomeSection({ title, icon, href, rows, emptyText = "Belum ada da
     </>
   );
 }
+

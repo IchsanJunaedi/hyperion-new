@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Crown, Plus, Users, Tags, Settings, FileOutput, Shield, Building2 } from "lucide-react";
+import { Crown, Plus, Users, Tags, Settings, FileOutput, Shield, Building2, ChevronRight } from "lucide-react";
 
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -138,11 +138,13 @@ export default async function DashboardPage() {
         {/* Manager — Tim & Divisi (max 7) */}
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-[#E5E2E1] flex items-center gap-2">
-              <Shield className="h-4 w-4 text-[#9B9A97]" /> Manager — Tim & Divisi
-            </h2>
-            <Link href="/dashboard/managers" className="text-xs text-[#9B9A97] hover:text-[#D4D4D4] transition-colors">
-              Detail →
+            <Link
+              href="/dashboard/managers"
+              className="group flex items-center gap-2 text-lg font-semibold text-[#E5E2E1] hover:text-white transition-colors"
+            >
+              <Shield className="h-4 w-4 text-[#9B9A97]" />
+              <span>Manager — Tim & Divisi</span>
+              <ChevronRight className="h-4 w-4 text-[#9B9A97] transition-transform group-hover:translate-x-0.5" />
             </Link>
           </div>
           <ManagerTimDivisiTable

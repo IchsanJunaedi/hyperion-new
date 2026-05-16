@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Building2, Loader2, Trash2, X } from "lucide-react";
+import { Building2, ChevronRight, Loader2, Trash2, X } from "lucide-react";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
@@ -59,11 +59,13 @@ export function HomeOrgSection({ orgs }: HomeOrgSectionProps) {
     <>
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-[#E5E2E1] flex items-center gap-2">
-            <Building2 className="h-4 w-4 text-[#9B9A97]" /> Tim
-          </h2>
-          <Link href="/dashboard/teams" className="text-xs text-[#9B9A97] hover:text-[#D4D4D4] transition-colors">
-            Detail →
+          <Link
+            href="/dashboard/teams"
+            className="group flex items-center gap-2 text-lg font-semibold text-[#E5E2E1] hover:text-white transition-colors"
+          >
+            <Building2 className="h-4 w-4 text-[#9B9A97]" />
+            <span>Tim</span>
+            <ChevronRight className="h-4 w-4 text-[#9B9A97] transition-transform group-hover:translate-x-0.5" />
           </Link>
         </div>
         <div className="flex flex-col">
@@ -153,3 +155,4 @@ export function HomeOrgSection({ orgs }: HomeOrgSectionProps) {
     </>
   );
 }
+
