@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import {
   BarChart3,
   Building2,
@@ -79,34 +79,31 @@ export default async function DashboardLayout({
 
   let displayName = user?.email ?? "Owner";
   let avatarUrl: string | null = null;
+  let orgName = "Hyperion Team";
+  let dashboardOrgId = "";
+  let orgLogoUrl: string | null = null;
 
   if (user) {
     const { data: profile } = await supabase
       .from("profiles")
-      .select("display_name, avatar_url")
+      .select("display_name, avatar_url, full_name")
       .eq("id", user.id)
       .maybeSingle();
 
-    displayName =
-      profile?.display_name ??
-      (user.user_metadata?.["display_name"] as string | undefined) ??
-      user.email ??
-      "Owner";
-    avatarUrl = profile?.avatar_url ?? null;
-  }
+    if (profile) {
+      displayName = profile.display_name ?? (user.user_metadata?.["display_name"] as string | undefined) ?? user.email ?? "Owner";
+      avatarUrl = profile.avatar_url ?? null;
+      orgName = profile.full_name ?? "Hyperion Team";
+      orgLogoUrl = profile.avatar_url ?? null;
+    }
 
-  let orgName = "Hyperion Team";
-  let dashboardOrgId = "";
-  if (user) {
-    const admin = createAdminClient();
-    const { data: org } = await admin
+    const { data: org } = await supabase
       .from("organizations")
-      .select("id, name")
+      .select("id")
       .eq("owner_id", user.id)
       .limit(1)
       .maybeSingle();
     if (org) {
-      orgName = org.name;
       dashboardOrgId = org.id;
     }
   }
@@ -118,13 +115,17 @@ export default async function DashboardLayout({
         <aside className="w-[280px] h-screen fixed left-0 top-0 bg-[#202020] flex flex-col border-r border-[#2D2D2D] text-sm">
           {/* Org header */}
           <div className="flex items-center gap-3 border-b border-[#2D2D2D] px-4 h-12 shrink-0">
-            <div className="grid h-5 w-5 place-items-center rounded bg-[#353434] text-xs font-semibold text-[#E5E2E1]">
-              {orgName.slice(0, 1).toUpperCase()}
-            </div>
+            {orgLogoUrl ? (
+              <img src={orgLogoUrl} alt="Logo" className="h-5 w-5 rounded object-cover" />
+            ) : (
+              <div className="grid h-5 w-5 place-items-center rounded bg-[#353434] text-xs font-semibold text-[#E5E2E1]">
+                {orgName.slice(0, 1).toUpperCase()}
+              </div>
+            )}
             <p className="min-w-0 flex-1 truncate text-sm font-medium text-[#D4D4D4]">
               {orgName}
             </p>
-            <span className="shrink-0 rounded-full bg-yellow-500/10 px-1.5 py-0.5 text-[10px] font-medium text-yellow-400">
+            <span className="shrink-0 text-[10px] font-bold uppercase tracking-widest text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.5)]">
               owner
             </span>
           </div>

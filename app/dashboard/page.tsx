@@ -54,8 +54,9 @@ export default async function DashboardPage() {
   const { count: totalUsers } = await admin.from("profiles").select("id", { count: "exact", head: true });
   const { data: orgs } = await admin.from("organizations").select("id, name, slug").order("created_at", { ascending: false });
   const { data: members } = await admin.from("team_members").select("id, user_id, organization_id, division_id, role, is_active").eq("is_active", true);
-  const { data: allDivisions } = await admin.from("divisions").select("id, name, organization_id").eq("is_active", true);
-  const { data: profiles } = await admin.from("profiles").select("id, full_name, username, display_name, phone_wa").order("created_at", { ascending: false });
+  const { data: allDivisions } = await admin.from("divisions").select("id, name, organization_id");
+  const { data: profiles } = await admin.from("profiles").select("id, full_name, username, display_name, phone_wa, avatar_url").order("created_at", { ascending: false });
+  const workspaceName = profiles?.find(p => p.id === user.id)?.full_name ?? "Hyperion Team";
 
   // Emails
   const { data: authUsers } = await admin.auth.admin.listUsers({ perPage: 100 });
@@ -73,7 +74,14 @@ export default async function DashboardPage() {
 
   // Team health score for first org
   const healthOrgId = orgs?.[0]?.id ?? null;
-  const healthScore = healthOrgId ? await getTeamHealthScore(healthOrgId) : null;
+  let healthScore = null;
+  if (healthOrgId) {
+    try {
+      healthScore = await getTeamHealthScore(healthOrgId);
+    } catch (e) {
+      console.error("Failed to fetch health score:", e);
+    }
+  }
 
   // Managers
   const managers = (members ?? []).filter((m) => m.role === "manager" && m.is_active).slice(0, 7);
@@ -82,7 +90,7 @@ export default async function DashboardPage() {
     <>
       <header className="h-12 flex items-center px-6 sticky top-0 bg-[#191919] z-40 border-b border-[#2D2D2D]">
         <div className="flex items-center gap-2 text-[#9B9A97] text-sm">
-          <span>Hyperion Team</span>
+          <span>{workspaceName}</span>
           <span className="text-[#6B6A68]">/</span>
           <span className="text-[#D4D4D4]">Home</span>
         </div>
@@ -231,9 +239,9 @@ export default async function DashboardPage() {
 
 function Stat({ label, value }: { label: string; value: number }) {
   return (
-    <div className="flex flex-col gap-0.5">
-      <span className="text-[#9B9A97] text-sm">{label}</span>
-      <span className="text-[#E5E2E1] text-2xl font-semibold">{value}</span>
+    <div className="flex flex-col items-center gap-1">
+      <span className="text-[#9B9A97] text-xs font-medium uppercase tracking-wider">{label}</span>
+      <span className="text-[#E5E2E1] text-3xl font-bold tabular-nums tracking-tight leading-none">{value}</span>
     </div>
   );
 }

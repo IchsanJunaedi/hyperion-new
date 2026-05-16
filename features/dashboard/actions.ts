@@ -502,11 +502,12 @@ export async function createDivisionAction(
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
 
-  // Check duplicate name (case-insensitive)
+  // Check duplicate name (case-insensitive) in standalone divisions
   const { data: existing } = await admin
     .from("divisions")
     .select("id")
     .ilike("name", name.trim())
+    .is("organization_id", null)
     .limit(1)
     .maybeSingle();
 
@@ -639,6 +640,7 @@ export async function createTeamWithDivisionsAction(input: {
   }
 
   // Copy selected divisions to this new org (standalone originals stay untouched)
+  let firstDivId: string | null = null;
   if (input.divisionIds.length > 0) {
     const { data: sourceDivs } = await admin
       .from("divisions")
@@ -652,7 +654,10 @@ export async function createTeamWithDivisionsAction(input: {
         slug: d.slug,
         game: d.game,
       }));
-      await admin.from("divisions").insert(newDivRows);
+      const { data: createdDivs } = await admin.from("divisions").insert(newDivRows).select("id");
+      if (createdDivs && createdDivs.length > 0) {
+        firstDivId = (createdDivs[0] as any).id;
+      }
     }
   }
 
@@ -660,6 +665,7 @@ export async function createTeamWithDivisionsAction(input: {
   await admin.from("team_members").insert({
     user_id: user.id,
     organization_id: org.id,
+    division_id: firstDivId, // Assign to first division if created
     role: "owner",
     is_active: true,
   });
@@ -699,8 +705,8 @@ export async function deleteOrgAction(
   // Delete members first (FK constraint)
   await admin.from("team_members").delete().eq("organization_id", orgId);
 
-  // Move divisions back to standalone (unlink from org)
-  await admin.from("divisions").update({ organization_id: null }).eq("organization_id", orgId);
+  // Delete divisions linked to this org
+  await admin.from("divisions").delete().eq("organization_id", orgId);
 
   // Delete org
   const { error } = await admin.from("organizations").delete().eq("id", orgId);
