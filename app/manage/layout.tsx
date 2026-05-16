@@ -1,28 +1,10 @@
 import { redirect } from "next/navigation";
-import Link from "next/link";
-import {
-  BarChart3,
-  Calendar,
-  CalendarClock,
-  DollarSign,
-  FileText,
-  FolderOpen,
-  LayoutDashboard,
-  LogOut,
-  Megaphone,
-  MessageSquare,
-  Plus,
-  Swords,
-  Tags,
-  TrendingUp,
-  Trophy,
-  Users,
-} from "lucide-react";
 
+import { WorkspaceSidebar } from "@/components/layout/WorkspaceSidebar";
+import { NotifyProvider } from "@/features/dashboard/components/NotifyModal";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { logoutAction } from "@/lib/actions/auth";
-import { NotifyProvider } from "@/features/dashboard/components/NotifyModal";
 
 export const dynamic = "force-dynamic";
 
@@ -39,11 +21,11 @@ export default async function ManageLayout({
   if (!user) redirect("/login?next=/manage");
 
   const ownerEmail = process.env.OWNER_EMAIL;
-  const isOwnerByEmail = ownerEmail && user.email === ownerEmail;
+  const isOwner = Boolean(ownerEmail && user.email === ownerEmail);
 
   const admin = createAdminClient();
 
-  // Get manager's org membership
+  // Get manager's membership
   const { data: membership } = await admin
     .from("team_members")
     .select("organization_id, role")
@@ -53,106 +35,108 @@ export default async function ManageLayout({
     .limit(1)
     .maybeSingle();
 
-  if (!membership && !isOwnerByEmail) redirect("/");
+  if (!membership && !isOwner) redirect("/");
 
-  // Get org slug for workspace links
-  let orgSlug: string | null = null;
-  if (membership) {
+  // Get org details
+  let orgSlug = "";
+  let orgName = "Tim";
+  let orgLogoUrl: string | null = null;
+  let divisions: Array<{ id: string; name: string }> = [];
+
+  const orgId = membership?.organization_id;
+
+  if (orgId) {
     const { data: org } = await admin
       .from("organizations")
-      .select("slug")
-      .eq("id", membership.organization_id)
+      .select("id, slug, name, logo_url")
+      .eq("id", orgId)
       .maybeSingle();
-    orgSlug = org?.slug ?? null;
+
+    if (org) {
+      orgSlug = org.slug;
+      orgName = org.name;
+      orgLogoUrl = org.logo_url;
+
+      const { data: divs } = await admin
+        .from("divisions")
+        .select("id, name")
+        .eq("organization_id", org.id)
+        .eq("is_active", true)
+        .order("name");
+      divisions = divs ?? [];
+    }
+  } else if (isOwner) {
+    // Owner without team_members row — find their org by owner_id
+    const { data: org } = await admin
+      .from("organizations")
+      .select("id, slug, name, logo_url")
+      .eq("owner_id", user.id)
+      .limit(1)
+      .maybeSingle();
+
+    if (org) {
+      orgSlug = org.slug;
+      orgName = org.name;
+      orgLogoUrl = org.logo_url;
+
+      const { data: divs } = await admin
+        .from("divisions")
+        .select("id, name")
+        .eq("organization_id", org.id)
+        .eq("is_active", true)
+        .order("name");
+      divisions = divs ?? [];
+    }
   }
+
+  // Get user display name
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("display_name, avatar_url")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  const displayName =
+    profile?.display_name ??
+    (user.user_metadata?.["display_name"] as string | undefined) ??
+    user.email ??
+    "Akun saya";
+
+  const userRole = isOwner ? "owner" : (membership?.role ?? "manager");
 
   return (
     <NotifyProvider>
-    <div className="flex min-h-screen bg-[#191919] text-[#E5E2E1]">
-      {/* Sidebar */}
-      <aside className="w-[280px] h-screen fixed left-0 top-0 bg-[#202020] flex flex-col border-r border-[#2D2D2D] text-[#9B9A97] text-sm">
-        <div className="flex items-center gap-2 p-4 hover:bg-[#2C2C2C] cursor-pointer transition-colors shrink-0">
-          <div className="w-5 h-5 bg-[#353434] rounded flex items-center justify-center text-xs text-[#E5E2E1] font-semibold shrink-0">
-            H
-          </div>
-          <span className="font-medium text-[#D4D4D4] truncate">Hyperion Team</span>
+      <div className="flex min-h-screen bg-[#191919] text-[#E5E2E1]">
+        {/* Unified sidebar — same as workspace */}
+        <WorkspaceSidebar
+          orgSlug={orgSlug}
+          orgName={orgName}
+          orgLogoUrl={orgLogoUrl}
+          divisions={divisions}
+          user={{
+            displayName,
+            avatarUrl: profile?.avatar_url ?? null,
+            userId: user.id,
+            email: user.email ?? undefined,
+            role: userRole,
+          }}
+        />
+
+        {/* Main content */}
+        <div className="ml-[280px] flex min-h-screen flex-1 flex-col">
+          {/* Breadcrumb header */}
+          <header className="sticky top-0 z-40 flex h-12 items-center border-b border-[#2D2D2D] bg-[#191919] px-6">
+            <div className="flex items-center gap-2 text-sm text-[#9B9A97]">
+              <span className="text-[#D4D4D4] font-medium">{orgName}</span>
+              <span className="text-[#6B6A68]">/</span>
+              <span>Manager Panel</span>
+            </div>
+          </header>
+          <main className="mx-auto w-full max-w-[900px] flex-1 px-12 py-10">
+            {children}
+          </main>
         </div>
-
-        <div className="px-2 flex-1 overflow-y-auto">
-          {/* Manager tools */}
-          <div className="px-3 py-1 text-xs font-semibold text-[#6B6A68] mb-1">
-            Manager Panel
-          </div>
-          <nav className="flex flex-col gap-0.5">
-            <NavItem href="/manage" Icon={LayoutDashboard} label="Overview" />
-            <NavItem href="/manage/assign" Icon={Plus} label="Tambah Member" />
-            <NavItem href="/manage/divisions" Icon={Tags} label="Edit Divisi" />
-            <NavItem href="/manage/captains" Icon={Swords} label="Edit Captain" />
-            <NavItem href="/manage/finances" Icon={DollarSign} label="Kas Tim" />
-            <NavItem href="/manage/content" Icon={CalendarClock} label="Konten" />
-            <NavItem href="/manage/development" Icon={TrendingUp} label="Player Dev" />
-            <NavItem href="/manage/reports" Icon={BarChart3} label="Laporan" />
-          </nav>
-
-          {/* Workspace features (linked to team workspace) */}
-          {orgSlug && (
-            <>
-              <div className="px-3 py-1 text-xs font-semibold text-[#6B6A68] mb-1 mt-4">
-                Tim
-              </div>
-              <nav className="flex flex-col gap-0.5">
-                <NavItem href={`/${orgSlug}/scrim`} Icon={Swords} label="Jadwal Scrim" />
-                <NavItem href={`/${orgSlug}/roster`} Icon={Users} label="Roster" />
-                <NavItem href={`/${orgSlug}/calendar`} Icon={Calendar} label="Calendar" />
-                <NavItem href={`/${orgSlug}/announcements`} Icon={Megaphone} label="Pengumuman" />
-                <NavItem href={`/${orgSlug}/strategy`} Icon={FileText} label="Strategy" />
-                <NavItem href={`/${orgSlug}/files`} Icon={FolderOpen} label="Files" />
-                <NavItem href={`/${orgSlug}/tournaments`} Icon={Trophy} label="Turnamen" />
-                <NavItem href={`/${orgSlug}/polls`} Icon={MessageSquare} label="Polling" />
-              </nav>
-            </>
-          )}
-        </div>
-
-        {/* User footer */}
-        <div className="mt-auto border-t border-[#2D2D2D] p-3 shrink-0">
-          <div className="flex items-center justify-between px-2">
-            <span className="text-xs text-[#9B9A97] truncate">{user.email}</span>
-            <form action={logoutAction}>
-              <button type="submit" className="text-[#9B9A97] hover:text-[#D4D4D4] transition-colors">
-                <LogOut className="h-3.5 w-3.5" />
-              </button>
-            </form>
-          </div>
-        </div>
-      </aside>
-
-      {/* Main content */}
-      <div className="flex-1 ml-[280px] flex flex-col min-h-screen">
-        <header className="h-12 flex items-center px-4 sticky top-0 bg-[#191919] z-40 border-b border-[#2D2D2D]">
-          <div className="flex items-center gap-2 text-[#9B9A97] text-sm">
-            <span>Hyperion Team</span>
-            <span className="text-[#6B6A68]">/</span>
-            <span className="text-[#D4D4D4]">Manager Panel</span>
-          </div>
-        </header>
-        <main className="flex-1 max-w-[900px] w-full mx-auto px-12 py-10">
-          {children}
-        </main>
       </div>
-    </div>
     </NotifyProvider>
-  );
-}
-
-function NavItem({ href, Icon, label }: { href: string; Icon: React.ComponentType<{ className?: string }>; label: string }) {
-  return (
-    <Link
-      href={href}
-      className="flex items-center gap-3 px-3 py-1.5 hover:bg-[#2C2C2C] rounded transition-colors"
-    >
-      <Icon className="h-[18px] w-[18px]" />
-      <span>{label}</span>
-    </Link>
   );
 }

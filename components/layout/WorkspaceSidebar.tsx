@@ -3,15 +3,22 @@
 import {
   BarChart3,
   Calendar,
+  CalendarClock,
   ChevronDown,
+  DollarSign,
   FolderOpen,
   Home,
+  LayoutDashboard,
   Lightbulb,
   LogOut,
   Megaphone,
   Settings,
+  Shield,
   Swords,
+  Tags,
+  TrendingUp,
   Trophy,
+  UserPlus,
   Users,
 } from "lucide-react";
 import Image from "next/image";
@@ -44,9 +51,14 @@ export interface WorkspaceSidebarProps {
 
 interface NavItem {
   key: string;
+  /** Relative path appended to orgSlug, OR absolute path if absoluteHref is set */
   href: string;
+  /** If set, used as-is for link href and active matching (for /manage/* routes) */
+  absoluteHref?: string;
   label: string;
   Icon: React.ComponentType<{ className?: string }>;
+  /** Use exact match for active check (default: startsWith) */
+  exactMatch?: boolean;
 }
 
 interface NavGroup {
@@ -54,11 +66,76 @@ interface NavGroup {
   items: NavItem[];
 }
 
-const NAV_GROUPS: NavGroup[] = [
+/** Manager panel group — absolute hrefs, shown only for manager/owner */
+const MANAGER_NAV_GROUP: NavGroup = {
+  label: "MANAGER PANEL",
+  items: [
+    {
+      key: "manage-overview",
+      href: "",
+      absoluteHref: "/manage",
+      label: "Overview",
+      Icon: LayoutDashboard,
+      exactMatch: true,
+    },
+    {
+      key: "manage-assign",
+      href: "",
+      absoluteHref: "/manage/assign",
+      label: "Tambah Member",
+      Icon: UserPlus,
+    },
+    {
+      key: "manage-divisions",
+      href: "",
+      absoluteHref: "/manage/divisions",
+      label: "Edit Divisi",
+      Icon: Tags,
+    },
+    {
+      key: "manage-captains",
+      href: "",
+      absoluteHref: "/manage/captains",
+      label: "Edit Captain",
+      Icon: Shield,
+    },
+    {
+      key: "manage-finances",
+      href: "",
+      absoluteHref: "/manage/finances",
+      label: "Kas Tim",
+      Icon: DollarSign,
+    },
+    {
+      key: "manage-content",
+      href: "",
+      absoluteHref: "/manage/content",
+      label: "Konten",
+      Icon: CalendarClock,
+    },
+    {
+      key: "manage-development",
+      href: "",
+      absoluteHref: "/manage/development",
+      label: "Player Dev",
+      Icon: TrendingUp,
+    },
+    {
+      key: "manage-reports",
+      href: "",
+      absoluteHref: "/manage/reports",
+      label: "Laporan",
+      Icon: BarChart3,
+    },
+  ],
+};
+
+/** Workspace groups — relative hrefs prefixed with orgSlug */
+const WORKSPACE_NAV_GROUPS: NavGroup[] = [
   {
     label: "HOME",
     items: [
-      { key: "home", href: "", label: "Home", Icon: Home },
+      { key: "home", href: "", label: "Home", Icon: Home, exactMatch: true },
       { key: "calendar", href: "/calendar", label: "Calendar", Icon: Calendar },
     ],
   },
@@ -78,12 +155,7 @@ const NAV_GROUPS: NavGroup[] = [
     label: "TIM",
     items: [
       { key: "roster", href: "/roster", label: "Roster", Icon: Users },
-      {
-        key: "polls",
-        href: "/polls",
-        label: "Polling",
-        Icon: BarChart3,
-      },
+      { key: "polls", href: "/polls", label: "Polling", Icon: BarChart3 },
     ],
   },
   {
@@ -101,15 +173,17 @@ const NAV_GROUPS: NavGroup[] = [
         label: "Pengumuman",
         Icon: Megaphone,
       },
-      {
-        key: "files",
-        href: "/files",
-        label: "Files",
-        Icon: FolderOpen,
-      },
+      { key: "files", href: "/files", label: "Files", Icon: FolderOpen },
     ],
   },
 ];
+
+const ROLE_BADGE: Record<string, string> = {
+  owner: "bg-yellow-500/10 text-yellow-400",
+  manager: "bg-green-500/10 text-green-400",
+  captain: "bg-purple-500/10 text-purple-400",
+  coach: "bg-blue-500/10 text-blue-400",
+};
 
 export function WorkspaceSidebar({
   orgSlug,
@@ -123,11 +197,6 @@ export function WorkspaceSidebar({
   const setActiveDivision = useWorkspaceStore((s) => s.setActiveDivision);
   const [divisionOpen, setDivisionOpen] = useState(false);
 
-  // Keep the persisted activeDivisionId in sync with the visible
-  // selection. If it's null (initial state or post-org-switch) or
-  // points at a division not in the current list, set it to the first
-  // division so downstream consumers (scrim/roster filters, etc.) read
-  // the same value the UI shows as active.
   useEffect(() => {
     if (
       !activeDivisionId ||
@@ -140,10 +209,24 @@ export function WorkspaceSidebar({
   const activeDivision =
     divisions.find((d) => d.id === activeDivisionId) ?? divisions[0] ?? null;
 
-  const isItemActive = (href: string) => {
-    if (href === "") return pathname === `/${orgSlug}`;
-    return pathname?.startsWith(`/${orgSlug}${href}`) ?? false;
+  const isManager = user.role === "manager" || user.role === "owner";
+
+  /** Resolve full href for a nav item */
+  const getHref = (item: NavItem) =>
+    item.absoluteHref ?? `/${orgSlug}${item.href}`;
+
+  /** Check if a nav item is currently active */
+  const isActive = (item: NavItem) => {
+    const full = getHref(item);
+    if (item.exactMatch || item.href === "") {
+      return pathname === full;
+    }
+    return pathname?.startsWith(full) ?? false;
   };
+
+  const allGroups: NavGroup[] = isManager
+    ? [MANAGER_NAV_GROUP, ...WORKSPACE_NAV_GROUPS]
+    : WORKSPACE_NAV_GROUPS;
 
   return (
     <aside className="hidden md:flex md:w-[280px] md:flex-col md:border-r md:border-[#2D2D2D] md:bg-[#202020] h-screen sticky top-0">
@@ -171,35 +254,15 @@ export function WorkspaceSidebar({
         </div>
         {user.role && (
           <span
-            className={`text-[10px] font-medium rounded-full px-1.5 py-0.5 ${
-              user.role === "manager"
-                ? "bg-green-500/10 text-green-400"
-                : user.role === "captain"
-                  ? "bg-purple-500/10 text-purple-400"
-                  : user.role === "coach"
-                    ? "bg-blue-500/10 text-blue-400"
-                    : user.role === "owner"
-                      ? "bg-yellow-500/10 text-yellow-400"
-                      : "bg-white/5 text-white/50"
-            }`}
+            className={`shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-medium ${ROLE_BADGE[user.role] ?? "bg-white/5 text-white/50"}`}
           >
             {user.role}
           </span>
         )}
       </Link>
 
-      {/* Back to panel link for manager */}
-      {user.role === "manager" && (
-        <Link
-          href="/manage"
-          className="flex items-center gap-2 mx-2 mt-2 px-3 py-1.5 text-xs text-[#9B9A97] hover:bg-[#2C2C2C] rounded transition-colors"
-        >
-          ← Manager Panel
-        </Link>
-      )}
-
-      {/* Division switcher — only show if multiple divisions */}
-      {divisions.length > 1 ? (
+      {/* Division switcher */}
+      {divisions.length > 1 && (
         <div className="px-3 pt-3">
           <button
             type="button"
@@ -214,7 +277,7 @@ export function WorkspaceSidebar({
               className={`h-4 w-4 transition ${divisionOpen ? "rotate-180" : ""}`}
             />
           </button>
-          {divisionOpen ? (
+          {divisionOpen && (
             <ul className="mt-1 max-h-60 overflow-auto rounded border border-[#2D2D2D] bg-[#202020] p-1 text-sm">
               {divisions.map((d) => (
                 <li key={d.id}>
@@ -224,43 +287,46 @@ export function WorkspaceSidebar({
                       setActiveDivision(d.id);
                       setDivisionOpen(false);
                     }}
-                    className={`block w-full truncate rounded px-3 py-1.5 text-left transition hover:bg-[#2C2C2C] ${d.id === activeDivision?.id ? "text-[#D4D4D4] bg-[#2C2C2C]" : "text-[#9B9A97]"}`}
+                    className={`block w-full truncate rounded px-3 py-1.5 text-left transition hover:bg-[#2C2C2C] ${
+                      d.id === activeDivision?.id
+                        ? "bg-[#2C2C2C] text-[#D4D4D4]"
+                        : "text-[#9B9A97]"
+                    }`}
                   >
                     {d.name}
                   </button>
                 </li>
               ))}
             </ul>
-          ) : null}
+          )}
         </div>
-      ) : null}
+      )}
 
-      {/* Nav items grouped by category */}
+      {/* Nav groups */}
       <nav
         aria-label="Workspace"
-        className="flex-1 px-2 pt-4 overflow-y-auto space-y-6"
+        className="flex-1 overflow-y-auto px-2 pt-4 space-y-5"
       >
-        {NAV_GROUPS.map((group) => (
+        {allGroups.map((group) => (
           <div key={group.label}>
-            <div className="px-3 py-1.5 text-xs font-semibold text-[#6B6A68] mb-2">
+            <p className="mb-1.5 px-3 text-[11px] font-semibold uppercase tracking-wide text-[#6B6A68]">
               {group.label}
-            </div>
+            </p>
             <ul className="space-y-0.5">
-              {group.items.map(({ key, href, label, Icon }) => {
-                const fullHref = `/${orgSlug}${href}`;
-                const active = isItemActive(href);
+              {group.items.map((item) => {
+                const active = isActive(item);
                 return (
-                  <li key={key}>
+                  <li key={item.key}>
                     <Link
-                      href={fullHref}
+                      href={getHref(item)}
                       className={`flex items-center gap-3 rounded px-3 py-1.5 text-sm transition ${
                         active
-                          ? "bg-[#2C2C2C] text-[#D4D4D4] font-medium"
-                          : "text-[#9B9A97] hover:bg-[#2C2C2C]"
+                          ? "bg-[#2C2C2C] font-medium text-[#D4D4D4]"
+                          : "text-[#9B9A97] hover:bg-[#2C2C2C] hover:text-[#D4D4D4]"
                       }`}
                     >
-                      <Icon className="h-[18px] w-[18px]" />
-                      {label}
+                      <item.Icon className="h-[18px] w-[18px] shrink-0" />
+                      {item.label}
                     </Link>
                   </li>
                 );
@@ -275,23 +341,19 @@ export function WorkspaceSidebar({
         <NotificationBell userId={user.userId} orgSlug={orgSlug} />
       </div>
 
-      {/* Settings section — separated */}
+      {/* Settings — separated */}
       <div className="border-t border-[#2D2D2D] px-2 py-3">
-        <ul className="space-y-0.5">
-          <li>
-            <Link
-              href={`/${orgSlug}/settings`}
-              className={`flex items-center gap-3 rounded px-3 py-1.5 text-sm transition ${
-                pathname?.startsWith(`/${orgSlug}/settings`)
-                  ? "bg-[#2C2C2C] text-[#D4D4D4] font-medium"
-                  : "text-[#9B9A97] hover:bg-[#2C2C2C]"
-              }`}
-            >
-              <Settings className="h-[18px] w-[18px]" />
-              Settings
-            </Link>
-          </li>
-        </ul>
+        <Link
+          href={`/${orgSlug}/settings`}
+          className={`flex items-center gap-3 rounded px-3 py-1.5 text-sm transition ${
+            pathname?.startsWith(`/${orgSlug}/settings`)
+              ? "bg-[#2C2C2C] font-medium text-[#D4D4D4]"
+              : "text-[#9B9A97] hover:bg-[#2C2C2C] hover:text-[#D4D4D4]"
+          }`}
+        >
+          <Settings className="h-[18px] w-[18px] shrink-0" />
+          Settings
+        </Link>
       </div>
 
       {/* User footer */}
