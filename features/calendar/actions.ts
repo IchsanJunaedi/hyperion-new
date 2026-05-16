@@ -51,7 +51,8 @@ export async function createCalendarEventAction(
     .select("id")
     .eq("slug", orgSlug)
     .maybeSingle();
-  if (orgError || !org) return { ok: false, message: "Organisasi tidak ditemukan" };
+  if (orgError || !org)
+    return { ok: false, message: "Organisasi tidak ditemukan" };
 
   const { data: event, error } = await supabase
     .from("calendar_events")
@@ -253,7 +254,7 @@ export async function addEventCommentAction(
       message:
         error?.code === "42501"
           ? "Anda tidak punya akses untuk menambah komentar"
-          : error?.message ?? "Gagal menambah komentar",
+          : (error?.message ?? "Gagal menambah komentar"),
     };
   }
 
@@ -322,9 +323,10 @@ export async function dragRescheduleEventAction(
   let newEndsAt = null;
   if (event.ends_at) {
     const duration =
-      new Date(event.ends_at).getTime() -
-      new Date(event.starts_at).getTime();
-    newEndsAt = new Date(new Date(newStartsAt).getTime() + duration).toISOString();
+      new Date(event.ends_at).getTime() - new Date(event.starts_at).getTime();
+    newEndsAt = new Date(
+      new Date(newStartsAt).getTime() + duration,
+    ).toISOString();
   }
 
   const { error } = await supabase
@@ -344,3 +346,8 @@ export async function dragRescheduleEventAction(
           ? "Anda tidak punya akses untuk mengubah event ini"
           : error.message,
     };
+  }
+
+  revalidatePath(`/${orgSlug}/calendar`);
+  return { ok: true };
+}
