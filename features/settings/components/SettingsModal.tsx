@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { Bell, Building2, Shield, User, X } from "lucide-react";
 
 import { cn } from "@/lib/utils/cn";
@@ -67,7 +68,7 @@ export function SettingsModal({
 
   if (!open) return null;
 
-  return (
+  const modalContent = (
     <div
       className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
       onClick={(e) => {
@@ -126,4 +127,6 @@ export function SettingsModal({
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 }
