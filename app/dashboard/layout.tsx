@@ -117,7 +117,7 @@ export default async function DashboardLayout({
         {/* Sidebar */}
         <aside className="w-[280px] h-screen fixed left-0 top-0 bg-[#202020] flex flex-col border-r border-[#2D2D2D] text-sm">
           {/* Org header */}
-          <div className="flex items-center gap-3 border-b border-[#2D2D2D] px-4 py-4 shrink-0">
+          <div className="flex items-center gap-3 border-b border-[#2D2D2D] px-4 h-12 shrink-0">
             <div className="grid h-5 w-5 place-items-center rounded bg-[#353434] text-xs font-semibold text-[#E5E2E1]">
               {orgName.slice(0, 1).toUpperCase()}
             </div>
