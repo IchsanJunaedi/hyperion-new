@@ -1,8 +1,8 @@
-"use client";
+﻿"use client";
 
 import { Loader2 } from "lucide-react";
 import { useMemo, useState, useTransition } from "react";
-import { toast } from "sonner";
+import { notify } from "@/features/dashboard/components/NotifyModal";
 import { useRouter } from "next/navigation";
 
 import { assignRoleAction } from "../actions";
@@ -78,7 +78,7 @@ export function AssignRoleForm({
         role: selectedRole as MemberRole,
       });
       if (res.ok) {
-        toast.success("Role berhasil di-assign");
+        notify.success("Role berhasil di-assign");
         setSelectedUser("");
         setSelectedOrg("");
         setSelectedDiv("");

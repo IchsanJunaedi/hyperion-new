@@ -1,10 +1,10 @@
-"use client";
+﻿"use client";
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
+import { notify } from "@/features/dashboard/components/NotifyModal";
 import { Mail } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -38,7 +38,7 @@ export function ForgotPasswordForm() {
       const result = await forgotPasswordAction(values);
       if (!result.ok) {
         setServerError(result.message ?? "Terjadi kesalahan.");
-        toast.error(result.message ?? "Terjadi kesalahan.");
+        notify.error(result.message ?? "Terjadi kesalahan.");
         return;
       }
       setSent(true);

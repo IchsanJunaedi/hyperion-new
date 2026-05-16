@@ -1,10 +1,10 @@
-"use client";
+﻿"use client";
 
 import { Bell } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+import { notify } from "@/features/dashboard/components/NotifyModal";
 
 import { markAllNotificationsRead } from "../actions";
 import { useUnreadCount } from "../hooks/useUnreadCount";
@@ -82,7 +82,7 @@ export function NotificationBell({ userId, orgSlug }: NotificationBellProps) {
       // Revert on failure
       queryClient.invalidateQueries({ queryKey: ["notifications", userId] });
       queryClient.invalidateQueries({ queryKey: ["unread-count", userId] });
-      toast.error("Gagal menandai semua notifikasi");
+      notify.error("Gagal menandai semua notifikasi");
     }
   }
 

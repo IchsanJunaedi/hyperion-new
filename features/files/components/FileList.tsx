@@ -1,8 +1,8 @@
-"use client";
+﻿"use client";
 
 import { File, Loader2, Trash2 } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
-import { toast } from "sonner";
+import { notify } from "@/features/dashboard/components/NotifyModal";
 
 import { createClient } from "@/lib/supabase/client";
 
@@ -50,10 +50,10 @@ export function FileList({ orgId, folder = "files" }: FileListProps) {
       .remove([filePath]);
 
     if (error) {
-      toast.error("Gagal menghapus file");
+      notify.error("Gagal menghapus file");
     } else {
       setFiles((prev) => prev.filter((f) => f.id !== fileId));
-      toast.success("File dihapus");
+      notify.success("File dihapus");
     }
     setDeletingId(null);
   }
@@ -66,7 +66,7 @@ export function FileList({ orgId, folder = "files" }: FileListProps) {
       .createSignedUrl(filePath, 60);
 
     if (error || !data?.signedUrl) {
-      toast.error("Gagal membuat link download");
+      notify.error("Gagal membuat link download");
       return;
     }
     window.open(data.signedUrl, "_blank");

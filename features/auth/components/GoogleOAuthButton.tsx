@@ -1,7 +1,7 @@
-"use client";
+﻿"use client";
 
 import { useState, useTransition } from "react";
-import { toast } from "sonner";
+import { notify } from "@/features/dashboard/components/NotifyModal";
 
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
@@ -36,7 +36,7 @@ export function GoogleOAuthButton({
         options: { redirectTo },
       });
       if (error) {
-        toast.error(error.message);
+        notify.error(error.message);
         setSubmitting(false);
       }
     });

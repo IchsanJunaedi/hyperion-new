@@ -1,8 +1,8 @@
-"use client";
+﻿"use client";
 
 import { Loader2, Upload, X } from "lucide-react";
 import { useRef, useState } from "react";
-import { toast } from "sonner";
+import { notify } from "@/features/dashboard/components/NotifyModal";
 
 import { createClient } from "@/lib/supabase/client";
 import { recordFileUploadAction } from "../actions";
@@ -34,7 +34,7 @@ export function FileUpload({
     if (!file) return;
 
     if (file.size > maxSize) {
-      toast.error(
+      notify.error(
         `File terlalu besar (maks ${Math.round(maxSize / 1024 / 1024)}MB)`,
       );
       return;
@@ -53,7 +53,7 @@ export function FileUpload({
         .upload(filePath, file, { cacheControl: "3600", upsert: false });
 
       if (storageError) {
-        toast.error(storageError.message);
+        notify.error(storageError.message);
         setFileName(null);
         return;
       }
@@ -73,16 +73,16 @@ export function FileUpload({
       });
       if (!dbResult.ok) {
         // Non-fatal: storage upload succeeded; DB record failed.
-        toast.warning(
+        notify.warning(
           `File diupload tapi gagal dicatat ke database: ${dbResult.message}`,
         );
       } else {
-        toast.success("File berhasil diupload");
+        notify.success("File berhasil diupload");
       }
 
       onUpload?.(filePath, url);
     } catch {
-      toast.error("Gagal mengupload file");
+      notify.error("Gagal mengupload file");
       setFileName(null);
     } finally {
       setUploading(false);

@@ -1,7 +1,7 @@
-"use client";
+﻿"use client";
 
 import { useState, useTransition } from "react";
-import { toast } from "sonner";
+import { notify } from "@/features/dashboard/components/NotifyModal";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -36,7 +36,7 @@ export function InviteAcceptCard({
       const result = await acceptInviteAction(token);
       if (result?.error) {
         setError(result.error);
-        toast.error(result.error);
+        notify.error(result.error);
       }
     });
   };
@@ -48,7 +48,7 @@ export function InviteAcceptCard({
       const result = await rejectInviteAction(token);
       if (result?.error) {
         setError(result.error);
-        toast.error(result.error);
+        notify.error(result.error);
       }
     });
   };

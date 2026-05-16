@@ -1,9 +1,9 @@
-"use client";
+﻿"use client";
 
 import { Loader2, Pin, PinOff, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import { toast } from "sonner";
+import { notify } from "@/features/dashboard/components/NotifyModal";
 
 import { deleteAnnouncementAction, togglePinAction } from "../actions";
 
@@ -27,10 +27,10 @@ export function AnnouncementActions({
     startPinTransition(async () => {
       const res = await togglePinAction(orgSlug, announcementId, !isPinned);
       if (res.ok) {
-        toast.success(isPinned ? "Pin dicabut" : "Pengumuman di-pin");
+        notify.success(isPinned ? "Pin dicabut" : "Pengumuman di-pin");
         router.refresh();
       } else {
-        toast.error(res.message);
+        notify.error(res.message);
       }
     });
   }
@@ -43,10 +43,10 @@ export function AnnouncementActions({
     startDeleteTransition(async () => {
       const res = await deleteAnnouncementAction(orgSlug, announcementId);
       if (res.ok) {
-        toast.success("Pengumuman dihapus");
+        notify.success("Pengumuman dihapus");
         router.push(`/${orgSlug}/announcements`);
       } else {
-        toast.error(res.message);
+        notify.error(res.message);
         setConfirmDelete(false);
       }
     });

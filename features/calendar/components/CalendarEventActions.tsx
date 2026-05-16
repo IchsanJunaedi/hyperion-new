@@ -1,9 +1,9 @@
-"use client";
+﻿"use client";
 
 import { Loader2, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import { toast } from "sonner";
+import { notify } from "@/features/dashboard/components/NotifyModal";
 
 import { deleteCalendarEventAction } from "../actions";
 
@@ -28,10 +28,10 @@ export function CalendarEventActions({
     startDeleteTransition(async () => {
       const res = await deleteCalendarEventAction(orgSlug, eventId);
       if (res.ok) {
-        toast.success("Event dihapus");
+        notify.success("Event dihapus");
         router.push(`/${orgSlug}/calendar`);
       } else {
-        toast.error(res.message);
+        notify.error(res.message);
         setConfirmDelete(false);
       }
     });

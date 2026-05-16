@@ -1,8 +1,8 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
-import { toast } from "sonner";
+import { notify } from "@/features/dashboard/components/NotifyModal";
 
 import { createClient } from "@/lib/supabase/client";
 
@@ -19,11 +19,11 @@ export function SecuritySection() {
   async function handleChangePassword(e: React.FormEvent) {
     e.preventDefault();
     if (newPassword.length < 8) {
-      toast.error("Password minimal 8 karakter.");
+      notify.error("Password minimal 8 karakter.");
       return;
     }
     if (newPassword !== confirmPassword) {
-      toast.error("Konfirmasi password tidak cocok.");
+      notify.error("Konfirmasi password tidak cocok.");
       return;
     }
     setSaving(true);
@@ -31,10 +31,10 @@ export function SecuritySection() {
     const { error } = await supabase.auth.updateUser({ password: newPassword });
     setSaving(false);
     if (error) {
-      toast.error(error.message);
+      notify.error(error.message);
       return;
     }
-    toast.success("Password berhasil diubah.");
+    notify.success("Password berhasil diubah.");
     setNewPassword("");
     setConfirmPassword("");
   }

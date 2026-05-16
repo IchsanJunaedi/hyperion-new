@@ -1,8 +1,8 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
-import { toast } from "sonner";
+import { notify } from "@/features/dashboard/components/NotifyModal";
 
 import { createClient } from "@/lib/supabase/client";
 import { updateNotifPrefsAction } from "@/features/settings/actions/updateNotifPrefs";
@@ -74,8 +74,8 @@ export function NotifSection({ orgId }: { orgId: string }) {
       EVENT_TYPES.map((e) => ({ event_type: e.key, wa_enabled: prefs[e.key] ?? true })),
     );
     setSaving(false);
-    if (result.ok) toast.success("Preferensi notifikasi disimpan.");
-    else toast.error(result.message);
+    if (result.ok) notify.success("Preferensi notifikasi disimpan.");
+    else notify.error(result.message);
   }
 
   if (loading) {

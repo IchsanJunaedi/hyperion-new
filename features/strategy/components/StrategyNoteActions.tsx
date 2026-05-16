@@ -1,9 +1,9 @@
-"use client";
+﻿"use client";
 
 import { Loader2, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import { toast } from "sonner";
+import { notify } from "@/features/dashboard/components/NotifyModal";
 
 import { deleteStrategyNoteAction } from "../actions";
 
@@ -28,10 +28,10 @@ export function StrategyNoteActions({
     startDeleteTransition(async () => {
       const res = await deleteStrategyNoteAction(orgSlug, noteId);
       if (res.ok) {
-        toast.success("Catatan dihapus");
+        notify.success("Catatan dihapus");
         router.push(`/${orgSlug}/strategy`);
       } else {
-        toast.error(res.message);
+        notify.error(res.message);
         setConfirmDelete(false);
       }
     });

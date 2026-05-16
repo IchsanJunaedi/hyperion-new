@@ -1,8 +1,8 @@
-"use client";
+﻿"use client";
 
 import { useState, useTransition } from "react";
 import { ChevronLeft, ChevronRight, Loader2, RotateCcw } from "lucide-react";
-import { toast } from "sonner";
+import { notify } from "@/features/dashboard/components/NotifyModal";
 import { useQueryClient } from "@tanstack/react-query";
 
 import { useWaDeliveryList, type WaFilter } from "../hooks/useWaDeliveryList";
@@ -182,10 +182,10 @@ function WaDeliveryRow({ notif, orgId }: WaDeliveryRowProps) {
     startTransition(async () => {
       const result = await retryFailedWa(notif.id, orgId);
       if (result.ok) {
-        toast.success("Notifikasi di-queue ulang untuk pengiriman");
+        notify.success("Notifikasi di-queue ulang untuk pengiriman");
         queryClient.invalidateQueries({ queryKey: ["wa-delivery", orgId] });
       } else {
-        toast.error(result.message);
+        notify.error(result.message);
       }
     });
   }

@@ -1,10 +1,10 @@
-"use client";
+﻿"use client";
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
+import { notify } from "@/features/dashboard/components/NotifyModal";
 import { cn } from "@/lib/utils/cn";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -47,7 +47,7 @@ export function RegisterForm({ next = "/onboarding/profile" }: RegisterFormProps
       const result = await signUpAction({ ...values, next });
       if (result?.error) {
         setServerError(result.error);
-        toast.error(result.error);
+        notify.error(result.error);
         return;
       }
       if (result?.needsEmailConfirmation) {

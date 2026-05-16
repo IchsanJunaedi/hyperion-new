@@ -1,10 +1,10 @@
-"use client";
+﻿"use client";
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
+import { notify } from "@/features/dashboard/components/NotifyModal";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,10 +36,10 @@ export function ResetPasswordForm() {
       const result = await resetPasswordAction(values);
       if (!result.ok) {
         setServerError(result.message ?? "Terjadi kesalahan.");
-        toast.error(result.message ?? "Terjadi kesalahan.");
+        notify.error(result.message ?? "Terjadi kesalahan.");
         return;
       }
-      toast.success("Password berhasil diubah. Silakan masuk kembali.");
+      notify.success("Password berhasil diubah. Silakan masuk kembali.");
       router.push("/login");
     });
   });

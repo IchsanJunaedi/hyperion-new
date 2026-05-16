@@ -1,8 +1,8 @@
-"use client";
+﻿"use client";
 
 import { Loader2 } from "lucide-react";
 import { useTransition } from "react";
-import { toast } from "sonner";
+import { notify } from "@/features/dashboard/components/NotifyModal";
 
 import type { MemberAvailability } from "@/types/database";
 import { updateAvailabilityAction } from "../actions/updateAvailability";
@@ -33,9 +33,9 @@ export function AvailabilitySelector({
     startTransition(async () => {
       const res = await updateAvailabilityAction(orgSlug, memberId, value);
       if (res.ok) {
-        toast.success("Status ketersediaan diperbarui");
+        notify.success("Status ketersediaan diperbarui");
       } else {
-        toast.error(res.message);
+        notify.error(res.message);
       }
     });
   }

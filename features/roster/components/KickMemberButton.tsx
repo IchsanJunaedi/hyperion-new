@@ -1,8 +1,8 @@
-"use client";
+﻿"use client";
 
 import { Loader2, UserMinus } from "lucide-react";
 import { useState, useTransition } from "react";
-import { toast } from "sonner";
+import { notify } from "@/features/dashboard/components/NotifyModal";
 
 import { kickMemberAction } from "../actions/kickMember";
 
@@ -47,13 +47,13 @@ export function KickMemberButton({
           startTransition(async () => {
             const res = await kickMemberAction(orgSlug, memberId);
             if (res.ok) {
-              toast.success(
+              notify.success(
                 isSelf
                   ? "Kamu telah keluar dari tim"
                   : `${memberName} telah dikeluarkan`,
               );
             } else {
-              toast.error(res.message);
+              notify.error(res.message);
               setConfirming(false);
             }
           });

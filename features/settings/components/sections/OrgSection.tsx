@@ -1,8 +1,8 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { Loader2, Lock, Upload } from "lucide-react";
-import { toast } from "sonner";
+import { notify } from "@/features/dashboard/components/NotifyModal";
 
 import { createClient } from "@/lib/supabase/client";
 import { updateProfileAction } from "@/features/settings/actions/updateProfile";
@@ -61,7 +61,7 @@ export function OrgSection({
       .from("avatars")
       .upload(path, file, { upsert: true });
     if (error) {
-      toast.error("Gagal upload logo.");
+      notify.error("Gagal upload logo.");
       setUploading(false);
       return;
     }
@@ -69,7 +69,7 @@ export function OrgSection({
     setLogoUrl(urlData.publicUrl);
     await updateProfileAction({ avatar_url: urlData.publicUrl });
     setUploading(false);
-    toast.success("Logo workspace diperbarui.");
+    notify.success("Logo workspace diperbarui.");
   }
 
   async function handleSave() {
@@ -77,8 +77,8 @@ export function OrgSection({
     setSaving(true);
     const result = await updateProfileAction({ full_name: name });
     setSaving(false);
-    if (result.ok) toast.success("Branding workspace berhasil disimpan.");
-    else toast.error(result.message);
+    if (result.ok) notify.success("Branding workspace berhasil disimpan.");
+    else notify.error(result.message);
   }
 
   if (loading) {

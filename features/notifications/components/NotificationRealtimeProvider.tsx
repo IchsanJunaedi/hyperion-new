@@ -1,7 +1,7 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useRef } from "react";
-import { toast } from "sonner";
+import { notify } from "@/features/dashboard/components/NotifyModal";
 
 import { useNotificationsSubscription } from "../hooks/useNotificationsSubscription";
 
@@ -22,7 +22,7 @@ export function NotificationRealtimeProvider({
       prevStatusRef.current !== "disconnected" &&
       status === "disconnected"
     ) {
-      toast.error(
+      notify.error(
         "Update realtime tidak tersedia. Refresh halaman untuk data terbaru.",
       );
     }

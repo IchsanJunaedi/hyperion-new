@@ -1,11 +1,11 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Loader2, Upload } from "lucide-react";
-import { toast } from "sonner";
+import { notify } from "@/features/dashboard/components/NotifyModal";
 
 import { createClient } from "@/lib/supabase/client";
 import { updateProfileAction } from "@/features/settings/actions/updateProfile";
@@ -98,7 +98,7 @@ export function ProfileSection({ userId }: { userId: string }) {
       .from("avatars")
       .upload(path, file, { upsert: true });
     if (error) {
-      toast.error("Gagal upload foto.");
+      notify.error("Gagal upload foto.");
       setUploading(false);
       return;
     }
@@ -106,7 +106,7 @@ export function ProfileSection({ userId }: { userId: string }) {
     setAvatarUrl(urlData.publicUrl);
     await updateProfileAction({ avatar_url: urlData.publicUrl });
     setUploading(false);
-    toast.success("Foto profil diperbarui.");
+    notify.success("Foto profil diperbarui.");
   }
 
   async function onSubmit(values: FormValues) {
@@ -119,8 +119,8 @@ export function ProfileSection({ userId }: { userId: string }) {
       date_of_birth: values.date_of_birth || null,
 
     });
-    if (result.ok) toast.success("Profil berhasil disimpan.");
-    else toast.error(result.message);
+    if (result.ok) notify.success("Profil berhasil disimpan.");
+    else notify.error(result.message);
   }
 
   if (loading) {

@@ -1,8 +1,8 @@
-"use client";
+﻿"use client";
 
 import { Loader2, UserMinus } from "lucide-react";
 import { useState, useTransition } from "react";
-import { toast } from "sonner";
+import { notify } from "@/features/dashboard/components/NotifyModal";
 import { useRouter } from "next/navigation";
 
 import { managerAssignRoleAction } from "../actions";

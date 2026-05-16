@@ -1,8 +1,8 @@
-"use client";
+﻿"use client";
 
 import { Copy, Loader2, X } from "lucide-react";
 import { useState, useTransition } from "react";
-import { toast } from "sonner";
+import { notify } from "@/features/dashboard/components/NotifyModal";
 
 import type { MemberRole } from "@/types/database";
 import { createInviteAction } from "../actions/createInvite";
@@ -65,7 +65,7 @@ export function InviteForm({
             type="button"
             onClick={() => {
               navigator.clipboard.writeText(inviteUrl);
-              toast.success("Link disalin ke clipboard");
+              notify.success("Link disalin ke clipboard");
             }}
             className="shrink-0 rounded-md p-1 text-white/40 transition hover:bg-white/10 hover:text-white"
             title="Salin link"

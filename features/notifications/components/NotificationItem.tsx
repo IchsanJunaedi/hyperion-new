@@ -1,8 +1,8 @@
-"use client";
+﻿"use client";
 
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+import { notify } from "@/features/dashboard/components/NotifyModal";
 
 import { markNotificationRead } from "../actions";
 import { formatRelative } from "@/lib/utils/format";
@@ -79,7 +79,7 @@ export function NotificationItem({
         // Revert on failure
         queryClient.invalidateQueries({ queryKey: ["notifications", userId] });
         queryClient.invalidateQueries({ queryKey: ["unread-count", userId] });
-        toast.error("Gagal menandai notifikasi");
+        notify.error("Gagal menandai notifikasi");
       }
     }
 

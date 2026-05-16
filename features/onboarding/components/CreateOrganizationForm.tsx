@@ -1,10 +1,10 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus, Trash2 } from "lucide-react";
-import { toast } from "sonner";
+import { notify } from "@/features/dashboard/components/NotifyModal";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -127,7 +127,7 @@ export function CreateOrganizationForm() {
       const result = await createOrganizationAction(values);
       if (result?.error) {
         setServerError(result.error);
-        toast.error(result.error);
+        notify.error(result.error);
       }
     });
   });

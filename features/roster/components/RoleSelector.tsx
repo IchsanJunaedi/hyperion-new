@@ -1,8 +1,8 @@
-"use client";
+﻿"use client";
 
 import { Loader2 } from "lucide-react";
 import { useTransition } from "react";
-import { toast } from "sonner";
+import { notify } from "@/features/dashboard/components/NotifyModal";
 
 import type { MemberRole } from "@/types/database";
 import { updateRoleAction } from "../actions/updateRole";
@@ -33,9 +33,9 @@ export function RoleSelector({
     startTransition(async () => {
       const res = await updateRoleAction(orgSlug, memberId, role);
       if (res.ok) {
-        toast.success("Role berhasil diubah");
+        notify.success("Role berhasil diubah");
       } else {
-        toast.error(res.message);
+        notify.error(res.message);
       }
     });
   }
