@@ -25,11 +25,11 @@ const NAV_ITEMS: {
   label: string;
   Icon: React.ComponentType<{ className?: string }>;
 }[] = [
-  { key: "profile", label: "Profil", Icon: User },
-  { key: "org", label: "Organisasi", Icon: Building2 },
-  { key: "notif", label: "Notifikasi", Icon: Bell },
-  { key: "security", label: "Keamanan", Icon: Shield },
-];
+    { key: "profile", label: "Profil", Icon: User },
+    { key: "org", label: "Organisasi", Icon: Building2 },
+    { key: "notif", label: "Notifikasi", Icon: Bell },
+    { key: "security", label: "Keamanan", Icon: Shield },
+  ];
 
 const SECTION_LABELS: Record<Tab, string> = {
   profile: "Profil Saya",

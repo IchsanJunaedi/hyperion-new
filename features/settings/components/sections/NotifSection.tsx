@@ -109,13 +109,18 @@ export function NotifSection({ orgId }: { orgId: string }) {
               onClick={() =>
                 setPrefs((p) => ({ ...p, [ev.key]: !p[ev.key] }))
               }
-              className={`relative h-5 w-9 shrink-0 rounded-full transition-colors cursor-pointer ${
-                prefs[ev.key] ? "bg-green-600" : "bg-[#353434]"
+              className={`relative h-6 w-11 shrink-0 rounded-full transition-all duration-300 cursor-pointer outline-none border-none p-0 ${
+                prefs[ev.key] ? "bg-[#238636]" : "bg-[#0D0D0D]"
               }`}
             >
+              {/* Track Shadow Internal */}
+              <div className="absolute inset-0 rounded-full shadow-[inset_0_1px_4px_rgba(0,0,0,0.4)]" />
+              
               <span
-                className={`absolute top-0.5 h-4 w-4 rounded-full bg-white transition-transform ${
-                  prefs[ev.key] ? "translate-x-4" : "translate-x-0.5"
+                className={`absolute top-[3px] left-[3px] h-[18px] w-[18px] rounded-full transition-all duration-300 shadow-sm ${
+                  prefs[ev.key]
+                    ? "translate-x-[20px] bg-white"
+                    : "translate-x-0 bg-[#3A3A3A]"
                 }`}
               />
             </button>
@@ -126,10 +131,13 @@ export function NotifSection({ orgId }: { orgId: string }) {
       <button
         onClick={handleSave}
         disabled={saving}
-        className="flex items-center gap-2 rounded bg-[#2C2C2C] px-4 py-2 text-sm text-[#D4D4D4] transition hover:bg-[#353434] cursor-pointer disabled:opacity-50"
+        className="group relative flex items-center justify-center gap-2 rounded-lg bg-[#E5E2E1] px-5 py-2.5 text-sm font-semibold text-black transition-all hover:bg-white hover:shadow-[0_0_20px_rgba(255,255,255,0.15)] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {saving && <Loader2 className="h-4 w-4 animate-spin" />}
-        Simpan Preferensi
+        {saving ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : (
+          "Simpan Preferensi"
+        )}
       </button>
     </div>
   );

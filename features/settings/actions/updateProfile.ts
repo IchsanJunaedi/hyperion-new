@@ -10,14 +10,6 @@ export interface UpdateProfileData {
   phone_wa?: string;
   date_of_birth?: string | null;
   avatar_url?: string | null;
-  game_ids?: Record<string, string>;
-  social_links?: {
-    instagram?: string;
-    twitter?: string;
-    tiktok?: string;
-    youtube?: string;
-    discord?: string;
-  };
 }
 
 export async function updateProfileAction(

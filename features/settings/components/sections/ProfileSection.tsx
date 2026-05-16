@@ -11,13 +11,7 @@ import { createClient } from "@/lib/supabase/client";
 import { updateProfileAction } from "@/features/settings/actions/updateProfile";
 import { cn } from "@/lib/utils/cn";
 
-const GAME_OPTIONS = [
-  { key: "valorant", label: "Valorant" },
-  { key: "mlbb", label: "Mobile Legends" },
-  { key: "pubg", label: "PUBG Mobile" },
-  { key: "freefire", label: "Free Fire" },
-  { key: "dota2", label: "Dota 2" },
-];
+
 
 const schema = z.object({
   display_name: z.string().min(1, "Wajib diisi"),
@@ -26,12 +20,7 @@ const schema = z.object({
   bio: z.string().optional(),
   phone_wa: z.string().optional(),
   date_of_birth: z.string().optional(),
-  instagram: z.string().optional(),
-  twitter: z.string().optional(),
-  tiktok: z.string().optional(),
-  youtube: z.string().optional(),
-  discord: z.string().optional(),
-  game_ids: z.record(z.string()).optional(),
+
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -76,14 +65,15 @@ export function ProfileSection({ userId }: { userId: string }) {
     supabase
       .from("profiles")
       .select(
-        "display_name,username,full_name,bio,phone_wa,date_of_birth,avatar_url,game_ids,social_links",
+        "display_name,username,full_name,bio,phone_wa,date_of_birth,avatar_url",
       )
       .eq("id", userId)
       .maybeSingle()
       .then(({ data }) => {
-        if (!data) { setLoading(false); return; }
-        const social = (data.social_links as Record<string, string>) ?? {};
-        const games = (data.game_ids as Record<string, string>) ?? {};
+        if (!data) {
+          setLoading(false);
+          return;
+        }
         reset({
           display_name: data.display_name ?? "",
           username: data.username ?? "",
@@ -91,12 +81,6 @@ export function ProfileSection({ userId }: { userId: string }) {
           bio: data.bio ?? "",
           phone_wa: data.phone_wa ?? "",
           date_of_birth: data.date_of_birth ?? "",
-          instagram: social.instagram ?? "",
-          twitter: social.twitter ?? "",
-          tiktok: social.tiktok ?? "",
-          youtube: social.youtube ?? "",
-          discord: social.discord ?? "",
-          game_ids: games,
         });
         setAvatarUrl(data.avatar_url);
         setLoading(false);
@@ -133,14 +117,7 @@ export function ProfileSection({ userId }: { userId: string }) {
       bio: values.bio || undefined,
       phone_wa: values.phone_wa || undefined,
       date_of_birth: values.date_of_birth || null,
-      game_ids: values.game_ids,
-      social_links: {
-        instagram: values.instagram || undefined,
-        twitter: values.twitter || undefined,
-        tiktok: values.tiktok || undefined,
-        youtube: values.youtube || undefined,
-        discord: values.discord || undefined,
-      },
+
     });
     if (result.ok) toast.success("Profil berhasil disimpan.");
     else toast.error(result.message);
@@ -232,46 +209,7 @@ export function ProfileSection({ userId }: { userId: string }) {
         </Field>
       </div>
 
-      {/* Game IDs */}
-      <div>
-        <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-[#6B6A68]">
-          Game IDs
-        </p>
-        <div className="grid grid-cols-2 gap-3">
-          {GAME_OPTIONS.map((g) => (
-            <Field key={g.key} label={g.label}>
-              <input
-                {...register(`game_ids.${g.key}`)}
-                className={inputCls}
-                placeholder={`ID ${g.label}`}
-              />
-            </Field>
-          ))}
-        </div>
-      </div>
 
-      {/* Social Links */}
-      <div>
-        <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-[#6B6A68]">
-          Social Media
-        </p>
-        <div className="grid grid-cols-2 gap-3">
-          {(
-            ["instagram", "twitter", "tiktok", "youtube", "discord"] as const
-          ).map((s) => (
-            <Field
-              key={s}
-              label={s.charAt(0).toUpperCase() + s.slice(1)}
-            >
-              <input
-                {...register(s)}
-                className={inputCls}
-                placeholder={s === "discord" ? "user#1234" : `@${s}`}
-              />
-            </Field>
-          ))}
-        </div>
-      </div>
 
       <button
         type="submit"

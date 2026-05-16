@@ -5,7 +5,7 @@ import { Loader2, Lock, Upload } from "lucide-react";
 import { toast } from "sonner";
 
 import { createClient } from "@/lib/supabase/client";
-import { updateOrgAction } from "@/features/settings/actions/updateOrg";
+import { updateProfileAction } from "@/features/settings/actions/updateProfile";
 import { cn } from "@/lib/utils/cn";
 
 const inputCls =
@@ -26,18 +26,25 @@ export function OrgSection({
 
   useEffect(() => {
     const supabase = createClient();
-    supabase
-      .from("organizations")
-      .select("name,logo_url")
-      .eq("id", orgId)
-      .maybeSingle()
-      .then(({ data }) => {
-        if (!data) { setLoading(false); return; }
-        setName(data.name);
-        setLogoUrl(data.logo_url);
+    supabase.auth.getUser().then(({ data: userData }) => {
+      if (!userData.user) {
         setLoading(false);
-      });
-  }, [orgId]);
+        return;
+      }
+      supabase
+        .from("profiles")
+        .select("full_name, avatar_url")
+        .eq("id", userData.user.id)
+        .maybeSingle()
+        .then(({ data: profileData }) => {
+          if (profileData) {
+            setName(profileData.full_name ?? "");
+            setLogoUrl(profileData.avatar_url);
+          }
+          setLoading(false);
+        });
+    });
+  }, []);
 
   async function handleLogoUpload(e: React.ChangeEvent<HTMLInputElement>) {
     if (!isOwner) return;
@@ -45,29 +52,32 @@ export function OrgSection({
     if (!file) return;
     setUploading(true);
     const supabase = createClient();
+    const { data: userData } = await supabase.auth.getUser();
+    if (!userData.user) return;
+
     const ext = file.name.split(".").pop();
-    const path = `${orgId}/logo.${ext}`;
+    const path = `${userData.user.id}/workspace-logo.${ext}`;
     const { error } = await supabase.storage
-      .from("org-logos")
+      .from("avatars")
       .upload(path, file, { upsert: true });
     if (error) {
       toast.error("Gagal upload logo.");
       setUploading(false);
       return;
     }
-    const { data: urlData } = supabase.storage.from("org-logos").getPublicUrl(path);
+    const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(path);
     setLogoUrl(urlData.publicUrl);
-    await updateOrgAction(orgId, { logo_url: urlData.publicUrl });
+    await updateProfileAction({ avatar_url: urlData.publicUrl });
     setUploading(false);
-    toast.success("Logo diperbarui.");
+    toast.success("Logo workspace diperbarui.");
   }
 
   async function handleSave() {
     if (!isOwner) return;
     setSaving(true);
-    const result = await updateOrgAction(orgId, { name });
+    const result = await updateProfileAction({ full_name: name });
     setSaving(false);
-    if (result.ok) toast.success("Organisasi berhasil disimpan.");
+    if (result.ok) toast.success("Branding workspace berhasil disimpan.");
     else toast.error(result.message);
   }
 
@@ -128,7 +138,7 @@ export function OrgSection({
 
       {/* Name */}
       <div className="flex flex-col gap-1">
-        <label className="text-xs text-[#9B9A97]">Nama Organisasi</label>
+        <label className="text-xs text-[#9B9A97]">Nama Workspace / Brand</label>
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
