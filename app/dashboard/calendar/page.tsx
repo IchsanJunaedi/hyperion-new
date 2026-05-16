@@ -1,7 +1,6 @@
-import { Calendar, Plus } from "lucide-react";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 
+import { CalendarWithQuickAdd } from "@/features/calendar/components/CalendarWithQuickAdd";
 import { CalendarGrid } from "@/features/calendar/components/CalendarGrid";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -26,7 +25,45 @@ export default async function DashboardCalendarPage({
   const ownerEmail = process.env.OWNER_EMAIL;
   const isOwner = ownerEmail && user.email === ownerEmail;
 
-  if (!isOwner) redirect("/dashboard");
+  // Determine if user is manager in any org (non-owner access)
+  let managerOrgSlug: string | null = null;
+  let managerOrgId: string | null = null;
+  let managerDivisions: Array<{ id: string; name: string }> = [];
+
+  if (!isOwner) {
+    // Check if user is manager in some org
+    const { data: managerMembership } = await supabase
+      .from("team_members")
+      .select("organization_id, role, organizations(id, slug)")
+      .eq("user_id", user.id)
+      .eq("role", "manager")
+      .eq("is_active", true)
+      .limit(1)
+      .maybeSingle();
+
+    if (!managerMembership) {
+      // Not owner, not manager — redirect to dashboard
+      redirect("/dashboard");
+    }
+
+    // managerMembership.organizations is an object (join)
+    const orgJoin = managerMembership.organizations as unknown as {
+      id: string;
+      slug: string;
+    } | null;
+    managerOrgId = orgJoin?.id ?? null;
+    managerOrgSlug = orgJoin?.slug ?? null;
+
+    if (managerOrgId && managerOrgSlug) {
+      const { data: divs } = await supabase
+        .from("divisions")
+        .select("id, name")
+        .eq("organization_id", managerOrgId)
+        .eq("is_active", true)
+        .order("name");
+      managerDivisions = divs ?? [];
+    }
+  }
 
   const sp = await searchParams;
   const now = new Date();
@@ -42,16 +79,23 @@ export default async function DashboardCalendarPage({
 
   const admin = createAdminClient();
 
-  // Get all organizations
-  const { data: orgs } = await admin
-    .from("organizations")
-    .select("id, slug, name")
-    .order("created_at", { ascending: false });
-
-  // Collect all unified events from all orgs
+  // Collect all events
   const allEvents: CalendarEvent[] = [];
 
-  for (const org of orgs ?? []) {
+  // Which orgs to fetch — owner sees all, manager sees only theirs
+  let orgs: Array<{ id: string; slug: string; name: string }> = [];
+
+  if (isOwner) {
+    const { data } = await admin
+      .from("organizations")
+      .select("id, slug, name")
+      .order("created_at", { ascending: false });
+    orgs = data ?? [];
+  } else if (managerOrgId && managerOrgSlug) {
+    orgs = [{ id: managerOrgId, slug: managerOrgSlug, name: "" }];
+  }
+
+  for (const org of orgs) {
     // 1. Manual calendar events
     const { data: manualEvents } = await admin
       .from("calendar_events")
@@ -65,7 +109,7 @@ export default async function DashboardCalendarPage({
       allEvents.push(...manualEvents);
     }
 
-    // 2. Scrims not already linked in calendar
+    // 2. Scrims not already linked
     const linkedScrimIds = new Set(
       manualEvents
         ?.filter((e) => e.ref_type === "scrim" && e.ref_id)
@@ -137,12 +181,12 @@ export default async function DashboardCalendarPage({
 
   // Sort by starts_at
   allEvents.sort(
-    (a, b) =>
-      new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime(),
+    (a, b) => new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime(),
   );
 
-  // For dashboard, we can't add events directly, so we'll note this in the UI
-  // The add button will redirect to manage panel or team workspace
+  // Owner: sees all orgs, readOnly for the unified view
+  // Manager: can add events to their own org via QuickAddModal
+  const isManager = !isOwner && !!managerOrgSlug;
 
   return (
     <div className="space-y-6 px-4 py-6 sm:px-8">
@@ -152,27 +196,45 @@ export default async function DashboardCalendarPage({
             Calendar
           </p>
           <h1 className="mt-1 text-2xl font-bold text-white sm:text-3xl">
-            Kalender Terpadu
+            {isOwner ? "Kalender Terpadu" : "Kalender Tim"}
           </h1>
+          {isManager && (
+            <p className="mt-0.5 text-xs text-white/40">
+              Klik tanggal untuk tambah event ke tim kamu
+            </p>
+          )}
         </div>
       </header>
 
       <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-4 sm:p-6">
-        <CalendarGrid
-          orgSlug="dashboard"
-          events={allEvents}
-          year={year}
-          month={month}
-          readOnly
-        />
+        {isManager && managerOrgSlug ? (
+          // Manager: clickable dates with QuickAdd modal
+          <CalendarWithQuickAdd
+            orgSlug={managerOrgSlug}
+            events={allEvents}
+            year={year}
+            month={month}
+            divisions={managerDivisions}
+            canCreate
+          />
+        ) : (
+          // Owner: read-only unified view
+          <CalendarGrid
+            orgSlug="dashboard"
+            events={allEvents}
+            year={year}
+            month={month}
+            readOnly
+          />
+        )}
       </div>
 
-      <div className="rounded-lg border border-white/10 bg-zinc-900/40 p-4 text-sm text-white/70">
-        <p>
-          Kalender terpadu menampilkan event dari semua tim. Untuk menambah
-          event, buka panel Manager atau workspace tim.
+      {isOwner && (
+        <p className="text-center text-xs text-white/30">
+          Kalender terpadu — semua tim, semua event. Untuk menambah event masuk
+          ke workspace tim.
         </p>
-      </div>
+      )}
     </div>
   );
 }
