@@ -27,23 +27,17 @@ export default async function DashboardCalendarPage({
   const isOwner = Boolean(ownerEmail && user.email === ownerEmail);
   const admin = createAdminClient();
 
-  // --- Resolve active org & canCreate ---
-  let activeOrgSlug: string | null = null;
-  let activeOrgId: string | null = null;
-  let activeDivisions: Array<{ id: string; name: string }> = [];
+  // Load orgs (single query, used for both event loading AND active org)
+  type OrgRow = { id: string; slug: string };
+  let orgsToLoad: OrgRow[] = [];
 
   if (isOwner) {
-    // Owner: grab any org — just needs a slug for the event creation action
-    const { data: orgs } = await admin
+    const { data } = await admin
       .from("organizations")
       .select("id, slug")
-      .order("created_at", { ascending: true })
-      .limit(1)
-      .returns<Array<{ id: string; slug: string }>>();
-    activeOrgId = orgs?.[0]?.id ?? null;
-    activeOrgSlug = orgs?.[0]?.slug ?? null;
+      .order("created_at", { ascending: false });
+    orgsToLoad = (data ?? []) as OrgRow[];
   } else {
-    // Manager: find their assigned org
     const { data: membership } = await supabase
       .from("team_members")
       .select("organization_id, organizations(id, slug)")
@@ -55,11 +49,20 @@ export default async function DashboardCalendarPage({
 
     if (!membership) redirect("/dashboard");
 
-    const orgJoin = membership.organizations as unknown as { id: string; slug: string } | null;
-    activeOrgId = orgJoin?.id ?? null;
-    activeOrgSlug = orgJoin?.slug ?? null;
+    const orgJoin = membership.organizations as unknown as OrgRow | null;
+    if (orgJoin?.id && orgJoin?.slug) {
+      orgsToLoad = [orgJoin];
+    }
   }
 
+  // Active org = first org found (owner picks first; manager has exactly one)
+  const activeOrg = orgsToLoad[0] ?? null;
+  const activeOrgSlug = activeOrg?.slug ?? null;
+  const activeOrgId = activeOrg?.id ?? null;
+  const canCreate = Boolean(activeOrgSlug);
+
+  // Load divisions for quick-add modal
+  let activeDivisions: Array<{ id: string; name: string }> = [];
   if (activeOrgId) {
     const { data: divs } = await admin
       .from("divisions")
@@ -70,11 +73,7 @@ export default async function DashboardCalendarPage({
     activeDivisions = divs ?? [];
   }
 
-  // Owner can always create (determined by email, not org query)
-  // Manager can create if their org was found
-  const canCreate = isOwner || Boolean(activeOrgSlug);
-
-  // --- Load all events visible to this user ---
+  // Month range
   const sp = await searchParams;
   const now = new Date();
   const year = sp.y ? parseInt(sp.y, 10) : now.getFullYear();
@@ -84,18 +83,7 @@ export default async function DashboardCalendarPage({
   const from = new Date(Date.UTC(year, month, 1) - WIB_OFFSET_MS).toISOString();
   const to = new Date(Date.UTC(year, month + 1, 0, 23, 59, 59) - WIB_OFFSET_MS).toISOString();
 
-  let orgsToLoad: Array<{ id: string; slug: string }> = [];
-  if (isOwner) {
-    const { data } = await admin
-      .from("organizations")
-      .select("id, slug")
-      .order("created_at", { ascending: false })
-      .returns<Array<{ id: string; slug: string }>>();
-    orgsToLoad = (data ?? []).filter((o) => o.id && o.slug);
-  } else if (activeOrgId && activeOrgSlug) {
-    orgsToLoad = [{ id: activeOrgId, slug: activeOrgSlug }];
-  }
-
+  // Load all events
   const allEvents: CalendarEvent[] = [];
 
   for (const org of orgsToLoad) {
@@ -184,7 +172,7 @@ export default async function DashboardCalendarPage({
             {isOwner ? "Kalender Terpadu" : "Kalender Tim"}
           </h1>
           <p className="mt-0.5 text-xs text-white/40">
-            {canCreate ? "Klik tanggal untuk tambah event" : "Kalender semua tim"}
+            {canCreate ? "Klik tanggal untuk tambah event" : "Belum ada tim yang terdaftar"}
           </p>
         </div>
         {canCreate && activeOrgSlug && (
