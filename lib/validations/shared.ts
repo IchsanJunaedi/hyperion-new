@@ -22,9 +22,11 @@ export const passwordSchema = z
   .string()
   .min(8, "Password minimal 8 karakter")
   .max(72, "Password maksimal 72 karakter")
+  .refine((val) => /[A-Z]/.test(val), "Password harus mengandung huruf kapital")
+  .refine((val) => /[0-9]/.test(val), "Password harus mengandung angka")
   .refine(
-    (val) => /[a-zA-Z]/.test(val) && /[0-9]/.test(val),
-    "Password harus mengandung huruf dan angka",
+    (val) => /[.!@#]/.test(val),
+    "Password harus mengandung karakter spesial (. ! @ #)",
   );
 
 export const emailSchema = z

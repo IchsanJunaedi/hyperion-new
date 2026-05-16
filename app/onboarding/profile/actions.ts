@@ -50,10 +50,9 @@ export async function saveProfileAction(
     .update({
       full_name: parsed.data.full_name,
       username: parsed.data.username,
-      display_name: parsed.data.username, // Use nickname as display name
+      display_name: parsed.data.username,
       phone_wa: parsed.data.phone_wa,
       date_of_birth: parsed.data.date_of_birth,
-      bio: parsed.data.bio ? parsed.data.bio : null,
       social_links: cleanSocialLinks,
       game_ids: cleanGameIds,
     })

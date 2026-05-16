@@ -56,8 +56,14 @@ export function RegisterForm({ next = "/onboarding/profile" }: RegisterFormProps
     });
   });
 
-  const passwordValue = watch("password");
-  const passwordMeetsMinLength = (passwordValue?.length ?? 0) >= 8;
+  const passwordValue = watch("password") ?? "";
+  const rules = [
+    { label: "Minimal 8 karakter", met: passwordValue.length >= 8 },
+    { label: "Huruf kapital (A-Z)", met: /[A-Z]/.test(passwordValue) },
+    { label: "Angka (0-9)", met: /[0-9]/.test(passwordValue) },
+    { label: "Karakter spesial (. ! @ #)", met: /[.!@#]/.test(passwordValue) },
+  ];
+  const allRulesMet = rules.every((r) => r.met);
 
   if (needsConfirm) {
     return (
@@ -110,18 +116,34 @@ export function RegisterForm({ next = "/onboarding/profile" }: RegisterFormProps
           id="password"
           type="password"
           autoComplete="new-password"
-          placeholder="Minimal 8 karakter"
+          placeholder="Buat password kamu"
           className={cn(
-            passwordMeetsMinLength && !errors.password
+            passwordValue.length > 0 && allRulesMet
               ? "border-green-500 focus-visible:ring-green-500/20"
-              : "",
+              : passwordValue.length > 0
+                ? "border-destructive focus-visible:ring-destructive/20"
+                : "",
           )}
           aria-invalid={errors.password ? "true" : undefined}
           {...register("password")}
         />
-        {passwordMeetsMinLength && !errors.password ? (
-          <p className="text-xs text-green-500">Password sudah memenuhi syarat</p>
-        ) : errors.password ? (
+        {passwordValue.length > 0 && (
+          <ul className="space-y-1 pt-1">
+            {rules.map((rule) => (
+              <li
+                key={rule.label}
+                className={cn(
+                  "flex items-center gap-1.5 text-xs",
+                  rule.met ? "text-green-500" : "text-destructive",
+                )}
+              >
+                <span className="font-bold">{rule.met ? "✓" : "✗"}</span>
+                {rule.label}
+              </li>
+            ))}
+          </ul>
+        )}
+        {errors.password && !passwordValue ? (
           <p className="text-xs text-destructive">{errors.password.message}</p>
         ) : null}
       </div>

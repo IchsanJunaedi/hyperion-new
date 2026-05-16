@@ -31,29 +31,23 @@ export const profileSetupSchema = z.object({
     .min(10, "Nomor WA minimal 10 digit")
     .max(15, "Nomor WA maksimal 15 digit")
     .regex(/^[0-9+]+$/, "Nomor WA hanya boleh angka dan +"),
-  bio: z
-    .string()
-    .trim()
-    .max(280, "Bio maksimal 280 karakter")
-    .optional()
-    .or(z.literal("")),
   social_links: z
     .object({
       instagram: z.string().trim().max(200).optional().or(z.literal("")),
-      twitter: z.string().trim().max(200).optional().or(z.literal("")),
       tiktok: z.string().trim().max(200).optional().or(z.literal("")),
-      youtube: z.string().trim().max(200).optional().or(z.literal("")),
-      discord: z.string().trim().max(100).optional().or(z.literal("")),
     })
     .partial()
     .optional(),
   game_ids: z
     .object({
       mlbb: z.string().trim().max(60).optional().or(z.literal("")),
-      mlbb_server: z.string().trim().max(20).optional().or(z.literal("")),
-      valorant: z.string().trim().max(60).optional().or(z.literal("")),
-      pubg: z.string().trim().max(60).optional().or(z.literal("")),
-      ff: z.string().trim().max(60).optional().or(z.literal("")),
+      mlbb_server: z
+        .string()
+        .trim()
+        .max(20)
+        .regex(/^[0-9]*$/, "Server hanya boleh angka")
+        .optional()
+        .or(z.literal("")),
     })
     .partial()
     .optional(),

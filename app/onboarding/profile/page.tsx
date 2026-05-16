@@ -23,7 +23,7 @@ export default async function ProfileOnboardingPage() {
   const profile = user
     ? await supabase
         .from("profiles")
-        .select("username, full_name, phone_wa, date_of_birth, bio, game_ids, social_links")
+        .select("username, full_name, phone_wa, date_of_birth, game_ids, social_links")
         .eq("id", user.id)
         .maybeSingle()
     : null;
@@ -32,6 +32,10 @@ export default async function ProfileOnboardingPage() {
     (profile?.data?.game_ids as Record<string, string> | null | undefined) ?? {};
   const socialLinks =
     (profile?.data?.social_links as Record<string, string> | null | undefined) ?? {};
+
+  // Prefer data from auth user metadata (set during registration) as defaults
+  const metaFullName = (user?.user_metadata?.display_name as string | undefined) ?? "";
+  const metaPhoneWa = (user?.user_metadata?.phone_wa as string | undefined) ?? "";
 
   return (
     <Card>
@@ -44,25 +48,21 @@ export default async function ProfileOnboardingPage() {
       </CardHeader>
       <CardContent>
         <ProfileSetupForm
+          lockedValues={{
+            full_name: profile?.data?.full_name || metaFullName,
+            phone_wa: profile?.data?.phone_wa || metaPhoneWa,
+            email: user?.email ?? "",
+          }}
           defaultValues={{
-            full_name: profile?.data?.full_name ?? "",
             username: profile?.data?.username ?? "",
-            phone_wa: profile?.data?.phone_wa ?? "",
             date_of_birth: profile?.data?.date_of_birth ?? "",
-            bio: "",
             social_links: {
               instagram: socialLinks.instagram ?? "",
-              twitter: socialLinks.twitter ?? "",
               tiktok: socialLinks.tiktok ?? "",
-              youtube: socialLinks.youtube ?? "",
-              discord: socialLinks.discord ?? "",
             },
             game_ids: {
               mlbb: gameIds.mlbb ?? "",
               mlbb_server: gameIds.mlbb_server ?? "",
-              valorant: gameIds.valorant ?? "",
-              pubg: gameIds.pubg ?? "",
-              ff: gameIds.ff ?? "",
             },
           }}
         />

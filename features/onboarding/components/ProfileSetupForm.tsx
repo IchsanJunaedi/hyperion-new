@@ -6,11 +6,21 @@ import { useState, useTransition } from "react";
 import { saveProfileAction } from "@/app/onboarding/profile/actions";
 import type { ProfileSetupInput } from "@/lib/validations/onboarding";
 
-interface ProfileSetupFormProps {
-  defaultValues: ProfileSetupInput;
+interface LockedValues {
+  full_name: string;
+  phone_wa: string;
+  email: string;
 }
 
-export function ProfileSetupForm({ defaultValues }: ProfileSetupFormProps) {
+interface ProfileSetupFormProps {
+  lockedValues: LockedValues;
+  defaultValues: Omit<ProfileSetupInput, "full_name" | "phone_wa"> & {
+    social_links?: { instagram?: string; tiktok?: string };
+    game_ids?: { mlbb?: string; mlbb_server?: string };
+  };
+}
+
+export function ProfileSetupForm({ lockedValues, defaultValues }: ProfileSetupFormProps) {
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
@@ -23,24 +33,17 @@ export function ProfileSetupForm({ defaultValues }: ProfileSetupFormProps) {
         startTransition(async () => {
           setError(null);
           const input: ProfileSetupInput = {
-            full_name: fd.get("full_name") as string,
+            full_name: lockedValues.full_name,
             username: fd.get("username") as string,
-            phone_wa: fd.get("phone_wa") as string,
+            phone_wa: lockedValues.phone_wa,
             date_of_birth: fd.get("date_of_birth") as string,
-            bio: fd.get("bio") as string,
             social_links: {
               instagram: fd.get("social_instagram") as string,
-              twitter: fd.get("social_twitter") as string,
               tiktok: fd.get("social_tiktok") as string,
-              youtube: fd.get("social_youtube") as string,
-              discord: fd.get("social_discord") as string,
             },
             game_ids: {
               mlbb: fd.get("game_mlbb") as string,
               mlbb_server: fd.get("game_mlbb_server") as string,
-              valorant: fd.get("game_valorant") as string,
-              pubg: fd.get("game_pubg") as string,
-              ff: fd.get("game_ff") as string,
             },
           };
           const res = await saveProfileAction(input);
@@ -49,22 +52,43 @@ export function ProfileSetupForm({ defaultValues }: ProfileSetupFormProps) {
       }}
       className="space-y-6"
     >
-      {/* Required fields */}
+      {/* Locked fields */}
       <section className="space-y-4">
-        <h3 className="text-sm font-semibold text-foreground">Data Wajib</h3>
+        <h3 className="text-sm font-semibold text-foreground">Data Akun</h3>
 
-        <Field label="Nama lengkap" name="full_name" required>
+        <Field label="Nama Lengkap" name="full_name_display">
           <input
-            name="full_name"
-            required
-            defaultValue={defaultValues.full_name}
-            maxLength={100}
-            placeholder="Nama lengkap kamu"
-            className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm focus:border-primary focus:outline-none"
+            readOnly
+            disabled
+            value={lockedValues.full_name}
+            className="h-10 w-full rounded-md border border-input bg-muted px-3 text-sm text-muted-foreground cursor-not-allowed"
           />
         </Field>
 
-        <Field label="Nickname / ID" name="username" required>
+        <Field label="Email" name="email_display">
+          <input
+            readOnly
+            disabled
+            value={lockedValues.email}
+            className="h-10 w-full rounded-md border border-input bg-muted px-3 text-sm text-muted-foreground cursor-not-allowed"
+          />
+        </Field>
+
+        <Field label="Nomor WhatsApp" name="phone_wa_display">
+          <input
+            readOnly
+            disabled
+            value={lockedValues.phone_wa}
+            className="h-10 w-full rounded-md border border-input bg-muted px-3 text-sm text-muted-foreground cursor-not-allowed"
+          />
+        </Field>
+      </section>
+
+      {/* Editable required fields */}
+      <section className="space-y-4">
+        <h3 className="text-sm font-semibold text-foreground">Data Wajib</h3>
+
+        <Field label="Nickname" name="username" required>
           <input
             name="username"
             required
@@ -75,23 +99,13 @@ export function ProfileSetupForm({ defaultValues }: ProfileSetupFormProps) {
           />
         </Field>
 
-        <Field label="Tanggal lahir" name="date_of_birth" required>
+        <Field label="Tanggal Lahir" name="date_of_birth" required>
           <input
             type="date"
             name="date_of_birth"
             required
             defaultValue={defaultValues.date_of_birth}
-            className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm focus:border-primary focus:outline-none"
-          />
-        </Field>
-
-        <Field label="Nomor WhatsApp" name="phone_wa" required>
-          <input
-            name="phone_wa"
-            required
-            defaultValue={defaultValues.phone_wa}
-            maxLength={15}
-            placeholder="08xxxxxxxxxx"
+            style={{ colorScheme: "dark" }}
             className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm focus:border-primary focus:outline-none"
           />
         </Field>
@@ -112,35 +126,11 @@ export function ProfileSetupForm({ defaultValues }: ProfileSetupFormProps) {
               className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm focus:border-primary focus:outline-none"
             />
           </Field>
-          <Field label="Twitter / X" name="social_twitter">
-            <input
-              name="social_twitter"
-              defaultValue={defaultValues.social_links?.twitter}
-              placeholder="https://twitter.com/..."
-              className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm focus:border-primary focus:outline-none"
-            />
-          </Field>
           <Field label="TikTok" name="social_tiktok">
             <input
               name="social_tiktok"
               defaultValue={defaultValues.social_links?.tiktok}
               placeholder="https://tiktok.com/@..."
-              className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm focus:border-primary focus:outline-none"
-            />
-          </Field>
-          <Field label="YouTube" name="social_youtube">
-            <input
-              name="social_youtube"
-              defaultValue={defaultValues.social_links?.youtube}
-              placeholder="https://youtube.com/..."
-              className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm focus:border-primary focus:outline-none"
-            />
-          </Field>
-          <Field label="Discord" name="social_discord">
-            <input
-              name="social_discord"
-              defaultValue={defaultValues.social_links?.discord}
-              placeholder="username#1234"
               className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm focus:border-primary focus:outline-none"
             />
           </Field>
@@ -162,52 +152,22 @@ export function ProfileSetupForm({ defaultValues }: ProfileSetupFormProps) {
               className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm focus:border-primary focus:outline-none"
             />
           </Field>
-          <Field label="ML Server" name="game_mlbb_server">
+          <Field label="Server" name="game_mlbb_server" required>
             <input
               name="game_mlbb_server"
               defaultValue={defaultValues.game_ids?.mlbb_server}
               placeholder="1234"
-              className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm focus:border-primary focus:outline-none"
-            />
-          </Field>
-          <Field label="Valorant Riot ID" name="game_valorant">
-            <input
-              name="game_valorant"
-              defaultValue={defaultValues.game_ids?.valorant}
-              placeholder="Name#TAG"
-              className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm focus:border-primary focus:outline-none"
-            />
-          </Field>
-          <Field label="PUBG Mobile" name="game_pubg">
-            <input
-              name="game_pubg"
-              defaultValue={defaultValues.game_ids?.pubg}
-              placeholder="ID PUBG"
-              className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm focus:border-primary focus:outline-none"
-            />
-          </Field>
-          <Field label="Free Fire" name="game_ff">
-            <input
-              name="game_ff"
-              defaultValue={defaultValues.game_ids?.ff}
-              placeholder="ID Free Fire"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              onInput={(e) => {
+                const el = e.currentTarget;
+                el.value = el.value.replace(/[^0-9]/g, "");
+              }}
               className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm focus:border-primary focus:outline-none"
             />
           </Field>
         </div>
       </section>
-
-      {/* Bio */}
-      <Field label="Bio (opsional)" name="bio">
-        <textarea
-          name="bio"
-          defaultValue={defaultValues.bio ?? ""}
-          rows={2}
-          maxLength={280}
-          placeholder="Ceritakan sedikit tentang diri kamu..."
-          className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:border-primary focus:outline-none"
-        />
-      </Field>
 
       {error ? (
         <p className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
