@@ -112,3 +112,9 @@
 .sidebar-scroll::-webkit-scrollbar-thumb:hover {
   background: rgba(155, 154, 151, 0.5);
 }
+
+/* ── Calendar icon color ───────────────────────────────────────────────────── */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
+}
