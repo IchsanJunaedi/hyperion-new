@@ -5,6 +5,8 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 
 import { createClient } from "@/lib/supabase/server";
+import { blastWaMessage } from "@/lib/utils/fonnte";
+import { buildScrimWaMessage } from "@/lib/utils/wa-templates";
 import {
   cancelScrimSchema,
   createScrimSchema,
@@ -129,16 +131,20 @@ async function fanOutScrimNotifications(
   });
   const title = `Scrim baru: vs ${scrim.opponent_name}`;
   const body = `${orgName} menjadwalkan scrim ${scrim.format.toUpperCase()} pada ${scheduled}.`;
-  const waMessage = [
-    `[${orgName}] Scrim baru dijadwalkan!`,
-    `🎮 Lawan: ${scrim.opponent_name}`,
-    `📅 ${scheduled}`,
-    `🏷️ Format: ${scrim.format.toUpperCase()}`,
-    scrim.room_info ? `🔐 Room: ${scrim.room_info}` : null,
-    "Konfirmasi kehadiran di workspace tim.",
-  ]
-    .filter(Boolean)
-    .join("\n");
+
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  const orgSlug = await getOrgSlugById(supabase, scrim.organization_id);
+  const scrimUrl = `${appUrl}/${orgSlug}/scrim/${scrim.id}`;
+
+  const waMessage = buildScrimWaMessage({
+    orgName,
+    opponentName: scrim.opponent_name,
+    scheduledAt: scrim.scheduled_at,
+    format: scrim.format,
+    serverRegion: scrim.server_region,
+    roomInfo: scrim.room_info,
+    scrimUrl,
+  });
 
   const rows = members.map((m) => ({
     organization_id: scrim.organization_id,
@@ -155,6 +161,30 @@ async function fanOutScrimNotifications(
   // Best-effort: the scrim insert is the source of truth; notification
   // failures shouldn't block the captain.
   await supabase.from("notifications").insert(rows);
+
+  // Real-time WA blast — send immediately to members with phone numbers
+  const recipients = members
+    .map((m) => ({ phone: phoneMap.get(m.user_id), message: waMessage }))
+    .filter((r): r is { phone: string; message: string } => Boolean(r.phone));
+
+  if (recipients.length > 0) {
+    // Fire-and-forget: don't await to avoid blocking the response
+    blastWaMessage(recipients).catch((err) =>
+      console.error("[WA Blast] Scrim notification error:", err),
+    );
+  }
+}
+
+async function getOrgSlugById(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  orgId: string,
+): Promise<string> {
+  const { data } = await supabase
+    .from("organizations")
+    .select("slug")
+    .eq("id", orgId)
+    .maybeSingle();
+  return data?.slug ?? "";
 }
 
 /**
