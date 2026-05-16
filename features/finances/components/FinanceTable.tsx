@@ -3,8 +3,24 @@ import type { FinanceRow } from "@/features/finances/queries";
 import { FinanceDeleteButton } from "./FinanceDeleteButton";
 
 function formatRupiah(amount: number) {
-  return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(amount);
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    maximumFractionDigits: 0,
+  }).format(amount);
 }
+
+const CAT_STYLE: Record<string, string> = {
+  "Iuran Member": "bg-blue-500/10 text-blue-400",
+  "Prize Money": "bg-yellow-500/10 text-yellow-400",
+  "Sponsor": "bg-purple-500/10 text-purple-400",
+  "Donasi": "bg-emerald-500/10 text-emerald-400",
+  "Daftar Turnamen": "bg-orange-500/10 text-orange-400",
+  "Jersey": "bg-pink-500/10 text-pink-400",
+  "Bootcamp": "bg-indigo-500/10 text-indigo-400",
+  "Peralatan": "bg-cyan-500/10 text-cyan-400",
+  "Operasional": "bg-amber-500/10 text-amber-400",
+};
 
 interface FinanceTableProps {
   rows: FinanceRow[];
@@ -16,54 +32,77 @@ interface FinanceTableProps {
 export function FinanceTable({ rows, orgId, canDelete, revalidatePaths }: FinanceTableProps) {
   if (rows.length === 0) {
     return (
-      <div className="rounded-lg border border-dashed border-[#2D2D2D] p-8 text-center">
-        <p className="text-sm text-[#9B9A97]">Belum ada transaksi bulan ini.</p>
+      <div className="rounded-xl border border-dashed border-[#2D2D2D] py-14 text-center">
+        <p className="text-sm text-[#6B6A68]">Belum ada transaksi bulan ini.</p>
+        <p className="mt-1 text-xs text-[#6B6A68]/60">Tambahkan transaksi pertama kamu.</p>
       </div>
     );
   }
 
+  const cols = canDelete
+    ? "grid-cols-[130px_150px_1fr_170px_40px]"
+    : "grid-cols-[130px_150px_1fr_170px]";
+
   return (
-    <div className="overflow-x-auto rounded-lg border border-[#2D2D2D]">
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="border-b border-[#2D2D2D] bg-[#202020]">
-            <th className="px-4 py-3 text-left text-xs font-medium text-[#9B9A97]">Tanggal</th>
-            <th className="px-4 py-3 text-left text-xs font-medium text-[#9B9A97]">Kategori</th>
-            <th className="px-4 py-3 text-left text-xs font-medium text-[#9B9A97]">Deskripsi</th>
-            <th className="px-4 py-3 text-right text-xs font-medium text-[#9B9A97]">Jumlah</th>
-            {canDelete && <th className="px-4 py-3 text-right text-xs font-medium text-[#9B9A97]" />}
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-[#2D2D2D]">
-          {rows.map((r) => (
-            <tr key={r.id} className="hover:bg-[#202020] transition-colors">
-              <td className="px-4 py-3 text-[#9B9A97] whitespace-nowrap">
-                {new Date(r.date).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
-              </td>
-              <td className="px-4 py-3 text-[#E5E2E1]">{r.category}</td>
-              <td className="px-4 py-3 text-[#9B9A97]">{r.description ?? "—"}</td>
-              <td className="px-4 py-3 text-right whitespace-nowrap">
-                <span className={`inline-flex items-center gap-1 font-medium ${r.type === "income" ? "text-green-400" : "text-red-400"}`}>
-                  {r.type === "income"
-                    ? <TrendingUp className="h-3.5 w-3.5" />
-                    : <TrendingDown className="h-3.5 w-3.5" />}
-                  {formatRupiah(r.amount)}
-                </span>
-              </td>
-              {canDelete && (
-                <td className="px-4 py-3 text-right">
-                  <FinanceDeleteButton
-                    financeId={r.id}
-                    orgId={orgId}
-                    description={r.description ?? r.category}
-                    revalidatePaths={revalidatePaths}
-                  />
-                </td>
+    <div className="overflow-hidden rounded-xl border border-[#2D2D2D]">
+      {/* Header */}
+      <div className={`grid ${cols} border-b border-[#2D2D2D] bg-[#202020] px-5 py-3`}>
+        <span className="text-[10px] font-semibold uppercase tracking-widest text-[#6B6A68]">Tanggal</span>
+        <span className="text-[10px] font-semibold uppercase tracking-widest text-[#6B6A68]">Kategori</span>
+        <span className="text-[10px] font-semibold uppercase tracking-widest text-[#6B6A68]">Deskripsi</span>
+        <span className="text-right text-[10px] font-semibold uppercase tracking-widest text-[#6B6A68]">Jumlah</span>
+        {canDelete && <span />}
+      </div>
+
+      {/* Rows */}
+      <div className="divide-y divide-[#2D2D2D]">
+        {rows.map((r) => (
+          <div
+            key={r.id}
+            className={`grid ${cols} items-center px-5 py-3.5 transition-colors hover:bg-[#202020]/70`}
+          >
+            <span className="text-sm text-[#9B9A97]">
+              {new Date(r.date).toLocaleDateString("id-ID", {
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+              })}
+            </span>
+            <span>
+              <span
+                className={`inline-block max-w-[130px] truncate rounded-full px-2.5 py-0.5 text-[11px] font-medium ${
+                  CAT_STYLE[r.category] ?? "bg-[#2D2D2D] text-[#9B9A97]"
+                }`}
+              >
+                {r.category}
+              </span>
+            </span>
+            <span className="truncate pr-4 text-sm text-[#9B9A97]">{r.description ?? "—"}</span>
+            <span
+              className={`flex items-center justify-end gap-1.5 text-sm font-semibold tabular-nums ${
+                r.type === "income" ? "text-green-400" : "text-red-400"
+              }`}
+            >
+              {r.type === "income" ? (
+                <TrendingUp className="h-3.5 w-3.5 shrink-0" />
+              ) : (
+                <TrendingDown className="h-3.5 w-3.5 shrink-0" />
               )}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+              {formatRupiah(r.amount)}
+            </span>
+            {canDelete && (
+              <div className="flex justify-end">
+                <FinanceDeleteButton
+                  financeId={r.id}
+                  orgId={orgId}
+                  description={r.description ?? r.category}
+                  revalidatePaths={revalidatePaths}
+                />
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
