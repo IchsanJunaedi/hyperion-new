@@ -49,7 +49,7 @@ export default async function AssignRolePage() {
   // Determine which roles are already filled per org (manager, captain, coach = max 1 each)
   const orgFilledRoles: Record<string, string[]> = {};
   for (const m of allActiveMembers ?? []) {
-    if (["manager", "captain", "coach"].includes(m.role)) {
+    if (m.organization_id && ["manager", "captain", "coach"].includes(m.role)) {
       if (!orgFilledRoles[m.organization_id]) orgFilledRoles[m.organization_id] = [];
       if (!orgFilledRoles[m.organization_id].includes(m.role)) {
         orgFilledRoles[m.organization_id].push(m.role);
@@ -86,11 +86,13 @@ export default async function AssignRolePage() {
             name: o.name,
             slug: o.slug,
           }))}
-          divisions={(divisions ?? []).map((d) => ({
-            id: d.id,
-            organizationId: d.organization_id,
-            name: d.name,
-          }))}
+          divisions={(divisions ?? [])
+            .filter((d) => !!d.organization_id)
+            .map((d) => ({
+              id: d.id,
+              organizationId: d.organization_id as string,
+              name: d.name,
+            }))}
           orgFilledRoles={orgFilledRoles}
         />
       </main>

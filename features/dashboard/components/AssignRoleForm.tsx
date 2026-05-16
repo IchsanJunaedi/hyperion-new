@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { Loader2 } from "lucide-react";
 import { useMemo, useState, useTransition } from "react";
@@ -157,7 +157,7 @@ export function AssignRoleForm({
               <option key={r.value} value={r.value}>{r.label}</option>
             ))}
           </select>
-          {orgFilledRoles[selectedOrg]?.length > 0 && (
+          {(orgFilledRoles[selectedOrg]?.length ?? 0) > 0 && (
             <p className="mt-1 text-xs text-[#6B6A68]">
               Role yang sudah terisi: {orgFilledRoles[selectedOrg]?.join(", ")}
             </p>
