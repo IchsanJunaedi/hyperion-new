@@ -1,8 +1,8 @@
 "use client";
 
-import { Loader2, Trash2 } from "lucide-react";
+import { AlertTriangle, Loader2, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 
 import { ConfirmDeleteDialog } from "@/features/dashboard/components/ConfirmDeleteDialog";
 import { useNotify } from "@/features/dashboard/components/NotifyModal";
@@ -19,16 +19,30 @@ export function TournamentDetailActions({ tournament, orgSlug }: TournamentDetai
   const { success, error } = useNotify();
   const [pending, startTransition] = useTransition();
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [completeConfirmOpen, setCompleteConfirmOpen] = useState(false);
 
-  function handleStart() {
+  const isPastStartDate = useMemo(() => {
+    return new Date(tournament.start_date).getTime() <= Date.now();
+  }, [tournament.start_date]);
+
+  function handleRegister() {
     startTransition(async () => {
       const res = await updateTournamentStatusAction(orgSlug, tournament.id, "ongoing");
-      if (res.ok) success("Turnamen dimulai!");
+      if (res.ok) success("Pendaftaran dikonfirmasi!");
       else error(res.message);
     });
   }
 
   function handleComplete() {
+    if (!isPastStartDate) {
+      setCompleteConfirmOpen(true);
+      return;
+    }
+    doComplete();
+  }
+
+  function doComplete() {
+    setCompleteConfirmOpen(false);
     startTransition(async () => {
       const res = await updateTournamentStatusAction(orgSlug, tournament.id, "completed");
       if (res.ok) success("Turnamen selesai!");
@@ -63,20 +77,20 @@ export function TournamentDetailActions({ tournament, orgSlug }: TournamentDetai
   return (
     <>
       <div className="flex flex-wrap items-center gap-3">
-        {/* Start — when scheduled and past start date */}
-        {tournament.status === "scheduled" && (
+        {/* Konfirmasi Pendaftaran — when upcoming (belum daftar) */}
+        {tournament.status === "upcoming" && (
           <button
             type="button"
             disabled={pending}
-            onClick={handleStart}
-            className="inline-flex h-9 items-center gap-2 rounded-md border border-white/10 px-4 text-sm font-medium text-white/80 transition hover:bg-white/5 disabled:opacity-50 cursor-pointer"
+            onClick={handleRegister}
+            className="inline-flex h-10 items-center gap-2 rounded-md bg-yellow-400 px-4 text-sm font-semibold text-black transition hover:bg-yellow-300 disabled:opacity-50 cursor-pointer"
           >
-            {pending && <Loader2 className="h-3 w-3 animate-spin" />}
-            Mulai Turnamen
+            {pending && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+            Konfirmasi Pendaftaran
           </button>
         )}
 
-        {/* Complete — when ongoing */}
+        {/* Turnamen Selesai — when ongoing (sudah daftar) */}
         {tournament.status === "ongoing" && (
           <button
             type="button"
@@ -89,8 +103,8 @@ export function TournamentDetailActions({ tournament, orgSlug }: TournamentDetai
           </button>
         )}
 
-        {/* Cancel — when not completed */}
-        {(tournament.status === "scheduled" || tournament.status === "ongoing") && (
+        {/* Batalkan — when not completed */}
+        {(tournament.status === "upcoming" || tournament.status === "ongoing") && (
           <button
             type="button"
             disabled={pending}
@@ -101,7 +115,7 @@ export function TournamentDetailActions({ tournament, orgSlug }: TournamentDetai
           </button>
         )}
 
-        {/* Delete */}
+        {/* Hapus */}
         <button
           type="button"
           onClick={() => setDeleteOpen(true)}
@@ -111,6 +125,51 @@ export function TournamentDetailActions({ tournament, orgSlug }: TournamentDetai
           Hapus
         </button>
       </div>
+
+      {/* Warning dialog — trying to complete before start date */}
+      {completeConfirmOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+          onClick={() => setCompleteConfirmOpen(false)}
+        >
+          <div
+            className="w-full max-w-sm rounded-xl border border-yellow-500/20 bg-[#191919] p-5 shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-3 mb-3">
+              <div className="grid h-10 w-10 place-items-center rounded-full bg-yellow-500/10">
+                <AlertTriangle className="h-5 w-5 text-yellow-400" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-[#E5E2E1]">Turnamen belum dimulai</h3>
+                <p className="text-xs text-[#9B9A97]">Countdown masih berjalan</p>
+              </div>
+            </div>
+            <p className="text-sm text-[#9B9A97] mb-4">
+              Tanggal turnamen belum tiba. Yakin ingin menandai sebagai selesai sekarang?
+              Ini tidak bisa di-undo.
+            </p>
+            <div className="flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setCompleteConfirmOpen(false)}
+                className="h-9 rounded-md border border-[#2D2D2D] px-4 text-xs font-medium text-[#9B9A97] hover:bg-[#2C2C2C] cursor-pointer"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                disabled={pending}
+                onClick={doComplete}
+                className="inline-flex h-9 items-center gap-1.5 rounded-md bg-yellow-400 px-4 text-xs font-semibold text-black hover:bg-yellow-300 disabled:opacity-50 cursor-pointer"
+              >
+                {pending && <Loader2 className="h-3 w-3 animate-spin" />}
+                Tetap Selesaikan
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <ConfirmDeleteDialog
         open={deleteOpen}

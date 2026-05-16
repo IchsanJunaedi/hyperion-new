@@ -61,10 +61,15 @@ export async function getTournamentDetail(
 
 /**
  * Categorize tournaments into panels.
+ * - upcoming: status upcoming (belum daftar)
+ * - registered: status ongoing + start_date belum lewat (terdaftar, countdown)
+ * - ongoing: status ongoing + start_date sudah lewat (sedang berlangsung)
+ * - completed/cancelled: selesai/batal
  */
 export function categorizeTournaments(tournaments: Tournament[]) {
   const now = new Date();
   const upcoming: Tournament[] = [];
+  const registered: Tournament[] = [];
   const ongoing: Tournament[] = [];
   const completed: Tournament[] = [];
   const cancelled: Tournament[] = [];
@@ -75,11 +80,17 @@ export function categorizeTournaments(tournaments: Tournament[]) {
     } else if (t.status === "completed") {
       completed.push(t);
     } else if (t.status === "ongoing") {
-      ongoing.push(t);
+      const startDate = new Date(t.start_date);
+      if (startDate.getTime() > now.getTime()) {
+        registered.push(t);
+      } else {
+        ongoing.push(t);
+      }
     } else {
+      // upcoming or scheduled
       upcoming.push(t);
     }
   }
 
-  return { upcoming, ongoing, completed, cancelled };
+  return { upcoming, registered, ongoing, completed, cancelled };
 }

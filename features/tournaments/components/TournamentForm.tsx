@@ -30,6 +30,7 @@ export function TournamentForm({ orgSlug, divisionId, tournament, onSuccess }: T
   const [startDate, setStartDate] = useState(tournament?.start_date ?? "");
   const [endDate, setEndDate] = useState(tournament?.end_date ?? "");
   const [prizePool, setPrizePool] = useState(tournament?.prize_pool ?? "");
+  const [registrationFee, setRegistrationFee] = useState(tournament?.registration_fee ?? "");
   const [registrationUrl, setRegistrationUrl] = useState(tournament?.registration_url ?? "");
   const [notes, setNotes] = useState(tournament?.notes ?? "");
 
@@ -42,6 +43,7 @@ export function TournamentForm({ orgSlug, divisionId, tournament, onSuccess }: T
       start_date: startDate,
       end_date: endDate || undefined,
       prize_pool: prizePool || undefined,
+      registration_fee: registrationFee || undefined,
       registration_url: registrationUrl || undefined,
       notes: notes || undefined,
     };
@@ -52,6 +54,9 @@ export function TournamentForm({ orgSlug, divisionId, tournament, onSuccess }: T
         : await createTournamentAction(orgSlug, payload);
       if (res.ok) {
         success(isEdit ? "Turnamen diperbarui!" : "Turnamen ditambahkan!");
+        if (!isEdit && "id" in res) {
+          window.location.href = `/${orgSlug}/tournaments/${res.id}`;
+        }
         onSuccess?.();
       } else {
         error(res.message);
@@ -100,14 +105,25 @@ export function TournamentForm({ orgSlug, divisionId, tournament, onSuccess }: T
         </div>
       </div>
 
-      <div>
-        <label className="text-xs text-[#9B9A97] mb-1 block">Prize Pool (Rp)</label>
-        <input
-          value={prizePool}
-          onChange={(e) => setPrizePool(formatNumber(e.target.value))}
-          inputMode="numeric"
-          className="h-9 w-full rounded-md border border-[#2D2D2D] bg-[#202020] px-3 text-sm text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none"
-        />
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div>
+          <label className="text-xs text-[#9B9A97] mb-1 block">Prize Pool (Rp)</label>
+          <input
+            value={prizePool}
+            onChange={(e) => setPrizePool(formatNumber(e.target.value))}
+            inputMode="numeric"
+            className="h-9 w-full rounded-md border border-[#2D2D2D] bg-[#202020] px-3 text-sm text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none"
+          />
+        </div>
+        <div>
+          <label className="text-xs text-[#9B9A97] mb-1 block">Biaya Registrasi (Rp)</label>
+          <input
+            value={registrationFee}
+            onChange={(e) => setRegistrationFee(formatNumber(e.target.value))}
+            inputMode="numeric"
+            className="h-9 w-full rounded-md border border-[#2D2D2D] bg-[#202020] px-3 text-sm text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none"
+          />
+        </div>
       </div>
 
       <div>

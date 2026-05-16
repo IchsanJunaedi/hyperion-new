@@ -7,6 +7,7 @@ export const createTournamentSchema = z.object({
   start_date: z.string().min(1, "Tanggal mulai wajib diisi"),
   end_date: z.string().optional().transform((v) => (v && v.length > 0 ? v : null)),
   prize_pool: z.string().trim().max(100).optional().transform((v) => (v && v.length > 0 ? v : null)),
+  registration_fee: z.string().trim().max(100).optional().transform((v) => (v && v.length > 0 ? v : null)),
   registration_url: z.string().trim().max(500).optional().transform((v) => (v && v.length > 0 ? v : null)),
   notes: z.string().trim().max(2000).optional().transform((v) => (v && v.length > 0 ? v : null)),
 });

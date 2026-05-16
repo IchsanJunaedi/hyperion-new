@@ -2,7 +2,7 @@
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 import type { Database } from "@/types/database";
 
@@ -13,6 +13,7 @@ interface CalendarGridProps {
   events: CalendarEvent[];
   year: number;
   month: number; // 0-indexed
+  readOnly?: boolean;
 }
 
 const DAY_NAMES = ["Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"];
@@ -25,7 +26,13 @@ const EVENT_TYPE_COLORS: Record<string, string> = {
   other: "bg-white/40",
 };
 
-export function CalendarGrid({ orgSlug, events, year, month }: CalendarGridProps) {
+export function CalendarGrid({
+  orgSlug,
+  events,
+  year,
+  month,
+  readOnly = false,
+}: CalendarGridProps) {
   const router = useRouter();
 
   const firstDay = new Date(year, month, 1);
@@ -45,9 +52,7 @@ export function CalendarGrid({ orgSlug, events, year, month }: CalendarGridProps
   for (const event of events) {
     // Parse in WIB
     const eventDate = new Date(event.starts_at);
-    const wibDate = new Date(
-      eventDate.getTime() + 7 * 60 * 60 * 1000,
-    );
+    const wibDate = new Date(eventDate.getTime() + 7 * 60 * 60 * 1000);
     const day = wibDate.getUTCDate();
     const eventMonth = wibDate.getUTCMonth();
     const eventYear = wibDate.getUTCFullYear();
@@ -63,7 +68,8 @@ export function CalendarGrid({ orgSlug, events, year, month }: CalendarGridProps
     const params = new URLSearchParams();
     params.set("y", String(newDate.getFullYear()));
     params.set("m", String(newDate.getMonth()));
-    router.push(`/${orgSlug}/calendar?${params.toString()}`);
+    const basePath = readOnly ? "/dashboard/calendar" : `/${orgSlug}/calendar`;
+    router.push(`${basePath}?${params.toString()}`);
   }
 
   const today = new Date();
@@ -136,18 +142,37 @@ export function CalendarGrid({ orgSlug, events, year, month }: CalendarGridProps
                 {day}
               </span>
               <div className="mt-0.5 space-y-0.5">
-                {dayEvents.slice(0, 3).map((ev) => (
-                  <Link
-                    key={ev.id}
-                    href={`/${orgSlug}/calendar/${ev.id}`}
-                    className="block truncate rounded px-1 py-0.5 text-[10px] leading-tight text-white/80 transition hover:bg-white/10"
-                  >
-                    <span
-                      className={`mr-1 inline-block h-1.5 w-1.5 rounded-full ${EVENT_TYPE_COLORS[ev.event_type] ?? "bg-white/40"}`}
-                    />
-                    {ev.title}
-                  </Link>
-                ))}
+                {dayEvents.slice(0, 3).map((ev) => {
+                  const eventContent = (
+                    <>
+                      <span
+                        className={`mr-1 inline-block h-1.5 w-1.5 rounded-full ${EVENT_TYPE_COLORS[ev.event_type] ?? "bg-white/40"}`}
+                      />
+                      {ev.title}
+                    </>
+                  );
+
+                  if (readOnly) {
+                    return (
+                      <div
+                        key={ev.id}
+                        className="block truncate rounded px-1 py-0.5 text-[10px] leading-tight text-white/80"
+                      >
+                        {eventContent}
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <Link
+                      key={ev.id}
+                      href={`/${orgSlug}/calendar/${ev.id}`}
+                      className="block truncate rounded px-1 py-0.5 text-[10px] leading-tight text-white/80 transition hover:bg-white/10"
+                    >
+                      {eventContent}
+                    </Link>
+                  );
+                })}
                 {dayEvents.length > 3 && (
                   <span className="block px-1 text-[10px] text-white/40">
                     +{dayEvents.length - 3} lagi

@@ -16,8 +16,8 @@ interface TournamentDetailPageProps {
 }
 
 const STATUS_BADGE: Record<string, { color: string; label: string }> = {
-  scheduled: { color: "bg-blue-500/10 text-blue-400 border-blue-500/20", label: "TERDAFTAR" },
-  ongoing: { color: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20", label: "BERLANGSUNG" },
+  upcoming: { color: "bg-white/5 text-[#9B9A97] border-white/10", label: "BELUM DAFTAR" },
+  ongoing: { color: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20", label: "TERDAFTAR" },
   completed: { color: "bg-green-500/10 text-green-400 border-green-500/20", label: "SELESAI" },
   cancelled: { color: "bg-red-500/10 text-red-400 border-red-500/20", label: "DIBATALKAN" },
 };
@@ -67,8 +67,8 @@ export default async function TournamentDetailPage({ params }: TournamentDetailP
           <p className="text-sm text-white/65">oleh {detail.organizer}</p>
         )}
 
-        {/* Countdown — show when scheduled (registered, waiting for day) */}
-        {detail.status === "scheduled" && (
+        {/* Countdown — show when not completed/cancelled */}
+        {(detail.status === "upcoming" || detail.status === "ongoing") && (
           <div className="mt-3">
             <TournamentCountdown
               name={detail.name}
@@ -102,9 +102,16 @@ export default async function TournamentDetailPage({ params }: TournamentDetailP
       <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
         <section className="space-y-6">
           {/* Detail info card */}
-          {(detail.registration_url || detail.notes) && (
+          {(detail.registration_fee || detail.registration_url || detail.notes) && (
             <article className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
               <h2 className="text-sm font-semibold text-white">Detail tambahan</h2>
+
+              {detail.registration_fee && (
+                <div className="mt-3">
+                  <span className="text-xs text-[#6B6A68]">Biaya Registrasi</span>
+                  <p className="text-sm text-[#E5E2E1]">Rp {detail.registration_fee}</p>
+                </div>
+              )}
 
               {detail.registration_url && (
                 <div className="mt-3 flex flex-wrap gap-2">

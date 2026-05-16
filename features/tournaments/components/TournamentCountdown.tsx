@@ -34,6 +34,7 @@ function diffParts(target: Date): CountdownParts {
 export function TournamentCountdown({ name, startDate, prizePool, organizer }: TournamentCountdownProps) {
   const target = useMemo(() => new Date(startDate), [startDate]);
   const [parts, setParts] = useState<CountdownParts | null>(null);
+  const [formatted, setFormatted] = useState("");
 
   useEffect(() => {
     setParts(diffParts(target));
@@ -41,27 +42,33 @@ export function TournamentCountdown({ name, startDate, prizePool, organizer }: T
     return () => clearInterval(id);
   }, [target]);
 
-  const formatted = target.toLocaleString("id-ID", {
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-    timeZone: "Asia/Jakarta",
-  });
+  useEffect(() => {
+    setFormatted(
+      target.toLocaleString("id-ID", {
+        weekday: "short",
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+        timeZone: "Asia/Jakarta",
+      }),
+    );
+  }, [target]);
+
+  const isPast = parts?.pastDue ?? false;
 
   return (
     <article className="rounded-xl border border-white/10 bg-gradient-to-br from-yellow-500/[0.08] to-transparent p-5">
       <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-yellow-400">
         <Trophy className="h-3.5 w-3.5" />
-        Turnamen terdaftar
+        {isPast ? "Turnamen sedang berlangsung" : "Turnamen berikutnya"}
       </div>
 
       <h3 className="mt-3 text-xl font-bold text-white sm:text-2xl">
         {name}
       </h3>
-      {organizer && (
-        <p className="mt-1 text-xs text-white/55">oleh {organizer}</p>
-      )}
+      <p className="mt-1 text-xs uppercase tracking-wide text-white/55">
+        {organizer ?? "—"}
+      </p>
 
       <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-white/75">
         <span className="inline-flex items-center gap-1.5">
@@ -90,7 +97,7 @@ export function TournamentCountdown({ name, startDate, prizePool, organizer }: T
           </div>
         ) : parts.pastDue ? (
           <span className="text-sm font-medium text-yellow-400">
-            Turnamen sudah dimulai
+            Sedang berlangsung
           </span>
         ) : (
           <div className="flex gap-2 text-sm tabular-nums">

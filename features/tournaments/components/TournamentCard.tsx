@@ -11,15 +11,13 @@ interface TournamentCardProps {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  scheduled: "bg-blue-500/10 text-blue-400",
-  upcoming: "bg-blue-500/10 text-blue-400",
+  upcoming: "bg-white/5 text-[#9B9A97]",
   ongoing: "bg-yellow-500/10 text-yellow-400",
   completed: "bg-green-500/10 text-green-400",
   cancelled: "bg-red-500/10 text-red-400",
 };
 
 const STATUS_LABELS: Record<string, string> = {
-  scheduled: "Belum Daftar",
   upcoming: "Belum Daftar",
   ongoing: "Terdaftar",
   completed: "Selesai",

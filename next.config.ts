@@ -3,6 +3,7 @@ import path from "node:path";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  devIndicators: false,
   // Pin file-tracing root to this app to silence the multi-lockfile warning
   // (the Laravel monorepo above us also has a package-lock.json).
   outputFileTracingRoot: path.resolve(__dirname),
