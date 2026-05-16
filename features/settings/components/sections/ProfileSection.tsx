@@ -180,7 +180,6 @@ export function ProfileSection({ userId }: { userId: string }) {
           <input
             {...register("username")}
             className={inputCls}
-            placeholder="@username"
           />
         </Field>
         <Field label="Nama Lengkap">
@@ -197,7 +196,6 @@ export function ProfileSection({ userId }: { userId: string }) {
           <input
             {...register("phone_wa")}
             className={inputCls}
-            placeholder="+628xxx"
           />
         </Field>
         <Field label="Bio" className="col-span-2">
