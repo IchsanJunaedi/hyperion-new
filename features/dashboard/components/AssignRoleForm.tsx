@@ -90,6 +90,9 @@ export function AssignRoleForm({
     });
   }
 
+  const selectCls =
+    "h-10 w-full rounded border border-[#2D2D2D] bg-[#191919] px-3 text-sm text-[#E5E2E1] focus:outline-none focus:border-[#4D4D4D] transition appearance-none cursor-pointer";
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <Field label="1. Pilih User" name="user_id">
@@ -98,7 +101,7 @@ export function AssignRoleForm({
           required
           value={selectedUser}
           onChange={(e) => handleUserChange(e.target.value)}
-          className="h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
+          className={selectCls}
         >
           <option value="" disabled>Pilih user...</option>
           {sortedUsers.map((u) => (
@@ -114,7 +117,7 @@ export function AssignRoleForm({
             required
             value={selectedOrg}
             onChange={(e) => handleOrgChange(e.target.value)}
-            className="h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
+            className={selectCls}
           >
             <option value="" disabled>Pilih tim...</option>
             {organizations.map((o) => (
@@ -130,7 +133,7 @@ export function AssignRoleForm({
             name="division_id"
             value={selectedDiv}
             onChange={(e) => setSelectedDiv(e.target.value)}
-            className="h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
+            className={selectCls}
           >
             <option value="">Tanpa divisi</option>
             {filteredDivisions.map((d) => (
@@ -147,7 +150,7 @@ export function AssignRoleForm({
             required
             value={selectedRole}
             onChange={(e) => setSelectedRole(e.target.value as MemberRole)}
-            className="h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
+            className={selectCls}
           >
             <option value="" disabled>Pilih role...</option>
             {availableRoles.map((r) => (
@@ -163,7 +166,7 @@ export function AssignRoleForm({
       )}
 
       {error && (
-        <p className="rounded-md border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-sm text-rose-300">
+        <p className="rounded border border-rose-500/20 bg-rose-500/5 px-3 py-2 text-xs text-rose-400">
           {error}
         </p>
       )}
@@ -171,9 +174,9 @@ export function AssignRoleForm({
       <button
         type="submit"
         disabled={pending || !selectedUser || !selectedOrg || !selectedRole}
-        className="inline-flex h-11 items-center gap-2 rounded-md bg-yellow-400 px-5 text-sm font-semibold text-black transition hover:bg-yellow-300 disabled:cursor-not-allowed disabled:opacity-40"
+        className="inline-flex h-9 items-center gap-2 rounded border border-[#2D2D2D] bg-[#252525] px-4 text-xs font-medium text-[#E5E2E1] transition-all hover:bg-[#2D2D2D] hover:border-[#3D3D3D] active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 cursor-pointer"
       >
-        {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+        {pending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
         Assign Role
       </button>
     </form>
@@ -190,8 +193,8 @@ function Field({
   children: React.ReactNode;
 }) {
   return (
-    <div className="space-y-1">
-      <label htmlFor={name} className="text-xs font-medium text-white/70">
+    <div className="space-y-1.5">
+      <label htmlFor={name} className="text-xs text-[#9B9A97]">
         {label}
       </label>
       {children}

@@ -40,7 +40,20 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <QueryProvider>{children}</QueryProvider>
-        <Toaster richColors position="top-right" />
+        <Toaster
+          theme="dark"
+          position="top-right"
+          toastOptions={{
+            style: {
+              background: "#1C1C1C",
+              border: "1px solid #2D2D2D",
+              color: "#E5E2E1",
+              borderRadius: "10px",
+              fontSize: "13px",
+              fontFamily: "var(--font-sans)",
+            },
+          }}
+        />
       </body>
     </html>
   );
