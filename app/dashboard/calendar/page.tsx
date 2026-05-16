@@ -27,21 +27,23 @@ export default async function DashboardCalendarPage({
   const isOwner = Boolean(ownerEmail && user.email === ownerEmail);
   const admin = createAdminClient();
 
-  // Determine which orgs this user can see & act on
-  let orgsToLoad: Array<{ id: string; slug: string }> = [];
-  let activeOrgId: string | null = null;
+  // --- Resolve active org & canCreate ---
   let activeOrgSlug: string | null = null;
+  let activeOrgId: string | null = null;
+  let activeDivisions: Array<{ id: string; name: string }> = [];
 
   if (isOwner) {
-    const { data } = await admin
+    // Owner: grab any org — just needs a slug for the event creation action
+    const { data: orgs } = await admin
       .from("organizations")
       .select("id, slug")
-      .order("created_at", { ascending: false });
-    orgsToLoad = data ?? [];
-    // First org is the "active" org for creating events
-    activeOrgId = orgsToLoad[0]?.id ?? null;
-    activeOrgSlug = orgsToLoad[0]?.slug ?? null;
+      .order("created_at", { ascending: true })
+      .limit(1)
+      .returns<Array<{ id: string; slug: string }>>();
+    activeOrgId = orgs?.[0]?.id ?? null;
+    activeOrgSlug = orgs?.[0]?.slug ?? null;
   } else {
+    // Manager: find their assigned org
     const { data: membership } = await supabase
       .from("team_members")
       .select("organization_id, organizations(id, slug)")
@@ -56,13 +58,8 @@ export default async function DashboardCalendarPage({
     const orgJoin = membership.organizations as unknown as { id: string; slug: string } | null;
     activeOrgId = orgJoin?.id ?? null;
     activeOrgSlug = orgJoin?.slug ?? null;
-    if (activeOrgId && activeOrgSlug) {
-      orgsToLoad = [{ id: activeOrgId, slug: activeOrgSlug }];
-    }
   }
 
-  // Load divisions for the active org (used in quick-add modal)
-  let activeDivisions: Array<{ id: string; name: string }> = [];
   if (activeOrgId) {
     const { data: divs } = await admin
       .from("divisions")
@@ -73,18 +70,32 @@ export default async function DashboardCalendarPage({
     activeDivisions = divs ?? [];
   }
 
+  // Owner can always create (determined by email, not org query)
+  // Manager can create if their org was found
+  const canCreate = isOwner || Boolean(activeOrgSlug);
+
+  // --- Load all events visible to this user ---
   const sp = await searchParams;
   const now = new Date();
   const year = sp.y ? parseInt(sp.y, 10) : now.getFullYear();
   const month = sp.m ? parseInt(sp.m, 10) : now.getMonth();
 
   const WIB_OFFSET_MS = 7 * 60 * 60 * 1000;
-  const startUtcMs = Date.UTC(year, month, 1) - WIB_OFFSET_MS;
-  const endUtcMs = Date.UTC(year, month + 1, 0, 23, 59, 59) - WIB_OFFSET_MS;
-  const from = new Date(startUtcMs).toISOString();
-  const to = new Date(endUtcMs).toISOString();
+  const from = new Date(Date.UTC(year, month, 1) - WIB_OFFSET_MS).toISOString();
+  const to = new Date(Date.UTC(year, month + 1, 0, 23, 59, 59) - WIB_OFFSET_MS).toISOString();
 
-  // Load all events from relevant orgs
+  let orgsToLoad: Array<{ id: string; slug: string }> = [];
+  if (isOwner) {
+    const { data } = await admin
+      .from("organizations")
+      .select("id, slug")
+      .order("created_at", { ascending: false })
+      .returns<Array<{ id: string; slug: string }>>();
+    orgsToLoad = (data ?? []).filter((o) => o.id && o.slug);
+  } else if (activeOrgId && activeOrgSlug) {
+    orgsToLoad = [{ id: activeOrgId, slug: activeOrgSlug }];
+  }
+
   const allEvents: CalendarEvent[] = [];
 
   for (const org of orgsToLoad) {
@@ -99,9 +110,7 @@ export default async function DashboardCalendarPage({
     if (manualEvents) allEvents.push(...manualEvents);
 
     const linkedScrimIds = new Set(
-      manualEvents
-        ?.filter((e) => e.ref_type === "scrim" && e.ref_id)
-        .map((e) => e.ref_id!) ?? [],
+      manualEvents?.filter((e) => e.ref_type === "scrim" && e.ref_id).map((e) => e.ref_id!) ?? [],
     );
 
     const { data: scrims } = await admin
@@ -133,9 +142,7 @@ export default async function DashboardCalendarPage({
     }
 
     const linkedTournamentIds = new Set(
-      manualEvents
-        ?.filter((e) => e.ref_type === "tournament" && e.ref_id)
-        .map((e) => e.ref_id!) ?? [],
+      manualEvents?.filter((e) => e.ref_type === "tournament" && e.ref_id).map((e) => e.ref_id!) ?? [],
     );
 
     const { data: tournaments } = await admin
@@ -166,11 +173,7 @@ export default async function DashboardCalendarPage({
     }
   }
 
-  allEvents.sort(
-    (a, b) => new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime(),
-  );
-
-  const canCreate = Boolean(activeOrgSlug);
+  allEvents.sort((a, b) => new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime());
 
   return (
     <div className="space-y-6 px-4 py-6 sm:px-8">
@@ -181,7 +184,7 @@ export default async function DashboardCalendarPage({
             {isOwner ? "Kalender Terpadu" : "Kalender Tim"}
           </h1>
           <p className="mt-0.5 text-xs text-white/40">
-            {canCreate ? "Klik tanggal untuk tambah event" : "Kalender terpadu semua tim"}
+            {canCreate ? "Klik tanggal untuk tambah event" : "Kalender semua tim"}
           </p>
         </div>
         {canCreate && activeOrgSlug && (
