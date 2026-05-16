@@ -215,84 +215,152 @@ export function ReportView({ report }: ReportViewProps) {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-bold text-[#E5E2E1]">
-          {report.month} {report.year}
-        </h2>
+        <div className="space-y-1">
+          <h2 className="text-xl font-bold tracking-tight text-[#E5E2E1]">
+            {report.month} {report.year}
+          </h2>
+          <p className="text-xs text-[#6B6A68]">Data ringkasan organisasi untuk periode ini.</p>
+        </div>
         <button
           type="button"
           onClick={handleDownloadPdf}
           disabled={downloading}
-          className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-md bg-yellow-400 px-4 text-xs font-semibold text-black transition-colors hover:bg-yellow-300 disabled:opacity-60"
+          className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-lg border border-[#2D2D2D] bg-[#252525] px-4 text-xs font-medium text-[#E5E2E1] transition-all hover:bg-[#2D2D2D] hover:border-[#3D3D3D] active:scale-95 disabled:opacity-50"
         >
           {downloading
             ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
-            : <Download className="h-3.5 w-3.5" />}
+            : <Download className="h-3.5 w-3.5 text-[#D4D4D4]" />}
           {downloading ? "Membuat PDF…" : "Download PDF"}
         </button>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-3">
-        {/* Scrim */}
-        <div className="rounded-xl border border-[#2D2D2D] bg-[#202020] p-4">
-          <div className="mb-3 flex items-center gap-2">
-            <Trophy className="h-4 w-4 text-yellow-400" />
-            <span className="text-xs font-medium text-[#9B9A97]">Scrim</span>
-          </div>
-          <p className="text-2xl font-bold text-[#E5E2E1]">{report.scrims.total}</p>
-          <p className="mt-1 text-xs text-[#6B6A68]">total scrim</p>
-          <div className="mt-3 grid grid-cols-3 gap-2 text-center">
-            <div>
-              <p className="text-sm font-semibold text-green-400">{report.scrims.wins}</p>
-              <p className="text-[10px] text-[#6B6A68]">Win</p>
+      <div className="grid gap-5 sm:grid-cols-3">
+        {/* Scrim Performance */}
+        <div className="group relative overflow-hidden rounded-2xl border border-[#2D2D2D] bg-[#1C1C1C] p-5 transition-all hover:border-[#3D3D3D]">
+          <div className="mb-4 flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#252525]">
+                <Trophy className="h-4 w-4 text-[#D4D4D4]" />
+              </div>
+              <span className="text-xs font-semibold uppercase tracking-wider text-[#9B9A97]">Scrim</span>
             </div>
-            <div>
-              <p className="text-sm font-semibold text-red-400">{report.scrims.losses}</p>
-              <p className="text-[10px] text-[#6B6A68]">Loss</p>
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-[#9B9A97]">{report.scrims.draws}</p>
-              <p className="text-[10px] text-[#6B6A68]">Draw</p>
+            <div className="text-right">
+              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                report.scrims.winRate >= 50 
+                  ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" 
+                  : "bg-rose-500/10 text-rose-400 border-rose-500/20"
+              }`}>
+                {report.scrims.winRate}% WR
+              </span>
             </div>
           </div>
-          <div className="mt-2 text-center">
-            <span className="text-xs text-[#9B9A97]">Win Rate: </span>
-            <span className={`text-xs font-semibold ${report.scrims.winRate >= 50 ? "text-green-400" : "text-red-400"}`}>
-              {report.scrims.winRate}%
-            </span>
+          
+          <div className="flex items-baseline gap-2">
+            <p className="text-3xl font-bold tracking-tight text-[#E5E2E1]">{report.scrims.total}</p>
+            <p className="text-xs text-[#6B6A68]">total match</p>
+          </div>
+
+          <div className="mt-6 flex items-center gap-1 h-1.5 w-full bg-[#252525] rounded-full overflow-hidden">
+            <div 
+              style={{ width: `${(report.scrims.wins / (report.scrims.total || 1)) * 100}%` }} 
+              className="h-full bg-emerald-500/60"
+            />
+            <div 
+              style={{ width: `${(report.scrims.draws / (report.scrims.total || 1)) * 100}%` }} 
+              className="h-full bg-zinc-500/40"
+            />
+            <div 
+              style={{ width: `${(report.scrims.losses / (report.scrims.total || 1)) * 100}%` }} 
+              className="h-full bg-rose-500/60"
+            />
+          </div>
+
+          <div className="mt-4 flex justify-between text-[11px] font-medium">
+            <div className="flex items-center gap-1.5">
+              <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+              <span className="text-[#E5E2E1]">{report.scrims.wins}</span>
+              <span className="text-[#6B6A68]">W</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="h-1.5 w-1.5 rounded-full bg-zinc-500" />
+              <span className="text-[#E5E2E1]">{report.scrims.draws}</span>
+              <span className="text-[#6B6A68]">D</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="h-1.5 w-1.5 rounded-full bg-rose-500" />
+              <span className="text-[#E5E2E1]">{report.scrims.losses}</span>
+              <span className="text-[#6B6A68]">L</span>
+            </div>
           </div>
         </div>
 
         {/* Attendance */}
-        <div className="rounded-xl border border-[#2D2D2D] bg-[#202020] p-4">
-          <div className="mb-3 flex items-center gap-2">
-            <FileText className="h-4 w-4 text-blue-400" />
-            <span className="text-xs font-medium text-[#9B9A97]">Kehadiran</span>
+        <div className="group relative overflow-hidden rounded-2xl border border-[#2D2D2D] bg-[#1C1C1C] p-5 transition-all hover:border-[#3D3D3D]">
+          <div className="mb-4 flex items-center gap-2.5">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#252525]">
+              <FileText className="h-4 w-4 text-[#D4D4D4]" />
+            </div>
+            <span className="text-xs font-semibold uppercase tracking-wider text-[#9B9A97]">Kehadiran</span>
           </div>
-          <p className="text-2xl font-bold text-[#E5E2E1]">{report.attendance.avgAttendanceRate}%</p>
-          <p className="mt-1 text-xs text-[#6B6A68]">rata-rata kehadiran</p>
-          <p className="mt-2 text-xs text-[#9B9A97]">{report.attendance.totalMembers} member aktif</p>
+          
+          <div className="flex items-baseline gap-2">
+            <p className="text-3xl font-bold tracking-tight text-[#E5E2E1]">{report.attendance.avgAttendanceRate}%</p>
+            <p className="text-xs text-[#6B6A68]">rata-rata</p>
+          </div>
+
+          <div className="mt-6 space-y-3">
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-[#9B9A97]">Member Aktif</span>
+              <span className="font-medium text-[#E5E2E1]">{report.attendance.totalMembers} Personil</span>
+            </div>
+            <div className="h-1.5 w-full bg-[#252525] rounded-full overflow-hidden">
+              <div 
+                style={{ width: `${report.attendance.avgAttendanceRate}%` }} 
+                className="h-full bg-blue-500/60"
+              />
+            </div>
+          </div>
         </div>
 
         {/* Finances */}
-        <div className="rounded-xl border border-[#2D2D2D] bg-[#202020] p-4">
-          <div className="mb-3 flex items-center gap-2">
-            <TrendingUp className="h-4 w-4 text-green-400" />
-            <span className="text-xs font-medium text-[#9B9A97]">Keuangan</span>
-          </div>
-          <p className={`text-2xl font-bold ${report.finances.balance >= 0 ? "text-green-400" : "text-red-400"}`}>
-            Rp {Math.abs(report.finances.balance).toLocaleString("id-ID")}
-          </p>
-          <p className="mt-1 text-xs text-[#6B6A68]">
-            {report.finances.balance >= 0 ? "surplus" : "defisit"}
-          </p>
-          <div className="mt-3 space-y-1 text-xs">
-            <div className="flex justify-between">
-              <span className="text-[#9B9A97]">Masuk</span>
-              <span className="text-green-400">+Rp {report.finances.totalIncome.toLocaleString("id-ID")}</span>
+        <div className="group relative overflow-hidden rounded-2xl border border-[#2D2D2D] bg-[#1C1C1C] p-5 transition-all hover:border-[#3D3D3D]">
+          <div className="mb-4 flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#252525]">
+                <TrendingUp className="h-4 w-4 text-[#D4D4D4]" />
+              </div>
+              <span className="text-xs font-semibold uppercase tracking-wider text-[#9B9A97]">Keuangan</span>
             </div>
-            <div className="flex justify-between">
-              <span className="text-[#9B9A97]">Keluar</span>
-              <span className="text-red-400">-Rp {report.finances.totalExpense.toLocaleString("id-ID")}</span>
+            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+              report.finances.balance >= 0 
+                ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" 
+                : "bg-rose-500/10 text-rose-400 border-rose-500/20"
+            }`}>
+              {report.finances.balance >= 0 ? "SURPLUS" : "DEFISIT"}
+            </span>
+          </div>
+          
+          <div className="flex items-baseline gap-1">
+            <span className="text-sm font-medium text-[#6B6A68]">Rp</span>
+            <p className={`text-2xl font-bold tracking-tight ${report.finances.balance >= 0 ? "text-[#E5E2E1]" : "text-rose-400"}`}>
+              {Math.abs(report.finances.balance).toLocaleString("id-ID")}
+            </p>
+          </div>
+
+          <div className="mt-6 space-y-2.5">
+            <div className="flex justify-between text-xs">
+              <span className="text-[#9B9A97]">Pemasukan</span>
+              <span className="font-medium text-emerald-400">+{report.finances.totalIncome.toLocaleString("id-ID")}</span>
+            </div>
+            <div className="flex justify-between text-xs">
+              <span className="text-[#9B9A97]">Pengeluaran</span>
+              <span className="font-medium text-rose-400">-{report.finances.totalExpense.toLocaleString("id-ID")}</span>
+            </div>
+            <div className="pt-2 border-t border-[#2D2D2D] flex justify-between text-[10px] text-[#6B6A68]">
+              <span>Nett Balance</span>
+              <span className={report.finances.balance >= 0 ? "text-emerald-400/70" : "text-rose-400/70"}>
+                {report.finances.balance >= 0 ? "+" : "-"}{Math.abs(report.finances.balance).toLocaleString("id-ID")}
+              </span>
             </div>
           </div>
         </div>

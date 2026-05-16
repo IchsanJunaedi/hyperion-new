@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { FileText } from "lucide-react";
 
 import { createClient } from "@/lib/supabase/server";
@@ -27,7 +28,7 @@ export default async function DashboardReportsPage({ searchParams }: ReportsPage
   // Get owner's org
   const { data: org } = await admin
     .from("organizations")
-    .select("id")
+    .select("id, name")
     .eq("owner_id", user.id)
     .limit(1)
     .maybeSingle();
@@ -54,11 +55,14 @@ export default async function DashboardReportsPage({ searchParams }: ReportsPage
     ][i],
   }));
 
+  const { data: profiles } = await admin.from("profiles").select("id, full_name");
+  const workspaceName = profiles?.find(p => p.id === user.id)?.full_name ?? "Hyperion Team";
+
   return (
     <>
       <header className="h-12 flex items-center px-6 sticky top-0 bg-[#191919] z-40 border-b border-[#2D2D2D]">
         <div className="flex items-center gap-2 text-[#9B9A97] text-sm">
-          <span>Hyperion Team</span>
+          <Link href="/dashboard" className="hover:text-[#D4D4D4]">Home</Link>
           <span className="text-[#6B6A68]">/</span>
           <span className="text-[#D4D4D4]">Laporan</span>
         </div>
@@ -67,7 +71,7 @@ export default async function DashboardReportsPage({ searchParams }: ReportsPage
       <main className="flex-1 max-w-[900px] w-full mx-auto px-8 py-12 space-y-6">
         <header>
           <div className="flex items-center gap-2">
-            <FileText className="h-5 w-5 text-purple-400" />
+            <FileText className="h-5 w-5 text-[#D4D4D4]" />
             <h1 className="text-xl font-bold text-[#E5E2E1]">Laporan Bulanan</h1>
           </div>
           <p className="text-sm text-[#9B9A97] mt-1">
