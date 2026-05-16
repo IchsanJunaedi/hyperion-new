@@ -2,8 +2,10 @@ import "server-only";
 
 import { createClient } from "@/lib/supabase/server";
 import type { Database } from "@/types/database";
+import type { EventDetailWithRelations, CalendarEventComment } from "./types";
 
-export type CalendarEvent = Database["public"]["Tables"]["calendar_events"]["Row"];
+export type CalendarEvent =
+  Database["public"]["Tables"]["calendar_events"]["Row"];
 
 /**
  * Fetch calendar events for an org within a date range.
@@ -52,7 +54,9 @@ export async function listUpcomingEvents(
 ): Promise<CalendarEvent[]> {
   const supabase = await createClient();
   const now = new Date().toISOString();
-  const weekLater = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+  const weekLater = new Date(
+    Date.now() + 7 * 24 * 60 * 60 * 1000,
+  ).toISOString();
 
   const { data, error } = await supabase
     .from("calendar_events")
@@ -64,5 +68,70 @@ export async function listUpcomingEvents(
     .limit(limit);
 
   if (error) return [];
+  return data ?? [];
+}
+
+/**
+ * Fetch event detail with all relations and comments
+ */
+export async function getEventDetailWithRelations(
+  eventId: string,
+): Promise<EventDetailWithRelations | null> {
+  const supabase = await createClient();
+
+  // Get event
+  const { data: event } = await supabase
+    .from("calendar_events")
+    .select("*")
+    .eq("id", eventId)
+    .maybeSingle();
+
+  if (!event) return null;
+
+  // Get PIC profile
+  let pic = null;
+  if (event.pic_user_id) {
+    const { data: picData } = await supabase
+      .from("profiles")
+      .select("id, display_name, avatar_url")
+      .eq("id", event.pic_user_id)
+      .maybeSingle();
+    pic = picData as any;
+  }
+
+  // Get comments
+  const { data: comments } = await supabase
+    .from("calendar_event_comments")
+    .select("*")
+    .eq("event_id", eventId)
+    .order("created_at", { ascending: true });
+
+  // Get relations
+  const { data: relations } = await supabase
+    .from("calendar_event_relations")
+    .select("*")
+    .eq("event_id", eventId);
+
+  return {
+    ...event,
+    pic,
+    comments: comments ?? [],
+    relations: relations ?? [],
+  };
+}
+
+/**
+ * Fetch comments for an event (for realtime updates)
+ */
+export async function getEventComments(
+  eventId: string,
+): Promise<CalendarEventComment[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("calendar_event_comments")
+    .select("*")
+    .eq("event_id", eventId)
+    .order("created_at", { ascending: true });
+
   return data ?? [];
 }

@@ -8,6 +8,16 @@ export const eventTypeSchema = z.enum([
   "other",
 ]);
 
+export const eventStatusSchema = z.enum([
+  "draft",
+  "confirmed",
+  "ongoing",
+  "completed",
+  "cancelled",
+]);
+
+export const eventPrioritySchema = z.enum(["low", "medium", "high", "urgent"]);
+
 export const createCalendarEventSchema = z.object({
   title: z
     .string()
@@ -30,7 +40,10 @@ export const createCalendarEventSchema = z.object({
   starts_at: z
     .string()
     .min(1, "Waktu mulai wajib diisi")
-    .refine((iso) => !Number.isNaN(new Date(iso).getTime()), "Waktu tidak valid"),
+    .refine(
+      (iso) => !Number.isNaN(new Date(iso).getTime()),
+      "Waktu tidak valid",
+    ),
   ends_at: z
     .string()
     .optional()
@@ -45,4 +58,89 @@ export const createCalendarEventSchema = z.object({
     .transform((v) => (v && v.length > 0 ? v : null)),
 });
 
-export type CreateCalendarEventInput = z.infer<typeof createCalendarEventSchema>;
+export const updateCalendarEventSchema = z.object({
+  id: z.string().uuid("Event ID harus valid UUID"),
+  title: z
+    .string()
+    .trim()
+    .min(1, "Judul wajib diisi")
+    .max(200, "Judul maksimal 200 karakter")
+    .optional(),
+  description: z
+    .string()
+    .trim()
+    .max(2000)
+    .optional()
+    .nullable()
+    .transform((v) => (v && v.length > 0 ? v : null)),
+  event_type: eventTypeSchema.optional(),
+  starts_at: z
+    .string()
+    .refine(
+      (iso) => !Number.isNaN(new Date(iso).getTime()),
+      "Waktu tidak valid",
+    )
+    .optional(),
+  ends_at: z
+    .string()
+    .optional()
+    .nullable()
+    .transform((v) => (v && v.length > 0 ? v : null)),
+  is_all_day: z.coerce.boolean().optional(),
+  location: z
+    .string()
+    .trim()
+    .max(200)
+    .optional()
+    .nullable()
+    .transform((v) => (v && v.length > 0 ? v : null)),
+  area: z.string().trim().max(100).optional().nullable(),
+  platform: z.string().trim().max(100).optional().nullable(),
+  status: eventStatusSchema.optional(),
+  priority: eventPrioritySchema.optional(),
+  pic_user_id: z
+    .string()
+    .uuid()
+    .optional()
+    .nullable()
+    .transform((v) => v ?? null),
+  tags: z.string().array().optional(),
+  visual_needed: z.coerce.boolean().optional(),
+  content: z.unknown().optional().nullable(),
+  color: z.string().trim().max(20).optional().nullable(),
+});
+
+export const updateEventPropertySchema = z.object({
+  id: z.string().uuid(),
+  field: z.enum([
+    "title",
+    "status",
+    "priority",
+    "area",
+    "platform",
+    "pic_user_id",
+    "tags",
+    "visual_needed",
+    "content",
+  ]),
+  value: z.unknown(),
+});
+
+export const recurringRuleSchema = z.object({
+  freq: z.enum(["daily", "weekly", "monthly", "yearly"]),
+  interval: z.number().min(1).default(1),
+  byday: z.string().array().optional(),
+  count: z.number().min(1).optional(),
+  ends_at: z.string().optional(),
+});
+
+export type CreateCalendarEventInput = z.infer<
+  typeof createCalendarEventSchema
+>;
+export type UpdateCalendarEventInput = z.infer<
+  typeof updateCalendarEventSchema
+>;
+export type UpdateEventPropertyInput = z.infer<
+  typeof updateEventPropertySchema
+>;
+export type RecurringRuleInput = z.infer<typeof recurringRuleSchema>;
