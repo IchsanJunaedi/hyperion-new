@@ -42,38 +42,74 @@ export interface WorkspaceSidebarProps {
   };
 }
 
-const NAV_ITEMS = [
-  { key: "home", href: "", label: "Home", Icon: Home },
-  { key: "scrim", href: "/scrim", label: "Scrim", Icon: Swords },
-  { key: "roster", href: "/roster", label: "Roster", Icon: Users },
-  { key: "calendar", href: "/calendar", label: "Calendar", Icon: Calendar },
-  { key: "strategy", href: "/strategy", label: "Strategy", Icon: Lightbulb },
+interface NavItem {
+  key: string;
+  href: string;
+  label: string;
+  Icon: React.ComponentType<{ className?: string }>;
+}
+
+interface NavGroup {
+  label: string;
+  items: NavItem[];
+}
+
+const NAV_GROUPS: NavGroup[] = [
   {
-    key: "announcements",
-    href: "/announcements",
-    label: "Pengumuman",
-    Icon: Megaphone,
+    label: "HOME",
+    items: [
+      { key: "home", href: "", label: "Home", Icon: Home },
+      { key: "calendar", href: "/calendar", label: "Calendar", Icon: Calendar },
+    ],
   },
   {
-    key: "files",
-    href: "/files",
-    label: "Files",
-    Icon: FolderOpen,
+    label: "KOMPETISI",
+    items: [
+      { key: "scrim", href: "/scrim", label: "Scrim", Icon: Swords },
+      {
+        key: "tournaments",
+        href: "/tournaments",
+        label: "Turnamen",
+        Icon: Trophy,
+      },
+    ],
   },
   {
-    key: "tournaments",
-    href: "/tournaments",
-    label: "Turnamen",
-    Icon: Trophy,
+    label: "TIM",
+    items: [
+      { key: "roster", href: "/roster", label: "Roster", Icon: Users },
+      {
+        key: "polls",
+        href: "/polls",
+        label: "Polling",
+        Icon: BarChart3,
+      },
+    ],
   },
   {
-    key: "polls",
-    href: "/polls",
-    label: "Polling",
-    Icon: BarChart3,
+    label: "KONTEN",
+    items: [
+      {
+        key: "strategy",
+        href: "/strategy",
+        label: "Strategy",
+        Icon: Lightbulb,
+      },
+      {
+        key: "announcements",
+        href: "/announcements",
+        label: "Pengumuman",
+        Icon: Megaphone,
+      },
+      {
+        key: "files",
+        href: "/files",
+        label: "Files",
+        Icon: FolderOpen,
+      },
+    ],
   },
-  { key: "settings", href: "/settings", label: "Settings", Icon: Settings },
-] as const;
+];
 
 export function WorkspaceSidebar({
   orgSlug,
@@ -104,6 +140,11 @@ export function WorkspaceSidebar({
   const activeDivision =
     divisions.find((d) => d.id === activeDivisionId) ?? divisions[0] ?? null;
 
+  const isItemActive = (href: string) => {
+    if (href === "") return pathname === `/${orgSlug}`;
+    return pathname?.startsWith(`/${orgSlug}${href}`) ?? false;
+  };
+
   return (
     <aside className="hidden md:flex md:w-[280px] md:flex-col md:border-r md:border-[#2D2D2D] md:bg-[#202020] h-screen sticky top-0">
       {/* Org header */}
@@ -129,12 +170,19 @@ export function WorkspaceSidebar({
           </p>
         </div>
         {user.role && (
-          <span className={`text-[10px] font-medium rounded-full px-1.5 py-0.5 ${
-            user.role === "manager" ? "bg-green-500/10 text-green-400" :
-            user.role === "captain" ? "bg-purple-500/10 text-purple-400" :
-            user.role === "coach" ? "bg-blue-500/10 text-blue-400" :
-            "bg-white/5 text-white/50"
-          }`}>
+          <span
+            className={`text-[10px] font-medium rounded-full px-1.5 py-0.5 ${
+              user.role === "manager"
+                ? "bg-green-500/10 text-green-400"
+                : user.role === "captain"
+                  ? "bg-purple-500/10 text-purple-400"
+                  : user.role === "coach"
+                    ? "bg-blue-500/10 text-blue-400"
+                    : user.role === "owner"
+                      ? "bg-yellow-500/10 text-yellow-400"
+                      : "bg-white/5 text-white/50"
+            }`}
+          >
             {user.role}
           </span>
         )}
@@ -187,40 +235,63 @@ export function WorkspaceSidebar({
         </div>
       ) : null}
 
-      {/* Nav items */}
-      <nav aria-label="Workspace" className="flex-1 px-2 pt-4 overflow-y-auto">
-        <div className="px-3 py-1 text-xs font-semibold text-[#6B6A68] mb-1">
-          Workspace
-        </div>
-        <ul className="space-y-0.5">
-          {NAV_ITEMS.map(({ key, href, label, Icon }) => {
-            const fullHref = `/${orgSlug}${href}`;
-            const active =
-              href === ""
-                ? pathname === `/${orgSlug}`
-                : pathname?.startsWith(fullHref) ?? false;
-            return (
-              <li key={key}>
-                <Link
-                  href={fullHref}
-                  className={`flex items-center gap-3 rounded px-3 py-1.5 text-sm transition ${
-                    active
-                      ? "bg-[#2C2C2C] text-[#D4D4D4] font-medium"
-                      : "text-[#9B9A97] hover:bg-[#2C2C2C]"
-                  }`}
-                >
-                  <Icon className="h-[18px] w-[18px]" />
-                  {label}
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
+      {/* Nav items grouped by category */}
+      <nav
+        aria-label="Workspace"
+        className="flex-1 px-2 pt-4 overflow-y-auto space-y-6"
+      >
+        {NAV_GROUPS.map((group) => (
+          <div key={group.label}>
+            <div className="px-3 py-1.5 text-xs font-semibold text-[#6B6A68] mb-2">
+              {group.label}
+            </div>
+            <ul className="space-y-0.5">
+              {group.items.map(({ key, href, label, Icon }) => {
+                const fullHref = `/${orgSlug}${href}`;
+                const active = isItemActive(href);
+                return (
+                  <li key={key}>
+                    <Link
+                      href={fullHref}
+                      className={`flex items-center gap-3 rounded px-3 py-1.5 text-sm transition ${
+                        active
+                          ? "bg-[#2C2C2C] text-[#D4D4D4] font-medium"
+                          : "text-[#9B9A97] hover:bg-[#2C2C2C]"
+                      }`}
+                    >
+                      <Icon className="h-[18px] w-[18px]" />
+                      {label}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        ))}
       </nav>
 
       {/* Notification bell */}
       <div className="px-3 pb-2">
         <NotificationBell userId={user.userId} orgSlug={orgSlug} />
+      </div>
+
+      {/* Settings section — separated */}
+      <div className="border-t border-[#2D2D2D] px-2 py-3">
+        <ul className="space-y-0.5">
+          <li>
+            <Link
+              href={`/${orgSlug}/settings`}
+              className={`flex items-center gap-3 rounded px-3 py-1.5 text-sm transition ${
+                pathname?.startsWith(`/${orgSlug}/settings`)
+                  ? "bg-[#2C2C2C] text-[#D4D4D4] font-medium"
+                  : "text-[#9B9A97] hover:bg-[#2C2C2C]"
+              }`}
+            >
+              <Settings className="h-[18px] w-[18px]" />
+              Settings
+            </Link>
+          </li>
+        </ul>
       </div>
 
       {/* User footer */}
