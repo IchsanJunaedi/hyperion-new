@@ -2,11 +2,61 @@
 
 import { redirect } from "next/navigation";
 
+import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { loginSchema, type LoginInput } from "@/lib/validations/auth";
 
 export interface SignInResult {
   error?: string;
+}
+
+const MAX_ATTEMPTS = 3;
+const LOCK_DURATION_MS = 60 * 60 * 1000; // 1 hour
+
+type RateLimitRow = { attempts: number; locked_until: string | null };
+
+async function getRateLimit(email: string): Promise<RateLimitRow | null> {
+  const admin = createAdminClient();
+  // Table not yet in generated types — cast required
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data } = await (admin as any)
+    .from("login_rate_limits")
+    .select("attempts, locked_until")
+    .eq("identifier", email)
+    .maybeSingle();
+  return data ?? null;
+}
+
+async function recordFailedAttempt(email: string, current: RateLimitRow | null): Promise<void> {
+  const admin = createAdminClient();
+  const now = new Date();
+
+  // If previous lock has expired, treat as a fresh window
+  const lockExpired =
+    current?.locked_until ? new Date(current.locked_until) <= now : true;
+  const prevAttempts = lockExpired ? 0 : (current?.attempts ?? 0);
+  const newAttempts = prevAttempts + 1;
+  const lockedUntil =
+    newAttempts >= MAX_ATTEMPTS
+      ? new Date(now.getTime() + LOCK_DURATION_MS).toISOString()
+      : null;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await (admin as any).from("login_rate_limits").upsert({
+    identifier: email,
+    attempts: newAttempts,
+    locked_until: lockedUntil,
+    updated_at: now.toISOString(),
+  });
+}
+
+async function clearRateLimit(email: string): Promise<void> {
+  const admin = createAdminClient();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await (admin as any)
+    .from("login_rate_limits")
+    .delete()
+    .eq("identifier", email);
 }
 
 export async function signInAction(
@@ -18,24 +68,63 @@ export async function signInAction(
     return { error: first?.message ?? "Input tidak valid" };
   }
 
+  const email = parsed.data.email;
+
+  // 1. Rate limit check
+  const rateLimit = await getRateLimit(email);
+  if (rateLimit?.locked_until) {
+    const lockedUntil = new Date(rateLimit.locked_until);
+    if (lockedUntil > new Date()) {
+      const minutesLeft = Math.ceil(
+        (lockedUntil.getTime() - Date.now()) / 60_000,
+      );
+      return {
+        error: `Terlalu banyak percobaan gagal. Coba lagi dalam ${minutesLeft} menit.`,
+      };
+    }
+  }
+
+  // 2. Attempt login
   const supabase = await createClient();
   const { data: authData, error } = await supabase.auth.signInWithPassword({
-    email: parsed.data.email,
+    email,
     password: parsed.data.password,
   });
 
   if (error) {
+    // Record failed attempt (fire-and-forget, don't block response)
+    await recordFailedAttempt(email, rateLimit);
+
+    // Check if this attempt just triggered a lock
+    const prevAttempts = rateLimit?.attempts ?? 0;
+    const lockExpired = rateLimit?.locked_until
+      ? new Date(rateLimit.locked_until) <= new Date()
+      : true;
+    const effectivePrev = lockExpired ? 0 : prevAttempts;
+    const newAttempts = effectivePrev + 1;
+
+    if (newAttempts >= MAX_ATTEMPTS) {
+      return {
+        error: `Terlalu banyak percobaan gagal. Akun dikunci selama 1 jam.`,
+      };
+    }
+
+    const remaining = MAX_ATTEMPTS - newAttempts;
     if (error.message.toLowerCase().includes("invalid login")) {
-      return { error: "Email atau password salah." };
+      return {
+        error: `Email atau password salah. Sisa percobaan: ${remaining}.`,
+      };
     }
     if (error.message.toLowerCase().includes("email not confirmed")) {
       return {
-        error:
-          "Email belum dikonfirmasi. Cek inbox kamu untuk link aktivasi.",
+        error: "Email belum dikonfirmasi. Cek inbox kamu untuk link aktivasi.",
       };
     }
     return { error: error.message };
   }
+
+  // 3. Success — clear rate limit record
+  await clearRateLimit(email);
 
   // If explicit next param, honor it
   const next = sanitizeNext(input.next);
@@ -59,13 +148,11 @@ async function getRedirectForUser(
   userId: string,
   userEmail: string | undefined,
 ): Promise<string> {
-  // Check if owner by email
   const ownerEmail = process.env.OWNER_EMAIL;
   if (ownerEmail && userEmail === ownerEmail) {
     return "/dashboard";
   }
 
-  // Get highest role membership
   const { data: memberships } = await supabase
     .from("team_members")
     .select("role, organization_id")
@@ -74,7 +161,7 @@ async function getRedirectForUser(
     .order("role", { ascending: true });
 
   if (!memberships || memberships.length === 0) {
-    return "/"; // No membership yet, show landing
+    return "/";
   }
 
   const roles = memberships.map((m) => m.role);
@@ -83,7 +170,6 @@ async function getRedirectForUser(
     return "/manage";
   }
 
-  // Coach, Captain, Member → go to workspace
   const firstMembership = memberships[0];
   if (firstMembership) {
     const { data: org } = await supabase
