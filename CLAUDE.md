@@ -200,10 +200,42 @@ FONNTE_WEBHOOK_SECRET=
 - After action changes: test the action works (create, update, delete)
 - After migration: run `npx supabase db push` to apply
 
-## Current State (as of 2026-05-16)
+## Calendar System (features/calendar/)
+The calendar is a unified system that merges manual events + tournaments (scrims removed from calendar view):
+
+### Event Types
+Valid types: `"tournament" | "practice" | "meeting" | "bootcamp" | "other"`.
+`"scrim"` is **NOT** a valid event type in the calendar. Scrims have their own separate module (`features/scrim/`).
+
+### Visibility Levels
+- `all` — All team members
+- `management` — Owner + Manager only
+- `coach_up` — Coach, Manager, Owner
+- `private` — Only the creator
+
+### Calendar Permissions (lib/permissions/)
+Permission system determines who can create/view/edit events based on role. Visibility is stored on the event itself, not a separate permission table.
+
+### Date Validation Rule
+`ends_at` must be >= `starts_at` when both are provided. `ends_at` is optional.
+Applied in Zod schema (`lib/validations/calendar.ts`) via `.refine()` on both create and update schemas.
+
+### QuickAddEventModal (features/calendar/components/QuickAddEventModal.tsx)
+- Stacked grid layout for datetime inputs (responsive, no overflow)
+- Custom switch toggle for "Event Seharian" (not a native checkbox)
+- Client-side + server-side date validation
+- `startsAt` state drives the `min` attribute on `ends_at` input
+
+## Scrim Format Values
+Valid formats: `"bo1" | "bo2" | "bo3" | "bo5" | "bo7" | "4match"`.
+`"scrimmage"` is **NOT** a valid format — removed from `ScrimForm.tsx` and `ScrimEditForm.tsx`.
+
+## Current State (as of 2026-05-17)
 - Owner dashboard: fully functional with Notion-style UI
 - Manager panel: functional with assign, divisions, captains, invite system
-- Workspace: scrim CRUD, roster, calendar (v2 with permissions), announcements, strategy, files, polls
+- Workspace: scrim CRUD, roster, calendar (v2 with visibility permissions + date validation), announcements, strategy, files, polls
+- Calendar: unified view (manual events + tournaments), QuickAddEventModal with premium switch toggle, date range validation (starts_at ≤ ends_at)
 - Auth: register, login, Google OAuth, role-based redirect
-- Features: finances, content calendar, invite system, tournaments, matchmaking, player development, scouting, notifications (bell + WA delivery)
-- Infrastructure: custom domain support, audit logging, calendar permission system
+- Features: finances, content calendar, invite system, tournaments, matchmaking, player development, scouting, notifications (bell + WA delivery), audit logging
+- Infrastructure: custom domain support, audit logging, calendar permission system (visibility: all/management/coach_up/private)
+- UI: Notion dark theme, custom switch toggles, consistent dropdown labels, responsive datetime grids
