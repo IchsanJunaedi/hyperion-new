@@ -1650,3 +1650,7 @@ export const Constants = {
     },
   },
 } as const
+
+export type MemberAvailability = Database["public"]["Enums"]["member_availability"];
+export type MemberRole = Database["public"]["Enums"]["member_role"];
+
