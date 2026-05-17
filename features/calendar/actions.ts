@@ -146,7 +146,6 @@ export async function updateCalendarEventAction(
     .from("calendar_events")
     .update({
       ...updateData,
-      updated_at: new Date().toISOString(),
     })
     .eq("id", id);
 
@@ -189,7 +188,6 @@ export async function updateEventPropertyAction(
     .from("calendar_events")
     .update({
       [field]: value,
-      updated_at: new Date().toISOString(),
     })
     .eq("id", id);
 
@@ -250,7 +248,7 @@ export async function addEventCommentAction(
   const { user, db } = await getAuthContext();
   if (!user) return { ok: false, message: "Anda harus login" };
 
-  const { data: comment, error } = await db
+  const { data: comment, error } = await (db as any)
     .from("calendar_event_comments")
     .insert({
       event_id: eventId,
@@ -285,7 +283,7 @@ export async function deleteEventCommentAction(
   const { user, db, isOwner } = await getAuthContext();
   if (!user) return { ok: false, message: "Anda harus login" };
 
-  const query = db.from("calendar_event_comments").delete().eq("id", commentId);
+  const query = (db as any).from("calendar_event_comments").delete().eq("id", commentId);
 
   // Non-owner can only delete their own comments
   const { error } = isOwner ? await query : await query.eq("user_id", user.id);
@@ -336,13 +334,12 @@ export async function dragRescheduleEventAction(
   }
 
   const { error } = await db
-    .from("calendar_events")
-    .update({
-      starts_at: newStartsAt,
-      ends_at: newEndsAt,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", eventId);
+.from("calendar_events")
+.update({
+  starts_at: newStartsAt,
+  ends_at: newEndsAt,
+})
+.eq("id", eventId);
 
   if (error) {
     return {

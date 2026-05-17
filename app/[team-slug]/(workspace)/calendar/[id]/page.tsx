@@ -66,8 +66,8 @@ export default async function CalendarEventDetailPage({
             {EVENT_TYPE_LABELS[event.event_type] ?? event.event_type}
           </span>
           {event.visibility && VISIBILITY_LABELS[event.visibility] && (
-            <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${VISIBILITY_LABELS[event.visibility].style}`}>
-              {VISIBILITY_LABELS[event.visibility].label}
+            <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${VISIBILITY_LABELS[event.visibility]!.style}`}>
+              {VISIBILITY_LABELS[event.visibility]!.label}
             </span>
           )}
         </div>

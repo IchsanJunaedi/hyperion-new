@@ -126,6 +126,7 @@ export default async function DashboardCalendarPage({
         ref_id: s.id,
         ref_type: "scrim",
         created_at: s.scheduled_at,
+        visibility: "all",
       } as CalendarEvent);
     }
 
@@ -157,6 +158,7 @@ export default async function DashboardCalendarPage({
         ref_id: t.id,
         ref_type: "tournament",
         created_at: new Date(t.start_date).toISOString(),
+        visibility: "all",
       } as CalendarEvent);
     }
   }
