@@ -1,6 +1,6 @@
 # Hyperion
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+[![License: Proprietary](https://img.shields.io/badge/License-Proprietary-red.svg)](./LICENSE)
 
 **Satu platform untuk semua kebutuhan tim esports kamu.**
 
@@ -84,4 +84,4 @@ Untuk pertanyaan atau demo, hubungi melalui platform.
 
 ## Lisensi
 
-Didistribusikan di bawah [MIT License](./LICENSE). Bebas digunakan dengan tetap mencantumkan kredit kepada pembuatnya.
+© 2026 ican. Semua hak dilindungi. Dilarang menyalin, memodifikasi, atau mendistribusikan software ini tanpa izin tertulis dari pemiliknya. Lihat [LICENSE](./LICENSE) untuk detail.
