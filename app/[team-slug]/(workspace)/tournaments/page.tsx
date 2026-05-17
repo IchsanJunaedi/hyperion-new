@@ -49,8 +49,7 @@ export default async function TournamentsPage({ params, searchParams }: Tourname
     <div className="space-y-6 px-4 py-6 sm:px-8">
       <header className="flex items-center justify-between gap-4">
         <div>
-          <p className="text-xs uppercase tracking-wide text-white/55">Turnamen</p>
-          <h1 className="text-2xl font-bold text-white sm:text-3xl mt-1">Info Turnamen</h1>
+          <h1 className="text-2xl font-bold text-white sm:text-3xl">Info Turnamen</h1>
         </div>
         {canManage && (
           <Link

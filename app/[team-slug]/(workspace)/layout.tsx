@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 import { WorkspaceSidebar } from "@/components/layout/WorkspaceSidebar";
 import { WorkspaceTopbar } from "@/components/layout/WorkspaceTopbar";
+import { WorkspaceBreadcrumb } from "@/components/layout/WorkspaceBreadcrumb";
 import { NotifyProvider } from "@/features/dashboard/components/NotifyModal";
 import { NotificationRealtimeProvider } from "@/features/notifications/components/NotificationRealtimeProvider";
 import {
@@ -88,8 +89,14 @@ export default async function WorkspaceLayout({
           role: userRole,
         }}
       />
-      <div className="flex min-w-0 flex-1 flex-col pb-20 md:pb-0">
+      <div className="flex min-w-0 flex-1 flex-col bg-[#191919] min-h-screen pb-20 md:pb-0">
         <WorkspaceTopbar organization={organization} userId={user.id} />
+        <WorkspaceBreadcrumb
+          orgName={organization.name}
+          orgSlug={organization.slug}
+          userId={user.id}
+          className="hidden md:flex"
+        />
         <NotificationRealtimeProvider userId={user.id}>
           <NotifyProvider>
             <main className="flex-1">{children}</main>

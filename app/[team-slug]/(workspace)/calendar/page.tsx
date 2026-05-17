@@ -69,10 +69,7 @@ export default async function CalendarPage({
     <div className="space-y-6 px-4 py-6 sm:px-8">
       <header className="flex items-center justify-between gap-4">
         <div>
-          <p className="text-xs uppercase tracking-wide text-white/55">
-            Calendar
-          </p>
-          <h1 className="mt-1 text-2xl font-bold text-white sm:text-3xl">
+          <h1 className="text-2xl font-bold text-white sm:text-3xl">
             Kalender Tim
           </h1>
         </div>

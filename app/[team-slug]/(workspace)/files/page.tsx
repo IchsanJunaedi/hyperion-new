@@ -19,8 +19,7 @@ export default async function FilesPage({ params }: FilesPageProps) {
   return (
     <div className="space-y-6 px-4 py-6 sm:px-8">
       <header>
-        <p className="text-xs uppercase tracking-wide text-white/55">Files</p>
-        <h1 className="mt-1 text-2xl font-bold text-white sm:text-3xl">
+        <h1 className="text-2xl font-bold text-white sm:text-3xl">
           File Tim
         </h1>
         <p className="mt-1 text-sm text-white/60">

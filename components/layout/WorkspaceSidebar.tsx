@@ -26,9 +26,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { NotificationBell } from "@/features/notifications/components/NotificationBell";
 import { SettingsModal } from "@/features/settings/components/SettingsModal";
-import { logoutAction } from "@/lib/actions/auth";
 import { useWorkspaceStore } from "@/stores/useWorkspaceStore";
 
 interface SidebarDivision {
@@ -181,10 +179,10 @@ const WORKSPACE_NAV_GROUPS: NavGroup[] = [
 ];
 
 const ROLE_BADGE: Record<string, string> = {
-  owner: "bg-yellow-500/10 text-yellow-400",
-  manager: "bg-green-500/10 text-green-400",
-  captain: "bg-purple-500/10 text-purple-400",
-  coach: "bg-blue-500/10 text-blue-400",
+  owner: "text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.5)]",
+  manager: "text-blue-400 drop-shadow-[0_0_8px_rgba(96,165,250,0.5)]",
+  coach: "text-purple-400 drop-shadow-[0_0_8px_rgba(192,132,252,0.5)]",
+  captain: "text-green-400 drop-shadow-[0_0_8px_rgba(74,222,128,0.5)]",
 };
 
 export function WorkspaceSidebar({
@@ -237,7 +235,7 @@ export function WorkspaceSidebar({
       {/* Org header */}
       <Link
         href={`/${orgSlug}`}
-        className="flex items-center gap-3 border-b border-[#2D2D2D] px-4 py-4 transition hover:bg-[#2C2C2C]"
+        className="flex h-12 shrink-0 items-center gap-3 border-b border-[#2D2D2D] px-4 transition hover:bg-[#2C2C2C]"
       >
         {orgLogoUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -258,7 +256,7 @@ export function WorkspaceSidebar({
         </div>
         {user.role && (
           <span
-            className={`shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-medium ${ROLE_BADGE[user.role] ?? "bg-white/5 text-white/50"}`}
+            className={`shrink-0 text-[10px] font-bold uppercase tracking-widest ${ROLE_BADGE[user.role] ?? "text-white/50"}`}
           >
             {user.role}
           </span>
@@ -340,11 +338,6 @@ export function WorkspaceSidebar({
         ))}
       </nav>
 
-      {/* Notification bell */}
-      <div className="px-3 pb-2">
-        <NotificationBell userId={user.userId} orgSlug={orgSlug} />
-      </div>
-
       {/* Settings — separated */}
       <div className="border-t border-[#2D2D2D] px-2 py-3">
         <button
@@ -384,16 +377,6 @@ export function WorkspaceSidebar({
           <p className="min-w-0 flex-1 truncate text-xs text-[#9B9A97]">
             {user.email ?? user.displayName}
           </p>
-          <form action={logoutAction}>
-            <button
-              type="submit"
-              aria-label="Logout"
-              className="rounded p-1.5 text-[#9B9A97] transition hover:bg-[#2C2C2C] hover:text-[#D4D4D4]"
-              title="Logout"
-            >
-              <LogOut className="h-4 w-4" />
-            </button>
-          </form>
         </div>
       </div>
     </aside>

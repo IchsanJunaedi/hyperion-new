@@ -4,6 +4,7 @@ import { Header } from "@/components/landing/Header";
 import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 import { WorkspaceSidebar } from "@/components/layout/WorkspaceSidebar";
 import { WorkspaceTopbar } from "@/components/layout/WorkspaceTopbar";
+import { WorkspaceBreadcrumb } from "@/components/layout/WorkspaceBreadcrumb";
 import { PublicTeamProfile } from "@/components/team/PublicTeamProfile";
 import { TeamHome } from "@/components/team/TeamHome";
 import {
@@ -61,6 +62,7 @@ export default async function TeamSlugPage({ params }: TeamSlugPageProps) {
     <div className="flex min-h-screen flex-1">
       <WorkspaceSidebar
         orgSlug={organization.slug}
+        orgId={organization.id}
         orgName={organization.name}
         orgLogoUrl={organization.logo_url}
         divisions={data.divisions.map((d) => ({ id: d.id, name: d.name }))}
@@ -71,10 +73,18 @@ export default async function TeamSlugPage({ params }: TeamSlugPageProps) {
             user.email ??
             "Akun saya",
           avatarUrl: null,
+          email: user.email ?? undefined,
+          role: isOwner ? "owner" : (currentUserRole ?? undefined),
         }}
       />
-      <div className="flex min-w-0 flex-1 flex-col pb-20 md:pb-0">
+      <div className="flex min-w-0 flex-1 flex-col bg-[#191919] min-h-screen pb-20 md:pb-0">
         <WorkspaceTopbar organization={organization} userId={user.id} />
+        <WorkspaceBreadcrumb
+          orgName={organization.name}
+          orgSlug={organization.slug}
+          userId={user.id}
+          className="hidden md:flex"
+        />
         <main className="flex-1">
           <TeamHome data={data} canManageScrims={canManageScrims} />
         </main>

@@ -23,7 +23,7 @@ export function TeamHome({
   return (
     <div className="space-y-8 px-4 py-6 sm:px-8">
       {/* Hero */}
-      <section className="rounded-2xl border border-white/10 bg-zinc-900/40 p-6 sm:p-8">
+      <section className="rounded-2xl border border-[#2D2D2D] bg-[#141414] p-6 sm:p-8">
         <p className="text-xs uppercase tracking-wide text-white/55">
           Team Home
         </p>
@@ -42,7 +42,7 @@ export function TeamHome({
         {data.nextScrim ? (
           <ScrimCountdown scrim={data.nextScrim} orgSlug={slug} />
         ) : (
-          <article className="rounded-xl border border-dashed border-white/10 bg-zinc-900/30 p-6 text-sm text-white/60">
+          <article className="rounded-xl border border-dashed border-[#2D2D2D] bg-[#141414] p-6 text-sm text-white/60">
             <div className="mb-2 flex items-center gap-2 text-xs uppercase tracking-wide text-white/45">
               <Swords className="h-3.5 w-3.5" />
               Scrim berikutnya
@@ -51,7 +51,7 @@ export function TeamHome({
             {canManageScrims && (
               <Link
                 href={`/${slug}/scrim/new`}
-                className="mt-3 inline-flex h-9 items-center rounded-md border border-white/10 px-3 text-sm font-medium text-white transition hover:bg-white/5"
+                className="mt-3 inline-flex h-9 items-center rounded-md border border-[#2D2D2D] px-3 text-sm font-medium text-white transition hover:bg-white/5"
               >
                 Buat scrim
               </Link>
@@ -119,7 +119,7 @@ export function TeamHome({
         </h2>
         {data.recentAnnouncements.length === 0 &&
         data.recentCompletedScrims.length === 0 ? (
-          <p className="rounded-xl border border-dashed border-white/10 bg-zinc-900/30 p-6 text-center text-sm text-white/55">
+          <p className="rounded-xl border border-dashed border-[#2D2D2D] bg-[#141414] p-6 text-center text-sm text-white/55">
             Belum ada aktivitas. Mulai scrim atau buat pengumuman pertama.
           </p>
         ) : (
@@ -127,7 +127,7 @@ export function TeamHome({
             {data.recentAnnouncements.map((a) => (
               <li
                 key={`a-${a.id}`}
-                className="flex items-start gap-3 rounded-lg border border-white/5 bg-zinc-900/40 p-3"
+                className="flex items-start gap-3 rounded-lg border border-[#2D2D2D] bg-[#141414] p-3"
               >
                 <span className="mt-0.5 grid h-7 w-7 flex-none place-items-center rounded-full bg-yellow-500/15 text-yellow-400">
                   <Megaphone className="h-3.5 w-3.5" />
@@ -148,7 +148,7 @@ export function TeamHome({
             {data.recentCompletedScrims.map((s) => (
               <li
                 key={`s-${s.id}`}
-                className="flex items-start gap-3 rounded-lg border border-white/5 bg-zinc-900/40 p-3"
+                className="flex items-start gap-3 rounded-lg border border-[#2D2D2D] bg-[#141414] p-3"
               >
                 <span className="mt-0.5 grid h-7 w-7 flex-none place-items-center rounded-full bg-emerald-500/15 text-emerald-400">
                   <Swords className="h-3.5 w-3.5" />
@@ -183,7 +183,7 @@ function StatCard({
   value: string;
 }) {
   return (
-    <div className="rounded-xl border border-white/10 bg-zinc-900/40 p-4">
+    <div className="rounded-xl border border-[#2D2D2D] bg-[#141414] p-4">
       <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-white/55">
         {icon}
         {label}
