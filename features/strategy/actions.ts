@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
+import { logAudit } from "@/lib/audit";
 import { createClient } from "@/lib/supabase/server";
 import {
   createStrategyNoteSchema,
@@ -76,6 +77,14 @@ export async function createStrategyNoteAction(
     };
   }
 
+  await logAudit({
+    actorId: user.id,
+    action: "strategy.create",
+    entityType: "strategy_note",
+    entityId: note.id,
+    metadata: { title: note.title },
+  });
+
   revalidatePath(`/${orgSlug}/strategy`);
   return { ok: true, note };
 }
@@ -123,6 +132,14 @@ export async function updateStrategyNoteAction(
     };
   }
 
+  await logAudit({
+    actorId: user.id,
+    action: "strategy.update",
+    entityType: "strategy_note",
+    entityId: parsed.data.id,
+    metadata: { title: parsed.data.title },
+  });
+
   revalidatePath(`/${orgSlug}/strategy`);
   revalidatePath(`/${orgSlug}/strategy/${parsed.data.id}`);
   return { ok: true };
@@ -155,6 +172,13 @@ export async function deleteStrategyNoteAction(
           : error.message,
     };
   }
+
+  await logAudit({
+    actorId: user.id,
+    action: "strategy.delete",
+    entityType: "strategy_note",
+    entityId: noteId,
+  });
 
   revalidatePath(`/${orgSlug}/strategy`);
   return { ok: true };

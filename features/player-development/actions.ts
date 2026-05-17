@@ -138,6 +138,13 @@ export async function deletePlayerTargetAction(
 
   if (error) return { ok: false, message: error.message };
 
+  await logAudit({
+    actorId: user.id,
+    action: "player_target.delete",
+    entityType: "player_target",
+    entityId: targetId,
+  });
+
   revalidatePath(`/${orgSlug}`);
   revalidatePath("/manage");
   return { ok: true };

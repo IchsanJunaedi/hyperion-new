@@ -5,6 +5,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { createContentSchema } from "@/lib/validations/content";
 import type { ContentCalendarRow, ContentStatus } from "@/types/database";
+import { logAudit } from "@/lib/audit";
 
 type ContentUpdate = Partial<Omit<ContentCalendarRow, "id" | "created_at">>;
 
@@ -51,6 +52,13 @@ export async function createContentAction(
   });
 
   if (error) return { ok: false, message: error.message };
+
+  await logAudit({
+    actorId: user.id,
+    action: "content.create",
+    entityType: "content_calendar",
+    metadata: { title: parsed.data.title, platform: parsed.data.platform },
+  });
 
   revalidatePath("/manage/content");
   revalidatePath("/dashboard/content");
@@ -105,6 +113,14 @@ export async function updateContentStatusAction(
 
   if (error) return { ok: false, message: error.message };
 
+  await logAudit({
+    actorId: user.id,
+    action: "content.status_change",
+    entityType: "content_calendar",
+    entityId: contentId,
+    metadata: { to: newStatus },
+  });
+
   revalidatePath("/manage/content");
   revalidatePath("/dashboard/content");
   return { ok: true };
@@ -154,6 +170,13 @@ export async function deleteContentAction(
     .eq("organization_id", orgId);
 
   if (error) return { ok: false, message: error.message };
+
+  await logAudit({
+    actorId: user.id,
+    action: "content.delete",
+    entityType: "content_calendar",
+    entityId: contentId,
+  });
 
   revalidatePath("/manage/content");
   revalidatePath("/dashboard/content");

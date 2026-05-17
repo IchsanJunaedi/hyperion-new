@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
+import { logAudit } from "@/lib/audit";
 import { createClient } from "@/lib/supabase/server";
 
 export interface FileActionError {
@@ -53,6 +54,14 @@ export async function recordFileUploadAction(
       message: error?.message ?? "Gagal menyimpan record file",
     };
   }
+
+  await logAudit({
+    actorId: user.id,
+    action: "file.upload",
+    entityType: "file",
+    entityId: data.id,
+    metadata: { name: payload.file_name, size: payload.file_size, type: payload.file_type },
+  });
 
   revalidatePath(`/${orgSlug}/files`);
   return { ok: true, id: data.id };

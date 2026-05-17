@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
+import { logAudit } from "@/lib/audit";
 import { createClient } from "@/lib/supabase/server";
 import {
   createAnnouncementSchema,
@@ -78,6 +79,14 @@ export async function createAnnouncementAction(
           : (error?.message ?? "Gagal membuat pengumuman"),
     };
   }
+
+  await logAudit({
+    actorId: user.id,
+    action: "announcement.create",
+    entityType: "announcement",
+    entityId: announcement.id,
+    metadata: { title: announcement.title, orgId: org.id },
+  });
 
   // Fan-out WA blast if requested
   if (parsed.data.send_wa_blast) {
@@ -192,6 +201,14 @@ export async function updateAnnouncementAction(
     };
   }
 
+  await logAudit({
+    actorId: user.id,
+    action: "announcement.update",
+    entityType: "announcement",
+    entityId: parsed.data.id,
+    metadata: { title: parsed.data.title },
+  });
+
   revalidatePath(`/${orgSlug}/announcements`);
   revalidatePath(`/${orgSlug}/announcements/${parsed.data.id}`);
   revalidatePath(`/${orgSlug}`);
@@ -225,6 +242,13 @@ export async function deleteAnnouncementAction(
           : error.message,
     };
   }
+
+  await logAudit({
+    actorId: user.id,
+    action: "announcement.delete",
+    entityType: "announcement",
+    entityId: announcementId,
+  });
 
   revalidatePath(`/${orgSlug}/announcements`);
   revalidatePath(`/${orgSlug}`);

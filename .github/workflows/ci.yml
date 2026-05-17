@@ -1,0 +1,53 @@
+name: CI — Lint, Typecheck & Unit Tests
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: [main, feat/**]
+
+jobs:
+  ci:
+    name: Lint · Typecheck · Unit Tests
+    runs-on: ubuntu-latest
+
+    env:
+      # These are non-secret and needed at build time for Next.js
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+      NEXT_PUBLIC_APP_URL: http://localhost:3000
+      NEXT_PUBLIC_MAIN_DOMAIN: localhost:3000
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      OWNER_EMAIL: ${{ secrets.OWNER_EMAIL }}
+      FONNTE_API_TOKEN: ${{ secrets.FONNTE_API_TOKEN }}
+      FONNTE_WEBHOOK_SECRET: ${{ secrets.FONNTE_WEBHOOK_SECRET }}
+
+    steps:
+      - name: ⬇️ Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: 📥 Install dependencies
+        run: npm ci
+
+      - name: 🔍 Run ESLint
+        run: npm run lint
+
+      - name: 🔷 Run TypeScript type check
+        run: npm run typecheck
+
+      - name: 🧪 Run Vitest unit tests
+        run: npm run test:unit
+
+      - name: 📊 Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 7

@@ -1,27 +1,28 @@
-import { redirect } from "next/navigation";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { fetchAuditActivity } from "@/features/dashboard/actions/fetchAuditActivity";
 import {
-  AuditLogList,
-  type AuditLogItem,
-} from "@/features/dashboard/components/AuditLogList";
+  fetchAuditLogs,
+  fetchDistinctActors,
+} from "@/features/dashboard/actions/fetchAuditLogs";
+import { AuditDashboard } from "@/features/dashboard/components/AuditDashboard";
 
 export const dynamic = "force-dynamic";
 
-const ACTION_LABELS: Record<string, string> = {
-  org_updated: "Tim diupdate",
-  division_archived: "Divisi diarsipkan",
-  division_deleted: "Divisi dihapus",
-  member_removed: "Member dihapus",
-  role_changed: "Role diubah",
-  member_added: "Member ditambahkan",
-  scrim_created: "Scrim dibuat",
-  announcement_created: "Pengumuman dibuat",
-};
+interface Props {
+  searchParams: Promise<{
+    search?: string;
+    module?: string;
+    actor?: string;
+    from?: string;
+    to?: string;
+    page?: string;
+  }>;
+}
 
-export default async function DashboardAuditPage() {
+export default async function DashboardAuditPage({ searchParams }: Props) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -31,44 +32,23 @@ export default async function DashboardAuditPage() {
   const ownerEmail = process.env.OWNER_EMAIL;
   if (user.email !== ownerEmail) redirect("/");
 
-  const admin = createAdminClient();
+  const params = await searchParams;
+  const page = Math.max(1, parseInt(params.page ?? "1"));
 
-  const { data: logs } = await admin
-    .from("audit_logs")
-    .select("*")
-    .order("created_at", { ascending: false })
-    .limit(200);
-
-  const actorIds = [
-    ...new Set((logs ?? []).map((l) => l.actor_id).filter(Boolean)),
-  ] as string[];
-
-  const { data: profiles } = await admin
-    .from("profiles")
-    .select("id, display_name, username")
-    .in("id", actorIds.length > 0 ? actorIds : ["__none__"]);
-
-  const profileMap = new Map((profiles ?? []).map((p) => [p.id, p]));
-
-  const items: AuditLogItem[] = (logs ?? []).map((log) => {
-    const actor = log.actor_id ? profileMap.get(log.actor_id) : null;
-    const meta = log.metadata as Record<string, unknown> | null;
-    return {
-      id: log.id,
-      action: log.action,
-      actionLabel: ACTION_LABELS[log.action] ?? log.action,
-      actorName: actor?.display_name ?? actor?.username ?? "System",
-      metaText: meta && Object.keys(meta).length > 0 ? JSON.stringify(meta) : "",
-      time: new Date(log.created_at).toLocaleString("id-ID", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        timeZone: "Asia/Jakarta",
+  const [{ items, total, pageCount }, activityData7, activityData30, actors] =
+    await Promise.all([
+      fetchAuditLogs({
+        search: params.search,
+        entityType: params.module,
+        actorId: params.actor,
+        from: params.from,
+        to: params.to,
+        page,
       }),
-    };
-  });
+      fetchAuditActivity(7),
+      fetchAuditActivity(30),
+      fetchDistinctActors(),
+    ]);
 
   return (
     <>
@@ -82,7 +62,22 @@ export default async function DashboardAuditPage() {
         </div>
       </header>
       <main className="mx-auto max-w-7xl px-4 py-6">
-        <AuditLogList logs={items} />
+        <AuditDashboard
+          items={items}
+          total={total}
+          pageCount={pageCount}
+          activityData7={activityData7}
+          activityData30={activityData30}
+          actors={actors}
+          currentFilters={{
+            search: params.search ?? "",
+            module: params.module ?? "",
+            actor: params.actor ?? "",
+            from: params.from ?? "",
+            to: params.to ?? "",
+            page,
+          }}
+        />
       </main>
     </>
   );
