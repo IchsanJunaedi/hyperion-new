@@ -61,13 +61,14 @@ export function ScrimForm({ orgSlug, divisions }: ScrimFormProps) {
           router.push(`/${orgSlug}/scrim/${res.scrim.id}`);
         });
       }}
-      className="space-y-4"
+      className="space-y-5"
     >
+      {/* Divisi - Full Width */}
       <Field label="Divisi" name="division_id" errors={fieldErrors["division_id"]}>
         {divisions.length === 1 ? (
           <>
             <input type="hidden" name="division_id" value={divisions[0]!.id} />
-            <p className="h-10 flex items-center rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white/70">
+            <p className="h-10 flex items-center rounded-lg border border-white/10 bg-zinc-950/40 px-3 text-sm text-white/70">
               {divisions[0]!.name}
             </p>
           </>
@@ -76,7 +77,7 @@ export function ScrimForm({ orgSlug, divisions }: ScrimFormProps) {
             name="division_id"
             required
             defaultValue=""
-            className="h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
+            className="h-10 w-full rounded-lg border border-white/10 bg-zinc-950/40 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
           >
             <option value="" disabled>
               Pilih divisi…
@@ -90,32 +91,38 @@ export function ScrimForm({ orgSlug, divisions }: ScrimFormProps) {
         )}
       </Field>
 
-      <Field
-        label="Nama lawan"
-        name="opponent_name"
-        errors={fieldErrors["opponent_name"]}
-      >
-        <input
+      {/* Nama Lawan & Kontak Lawan - Side by Side Grid */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <Field
+          label="Nama lawan"
           name="opponent_name"
-          required
-          maxLength={120}
-          className="h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
-        />
-      </Field>
+          errors={fieldErrors["opponent_name"]}
+        >
+          <input
+            name="opponent_name"
+            required
+            maxLength={120}
+            placeholder="Masukkan nama tim lawan"
+            className="h-10 w-full rounded-lg border border-white/10 bg-zinc-950/40 px-3 text-sm text-white placeholder-white/30 focus:border-yellow-400 focus:outline-none"
+          />
+        </Field>
 
-      <Field
-        label="Kontak lawan"
-        name="opponent_contact"
-        errors={fieldErrors["opponent_contact"]}
-      >
-        <input
+        <Field
+          label="Kontak lawan"
           name="opponent_contact"
-          required
-          maxLength={120}
-          className="h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
-        />
-      </Field>
+          errors={fieldErrors["opponent_contact"]}
+        >
+          <input
+            name="opponent_contact"
+            required
+            maxLength={120}
+            placeholder="WA atau ID Discord lawan"
+            className="h-10 w-full rounded-lg border border-white/10 bg-zinc-950/40 px-3 text-sm text-white placeholder-white/30 focus:border-yellow-400 focus:outline-none"
+          />
+        </Field>
+      </div>
 
+      {/* Jadwal - Full Width */}
       <Field
         label="Jadwal"
         name="scheduled_at"
@@ -125,16 +132,17 @@ export function ScrimForm({ orgSlug, divisions }: ScrimFormProps) {
           type="datetime-local"
           name="scheduled_at"
           required
-          className="h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
+          className="h-10 w-full rounded-lg border border-white/10 bg-zinc-950/40 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
         />
       </Field>
 
+      {/* Format - Pill Selects */}
       <Field label="Format" name="format" errors={fieldErrors["format"]}>
         <div className="flex flex-wrap gap-2">
           {FORMATS.map((f, i) => (
             <label
               key={f.value}
-              className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-zinc-800 px-3 py-2 text-sm text-white/85 has-[input:checked]:bg-yellow-400 has-[input:checked]:text-black"
+              className="inline-flex cursor-pointer items-center justify-center rounded-lg border border-white/10 bg-zinc-800/40 px-4 py-2 text-xs font-semibold text-white/80 transition-all duration-300 hover:bg-zinc-700/40 has-[input:checked]:bg-yellow-400 has-[input:checked]:text-black has-[input:checked]:border-yellow-400"
             >
               <input
                 type="radio"
@@ -149,66 +157,75 @@ export function ScrimForm({ orgSlug, divisions }: ScrimFormProps) {
         </div>
       </Field>
 
-      <Field
-        label="Server / region"
-        name="server_region"
-        errors={fieldErrors["server_region"]}
-      >
-        <input
+      {/* Server Region & Room Info - Side by Side Grid */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <Field
+          label="Server / region"
           name="server_region"
-          required
-          maxLength={60}
-          className="h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
-        />
-      </Field>
+          errors={fieldErrors["server_region"]}
+        >
+          <input
+            name="server_region"
+            required
+            maxLength={60}
+            placeholder="mis. SEA, ID, SG"
+            className="h-10 w-full rounded-lg border border-white/10 bg-zinc-950/40 px-3 text-sm text-white placeholder-white/30 focus:border-yellow-400 focus:outline-none"
+          />
+        </Field>
 
-      <Field
-        label="Room info"
-        name="room_info"
-        errors={fieldErrors["room_info"]}
-      >
-        <div className="flex flex-wrap gap-2">
-          {ROOM_TYPES.map((r, i) => (
-            <label
-              key={r.value}
-              className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-zinc-800 px-3 py-2 text-sm text-white/85 has-[input:checked]:bg-yellow-400 has-[input:checked]:text-black"
-            >
-              <input
-                type="radio"
-                name="room_info"
-                value={r.value}
-                defaultChecked={i === 0}
-                className="sr-only"
-              />
-              {r.label}
-            </label>
-          ))}
-        </div>
-      </Field>
+        <Field
+          label="Room info"
+          name="room_info"
+          errors={fieldErrors["room_info"]}
+        >
+          <div className="flex gap-2 h-10">
+            {ROOM_TYPES.map((r, i) => (
+              <label
+                key={r.value}
+                className="flex-1 h-full flex items-center justify-center cursor-pointer rounded-lg border border-white/10 bg-zinc-800/40 text-xs font-semibold text-white/85 transition-all duration-300 hover:bg-zinc-700/40 has-[input:checked]:bg-yellow-400 has-[input:checked]:text-black has-[input:checked]:border-yellow-400"
+              >
+                <input
+                  type="radio"
+                  name="room_info"
+                  value={r.value}
+                  defaultChecked={i === 0}
+                  className="sr-only"
+                />
+                {r.label}
+              </label>
+            ))}
+          </div>
+        </Field>
+      </div>
 
+      {/* Catatan - Full Width */}
       <Field label="Catatan (opsional)" name="notes" errors={fieldErrors["notes"]}>
         <textarea
           name="notes"
           rows={3}
           maxLength={2000}
-          className="w-full rounded-md border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-yellow-400 focus:outline-none"
+          placeholder="Tulis instruksi tambahan, detail custom room, link stream, dsb..."
+          className="w-full rounded-lg border border-white/10 bg-zinc-950/40 px-3 py-2 text-sm text-white placeholder-white/30 focus:border-yellow-400 focus:outline-none"
         />
       </Field>
 
       {globalError ? (
-        <p className="rounded-md border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-sm text-rose-300">
+        <p className="rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-sm text-rose-300">
           {globalError}
         </p>
       ) : null}
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="inline-flex h-11 items-center gap-2 rounded-md bg-yellow-400 px-5 text-sm font-semibold text-black transition hover:bg-yellow-300 disabled:cursor-not-allowed disabled:opacity-60"
-      >
-        {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-        Buat scrim
-      </button>
+      {/* Buat Scrim Button - Bottom Right */}
+      <div className="flex justify-end pt-3">
+        <button
+          type="submit"
+          disabled={pending}
+          className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-yellow-400 px-6 text-sm font-bold text-black transition-all duration-300 hover:bg-yellow-300 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60 shadow-lg shadow-yellow-400/10 hover:shadow-yellow-400/20"
+        >
+          {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+          Buat scrim
+        </button>
+      </div>
     </form>
   );
 }
