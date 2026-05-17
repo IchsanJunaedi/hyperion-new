@@ -85,7 +85,7 @@ export default async function ManagerAssignPage() {
           }))}
           divisions={(divisions ?? []).map((d) => ({
             id: d.id,
-            organizationId: d.organization_id,
+            organizationId: d.organization_id ?? "",
             name: d.name,
           }))}
           orgHasCaptain={orgHasCaptain}

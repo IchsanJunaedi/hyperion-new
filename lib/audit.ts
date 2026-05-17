@@ -18,7 +18,7 @@ export async function logAudit(params: {
       action: params.action,
       entity_type: params.entityType,
       entity_id: params.entityId ?? null,
-      metadata: (params.metadata ?? {}) as Record<string, unknown>,
+      metadata: (params.metadata ?? {}) as unknown as import("@/types/database").Json,
     });
   } catch (err) {
     // Non-blocking: audit failure shouldn't break the main action

@@ -96,6 +96,7 @@ export async function getEventDetailWithRelations(
       .select("id, display_name, avatar_url")
       .eq("id", event.pic_user_id)
       .maybeSingle();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     pic = picData as any;
   }
 

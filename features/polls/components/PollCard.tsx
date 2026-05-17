@@ -61,7 +61,7 @@ export function PollCard({ poll, orgSlug, canManage, userId }: PollCardProps) {
 
       <div className="mt-3 space-y-2">
         {options.map((option, i) => {
-          const count = voteCounts[i];
+          const count = voteCounts[i] ?? 0;
           const pct = poll.total_votes > 0 ? Math.round((count / poll.total_votes) * 100) : 0;
           const isMyVote = poll.my_vote === i;
 
@@ -84,7 +84,7 @@ export function PollCard({ poll, orgSlug, canManage, userId }: PollCardProps) {
             <button
               key={i}
               type="button"
-              disabled={pending || isClosed}
+              disabled={pending || !!isClosed}
               onClick={() => handleVote(i)}
               className="flex w-full items-center rounded-md border border-[#2D2D2D] px-3 py-1.5 text-xs text-[#9B9A97] transition hover:border-purple-400/30 hover:bg-[#2C2C2C] hover:text-[#E5E2E1] disabled:opacity-50 cursor-pointer"
             >

@@ -206,7 +206,7 @@ export function EventPermissionModal({
     }
   };
 
-  const currentVisibility = visibility || "team-only";
+  const currentVisibility = ((visibility as unknown as string) || "team-only") as CalendarVisibility;
 
   return (
     <>

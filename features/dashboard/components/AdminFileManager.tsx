@@ -71,7 +71,7 @@ export function AdminFileManager({
         setFiles((prev) => prev.filter((f) => f.id !== id));
         notify.success("File berhasil dihapus secara permanen");
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       notify.error("Terjadi kesalahan saat menghapus file");
       console.error(err);
     } finally {

@@ -68,11 +68,11 @@ export async function GET(
       .maybeSingle();
 
     // Get calendar visibility (default)
-    const { data: calendar } = await supabase
+    const { data: calendar } = event.calendar_id ? await supabase
       .from("calendar_configs")
       .select("visibility")
       .eq("id", event.calendar_id)
-      .maybeSingle();
+      .maybeSingle() : { data: null };
 
     return success({
       eventId,

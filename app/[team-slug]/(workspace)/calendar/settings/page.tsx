@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useParams } from "next/navigation";
-import { ArrowLeft, Settings, Eye, Users, History, Trash2, Loading } from "lucide-react";
+import { ArrowLeft, Settings, Eye, Users, History, Trash2, Loader2 } from "lucide-react";
 import Link from "next/link";
 
 import { useAccessibleCalendars } from "@/features/calendar/hooks/useCalendarPermissions";

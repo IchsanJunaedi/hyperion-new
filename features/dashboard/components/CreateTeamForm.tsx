@@ -70,7 +70,7 @@ export function CreateTeamForm({ existingDivisions }: CreateTeamFormProps) {
     <form onSubmit={handleSubmit} className="space-y-4">
       {noDivisions && (
         <p className="rounded border border-[#2D2D2D] bg-[#2C2C2C] px-3 py-2 text-sm text-[#9B9A97]">
-          Buat divisi terlebih dahulu di halaman "Kelola Divisi" sebelum membuat tim.
+          Buat divisi terlebih dahulu di halaman &quot;Kelola Divisi&quot; sebelum membuat tim.
         </p>
       )}
 
@@ -109,7 +109,7 @@ export function CreateTeamForm({ existingDivisions }: CreateTeamFormProps) {
             })}
           </div>
           <p className="text-[10px] text-[#6B6A68]">
-            Klik untuk pilih. Buat divisi baru di "Kelola Divisi".
+            Klik untuk pilih. Buat divisi baru di &quot;Kelola Divisi&quot;.
           </p>
         </div>
       )}

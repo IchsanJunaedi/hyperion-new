@@ -6,7 +6,7 @@ import { Eye, EyeOff, Pin, PinOff, Star } from "lucide-react";
 import Link from "next/link";
 
 import { useAccessibleCalendars } from "@/features/calendar/hooks/useCalendarPermissions";
-import { useCalendarPreferences, selectIsCalendarVisible, selectIsCalendarPinned } from "@/stores/calendar-preferences";
+import { useCalendarPreferences } from "@/stores/calendar-preferences";
 import type { AccessibleCalendarResult } from "@/features/calendar/hooks/useCalendarPermissions";
 import type { CalendarVisibility } from "@/lib/permissions/calendar-types";
 
@@ -213,8 +213,10 @@ export default function CalendarViewSettingsPage() {
   } = useCalendarPreferences();
 
   // Get selector hooks
-  const isCalendarVisible = useCalendarPreferences(selectIsCalendarVisible);
-  const isCalendarPinned = useCalendarPreferences(selectIsCalendarPinned);
+  const visibleCalendarIds = useCalendarPreferences((state) => state.visibleCalendarIds);
+  const pinnedCalendarIds = useCalendarPreferences((state) => state.pinnedCalendarIds);
+  const isCalendarVisible = (id: string) => visibleCalendarIds.includes(id);
+  const isCalendarPinned = (id: string) => pinnedCalendarIds.includes(id);
 
   // Combine data
   const calendarsWithPreferences: CalendarDisplayItem[] = calendars

@@ -47,7 +47,7 @@ export async function createOpponentProfileAction(
     .insert({
       organization_id: org.id,
       opponent_name: parsed.data.opponent_name,
-      data: (parsed.data.data ?? {}) as Record<string, unknown>,
+      data: (parsed.data.data ?? {}) as unknown as import("@/types/database").Json,
       created_by: user.id,
     })
     .select("id")
@@ -87,7 +87,7 @@ export async function updateOpponentProfileAction(
     .from("opponent_profiles")
     .update({
       opponent_name: parsed.data.opponent_name,
-      data: (parsed.data.data ?? {}) as Record<string, unknown>,
+      data: (parsed.data.data ?? {}) as unknown as import("@/types/database").Json,
     })
     .eq("id", parsed.data.profile_id);
 

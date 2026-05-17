@@ -148,7 +148,7 @@ export default async function DashboardUsersPage({ searchParams }: UsersPageProp
             <Users className="h-8 w-8 text-[#9B9A97] mb-3" />
             <h1 className="font-bold text-[28px] text-[#E5E2E1]">Semua User</h1>
             <p className="text-[#9B9A97] mt-1 text-sm">
-              Semua user terdaftar. User "none" belum di-assign ke tim.
+              Semua user terdaftar. User &quot;none&quot; belum di-assign ke tim.
             </p>
           </div>
           <UserSearch />

@@ -34,6 +34,7 @@ export async function listUnifiedCalendarEvents(
         .maybeSingle();
 
       if (member) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         userRole = member.role as any;
       }
     }
@@ -102,6 +103,10 @@ export async function listUnifiedCalendarEvents(
       ends_at: null,
       is_all_day: true,
       location: null,
+      // v2 fields with defaults
+      calendar_id: null, area: null, platform: null, status: "confirmed", priority: "medium",
+      pic_user_id: null, tags: [], visual_needed: false, content: null, color: null,
+      recurring_rule: null, recurring_parent_id: null, is_recurring: false, updated_at: new Date(t.start_date).toISOString(),
       ref_id: t.id,
       ref_type: "tournament",
       created_at: new Date(t.start_date).toISOString(),
@@ -140,6 +145,10 @@ export async function listUnifiedCalendarEvents(
       ref_type: "scrim",
       created_at: s.scheduled_at,
       visibility: "all",
+      // v2 fields with defaults
+      calendar_id: null, area: null, platform: null, status: "confirmed", priority: "medium",
+      pic_user_id: null, tags: [], visual_needed: false, content: null, color: null,
+      recurring_rule: null, recurring_parent_id: null, is_recurring: false, updated_at: s.scheduled_at,
     });
   }
 

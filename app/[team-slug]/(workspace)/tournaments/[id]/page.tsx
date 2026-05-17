@@ -33,7 +33,7 @@ export default async function TournamentDetailPage({ params }: TournamentDetailP
   const currentUserRole = await getCurrentUserRole(organization.id);
   const canManage = ["captain", "manager", "owner"].includes(currentUserRole ?? "");
 
-  const badge = STATUS_BADGE[detail.status] ?? STATUS_BADGE.scheduled;
+  const badge = STATUS_BADGE[detail.status] ?? STATUS_BADGE["upcoming"] ?? { color: "bg-white/5 text-[#9B9A97] border-white/10", label: "TIDAK DIKETAHUI" };
 
   const scheduled = new Date(detail.start_date).toLocaleString("id-ID", {
     weekday: "long",

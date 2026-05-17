@@ -23,7 +23,7 @@ export async function markNotificationRead(
   if (!user) return { ok: false, message: "Anda harus login" };
 
   const { error } = await supabase.rpc("mark_notification_read", {
-    p_notification_id: notificationId,
+    notification_id: notificationId,
   });
   if (error) return { ok: false, message: error.message };
   return { ok: true };

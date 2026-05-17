@@ -144,9 +144,7 @@ export async function updateCalendarEventAction(
 
   const { error } = await db
     .from("calendar_events")
-    .update({
-      ...updateData,
-    })
+    .update(updateData as import("@/types/database").Database["public"]["Tables"]["calendar_events"]["Update"])
     .eq("id", id);
 
   if (error) {
@@ -186,9 +184,7 @@ export async function updateEventPropertyAction(
 
   const { error } = await db
     .from("calendar_events")
-    .update({
-      [field]: value,
-    })
+    .update({ [field]: value } as import("@/types/database").Database["public"]["Tables"]["calendar_events"]["Update"])
     .eq("id", id);
 
   if (error) {
@@ -248,6 +244,7 @@ export async function addEventCommentAction(
   const { user, db } = await getAuthContext();
   if (!user) return { ok: false, message: "Anda harus login" };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: comment, error } = await (db as any)
     .from("calendar_event_comments")
     .insert({
@@ -283,6 +280,7 @@ export async function deleteEventCommentAction(
   const { user, db, isOwner } = await getAuthContext();
   if (!user) return { ok: false, message: "Anda harus login" };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const query = (db as any).from("calendar_event_comments").delete().eq("id", commentId);
 
   // Non-owner can only delete their own comments

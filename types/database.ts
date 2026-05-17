@@ -179,6 +179,20 @@ export type Database = {
           starts_at: string
           title: string
           visibility: string
+          calendar_id: string | null
+          area: string | null
+          platform: string | null
+          status: string
+          priority: string
+          pic_user_id: string | null
+          tags: string[]
+          visual_needed: boolean
+          content: Json | null
+          color: string | null
+          recurring_rule: Json | null
+          recurring_parent_id: string | null
+          is_recurring: boolean
+          updated_at: string
         }
         Insert: {
           created_at?: string
@@ -196,6 +210,20 @@ export type Database = {
           starts_at: string
           title: string
           visibility?: string
+          calendar_id?: string | null
+          area?: string | null
+          platform?: string | null
+          status?: string
+          priority?: string
+          pic_user_id?: string | null
+          tags?: string[]
+          visual_needed?: boolean
+          content?: Json | null
+          color?: string | null
+          recurring_rule?: Json | null
+          recurring_parent_id?: string | null
+          is_recurring?: boolean
+          updated_at?: string
         }
         Update: {
           created_at?: string
@@ -213,6 +241,20 @@ export type Database = {
           starts_at?: string
           title?: string
           visibility?: string
+          calendar_id?: string | null
+          area?: string | null
+          platform?: string | null
+          status?: string
+          priority?: string
+          pic_user_id?: string | null
+          tags?: string[]
+          visual_needed?: boolean
+          content?: Json | null
+          color?: string | null
+          recurring_rule?: Json | null
+          recurring_parent_id?: string | null
+          is_recurring?: boolean
+          updated_at?: string
         }
         Relationships: [
           {
@@ -497,6 +539,8 @@ export type Database = {
           user_id: string
           wa_message: string | null
           wa_number: string | null
+          retry_count: number | null
+          claimed_at: string | null
         }
         Insert: {
           attempts?: number
@@ -515,6 +559,8 @@ export type Database = {
           user_id: string
           wa_message?: string | null
           wa_number?: string | null
+          retry_count?: number | null
+          claimed_at?: string | null
         }
         Update: {
           attempts?: number
@@ -533,6 +579,8 @@ export type Database = {
           user_id?: string
           wa_message?: string | null
           wa_number?: string | null
+          retry_count?: number | null
+          claimed_at?: string | null
         }
         Relationships: [
           {
@@ -1426,6 +1474,365 @@ export type Database = {
           },
         ]
       }
+      calendar_event_comments: {
+        Row: {
+          id: string
+          event_id: string
+          user_id: string
+          body: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          event_id: string
+          user_id: string
+          body: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          event_id?: string
+          user_id?: string
+          body?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "calendar_event_comments_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "calendar_events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      calendar_event_relations: {
+        Row: {
+          id: string
+          event_id: string
+          rel_type: string
+          rel_id: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          event_id: string
+          rel_type: string
+          rel_id: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          event_id?: string
+          rel_type?: string
+          rel_id?: string
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "calendar_event_relations_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "calendar_events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      calendar_audit_logs: {
+        Row: {
+          id: string
+          organization_id: string
+          calendar_id: string | null
+          event_id: string | null
+          actor_id: string | null
+          action: string
+          entity_type: string
+          changes: Json
+          metadata: Json
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          organization_id: string
+          calendar_id?: string | null
+          event_id?: string | null
+          actor_id?: string | null
+          action: string
+          entity_type: string
+          changes?: Json
+          metadata?: Json
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          organization_id?: string
+          calendar_id?: string | null
+          event_id?: string | null
+          actor_id?: string | null
+          action?: string
+          entity_type?: string
+          changes?: Json
+          metadata?: Json
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "calendar_audit_logs_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "calendar_audit_logs_calendar_id_fkey"
+            columns: ["calendar_id"]
+            isOneToOne: false
+            referencedRelation: "calendar_configs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "calendar_audit_logs_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "calendar_events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      calendar_configs: {
+        Row: {
+          id: string
+          organization_id: string
+          division_id: string | null
+          created_by: string
+          title: string
+          description: string | null
+          visibility: string
+          is_active: boolean
+          created_at: string
+          updated_at: string
+          deleted_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          id?: string
+          organization_id: string
+          division_id?: string | null
+          created_by: string
+          title: string
+          description?: string | null
+          visibility?: string
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+          deleted_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          id?: string
+          organization_id?: string
+          division_id?: string | null
+          created_by?: string
+          title?: string
+          description?: string | null
+          visibility?: string
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+          deleted_at?: string | null
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "calendar_configs_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "calendar_configs_division_id_fkey"
+            columns: ["division_id"]
+            isOneToOne: false
+            referencedRelation: "divisions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      calendar_member_permissions: {
+        Row: {
+          id: string
+          organization_id: string
+          calendar_id: string
+          member_user_id: string
+          can_view: boolean
+          can_create_event: boolean
+          can_edit_event: boolean
+          can_delete_event: boolean
+          can_manage_permissions: boolean
+          created_at: string
+          updated_at: string
+          created_by: string
+          updated_by: string | null
+          deleted_at: string | null
+        }
+        Insert: {
+          id?: string
+          organization_id: string
+          calendar_id: string
+          member_user_id: string
+          can_view?: boolean
+          can_create_event?: boolean
+          can_edit_event?: boolean
+          can_delete_event?: boolean
+          can_manage_permissions?: boolean
+          created_at?: string
+          updated_at?: string
+          created_by: string
+          updated_by?: string | null
+          deleted_at?: string | null
+        }
+        Update: {
+          id?: string
+          organization_id?: string
+          calendar_id?: string
+          member_user_id?: string
+          can_view?: boolean
+          can_create_event?: boolean
+          can_edit_event?: boolean
+          can_delete_event?: boolean
+          can_manage_permissions?: boolean
+          created_at?: string
+          updated_at?: string
+          created_by?: string
+          updated_by?: string | null
+          deleted_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "calendar_member_permissions_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "calendar_member_permissions_calendar_id_fkey"
+            columns: ["calendar_id"]
+            isOneToOne: false
+            referencedRelation: "calendar_configs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      calendar_visibility_rules: {
+        Row: {
+          id: string
+          organization_id: string
+          visibility: string
+          permissions: Json
+          is_active: boolean
+          created_at: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          id?: string
+          organization_id: string
+          visibility: string
+          permissions?: Json
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          id?: string
+          organization_id?: string
+          visibility?: string
+          permissions?: Json
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "calendar_visibility_rules_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_visibility: {
+        Row: {
+          id: string
+          organization_id: string
+          event_id: string
+          calendar_id: string | null
+          visibility: string
+          allowed_member_ids: string[]
+          created_at: string
+          updated_at: string
+          created_by: string
+          updated_by: string | null
+          deleted_at: string | null
+        }
+        Insert: {
+          id?: string
+          organization_id: string
+          event_id: string
+          calendar_id?: string | null
+          visibility: string
+          allowed_member_ids?: string[]
+          created_at?: string
+          updated_at?: string
+          created_by: string
+          updated_by?: string | null
+          deleted_at?: string | null
+        }
+        Update: {
+          id?: string
+          organization_id?: string
+          event_id?: string
+          calendar_id?: string | null
+          visibility?: string
+          allowed_member_ids?: string[]
+          created_at?: string
+          updated_at?: string
+          created_by?: string
+          updated_by?: string | null
+          deleted_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_visibility_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_visibility_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "calendar_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_visibility_calendar_id_fkey"
+            columns: ["calendar_id"]
+            isOneToOne: false
+            referencedRelation: "calendar_configs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -1656,4 +2063,17 @@ export const Constants = {
 
 export type MemberAvailability = Database["public"]["Enums"]["member_availability"];
 export type MemberRole = Database["public"]["Enums"]["member_role"];
+
+// Convenience row types
+export type AttendanceStatus = Database["public"]["Enums"]["attendance_status"];
+export type ScrimStatus = Database["public"]["Enums"]["scrim_status"];
+export type MatchFormat = Database["public"]["Enums"]["match_format"];
+export type ContentStatus = Database["public"]["Enums"]["content_status"];
+
+export type ContentCalendarRow = Database["public"]["Tables"]["content_calendar"]["Row"];
+export type FinanceRow = Database["public"]["Tables"]["finances"]["Row"];
+export type CalendarConfigRow = Database["public"]["Tables"]["calendar_configs"]["Row"];
+export type CalendarMemberPermissionRow = Database["public"]["Tables"]["calendar_member_permissions"]["Row"];
+export type CalendarAuditLogRow = Database["public"]["Tables"]["calendar_audit_logs"]["Row"];
+export type EventVisibilityRow = Database["public"]["Tables"]["event_visibility"]["Row"];
 

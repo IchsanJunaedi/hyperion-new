@@ -161,7 +161,7 @@ export async function getCalendarDetailAction(
 
   return {
     ok: true,
-    data: { calendar },
+    data: { calendar: calendar as unknown as CalendarConfig },
   };
 }
 
@@ -245,8 +245,8 @@ export async function listCalendarEventsWithPermissionsAction(
     // Add permission context to each event
     const eventsWithContext: EventWithPermissionContext[] = (events ?? []).map(
       (event) => ({
-        ...event,
-        calendar,
+        ...(event as unknown as CalendarEvent),
+        calendar: calendar as unknown as CalendarConfig,
         userCanEdit: user.id === event.created_by,
         userCanDelete: user.id === event.created_by,
       }),
@@ -331,8 +331,8 @@ export async function getUserAccessibleEventsAction(
     const calendarMap = new Map(calendars.map((c) => [c.id, c]));
     const eventsWithContext: EventWithPermissionContext[] = (events ?? []).map(
       (event) => ({
-        ...event,
-        calendar: calendarMap.get(event.calendar_id) || null,
+        ...(event as unknown as CalendarEvent),
+        calendar: (event.calendar_id ? calendarMap.get(event.calendar_id) ?? null : null) as unknown as CalendarConfig | null,
         userCanEdit: user.id === event.created_by,
         userCanDelete: user.id === event.created_by,
       }),

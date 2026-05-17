@@ -53,7 +53,7 @@ export default async function ManageCaptainsPage() {
       <header>
         <h1 className="text-2xl font-bold text-white">Edit Captain</h1>
         <p className="mt-1 text-sm text-white/60">
-          Lihat dan kelola captain di tim kamu. Untuk assign captain baru, gunakan "Tambah Member" dengan role Captain.
+          Lihat dan kelola captain di tim kamu. Untuk assign captain baru, gunakan &quot;Tambah Member&quot; dengan role Captain.
         </p>
       </header>
 

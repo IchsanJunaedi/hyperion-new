@@ -161,7 +161,7 @@ export async function createCalendarAction(
 
   return {
     ok: true,
-    data: { calendar },
+    data: { calendar: calendar as unknown as CalendarConfig },
   };
 }
 
@@ -237,7 +237,7 @@ export async function updateCalendarAction(
   }
 
   // Prepare updates
-  const updates: Record<string, unknown> = {};
+  const updates: { title?: string; description?: string | null; visibility?: string; is_active?: boolean; updated_at?: string; updated_by?: string | null } = {};
   if (parsed.data.title !== undefined) updates.title = parsed.data.title;
   if (parsed.data.description !== undefined)
     updates.description = parsed.data.description;
@@ -376,7 +376,7 @@ export async function deleteCalendarAction(
     "calendar",
     calendarId,
     user.id,
-    { deleted_at: new Date().toISOString() },
+    { deleted_at: { new_value: new Date().toISOString() } },
   );
 
   revalidatePath(`/${orgSlug}`);

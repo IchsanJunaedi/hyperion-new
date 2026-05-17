@@ -34,6 +34,7 @@ export type RealtimeCallback<T = unknown> = (payload: T) => void;
  */
 export async function subscribeToCalendarPermissions(
   calendarId: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   callback: RealtimeCallback<RealtimePostgresChangesPayload<any>>,
 ): Promise<(() => void) | null> {
   try {
@@ -92,6 +93,7 @@ export async function subscribeToCalendarPermissions(
  */
 export async function subscribeToCalendarAuditLogs(
   calendarId: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   callback: RealtimeCallback<RealtimePostgresChangesPayload<any>>,
 ): Promise<(() => void) | null> {
   try {
@@ -147,6 +149,7 @@ export async function subscribeToCalendarAuditLogs(
  */
 export async function subscribeToEventVisibility(
   eventId: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   callback: RealtimeCallback<RealtimePostgresChangesPayload<any>>,
 ): Promise<(() => void) | null> {
   try {
@@ -203,6 +206,7 @@ export async function subscribeToEventVisibility(
  */
 export async function subscribeToCalendarConfig(
   calendarId: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   callback: RealtimeCallback<RealtimePostgresChangesPayload<any>>,
 ): Promise<(() => void) | null> {
   try {
@@ -258,6 +262,7 @@ export async function subscribeToCalendarConfig(
  */
 export async function subscribeToMultipleCalendars(
   calendarIds: string[],
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   callback: (change: RealtimePostgresChangesPayload<any>, calendarId: string) => void,
 ): Promise<() => void> {
   const unsubscribeFunctions: Array<() => void> = [];
@@ -304,6 +309,7 @@ export async function subscribeToOrganizationCalendars(
   organizationId: string,
   callback: (
     type: "config" | "permissions" | "audit" | "event-visibility",
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     change: RealtimePostgresChangesPayload<any>,
   ) => void,
 ): Promise<() => void> {
@@ -361,7 +367,7 @@ export async function subscribeToOrganizationCalendars(
     // Return unsubscribe function that removes all channels
     return () => {
       for (const { name } of channels) {
-        supabase.removeChannel(supabase.getChannel(name)!);
+        const ch = supabase.getChannels().find((c) => c.topic === name); if (ch) supabase.removeChannel(ch);
       }
     };
   } catch (err) {

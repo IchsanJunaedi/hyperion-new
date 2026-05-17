@@ -133,7 +133,7 @@ export function PermissionGuard({
           <div>
             <p className="font-medium text-red-400">Access Denied</p>
             <p className="text-sm text-red-300 mt-1">
-              You don't have permission to perform this action.
+              You don&apos;t have permission to perform this action.
             </p>
           </div>
         </div>
@@ -291,7 +291,7 @@ export function PermissionConfirmDialog({
             <div>
               <h3 className="font-semibold text-[#E5E2E1]">Permission Denied</h3>
               <p className="text-sm text-[#9B9A97] mt-2">
-                You don't have permission to perform this action.
+                You don&apos;t have permission to perform this action.
               </p>
             </div>
           </div>

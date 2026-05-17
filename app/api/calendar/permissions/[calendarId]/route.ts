@@ -165,6 +165,7 @@ export async function PUT(
               can_delete_event: Boolean(perm.can_delete_event ?? false),
               can_manage_permissions: Boolean(perm.can_manage_permissions ?? false),
               updated_by: user!.id,
+              created_by: user!.id,
             },
             {
               onConflict: "calendar_id,member_user_id",

@@ -104,7 +104,7 @@ export async function generateMonthlyReport(
   ];
 
   return {
-    month: monthNames[month - 1],
+    month: monthNames[month - 1] ?? "",
     year,
     scrims: { total: totalScrims, wins, losses, draws, winRate },
     attendance: {
