@@ -74,7 +74,7 @@ export async function GET(
       .maybeSingle();
 
     // Get selected members if visibility is "selected-members"
-    let selectedMembers = [];
+    let selectedMembers: unknown[] = [];
     if (calendar.visibility === "selected-members") {
       const { data: perms } = await supabase
         .from("calendar_member_permissions")

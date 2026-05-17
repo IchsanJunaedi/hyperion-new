@@ -77,7 +77,7 @@ export async function cascadePermissionChange(
     // Get member profile for notification
     const { data: memberProfile } = await admin
       .from("profiles")
-      .select("display_name, email")
+      .select("display_name")
       .eq("id", memberId)
       .maybeSingle();
 

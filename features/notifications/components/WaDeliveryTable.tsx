@@ -109,7 +109,7 @@ export function WaDeliveryTable({ orgId, orgSlug }: WaDeliveryTableProps) {
                 {data.data.map((notif) => (
                   <WaDeliveryRow
                     key={notif.id}
-                    notif={notif}
+                    notif={notif as unknown as Parameters<typeof WaDeliveryRow>[0]["notif"]}
                     orgId={orgId}
                   />
                 ))}

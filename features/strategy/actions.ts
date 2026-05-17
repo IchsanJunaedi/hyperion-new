@@ -57,7 +57,7 @@ export async function createStrategyNoteAction(
     .from("strategy_notes")
     .insert({
       organization_id: org.id,
-      division_id: parsed.data.division_id,
+      division_id: parsed.data.division_id ?? "",
       created_by: user.id,
       title: parsed.data.title,
       content: parsed.data.content,

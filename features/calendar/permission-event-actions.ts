@@ -115,7 +115,7 @@ export async function setEventVisibilityAction(
     // If no visibility specified and record exists, just return it
     return {
       ok: true,
-      data: { visibility: existing },
+      data: { visibility: existing as unknown as EventVisibility },
     };
   }
 
@@ -162,7 +162,7 @@ export async function setEventVisibilityAction(
 
     return {
       ok: true,
-      data: { visibility: updated },
+      data: { visibility: updated as unknown as EventVisibility },
     };
   }
 
@@ -212,7 +212,7 @@ export async function setEventVisibilityAction(
 
   return {
     ok: true,
-    data: { visibility: newVisibility },
+    data: { visibility: newVisibility as unknown as EventVisibility },
   };
 }
 
@@ -280,7 +280,7 @@ export async function getEventVisibilityAction(
 
   return {
     ok: true,
-    data: { visibility },
+    data: { visibility: visibility as unknown as EventVisibility },
   };
 }
 
@@ -396,7 +396,7 @@ export async function resetEventVisibilityAction(
     "event",
     parsed.data.eventId,
     user.id,
-    { deleted_at: new Date().toISOString() },
+    { deleted_at: { new_value: new Date().toISOString() } },
     {
       action: "reset_to_calendar_default",
       previousVisibility: visibility.visibility,

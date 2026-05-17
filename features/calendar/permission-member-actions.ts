@@ -138,7 +138,7 @@ export async function grantMemberPermissionAction(
     .select("*")
     .eq("calendar_id", parsed.data.calendarId)
     .eq("member_user_id", parsed.data.memberUserId)
-    .eq("deleted_at", null)
+    .is("deleted_at", null)
     .single();
 
   if (existing) {
@@ -340,7 +340,7 @@ export async function revokeMemberPermissionAction(
     .select("*")
     .eq("calendar_id", parsed.data.calendarId)
     .eq("member_user_id", parsed.data.memberUserId)
-    .eq("deleted_at", null)
+    .is("deleted_at", null)
     .single();
 
   if (!permissionRecord) {
@@ -503,7 +503,7 @@ export async function bulkGrantPermissionsAction(
     org.id,
     "permission_granted",
     "permission",
-    null,
+    parsed.data.calendarId,
     user.id,
     {},
     {
@@ -591,7 +591,7 @@ export async function getCalendarMembersAction(
       `,
     )
     .eq("calendar_id", calendarId)
-    .eq("deleted_at", null)
+    .is("deleted_at", null)
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -604,7 +604,7 @@ export async function getCalendarMembersAction(
   return {
     ok: true,
     data: {
-      members: (memberPermissions ?? []) as CalendarMemberWithProfile[],
+      members: (memberPermissions ?? []) as unknown as CalendarMemberWithProfile[],
     },
   };
 }

@@ -176,7 +176,7 @@ export async function checkCalendarVisibility(
       case "management-only":
         // Owner, Manager, Coach
         return {
-          allowed: userRole && ["owner", "manager", "coach"].includes(userRole),
+          allowed: !!(userRole && ["owner", "manager", "coach"].includes(userRole)),
           reason:
             !userRole || !["owner", "manager", "coach"].includes(userRole)
               ? "Management-only calendar - requires manager or coach role"
@@ -188,7 +188,7 @@ export async function checkCalendarVisibility(
       case "captain-only":
         // Owner, Manager, Coach, Captain
         return {
-          allowed: userRole && ["owner", "manager", "coach", "captain"].includes(userRole),
+          allowed: !!(userRole && ["owner", "manager", "coach", "captain"].includes(userRole)),
           reason:
             !userRole || !["owner", "manager", "coach", "captain"].includes(userRole)
               ? "Captain-only calendar - requires captain or higher role"
@@ -221,7 +221,7 @@ export async function checkCalendarVisibility(
           .select("can_view")
           .eq("calendar_id", calendarId)
           .eq("member_user_id", userId)
-          .eq("deleted_at", null)
+          .is("deleted_at", null)
           .eq("can_view", true)
           .single();
 
@@ -353,7 +353,7 @@ export async function checkEventVisibility(
 
       case "management-only":
         return {
-          allowed: userRole && ["owner", "manager", "coach"].includes(userRole),
+          allowed: !!(userRole && ["owner", "manager", "coach"].includes(userRole)),
           reason:
             !userRole || !["owner", "manager", "coach"].includes(userRole)
               ? "Management-only event"
@@ -364,7 +364,7 @@ export async function checkEventVisibility(
 
       case "captain-only":
         return {
-          allowed: userRole && ["owner", "manager", "coach", "captain"].includes(userRole),
+          allowed: !!(userRole && ["owner", "manager", "coach", "captain"].includes(userRole)),
           reason:
             !userRole || !["owner", "manager", "coach", "captain"].includes(userRole)
               ? "Captain-only event"
@@ -662,7 +662,7 @@ export async function getAccessibleCalendars(
       }
 
       result.push({
-        ...calendar,
+        ...(calendar as unknown as import("@/lib/permissions/calendar-types").CalendarConfig),
         userPermissions,
       });
     }

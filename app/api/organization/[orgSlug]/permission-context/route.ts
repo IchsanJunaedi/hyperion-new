@@ -86,7 +86,7 @@ export async function GET(
     const userLevel = roleHierarchy[userRole || ""] || 0;
 
     // Get divisions (if role is manager+)
-    let divisions = [];
+    let divisions: unknown[] = [];
     if (userLevel >= 4) {
       // manager+
       const { data: divs } = await supabase

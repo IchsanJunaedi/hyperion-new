@@ -20,13 +20,13 @@ export function ScoutingCard({ profile }: ScoutingCardProps) {
       </div>
 
       <div className="grid gap-2 text-xs sm:grid-cols-2">
-        {data.high_rank && (
+        {!!data.high_rank && (
           <div>
             <span className="text-[#6B6A68]">High Rank:</span>{" "}
             <span className="text-[#E5E2E1]">{data.high_rank as string}</span>
           </div>
         )}
-        {data.current_rank && (
+        {!!data.current_rank && (
           <div>
             <span className="text-[#6B6A68]">Current Rank:</span>{" "}
             <span className="text-[#E5E2E1]">{data.current_rank as string}</span>
@@ -47,7 +47,7 @@ export function ScoutingCard({ profile }: ScoutingCardProps) {
         </div>
       )}
 
-      {data.playstyle && (
+      {!!data.playstyle && (
         <div>
           <div className="flex items-center gap-1 text-[10px] text-[#6B6A68] uppercase tracking-wide">
             <Swords className="h-3 w-3" />
@@ -57,7 +57,7 @@ export function ScoutingCard({ profile }: ScoutingCardProps) {
         </div>
       )}
 
-      {data.weaknesses && (
+      {!!data.weaknesses && (
         <div>
           <div className="flex items-center gap-1 text-[10px] text-[#6B6A68] uppercase tracking-wide">
             <Target className="h-3 w-3" />
@@ -67,7 +67,7 @@ export function ScoutingCard({ profile }: ScoutingCardProps) {
         </div>
       )}
 
-      {data.notes && (
+      {!!data.notes && (
         <p className="text-xs text-[#6B6A68] border-t border-[#2D2D2D] pt-2">
           {data.notes as string}
         </p>

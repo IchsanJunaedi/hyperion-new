@@ -144,9 +144,7 @@ export async function updateCalendarEventAction(
 
   const { error } = await db
     .from("calendar_events")
-    .update({
-      ...updateData,
-    })
+    .update(updateData as import("@/types/database").Database["public"]["Tables"]["calendar_events"]["Update"])
     .eq("id", id);
 
   if (error) {
@@ -186,9 +184,7 @@ export async function updateEventPropertyAction(
 
   const { error } = await db
     .from("calendar_events")
-    .update({
-      [field]: value,
-    })
+    .update({ [field]: value } as import("@/types/database").Database["public"]["Tables"]["calendar_events"]["Update"])
     .eq("id", id);
 
   if (error) {

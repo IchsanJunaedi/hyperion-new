@@ -361,7 +361,7 @@ export async function subscribeToOrganizationCalendars(
     // Return unsubscribe function that removes all channels
     return () => {
       for (const { name } of channels) {
-        supabase.removeChannel(supabase.getChannel(name)!);
+        const ch = supabase.getChannels().find((c) => c.topic === name); if (ch) supabase.removeChannel(ch);
       }
     };
   } catch (err) {

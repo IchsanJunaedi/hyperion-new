@@ -34,7 +34,7 @@ export default async function StrategyNoteDetailPage({
     timeZone: "Asia/Jakarta",
   });
 
-  const vis = VISIBILITY_LABELS[note.visibility] ?? VISIBILITY_LABELS["division"];
+  const vis = VISIBILITY_LABELS[note.visibility] ?? VISIBILITY_LABELS["division"] ?? { label: "Divisi saja", Icon: Users };
   const VisIcon = vis.Icon;
 
   return (
