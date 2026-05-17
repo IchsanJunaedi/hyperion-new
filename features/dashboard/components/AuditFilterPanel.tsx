@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
 import { Input } from "@/components/ui/input";
+import { CustomSelect } from "@/features/dashboard/components/CustomSelect";
 import { ENTITY_TYPE_LABELS } from "@/features/dashboard/actions/fetchAuditLogs";
 
 const PRESETS_KEY = "audit_filter_presets";
@@ -109,31 +110,23 @@ export function AuditFilterPanel({ filters, actors }: AuditFilterPanelProps) {
           />
         </div>
 
-        <select
+        <CustomSelect
           value={filters.module}
-          onChange={(e) => pushFilters({ module: e.target.value })}
-          className="h-8 rounded-md border border-[#2D2D2D] bg-[#202020] px-2 text-xs text-[#E5E2E1] cursor-pointer focus:outline-none focus:border-[#9B9A97]"
-        >
-          <option value="">Semua Modul</option>
-          {Object.entries(ENTITY_TYPE_LABELS).map(([value, label]) => (
-            <option key={value} value={value}>
-              {label}
-            </option>
-          ))}
-        </select>
+          options={[
+            { value: "", label: "Semua Modul" },
+            ...Object.entries(ENTITY_TYPE_LABELS).map(([value, label]) => ({ value, label })),
+          ]}
+          onChange={(val) => pushFilters({ module: val })}
+        />
 
-        <select
+        <CustomSelect
           value={filters.actor}
-          onChange={(e) => pushFilters({ actor: e.target.value })}
-          className="h-8 rounded-md border border-[#2D2D2D] bg-[#202020] px-2 text-xs text-[#E5E2E1] cursor-pointer focus:outline-none focus:border-[#9B9A97]"
-        >
-          <option value="">Semua Aktor</option>
-          {actors.map((a) => (
-            <option key={a.id} value={a.id}>
-              {a.name}
-            </option>
-          ))}
-        </select>
+          options={[
+            { value: "", label: "Semua Aktor" },
+            ...actors.map((a) => ({ value: a.id, label: a.name })),
+          ]}
+          onChange={(val) => pushFilters({ actor: val })}
+        />
 
         <input
           type="date"
