@@ -16,7 +16,15 @@ const EVENT_TYPE_LABELS: Record<string, string> = {
   tournament: "Turnamen",
   practice: "Latihan",
   meeting: "Meeting",
+  bootcamp: "Bootcamp",
   other: "Lainnya",
+};
+
+const VISIBILITY_LABELS: Record<string, { label: string; style: string }> = {
+  all: { label: "👥 Semua Tim", style: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" },
+  management: { label: "💼 Manajemen", style: "bg-blue-500/10 text-blue-400 border border-blue-500/20" },
+  coach_up: { label: "⚡ Coach & Manajemen", style: "bg-indigo-500/10 text-indigo-400 border border-indigo-500/20" },
+  private: { label: "🔒 Hanya Saya (Private)", style: "bg-rose-500/10 text-rose-400 border border-rose-500/20" },
 };
 
 export default async function CalendarEventDetailPage({
@@ -53,9 +61,16 @@ export default async function CalendarEventDetailPage({
         >
           ← Kalender
         </Link>
-        <span className="inline-flex items-center rounded-full bg-white/5 px-2 py-0.5 text-xs font-medium text-white/60">
-          {EVENT_TYPE_LABELS[event.event_type] ?? event.event_type}
-        </span>
+        <div className="flex flex-wrap gap-2">
+          <span className="inline-flex items-center rounded-full bg-white/5 px-2 py-0.5 text-xs font-medium text-white/60">
+            {EVENT_TYPE_LABELS[event.event_type] ?? event.event_type}
+          </span>
+          {event.visibility && VISIBILITY_LABELS[event.visibility] && (
+            <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${VISIBILITY_LABELS[event.visibility].style}`}>
+              {VISIBILITY_LABELS[event.visibility].label}
+            </span>
+          )}
+        </div>
         <h1 className="text-3xl font-bold text-white">{event.title}</h1>
         <dl className="grid gap-1 text-sm text-white/70 sm:grid-cols-2">
           <div className="inline-flex items-center gap-2">

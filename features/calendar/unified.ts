@@ -14,14 +14,65 @@ export async function listUnifiedCalendarEvents(
 ): Promise<CalendarEvent[]> {
   const supabase = await createClient();
 
-  // 1. Manual calendar events
-  const { data: manualEvents } = await supabase
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  let userRole: "owner" | "manager" | "coach" | "captain" | "member" | null = null;
+
+  if (user) {
+    const ownerEmail = process.env.OWNER_EMAIL;
+    if (ownerEmail && user.email === ownerEmail) {
+      userRole = "owner";
+    } else {
+      const { data: member } = await supabase
+        .from("team_members")
+        .select("role")
+        .eq("organization_id", orgId)
+        .eq("user_id", user.id)
+        .eq("is_active", true)
+        .maybeSingle();
+
+      if (member) {
+        userRole = member.role as any;
+      }
+    }
+  }
+
+  // 1. Manual calendar events with visibility filter
+  let query = supabase
     .from("calendar_events")
     .select("*")
     .eq("organization_id", orgId)
     .gte("starts_at", from)
-    .lte("starts_at", to)
-    .order("starts_at", { ascending: true });
+    .lte("starts_at", to);
+
+  if (userRole === "owner") {
+    // Owner sees everything
+  } else if (userRole === "manager") {
+    // Manager sees 'all', 'management', 'coach_up', and anything they created
+    if (user) {
+      query = query.or(`visibility.in.(all,management,coach_up),created_by.eq.${user.id}`);
+    } else {
+      query = query.eq("visibility", "all");
+    }
+  } else if (userRole === "coach") {
+    // Coach sees 'all', 'coach_up', and anything they created
+    if (user) {
+      query = query.or(`visibility.in.(all,coach_up),created_by.eq.${user.id}`);
+    } else {
+      query = query.eq("visibility", "all");
+    }
+  } else {
+    // Captain, Member, and Guest see 'all' and their own created events
+    if (user) {
+      query = query.or(`visibility.eq.all,created_by.eq.${user.id}`);
+    } else {
+      query = query.eq("visibility", "all");
+    }
+  }
+
+  const { data: manualEvents } = await query.order("starts_at", { ascending: true });
 
   const events: CalendarEvent[] = manualEvents ?? [];
 

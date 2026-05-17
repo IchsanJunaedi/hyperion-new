@@ -5,6 +5,7 @@ export const eventTypeSchema = z.enum([
   "tournament",
   "practice",
   "meeting",
+  "bootcamp",
   "other",
 ]);
 
@@ -56,6 +57,7 @@ export const createCalendarEventSchema = z.object({
     .max(200)
     .optional()
     .transform((v) => (v && v.length > 0 ? v : null)),
+  visibility: z.enum(["private", "management", "coach_up", "all"]).default("all"),
 });
 
 export const updateCalendarEventSchema = z.object({
@@ -108,6 +110,7 @@ export const updateCalendarEventSchema = z.object({
   visual_needed: z.coerce.boolean().optional(),
   content: z.unknown().optional().nullable(),
   color: z.string().trim().max(20).optional().nullable(),
+  visibility: z.enum(["private", "management", "coach_up", "all"]).optional(),
 });
 
 export const updateEventPropertySchema = z.object({

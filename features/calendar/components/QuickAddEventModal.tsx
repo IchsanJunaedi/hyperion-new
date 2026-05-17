@@ -11,14 +11,14 @@ interface QuickAddEventModalProps {
   date: Date | null;
   orgSlug: string;
   divisions?: Array<{ id: string; name: string }>;
+  userRole?: string;
   onClose: () => void;
 }
 
 const EVENT_TYPES = [
   { value: "practice", label: "Latihan", color: "text-green-400" },
-  { value: "scrim", label: "Scrim", color: "text-blue-400" },
-  { value: "tournament", label: "Turnamen", color: "text-yellow-400" },
   { value: "meeting", label: "Meeting", color: "text-purple-400" },
+  { value: "bootcamp", label: "Bootcamp", color: "text-rose-400" },
   { value: "other", label: "Lainnya", color: "text-white/60" },
 ] as const;
 
@@ -36,6 +36,7 @@ export function QuickAddEventModal({
   date,
   orgSlug,
   divisions = [],
+  userRole = "member",
   onClose,
 }: QuickAddEventModalProps) {
   const router = useRouter();
@@ -43,6 +44,21 @@ export function QuickAddEventModal({
   const [error, setError] = useState<string | null>(null);
   const [eventType, setEventType] = useState<string>("practice");
   const titleRef = useRef<HTMLInputElement>(null);
+
+  const visibilityOptions = [
+    { value: "all", label: "Semua Tim" },
+    ...(userRole === "owner" ? [
+      { value: "management", label: "Manajemen (Owner + Manager)" },
+      { value: "private", label: "Hanya Saya (Private)" }
+    ] : []),
+    ...(userRole === "manager" ? [
+      { value: "coach_up", label: "Coach & Saya" },
+      { value: "private", label: "Hanya Saya (Private)" }
+    ] : []),
+    ...(userRole === "coach" || userRole === "captain" ? [
+      { value: "private", label: "Hanya Saya (Private)" }
+    ] : [])
+  ];
 
   // Default starts_at = clicked date at 08:00
   const defaultStartsAt = date
@@ -106,6 +122,7 @@ export function QuickAddEventModal({
         ends_at: fd.get("ends_at") || null,
         is_all_day: fd.get("is_all_day") === "on",
         location: null,
+        visibility: fd.get("visibility") || "all",
       });
 
       if (!res.ok) {
@@ -154,6 +171,11 @@ export function QuickAddEventModal({
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4 px-5 py-4">
+          {/* Tip Banner */}
+          <div className="rounded-lg bg-zinc-900/60 p-3 text-[11px] leading-relaxed text-white/55 border border-white/5">
+            <span className="font-semibold text-yellow-400">💡 Tips Senior:</span> Scrimmage atau Turnamen resmi tim dibuat melalui menu <strong className="text-white">Scrim</strong> atau <strong className="text-white">Turnamen</strong> agar otomatis sinkron dengan sistem kehadiran dan rekapitulasi data.
+          </div>
+
           {/* Title */}
           <input
             ref={titleRef}
@@ -230,6 +252,26 @@ export function QuickAddEventModal({
                 {divisions.map((d) => (
                   <option key={d.id} value={d.id}>
                     {d.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {/* Visibility selection */}
+          {visibilityOptions.length > 1 && (
+            <div className="pl-5 space-y-1">
+              <label className="block text-[10px] font-medium text-white/40">
+                Siapa yang bisa melihat event ini?
+              </label>
+              <select
+                name="visibility"
+                defaultValue="all"
+                className="w-full rounded-md border border-white/10 bg-zinc-900/60 px-2.5 py-1.5 text-xs text-white focus:border-yellow-400/50 focus:outline-none"
+              >
+                {visibilityOptions.map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
                   </option>
                 ))}
               </select>

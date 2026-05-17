@@ -178,6 +178,7 @@ export type Database = {
           ref_type: string | null
           starts_at: string
           title: string
+          visibility: string
         }
         Insert: {
           created_at?: string
@@ -194,6 +195,7 @@ export type Database = {
           ref_type?: string | null
           starts_at: string
           title: string
+          visibility?: string
         }
         Update: {
           created_at?: string
@@ -210,6 +212,7 @@ export type Database = {
           ref_type?: string | null
           starts_at?: string
           title?: string
+          visibility?: string
         }
         Relationships: [
           {

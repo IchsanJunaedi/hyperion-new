@@ -18,6 +18,7 @@ interface CalendarWithQuickAddProps {
   canCreate?: boolean;
   /** Overrides the base path used for month navigation */
   navBasePath?: string;
+  userRole?: string;
 }
 
 export function CalendarWithQuickAdd({
@@ -28,6 +29,7 @@ export function CalendarWithQuickAdd({
   divisions = [],
   canCreate = true,
   navBasePath,
+  userRole = "member",
 }: CalendarWithQuickAddProps) {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
@@ -57,6 +59,7 @@ export function CalendarWithQuickAdd({
           date={selectedDate}
           orgSlug={orgSlug}
           divisions={divisions}
+          userRole={userRole}
           onClose={handleClose}
         />
       )}

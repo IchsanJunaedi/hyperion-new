@@ -92,6 +92,7 @@ export async function createCalendarEventAction(
         : null,
       is_all_day: parsed.data.is_all_day,
       location: parsed.data.location,
+      visibility: parsed.data.visibility,
     })
     .select("*")
     .single();

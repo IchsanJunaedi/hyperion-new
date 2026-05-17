@@ -200,6 +200,7 @@ export default async function DashboardCalendarPage({
             divisions={activeDivisions}
             canCreate={canCreate}
             navBasePath="/dashboard/calendar"
+            userRole={isOwner ? "owner" : "manager"}
           />
         </div>
       </main>

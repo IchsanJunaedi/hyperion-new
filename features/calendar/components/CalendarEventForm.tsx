@@ -13,9 +13,8 @@ interface CalendarEventFormProps {
 
 const EVENT_TYPES = [
   { value: "practice", label: "Latihan" },
-  { value: "scrim", label: "Scrim" },
-  { value: "tournament", label: "Turnamen" },
   { value: "meeting", label: "Meeting" },
+  { value: "bootcamp", label: "Bootcamp" },
   { value: "other", label: "Lainnya" },
 ] as const;
 
@@ -54,6 +53,11 @@ export function CalendarEventForm({ orgSlug, divisions }: CalendarEventFormProps
       }}
       className="space-y-4"
     >
+      {/* Tip Banner */}
+      <div className="rounded-lg bg-zinc-950/60 p-4 text-xs leading-relaxed text-white/55 border border-white/5 mb-2">
+        <span className="font-semibold text-yellow-400">💡 Tips Senior:</span> Scrimmage atau Turnamen resmi tim dibuat melalui menu <strong className="text-white">Scrim</strong> atau <strong className="text-white">Turnamen</strong> agar otomatis sinkron dengan sistem kehadiran dan rekapitulasi data.
+      </div>
+
       <Field label="Judul event" name="title" errors={fieldErrors["title"]}>
         <input
           name="title"
