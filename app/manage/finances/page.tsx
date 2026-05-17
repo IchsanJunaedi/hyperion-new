@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { listFinances, summarizeFinances } from "@/features/finances/queries";
+import { listFinances, getFinanceSummary } from "@/features/finances/queries";
 import { FinancePageClient } from "@/features/finances/components/FinancePageClient";
 
 export const dynamic = "force-dynamic";
@@ -35,7 +35,7 @@ export default async function ManageFinancesPage({ searchParams }: FinancesPageP
 
   const orgId = membership.organization_id;
   const rows = await listFinances(orgId, year, month);
-  const summary = summarizeFinances(rows);
+  const summary = await getFinanceSummary(orgId, year, month, rows);
 
   return (
     <div className="space-y-6">

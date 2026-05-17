@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
-
 import { WorkspaceSidebar } from "@/components/layout/WorkspaceSidebar";
+import { ManageBreadcrumb } from "@/components/layout/ManageBreadcrumb";
 import { NotifyProvider } from "@/features/dashboard/components/NotifyModal";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -127,15 +127,9 @@ export default async function ManageLayout({
         />
 
         {/* Main content */}
-        <div className="ml-[280px] flex min-h-screen flex-1 flex-col">
+        <div className="flex min-h-screen flex-1 flex-col">
           {/* Breadcrumb header */}
-          <header className="sticky top-0 z-40 flex h-12 items-center border-b border-[#2D2D2D] bg-[#191919] px-6">
-            <div className="flex items-center gap-2 text-sm text-[#9B9A97]">
-              <span className="text-[#D4D4D4] font-medium">{orgName}</span>
-              <span className="text-[#6B6A68]">/</span>
-              <span>Manager Panel</span>
-            </div>
-          </header>
+          <ManageBreadcrumb orgName={orgName} orgSlug={orgSlug} />
           <main className="mx-auto w-full max-w-[900px] flex-1 px-12 py-10">
             {children}
           </main>

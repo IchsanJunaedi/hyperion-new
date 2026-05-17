@@ -511,7 +511,7 @@ export async function checkCalendarPermission(
       case "delete-event":
         // Check explicit permissions for selected-members
         if (visibility === "selected-members") {
-          const { data: permission: perm } = await client
+          const { data: perm } = await client
             .from("calendar_member_permissions")
             .select("can_edit_event, can_delete_event")
             .eq("calendar_id", calendarId)

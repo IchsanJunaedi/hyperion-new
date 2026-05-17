@@ -53,8 +53,7 @@ export default async function ManageDivisionsPage() {
   return (
     <div className="space-y-6">
       <header>
-        <Link href="/manage" className="text-xs text-white/50 hover:text-white">← Manager Panel</Link>
-        <h1 className="mt-2 text-2xl font-bold text-white">Edit Divisi</h1>
+        <h1 className="text-2xl font-bold text-white">Edit Divisi</h1>
         <p className="mt-1 text-sm text-white/60">
           Lihat divisi yang ada dan jumlah member di masing-masing divisi.
           Untuk menambah member ke divisi, gunakan "Tambah Member".

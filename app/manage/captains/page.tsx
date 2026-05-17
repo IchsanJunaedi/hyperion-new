@@ -51,8 +51,7 @@ export default async function ManageCaptainsPage() {
   return (
     <div className="space-y-6">
       <header>
-        <Link href="/manage" className="text-xs text-white/50 hover:text-white">← Manager Panel</Link>
-        <h1 className="mt-2 text-2xl font-bold text-white">Edit Captain</h1>
+        <h1 className="text-2xl font-bold text-white">Edit Captain</h1>
         <p className="mt-1 text-sm text-white/60">
           Lihat dan kelola captain di tim kamu. Untuk assign captain baru, gunakan "Tambah Member" dengan role Captain.
         </p>
