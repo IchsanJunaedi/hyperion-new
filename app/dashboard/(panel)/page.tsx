@@ -3,7 +3,6 @@ import { Crown, Plus, Users, Tags, Settings, FileOutput, Shield, Building2, Chev
 
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { DashboardLoginForm } from "@/features/dashboard/components/DashboardLoginForm";
 import { CreateTeamForm } from "@/features/dashboard/components/CreateTeamForm";
 import { HomeSection } from "@/features/dashboard/components/HomeSection";
 import { HomeOrgSection } from "@/features/dashboard/components/HomeOrgSection";
@@ -20,23 +19,9 @@ export default async function DashboardPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) {
-    return (
-      <main className="flex min-h-screen items-center justify-center px-4 bg-[#191919]">
-        <div className="w-full max-w-sm space-y-6">
-          <div className="text-center">
-            <Crown className="h-12 w-12 mx-auto text-[#9B9A97] mb-4" />
-            <h1 className="text-2xl font-bold text-[#E5E2E1]">Master Dashboard</h1>
-            <p className="mt-1 text-sm text-[#9B9A97]">Login untuk mengakses panel admin.</p>
-          </div>
-          <DashboardLoginForm />
-        </div>
-      </main>
-    );
-  }
-
+  // user is guaranteed to exist because of parent layout auth guard
   const ownerEmail = process.env.OWNER_EMAIL;
-  if (!ownerEmail || user.email !== ownerEmail) {
+  if (!user || !ownerEmail || user.email !== ownerEmail) {
     return (
       <main className="flex min-h-screen items-center justify-center px-4 bg-[#191919]">
         <div className="text-center">

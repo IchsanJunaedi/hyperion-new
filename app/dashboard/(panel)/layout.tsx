@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import {
   BarChart3,
   Building2,
@@ -16,7 +17,7 @@ import {
 
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { logoutAction } from "@/lib/actions/auth";
+import { dashboardLogoutAction } from "@/lib/actions/auth";
 import { NotifyProvider } from "@/features/dashboard/components/NotifyModal";
 import { DashboardSettingsButton } from "@/components/layout/DashboardSettingsButton";
 
@@ -76,6 +77,10 @@ export default async function DashboardLayout({
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/dashboard/login");
+  }
 
   let displayName = user?.email ?? "Owner";
   let avatarUrl: string | null = null;
@@ -173,7 +178,7 @@ export default async function DashboardLayout({
               <p className="min-w-0 flex-1 truncate text-xs text-[#9B9A97]">
                 {user?.email ?? displayName}
               </p>
-              <form action={logoutAction}>
+              <form action={dashboardLogoutAction}>
                 <button
                   type="submit"
                   aria-label="Logout"

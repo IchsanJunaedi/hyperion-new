@@ -11,6 +11,53 @@ export interface ActionError {
   message: string;
 }
 
+const MAX_ATTEMPTS = 3;
+const LOCK_DURATION_MS = 60 * 60 * 1000; // 1 hour
+
+type RateLimitRow = { attempts: number; locked_until: string | null };
+
+async function getRateLimit(email: string): Promise<RateLimitRow | null> {
+  const admin = createAdminClient();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data } = await (admin as any)
+    .from("login_rate_limits")
+    .select("attempts, locked_until")
+    .eq("identifier", email)
+    .maybeSingle();
+  return data ?? null;
+}
+
+async function recordFailedAttempt(email: string, current: RateLimitRow | null): Promise<void> {
+  const admin = createAdminClient();
+  const now = new Date();
+
+  const lockExpired =
+    current?.locked_until ? new Date(current.locked_until) <= now : true;
+  const prevAttempts = lockExpired ? 0 : (current?.attempts ?? 0);
+  const newAttempts = prevAttempts + 1;
+  const lockedUntil =
+    newAttempts >= MAX_ATTEMPTS
+      ? new Date(now.getTime() + LOCK_DURATION_MS).toISOString()
+      : null;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await (admin as any).from("login_rate_limits").upsert({
+    identifier: email,
+    attempts: newAttempts,
+    locked_until: lockedUntil,
+    updated_at: now.toISOString(),
+  });
+}
+
+async function clearRateLimit(email: string): Promise<void> {
+  const admin = createAdminClient();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await (admin as any)
+    .from("login_rate_limits")
+    .delete()
+    .eq("identifier", email);
+}
+
 /**
  * Login action specifically for the /dashboard page.
  * Uses Supabase auth signInWithPassword. After login, page refreshes
@@ -20,16 +67,49 @@ export async function dashboardLoginAction(input: {
   email: string;
   password: string;
 }): Promise<{ error?: string }> {
+  const email = input.email;
+
+  // 1. Rate limit check
+  const rateLimit = await getRateLimit(email);
+  if (rateLimit?.locked_until) {
+    const lockedUntil = new Date(rateLimit.locked_until);
+    if (lockedUntil > new Date()) {
+      const minutesLeft = Math.ceil(
+        (lockedUntil.getTime() - Date.now()) / 60_000,
+      );
+      return {
+        error: `Terlalu banyak percobaan gagal. Coba lagi dalam ${minutesLeft} menit.`,
+      };
+    }
+  }
+
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword({
-    email: input.email,
+    email,
     password: input.password,
   });
 
   if (error) {
-    return { error: "Email atau password salah" };
+    await recordFailedAttempt(email, rateLimit);
+
+    const prevAttempts = rateLimit?.attempts ?? 0;
+    const lockExpired = rateLimit?.locked_until
+      ? new Date(rateLimit.locked_until) <= new Date()
+      : true;
+    const effectivePrev = lockExpired ? 0 : prevAttempts;
+    const newAttempts = effectivePrev + 1;
+
+    if (newAttempts >= MAX_ATTEMPTS) {
+      return {
+        error: `Terlalu banyak percobaan gagal. Akun dikunci selama 1 jam.`,
+      };
+    }
+
+    const remaining = MAX_ATTEMPTS - newAttempts;
+    return { error: `Email atau password salah. Sisa percobaan: ${remaining}.` };
   }
 
+  await clearRateLimit(email);
   return {};
 }
 
@@ -329,6 +409,11 @@ export async function archiveDivisionAction(
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, message: "Anda harus login" };
 
+  const ownerEmail = process.env.OWNER_EMAIL;
+  if (!ownerEmail || user.email !== ownerEmail) {
+    return { ok: false, message: "Hanya Owner yang bisa mengarsipkan divisi" };
+  }
+
   const admin = createAdminClient();
   const { error } = await admin
     .from("divisions")
@@ -361,6 +446,11 @@ export async function deleteDivisionAction(
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, message: "Anda harus login" };
 
+  const ownerEmail = process.env.OWNER_EMAIL;
+  if (!ownerEmail || user.email !== ownerEmail) {
+    return { ok: false, message: "Hanya Owner yang bisa menghapus divisi" };
+  }
+
   const admin = createAdminClient();
   const { error } = await admin
     .from("divisions")
@@ -392,6 +482,11 @@ export async function removeMemberAction(
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, message: "Anda harus login" };
+
+  const ownerEmail = process.env.OWNER_EMAIL;
+  if (!ownerEmail || user.email !== ownerEmail) {
+    return { ok: false, message: "Hanya Owner yang bisa menghapus member" };
+  }
 
   const admin = createAdminClient();
 
@@ -437,6 +532,11 @@ export async function changeRoleAction(
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, message: "Anda harus login" };
+
+  const ownerEmail = process.env.OWNER_EMAIL;
+  if (!ownerEmail || user.email !== ownerEmail) {
+    return { ok: false, message: "Hanya Owner yang bisa mengubah role" };
+  }
 
   if (newRole === "owner") return { ok: false, message: "Tidak bisa assign role Owner" };
 
@@ -557,6 +657,11 @@ export async function renameDivisionAction(
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, message: "Anda harus login" };
+
+  const ownerEmail = process.env.OWNER_EMAIL;
+  if (!ownerEmail || user.email !== ownerEmail) {
+    return { ok: false, message: "Hanya Owner yang bisa merename divisi" };
+  }
 
   if (!newName || newName.trim().length < 2) {
     return { ok: false, message: "Nama divisi minimal 2 karakter" };

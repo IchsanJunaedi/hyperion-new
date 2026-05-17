@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import { Loader2, Lock, Upload } from "lucide-react";
@@ -100,18 +100,20 @@ export function OrgSection({
 
       {/* Logo */}
       <div className="flex items-center gap-4">
-        {logoUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={logoUrl}
-            alt="Logo"
-            className="h-14 w-14 rounded object-cover"
-          />
-        ) : (
-          <div className="grid h-14 w-14 place-items-center rounded bg-[#353434] text-lg font-semibold text-[#D4D4D4]">
-            {name.slice(0, 1).toUpperCase()}
-          </div>
-        )}
+        <div className="h-14 w-14 shrink-0">
+          {logoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={logoUrl}
+              alt="Logo"
+              className="h-14 w-14 rounded object-cover"
+            />
+          ) : (
+            <div className="grid h-14 w-14 place-items-center rounded bg-[#353434] text-lg font-semibold text-[#D4D4D4]">
+              {name.slice(0, 1).toUpperCase()}
+            </div>
+          )}
+        </div>
         {isOwner && (
           <label
             className={cn(

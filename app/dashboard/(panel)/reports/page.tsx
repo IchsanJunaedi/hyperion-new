@@ -19,7 +19,7 @@ export default async function DashboardReportsPage({ searchParams }: ReportsPage
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) redirect("/login?next=/dashboard/reports");
+  if (!user) redirect("/dashboard/login");
 
   const ownerEmail = process.env.OWNER_EMAIL;
   if (user.email !== ownerEmail) redirect("/");

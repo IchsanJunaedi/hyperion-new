@@ -26,7 +26,10 @@ export default async function DashboardAuditPage() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) redirect("/dashboard");
+  if (!user) redirect("/dashboard/login");
+
+  const ownerEmail = process.env.OWNER_EMAIL;
+  if (user.email !== ownerEmail) redirect("/");
 
   const admin = createAdminClient();
 

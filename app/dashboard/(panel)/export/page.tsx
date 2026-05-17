@@ -10,7 +10,10 @@ export const dynamic = "force-dynamic";
 export default async function DashboardExportPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/dashboard");
+  if (!user) redirect("/dashboard/login");
+
+  const ownerEmail = process.env.OWNER_EMAIL;
+  if (user.email !== ownerEmail) redirect("/");
 
   const admin = createAdminClient();
   const { data: profile } = await admin.from("profiles").select("full_name").eq("id", user.id).maybeSingle();

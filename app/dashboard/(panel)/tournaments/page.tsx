@@ -34,11 +34,11 @@ export default async function DashboardTournamentsPage({
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) redirect("/login?next=/dashboard/tournaments");
+  if (!user) redirect("/dashboard/login");
 
   const ownerEmail = process.env.OWNER_EMAIL;
   const isOwner = Boolean(ownerEmail && user.email === ownerEmail);
-  if (!isOwner) redirect("/dashboard");
+  if (!isOwner) redirect("/");
 
   const admin = createAdminClient();
 

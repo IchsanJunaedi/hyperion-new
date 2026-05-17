@@ -15,10 +15,10 @@ interface FinancesPageProps {
 export default async function DashboardFinancesPage({ searchParams }: FinancesPageProps) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/login?next=/dashboard/finances");
+  if (!user) redirect("/dashboard/login");
 
   const ownerEmail = process.env.OWNER_EMAIL;
-  if (!ownerEmail || user.email !== ownerEmail) redirect("/dashboard");
+  if (!ownerEmail || user.email !== ownerEmail) redirect("/");
 
   const sp = await searchParams;
   const now = new Date();

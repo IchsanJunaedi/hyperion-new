@@ -21,7 +21,10 @@ export default async function DashboardUsersPage({ searchParams }: UsersPageProp
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) redirect("/dashboard");
+  if (!user) redirect("/dashboard/login");
+
+  const ownerEmail = process.env.OWNER_EMAIL;
+  if (user.email !== ownerEmail) redirect("/");
 
   const admin = createAdminClient();
   const { data: allProfiles } = await admin
@@ -48,7 +51,6 @@ export default async function DashboardUsersPage({ searchParams }: UsersPageProp
   const emailMap = new Map<string, string>();
   for (const u of authUsers?.users ?? []) { if (u.email) emailMap.set(u.id, u.email); }
 
-  const ownerEmail = process.env.OWNER_EMAIL;
   const rolePriority: Record<string, number> = { owner: 0, manager: 1, coach: 2, captain: 3, member: 4 };
 
   // Build rows: membership rows + unassigned users

@@ -9,3 +9,9 @@ export async function logoutAction(): Promise<void> {
   await supabase.auth.signOut();
   redirect("/");
 }
+
+export async function dashboardLogoutAction(): Promise<void> {
+  const supabase = await createClient();
+  await supabase.auth.signOut();
+  redirect("/dashboard/login");
+}

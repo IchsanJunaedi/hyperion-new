@@ -161,6 +161,30 @@ export async function middleware(request: NextRequest) {
     firstSegment &&
     RESERVED_ROOT_SEGMENTS.has(firstSegment)
   ) {
+    // Special guard for /dashboard
+    if (firstSegment === "dashboard") {
+      const ownerEmail = process.env.OWNER_EMAIL;
+      if (!user) {
+        if (section !== "login") {
+          return redirectWithCookies(
+            new URL("/dashboard/login", request.url),
+            response,
+          );
+        }
+      } else {
+        if (section === "login") {
+          return redirectWithCookies(
+            new URL("/dashboard", request.url),
+            response,
+          );
+        }
+        if (!ownerEmail || user.email !== ownerEmail) {
+          return redirectWithCookies(new URL("/", request.url), response);
+        }
+      }
+      return response;
+    }
+
     // Onboarding requires auth. Bounce visitors to /login with a
     // post-login redirect back to the originally requested path.
     if (!user && AUTH_REQUIRED_SEGMENTS.has(firstSegment)) {

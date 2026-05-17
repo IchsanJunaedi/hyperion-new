@@ -12,10 +12,10 @@ export const dynamic = "force-dynamic";
 export default async function DashboardContentPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/dashboard");
+  if (!user) redirect("/dashboard/login");
 
   const ownerEmail = process.env.OWNER_EMAIL;
-  if (!ownerEmail || user.email !== ownerEmail) redirect("/dashboard");
+  if (!ownerEmail || user.email !== ownerEmail) redirect("/");
 
   const admin = createAdminClient();
 

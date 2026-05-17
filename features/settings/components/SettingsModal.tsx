@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { Bell, Building2, Shield, User, X } from "lucide-react";
+import { Bell, Building2, LogOut, Shield, User, X } from "lucide-react";
 
 import { cn } from "@/lib/utils/cn";
+import { logoutAction } from "@/lib/actions/auth";
 import { NotifSection } from "./sections/NotifSection";
 import { OrgSection } from "./sections/OrgSection";
 import { ProfileSection } from "./sections/ProfileSection";
@@ -76,7 +77,7 @@ export function SettingsModal({
       }}
     >
       <div
-        className="flex w-full max-w-3xl flex-col rounded-lg border border-[#2D2D2D] bg-[#202020] shadow-2xl"
+        className="flex w-full max-w-3xl h-[600px] flex-col rounded-lg border border-[#2D2D2D] bg-[#202020] shadow-2xl"
         style={{ maxHeight: "85vh" }}
       >
         {/* Header */}
@@ -93,26 +94,40 @@ export function SettingsModal({
         {/* Body */}
         <div className="flex flex-1 overflow-hidden">
           {/* Left nav */}
-          <nav className="w-48 shrink-0 space-y-0.5 border-r border-[#2D2D2D] p-2">
-            {visibleNav.map((item) => (
-              <button
-                key={item.key}
-                onClick={() => setTab(item.key)}
-                className={cn(
-                  "flex w-full cursor-pointer items-center gap-3 rounded px-3 py-1.5 text-left text-sm transition",
-                  tab === item.key
-                    ? "bg-[#2C2C2C] font-medium text-[#D4D4D4]"
-                    : "text-[#9B9A97] hover:bg-[#2C2C2C] hover:text-[#D4D4D4]",
-                )}
-              >
-                <item.Icon className="h-4 w-4 shrink-0" />
-                {item.label}
-              </button>
-            ))}
+          <nav className="flex w-48 shrink-0 flex-col border-r border-[#2D2D2D] p-2">
+            <div className="flex-1 space-y-0.5">
+              {visibleNav.map((item) => (
+                <button
+                  key={item.key}
+                  onClick={() => setTab(item.key)}
+                  className={cn(
+                    "flex w-full cursor-pointer items-center gap-3 rounded px-3 py-1.5 text-left text-sm transition",
+                    tab === item.key
+                      ? "bg-[#2C2C2C] font-medium text-[#D4D4D4]"
+                      : "text-[#9B9A97] hover:bg-[#2C2C2C] hover:text-[#D4D4D4]",
+                  )}
+                >
+                  <item.Icon className="h-4 w-4 shrink-0" />
+                  {item.label}
+                </button>
+              ))}
+            </div>
+            
+            <div className="mt-2 border-t border-[#2D2D2D] pt-2">
+              <form action={logoutAction}>
+                <button
+                  type="submit"
+                  className="flex w-full cursor-pointer items-center gap-3 rounded px-3 py-1.5 text-left text-sm text-[#9B9A97] transition hover:bg-red-500/10 hover:text-red-400"
+                >
+                  <LogOut className="h-4 w-4 shrink-0" />
+                  Logout
+                </button>
+              </form>
+            </div>
           </nav>
 
           {/* Content */}
-          <div className="flex-1 overflow-y-auto p-6">
+          <div className="flex-1 sidebar-scroll overflow-y-auto p-6">
             <h2 className="mb-6 text-base font-semibold text-[#D4D4D4]">
               {SECTION_LABELS[tab]}
             </h2>

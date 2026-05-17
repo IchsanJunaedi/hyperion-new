@@ -21,7 +21,7 @@ export default async function DashboardCalendarPage({
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) redirect("/login?next=/dashboard/calendar");
+  if (!user) redirect("/dashboard/login");
 
   const ownerEmail = process.env.OWNER_EMAIL;
   const isOwner = Boolean(ownerEmail && user.email === ownerEmail);
@@ -47,7 +47,7 @@ export default async function DashboardCalendarPage({
       .limit(1)
       .maybeSingle();
 
-    if (!membership) redirect("/dashboard");
+    if (!membership) redirect("/");
 
     const orgJoin = membership.organizations as unknown as OrgRow | null;
     if (orgJoin?.id && orgJoin?.slug) {
