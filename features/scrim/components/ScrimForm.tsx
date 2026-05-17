@@ -102,8 +102,7 @@ export function ScrimForm({ orgSlug, divisions }: ScrimFormProps) {
             name="opponent_name"
             required
             maxLength={120}
-            placeholder="Masukkan nama tim lawan"
-            className="h-10 w-full rounded-lg border border-white/10 bg-zinc-950/40 px-3 text-sm text-white placeholder-white/30 focus:border-yellow-400 focus:outline-none"
+            className="h-10 w-full rounded-lg border border-white/10 bg-zinc-950/40 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
           />
         </Field>
 
@@ -116,8 +115,7 @@ export function ScrimForm({ orgSlug, divisions }: ScrimFormProps) {
             name="opponent_contact"
             required
             maxLength={120}
-            placeholder="WA atau ID Discord lawan"
-            className="h-10 w-full rounded-lg border border-white/10 bg-zinc-950/40 px-3 text-sm text-white placeholder-white/30 focus:border-yellow-400 focus:outline-none"
+            className="h-10 w-full rounded-lg border border-white/10 bg-zinc-950/40 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
           />
         </Field>
       </div>
@@ -132,7 +130,7 @@ export function ScrimForm({ orgSlug, divisions }: ScrimFormProps) {
           type="datetime-local"
           name="scheduled_at"
           required
-          className="h-10 w-full rounded-lg border border-white/10 bg-zinc-950/40 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
+          className="h-10 w-full rounded-lg border border-white/10 bg-zinc-950/40 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none [&::-webkit-calendar-picker-indicator]:invert"
         />
       </Field>
 
@@ -168,8 +166,7 @@ export function ScrimForm({ orgSlug, divisions }: ScrimFormProps) {
             name="server_region"
             required
             maxLength={60}
-            placeholder="mis. SEA, ID, SG"
-            className="h-10 w-full rounded-lg border border-white/10 bg-zinc-950/40 px-3 text-sm text-white placeholder-white/30 focus:border-yellow-400 focus:outline-none"
+            className="h-10 w-full rounded-lg border border-white/10 bg-zinc-950/40 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
           />
         </Field>
 
@@ -204,8 +201,7 @@ export function ScrimForm({ orgSlug, divisions }: ScrimFormProps) {
           name="notes"
           rows={3}
           maxLength={2000}
-          placeholder="Tulis instruksi tambahan, detail custom room, link stream, dsb..."
-          className="w-full rounded-lg border border-white/10 bg-zinc-950/40 px-3 py-2 text-sm text-white placeholder-white/30 focus:border-yellow-400 focus:outline-none"
+          className="w-full rounded-lg border border-white/10 bg-zinc-950/40 px-3 py-2 text-sm text-white focus:border-yellow-400 focus:outline-none"
         />
       </Field>
 
