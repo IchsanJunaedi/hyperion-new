@@ -1,5 +1,7 @@
 # Hyperion
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+
 **Satu platform untuk semua kebutuhan tim esports kamu.**
 
 Hyperion adalah sistem manajemen tim esports berbasis web yang dibangun khusus untuk komunitas esports Indonesia. Tidak perlu lagi bolak-balik antara grup WhatsApp, spreadsheet, dan berbagai aplikasi yang berantakan — semua ada di satu tempat.
@@ -77,3 +79,9 @@ Tersedia di desktop maupun perangkat mobile.
 Hyperion dibangun dan dikembangkan oleh **ican** — dirancang dari nol khusus untuk kebutuhan tim esports Indonesia.
 
 Untuk pertanyaan atau demo, hubungi melalui platform.
+
+---
+
+## Lisensi
+
+Didistribusikan di bawah [MIT License](./LICENSE). Bebas digunakan dengan tetap mencantumkan kredit kepada pembuatnya.
