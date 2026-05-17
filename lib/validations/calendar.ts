@@ -29,6 +29,7 @@ export const createCalendarEventSchema = z.object({
     .trim()
     .max(2000)
     .optional()
+    .nullable()
     .transform((v) => (v && v.length > 0 ? v : null)),
   event_type: eventTypeSchema,
   division_id: z
@@ -55,6 +56,7 @@ export const createCalendarEventSchema = z.object({
     .trim()
     .max(200)
     .optional()
+    .nullable()
     .transform((v) => (v && v.length > 0 ? v : null)),
   visibility: z.enum(["private", "management", "coach_up", "all"]).default("all"),
 }).refine(
@@ -84,6 +86,7 @@ export const updateCalendarEventSchema = z.object({
     .nullable()
     .transform((v) => (v && v.length > 0 ? v : null)),
   event_type: eventTypeSchema.optional(),
+
   starts_at: z
     .string()
     .refine(
