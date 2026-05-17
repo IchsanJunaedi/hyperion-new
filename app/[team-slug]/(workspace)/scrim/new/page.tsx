@@ -35,7 +35,7 @@ export default async function NewScrimPage({ params }: NewScrimPageProps) {
             Kembali ke daftar scrim
           </Link>
         </div>
-        <h1 className="text-2xl font-bold text-white sm:text-3xl tracking-tight text-center">
+        <h1 className="text-2xl font-bold text-white sm:text-3xl tracking-tight text-left">
           Buat Scrim Baru
         </h1>
       </header>

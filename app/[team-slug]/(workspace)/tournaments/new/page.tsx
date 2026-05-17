@@ -36,7 +36,7 @@ export default async function NewTournamentPage({ params }: NewTournamentPagePro
             Kembali ke daftar turnamen
           </Link>
         </div>
-        <h1 className="text-2xl font-bold text-white sm:text-3xl tracking-tight text-center">Tambah Turnamen</h1>
+        <h1 className="text-2xl font-bold text-white sm:text-3xl tracking-tight text-left">Tambah Turnamen</h1>
       </header>
 
       <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5 sm:p-6 w-full shadow-xl shadow-black/20">
