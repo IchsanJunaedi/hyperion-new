@@ -24,8 +24,8 @@ export default async function NewScrimPage({ params }: NewScrimPageProps) {
   const { divisions } = await getPublicTeamData(organization);
 
   return (
-    <div className="space-y-6 px-4 py-6 sm:px-8">
-      <header className="space-y-3">
+    <div className="space-y-6 px-4 py-6 sm:px-8 max-w-2xl mx-auto w-full">
+      <header className="flex flex-col items-center text-center space-y-3">
         <Link
           href={`/${slug}/scrim`}
           className="group inline-flex items-center gap-2 rounded-full border border-white/5 bg-zinc-900/40 px-3.5 py-1.5 text-xs font-semibold text-white/60 transition-all duration-300 hover:bg-zinc-800/60 hover:text-white"
@@ -38,9 +38,9 @@ export default async function NewScrimPage({ params }: NewScrimPageProps) {
         </h1>
       </header>
 
-      <div className="max-w-2xl rounded-2xl border border-white/10 bg-zinc-900/40 p-5 sm:p-6">
+      <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5 sm:p-6 w-full shadow-xl shadow-black/20">
         {divisions.length === 0 ? (
-          <p className="text-sm text-white/65">
+          <p className="text-sm text-white/65 text-center">
             Tim belum punya divisi aktif. Tambah divisi di pengaturan tim
             sebelum membuat scrim.
           </p>
