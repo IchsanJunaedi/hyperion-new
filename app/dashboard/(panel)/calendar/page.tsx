@@ -177,7 +177,7 @@ export default async function DashboardCalendarPage({
         <div className="mb-6 flex items-center justify-between gap-4">
           <div>
             <h1 className="text-xl font-bold text-[#E5E2E1]">
-              {isOwner ? "Kalender Terpadu" : "Kalender Tim"}
+              Kalender Tim
             </h1>
             <p className="mt-0.5 text-sm text-[#9B9A97]">
               {canCreate ? "Klik tanggal untuk tambah event" : "Belum ada tim yang terdaftar"}
@@ -186,7 +186,7 @@ export default async function DashboardCalendarPage({
           {canCreate && activeOrgSlug && (
             <Link
               href={`/${activeOrgSlug}/calendar/new`}
-              className="inline-flex h-9 items-center gap-2 rounded px-4 text-sm font-medium bg-[#2C2C2C] text-[#D4D4D4] border border-[#2D2D2D] transition hover:bg-[#353434] hover:text-[#E5E2E1] cursor-pointer"
+              className="inline-flex h-9 items-center gap-2 rounded-md bg-yellow-400 px-4 text-sm font-semibold text-black transition hover:bg-yellow-300 cursor-pointer"
             >
               <Plus className="h-4 w-4" />
               Tambah event
