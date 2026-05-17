@@ -200,10 +200,22 @@ export function CalendarGrid({
                     );
                   }
 
+                  let eventHref = `/${orgSlug}/calendar/${ev.id}`;
+                  const isScrim = ev.event_type === "scrim" || ev.ref_type === "scrim";
+                  const isTournament = ev.event_type === "tournament" || ev.ref_type === "tournament";
+
+                  if (isScrim) {
+                    const scrimId = ev.ref_id || ev.id.replace("scrim-", "");
+                    eventHref = `/${orgSlug}/scrim/${scrimId}`;
+                  } else if (isTournament) {
+                    const tournamentId = ev.ref_id || ev.id.replace("tournament-", "");
+                    eventHref = `/${orgSlug}/tournaments/${tournamentId}`;
+                  }
+
                   return (
                     <Link
                       key={ev.id}
-                      href={`/${orgSlug}/calendar/${ev.id}`}
+                      href={eventHref}
                       onClick={(e) => e.stopPropagation()}
                       className="block truncate rounded px-1 py-0.5 text-[10px] leading-tight text-white/80 transition hover:bg-white/10"
                     >
