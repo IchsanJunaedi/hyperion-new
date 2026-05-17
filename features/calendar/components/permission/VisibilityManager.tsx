@@ -488,7 +488,7 @@ export function VisibilityManager({
       {hasChanges && (
         <div className="p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
           <p className="text-xs text-blue-400">
-            You have unsaved changes. Click 'Save Changes' to apply them.
+            You have unsaved changes. Click &apos;Save Changes&apos; to apply them.
           </p>
         </div>
       )}

@@ -244,6 +244,7 @@ export async function addEventCommentAction(
   const { user, db } = await getAuthContext();
   if (!user) return { ok: false, message: "Anda harus login" };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: comment, error } = await (db as any)
     .from("calendar_event_comments")
     .insert({
@@ -279,6 +280,7 @@ export async function deleteEventCommentAction(
   const { user, db, isOwner } = await getAuthContext();
   if (!user) return { ok: false, message: "Anda harus login" };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const query = (db as any).from("calendar_event_comments").delete().eq("id", commentId);
 
   // Non-owner can only delete their own comments

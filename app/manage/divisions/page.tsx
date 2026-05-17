@@ -56,7 +56,7 @@ export default async function ManageDivisionsPage() {
         <h1 className="text-2xl font-bold text-white">Edit Divisi</h1>
         <p className="mt-1 text-sm text-white/60">
           Lihat divisi yang ada dan jumlah member di masing-masing divisi.
-          Untuk menambah member ke divisi, gunakan "Tambah Member".
+          Untuk menambah member ke divisi, gunakan &quot;Tambah Member&quot;.
         </p>
       </header>
 

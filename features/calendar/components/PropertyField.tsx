@@ -7,8 +7,8 @@ import type { EventPriority, EventStatus } from "../types";
 interface PropertyFieldProps {
   label: string;
   icon?: React.ReactNode;
-  value: any;
-  onChange: (value: any) => void;
+  value: unknown;
+  onChange: (value: unknown) => void;
   fieldType:
     | "text"
     | "select"
@@ -64,7 +64,7 @@ export function PropertyField({
   }, [isEditing, onEdit]);
 
   const handleChange = useCallback(
-    (newValue: any) => {
+    (newValue: unknown) => {
       onChange(newValue);
       setIsEditing(false);
       if (onEdit) onEdit(false);

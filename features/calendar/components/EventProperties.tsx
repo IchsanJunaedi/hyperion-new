@@ -17,7 +17,7 @@ import type { CalendarEvent } from "../types";
 
 interface EventPropertiesProps {
   event: CalendarEvent;
-  onPropertyChange: (field: string, value: any) => void;
+  onPropertyChange: (field: string, value: unknown) => void;
   readOnly?: boolean;
 }
 
@@ -26,7 +26,7 @@ export function EventProperties({
   onPropertyChange,
   readOnly = false,
 }: EventPropertiesProps) {
-  const handlePropertyChange = (field: string, value: any) => {
+  const handlePropertyChange = (field: string, value: unknown) => {
     onPropertyChange(field, value);
   };
 

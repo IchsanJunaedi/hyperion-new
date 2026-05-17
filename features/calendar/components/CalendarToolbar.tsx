@@ -238,7 +238,7 @@ export function CalendarToolbar({
         <div className="flex flex-wrap items-center gap-2">
           {searchQuery && (
             <div className="inline-flex items-center gap-1.5 rounded-full bg-blue-500/20 px-3 py-1 text-xs text-blue-300">
-              <span>"{searchQuery}"</span>
+              <span>&quot;{searchQuery}&quot;</span>
               <button
                 type="button"
                 onClick={() => handleSearchChange("")}

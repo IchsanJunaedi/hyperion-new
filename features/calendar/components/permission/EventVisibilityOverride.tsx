@@ -445,7 +445,7 @@ export function EventVisibilityOverride({
                 Confirm Visibility Override
               </h3>
               <p className="text-sm text-[#9B9A97] mt-2">
-                Are you sure you want to change this event's visibility?
+                Are you sure you want to change this event&apos;s visibility?
               </p>
             </div>
 

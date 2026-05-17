@@ -34,6 +34,7 @@ export async function listUnifiedCalendarEvents(
         .maybeSingle();
 
       if (member) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         userRole = member.role as any;
       }
     }
