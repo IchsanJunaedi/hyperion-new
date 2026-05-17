@@ -172,25 +172,32 @@ export function QuickAddEventModal({
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4 px-6 py-5">
+        <form onSubmit={handleSubmit} className="space-y-5 px-6 py-5">
           {/* Tip Banner */}
           <div className="rounded-xl bg-zinc-900/60 p-3 text-[11px] leading-relaxed text-white/50 border border-white/5">
             <span className="font-semibold text-yellow-400">💡 Tips Senior:</span> Scrimmage atau Turnamen resmi tim dibuat melalui menu <strong className="text-white">Scrim</strong> atau <strong className="text-white">Turnamen</strong> agar otomatis sinkron dengan sistem kehadiran dan rekapitulasi data.
           </div>
 
           {/* Title */}
-          <input
-            ref={titleRef}
-            name="title"
-            required
-            maxLength={200}
-            placeholder="Nama event..."
-            className="w-full border-0 border-b border-white/10 bg-transparent pb-2 text-base font-semibold text-white placeholder:text-white/20 transition-all duration-300 focus:border-yellow-400 focus:outline-none"
-          />
+          <div className="space-y-1">
+            <label className="block text-[10px] font-semibold text-white/40">
+              Nama Event
+            </label>
+            <input
+              ref={titleRef}
+              name="title"
+              required
+              maxLength={200}
+              placeholder="Masukkan nama event..."
+              className="w-full rounded-lg border border-white/10 bg-zinc-900/40 px-3.5 py-2 text-xs text-white placeholder:text-white/20 transition-all duration-300 focus:border-yellow-400/50 focus:outline-none"
+            />
+          </div>
 
           {/* Event type */}
-          <div className="flex items-center gap-2">
-            <Tag className="h-3.5 w-3.5 shrink-0 text-white/40" />
+          <div className="space-y-2">
+            <label className="block text-[10px] font-semibold text-white/40">
+              Kategori Event
+            </label>
             <div className="flex flex-wrap gap-2">
               {EVENT_TYPES.map((t) => (
                 <button
@@ -211,31 +218,37 @@ export function QuickAddEventModal({
             <input type="hidden" name="event_type" value={eventType} />
           </div>
 
-          {/* Time row */}
-          <div className="flex items-center gap-3">
-            <Clock className="h-3.5 w-3.5 shrink-0 text-white/40" />
-            <div className="flex flex-1 items-center gap-2">
+          {/* Time fields */}
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="space-y-1">
+              <label className="flex items-center gap-1.5 text-[10px] font-semibold text-white/40">
+                <Clock className="h-3 w-3 text-white/30" /> Waktu Mulai
+              </label>
               <input
                 type="datetime-local"
                 name="starts_at"
                 defaultValue={defaultStartsAt}
                 required
                 style={{ colorScheme: "dark" }}
-                className="flex-1 rounded-lg border border-white/10 bg-zinc-900/60 px-3 py-2 text-xs text-white transition-all duration-300 focus:border-yellow-400/50 focus:outline-none"
+                className="w-full rounded-lg border border-white/10 bg-zinc-900/60 px-3 py-2 text-xs text-white transition-all duration-300 focus:border-yellow-400/50 focus:outline-none"
               />
-              <span className="text-xs text-white/30">→</span>
+            </div>
+            <div className="space-y-1">
+              <label className="flex items-center gap-1.5 text-[10px] font-semibold text-white/40">
+                <Clock className="h-3 w-3 text-white/30" /> Waktu Selesai (Opsional)
+              </label>
               <input
                 type="datetime-local"
                 name="ends_at"
                 defaultValue={defaultEndsAt}
                 style={{ colorScheme: "dark" }}
-                className="flex-1 rounded-lg border border-white/10 bg-zinc-900/60 px-3 py-2 text-xs text-white transition-all duration-300 focus:border-yellow-400/50 focus:outline-none"
+                className="w-full rounded-lg border border-white/10 bg-zinc-900/60 px-3 py-2 text-xs text-white transition-all duration-300 focus:border-yellow-400/50 focus:outline-none"
               />
             </div>
           </div>
 
           {/* All day toggle */}
-          <label className="flex cursor-pointer items-center gap-2.5 pl-5 text-xs text-white/50 transition-colors duration-200 hover:text-white/80">
+          <label className="flex cursor-pointer items-center gap-2.5 text-xs text-white/50 transition-colors duration-200 hover:text-white/80">
             <input
               type="checkbox"
               name="is_all_day"
@@ -246,7 +259,10 @@ export function QuickAddEventModal({
 
           {/* Division (if multiple exist) */}
           {divisions.length > 0 && (
-            <div className="pl-5">
+            <div className="space-y-1">
+              <label className="block text-[10px] font-semibold text-white/40">
+                Pilih Divisi
+              </label>
               <select
                 name="division_id"
                 defaultValue=""
@@ -264,7 +280,7 @@ export function QuickAddEventModal({
 
           {/* Visibility selection */}
           {visibilityOptions.length > 1 && (
-            <div className="pl-5 space-y-1">
+            <div className="space-y-1">
               <label className="block text-[10px] font-semibold text-white/40">
                 Siapa yang bisa melihat event ini?
               </label>
@@ -283,13 +299,18 @@ export function QuickAddEventModal({
           )}
 
           {/* Description */}
-          <textarea
-            name="description"
-            rows={2}
-            maxLength={2000}
-            placeholder="Catatan tambahan (opsional)..."
-            className="w-full resize-none rounded-lg border border-white/10 bg-zinc-900/40 px-3.5 py-2.5 text-xs text-white/80 placeholder:text-white/20 transition-all duration-300 focus:border-yellow-400/50 focus:outline-none"
-          />
+          <div className="space-y-1">
+            <label className="block text-[10px] font-semibold text-white/40">
+              Catatan Tambahan (Opsional)
+            </label>
+            <textarea
+              name="description"
+              rows={2}
+              maxLength={2000}
+              placeholder="Tambahkan detail, link, atau catatan penting..."
+              className="w-full resize-none rounded-lg border border-white/10 bg-zinc-900/40 px-3.5 py-2.5 text-xs text-white/80 placeholder:text-white/20 transition-all duration-300 focus:border-yellow-400/50 focus:outline-none"
+            />
+          </div>
 
           {/* Error */}
           {error && (
