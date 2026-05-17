@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { File, Loader2, Trash2 } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
@@ -45,16 +45,30 @@ export function FileList({ orgId, folder = "files" }: FileListProps) {
     setDeletingId(fileId);
     const supabase = createClient();
     const filePath = `${orgId}/${folder}/${fileName}`;
-    const { error } = await supabase.storage
+    
+    // 1. Delete from Storage
+    const { error: storageError } = await supabase.storage
       .from("org-private")
       .remove([filePath]);
 
-    if (error) {
-      notify.error("Gagal menghapus file");
-    } else {
-      setFiles((prev) => prev.filter((f) => f.id !== fileId));
-      notify.success("File dihapus");
+    if (storageError) {
+      notify.error("Gagal menghapus file dari storage");
+      setDeletingId(null);
+      return;
     }
+
+    // 2. Delete from Database
+    const { error: dbError } = await supabase
+      .from("files")
+      .delete()
+      .eq("storage_path", filePath);
+
+    if (dbError) {
+      console.error("Failed to delete database record for file:", dbError);
+    }
+
+    setFiles((prev) => prev.filter((f) => f.id !== fileId));
+    notify.success("File berhasil dihapus");
     setDeletingId(null);
   }
 
