@@ -26,6 +26,7 @@ export function AvailabilitySelector({
 }: AvailabilitySelectorProps) {
   const [pending, startTransition] = useTransition();
   const [isOpen, setIsOpen] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -59,23 +60,42 @@ export function AvailabilitySelector({
     });
   };
 
+  // Determine active visual state (hovered or open)
+  const isInteractive = isHovered || isOpen;
+
+  // Set color for flat text state
+  const statusTextColor = 
+    currentAvailability === "active"
+      ? "text-green-500 font-semibold"
+      : currentAvailability === "hiatus"
+      ? "text-amber-500 font-semibold"
+      : "text-red-500 font-semibold";
+
   return (
     <div className="relative inline-block text-left" ref={containerRef}>
       <button
         type="button"
         disabled={pending}
         onClick={() => setIsOpen(!isOpen)}
-        className="inline-flex h-8 w-36 items-center justify-between gap-2 rounded-md border border-[#2D2D2D] bg-[#141414] px-3 text-xs text-white hover:bg-[#1A1A1A] transition focus:outline-none disabled:opacity-50"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        className={`inline-flex h-8 w-36 items-center justify-between gap-2 rounded-md px-3 text-xs transition-all duration-200 focus:outline-none disabled:opacity-50 ${
+          isInteractive
+            ? "border border-[#2D2D2D] bg-[#141414] text-white cursor-pointer"
+            : "border border-transparent bg-transparent cursor-pointer"
+        }`}
       >
-        <span className="flex items-center gap-2">
-          <span className={`h-2 w-2 rounded-full ${currentOption.dotColor}`} />
+        <span className={isInteractive ? "text-white font-medium" : statusTextColor}>
           {currentOption.label}
         </span>
+        
         {pending ? (
           <Loader2 className="h-3 w-3 animate-spin text-white/40" />
         ) : (
           <svg
-            className="h-3 w-3 text-white/55 transition-transform duration-200"
+            className={`h-3 w-3 text-white/55 transition-all duration-200 ${
+              isInteractive ? "opacity-100 scale-100" : "opacity-0 scale-75 pointer-events-none"
+            }`}
             style={{ transform: isOpen ? "rotate(180deg)" : "rotate(0deg)" }}
             fill="none"
             viewBox="0 0 24 24"
