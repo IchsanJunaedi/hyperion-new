@@ -176,12 +176,9 @@ export default async function DashboardCalendarPage({
       <main className="flex-1 px-8 py-6">
         <div className="mb-6 flex items-center justify-between gap-4">
           <div>
-            <h1 className="text-xl font-bold text-[#E5E2E1]">
+            <h1 className="text-2xl font-bold text-white sm:text-3xl">
               Kalender Tim
             </h1>
-            <p className="mt-0.5 text-sm text-[#9B9A97]">
-              {canCreate ? "Klik tanggal untuk tambah event" : "Belum ada tim yang terdaftar"}
-            </p>
           </div>
           {canCreate && activeOrgSlug && (
             <Link
