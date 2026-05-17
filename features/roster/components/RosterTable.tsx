@@ -80,9 +80,10 @@ export function RosterTable({
             currentUserRole === "owner" ||
             (currentUserRole === "manager" && m.role !== "owner") ||
             (currentUserRole === "captain" && m.role !== "owner" && m.role !== "manager");
-          // Owner can kick others; anyone (except owner) can self-leave
+          // Owner can kick others; Manager can kick Captain & Member; anyone (except owner) can self-leave
           const canKick =
             (currentUserRole === "owner" && !isSelf) ||
+            (currentUserRole === "manager" && !isSelf && m.role !== "owner" && m.role !== "manager") ||
             (isSelf && currentUserRole !== "owner");
 
           const initials = (m.display_name ?? m.username ?? "?")
@@ -95,7 +96,7 @@ export function RosterTable({
           return (
             <div
               key={m.id}
-              className="flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center"
+              className="flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between"
             >
               {/* Avatar + name + division */}
               <div className="flex min-w-0 flex-1 items-center gap-3">
@@ -128,43 +129,49 @@ export function RosterTable({
                 </div>
               </div>
 
-              {/* Role */}
-              <div className="flex shrink-0 items-center gap-2">
-                {canEditRole ? (
-                  <RoleSelector
-                    orgSlug={orgSlug}
-                    memberId={m.id}
-                    currentRole={m.role}
-                  />
-                ) : (
-                  <RoleBadge role={m.role} />
-                )}
-              </div>
-
-              {/* Availability */}
-              <div className="shrink-0">
-                {canChangeAvailability ? (
-                  <AvailabilitySelector
-                    orgSlug={orgSlug}
-                    memberId={m.id}
-                    currentAvailability={m.availability}
-                  />
-                ) : (
-                  <AvailabilityBadge availability={m.availability} />
-                )}
-              </div>
-
-              {/* Kick / Leave */}
-              {canKick && (
-                <div className="shrink-0">
-                  <KickMemberButton
-                    orgSlug={orgSlug}
-                    memberId={m.id}
-                    memberName={m.display_name ?? m.username ?? "member ini"}
-                    isSelf={isSelf}
-                  />
+              {/* Grid-aligned Actions Segment */}
+              <div className="flex flex-wrap items-center gap-4 sm:flex-nowrap">
+                {/* Role */}
+                <div className="flex shrink-0 items-center justify-start sm:w-24">
+                  {canEditRole ? (
+                    <RoleSelector
+                      orgSlug={orgSlug}
+                      memberId={m.id}
+                      currentRole={m.role}
+                    />
+                  ) : (
+                    <RoleBadge role={m.role} />
+                  )}
                 </div>
-              )}
+
+                {/* Availability */}
+                <div className="flex shrink-0 justify-start sm:w-36">
+                  {canChangeAvailability ? (
+                    <AvailabilitySelector
+                      orgSlug={orgSlug}
+                      memberId={m.id}
+                      currentAvailability={m.availability}
+                    />
+                  ) : (
+                    <AvailabilityBadge availability={m.availability} />
+                  )}
+                </div>
+
+                {/* Kick / Leave */}
+                <div className="flex shrink-0 justify-end sm:w-28">
+                  {canKick ? (
+                    <KickMemberButton
+                      orgSlug={orgSlug}
+                      memberId={m.id}
+                      memberName={m.display_name ?? m.username ?? "member ini"}
+                      isSelf={isSelf}
+                    />
+                  ) : (
+                    // Elegant layout spacer to align grid perfectly
+                    <div className="h-7 w-20" />
+                  )}
+                </div>
+              </div>
             </div>
           );
         })}
