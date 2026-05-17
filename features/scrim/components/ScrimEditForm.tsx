@@ -27,7 +27,6 @@ const FORMATS: Array<{ value: MatchFormat; label: string }> = [
   { value: "bo1", label: "BO1" },
   { value: "bo3", label: "BO3" },
   { value: "bo5", label: "BO5" },
-  { value: "scrimmage", label: "Scrim" },
 ];
 
 function toWibDatetimeLocal(utcIso: string): string {

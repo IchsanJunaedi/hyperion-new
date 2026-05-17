@@ -260,14 +260,20 @@ export function QuickAddEventModal({
           </div>
 
           {/* All day toggle */}
-          <label className="flex cursor-pointer items-center gap-2.5 text-xs text-white/50 transition-colors duration-200 hover:text-white/80">
-            <input
-              type="checkbox"
-              name="is_all_day"
-              className="h-3.5 w-3.5 rounded border-white/20 bg-zinc-900 accent-yellow-400 focus:ring-0 focus:ring-offset-0"
-            />
-            Event seharian
-          </label>
+          <div className="flex items-center justify-between rounded-xl bg-zinc-900/40 border border-white/5 px-4 py-3">
+            <div className="space-y-0.5">
+              <span className="block text-xs font-semibold text-white/80">Event Seharian</span>
+              <span className="block text-[10px] text-white/40">Setel event berlangsung sepanjang hari</span>
+            </div>
+            <label className="relative inline-flex cursor-pointer items-center">
+              <input
+                type="checkbox"
+                name="is_all_day"
+                className="peer sr-only"
+              />
+              <div className="peer h-5 w-9 rounded-full bg-zinc-800 transition-all duration-300 after:absolute after:top-[2px] after:left-[2px] after:h-4 after:w-4 after:rounded-full after:bg-white/60 after:transition-all after:content-[''] peer-checked:bg-yellow-400 peer-checked:after:translate-x-full peer-checked:after:bg-black peer-hover:bg-zinc-700/80"></div>
+            </label>
+          </div>
 
           {/* Division (if multiple exist) */}
           {divisions.length > 0 && (
