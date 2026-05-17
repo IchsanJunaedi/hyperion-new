@@ -4,23 +4,23 @@ import type { MemberRole } from "@/types/database";
 const ROLE_CONFIG: Record<MemberRole, { label: string; className: string }> = {
   owner: {
     label: "Owner",
-    className: "bg-yellow-500/15 text-yellow-400 border-yellow-500/25",
+    className: "bg-yellow-500/10 text-yellow-400",
   },
   captain: {
     label: "Captain",
-    className: "bg-blue-500/15 text-blue-400 border-blue-500/25",
+    className: "bg-purple-500/10 text-purple-400",
   },
   coach: {
     label: "Pelatih",
-    className: "bg-purple-500/15 text-purple-400 border-purple-500/25",
+    className: "bg-pink-500/10 text-pink-400",
   },
   manager: {
     label: "Manajer",
-    className: "bg-orange-500/15 text-orange-400 border-orange-500/25",
+    className: "bg-blue-500/10 text-blue-400",
   },
   member: {
     label: "Member",
-    className: "bg-white/5 text-white/55 border-white/10",
+    className: "bg-white/5 text-white/55",
   },
 };
 
@@ -29,7 +29,7 @@ export function RoleBadge({ role }: { role: MemberRole }) {
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium",
+        "inline-flex items-center px-2.5 py-0.5 text-xs font-medium rounded-full",
         className,
       )}
     >

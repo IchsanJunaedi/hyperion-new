@@ -1,7 +1,7 @@
-﻿"use client";
+"use client";
 
 import { Loader2 } from "lucide-react";
-import { useTransition } from "react";
+import { useTransition, useState, useRef, useEffect } from "react";
 import { notify } from "@/features/dashboard/components/NotifyModal";
 
 import type { MemberAvailability } from "@/types/database";
@@ -13,10 +13,10 @@ interface AvailabilitySelectorProps {
   currentAvailability: MemberAvailability;
 }
 
-const OPTIONS: Array<{ value: MemberAvailability; label: string; emoji: string }> = [
-  { value: "active", label: "Aktif", emoji: "🟢" },
-  { value: "hiatus", label: "Hiatus", emoji: "🟡" },
-  { value: "unavailable", label: "Tidak Tersedia", emoji: "🔴" },
+const OPTIONS: Array<{ value: MemberAvailability; label: string; dotColor: string }> = [
+  { value: "active", label: "Aktif", dotColor: "bg-green-500" },
+  { value: "hiatus", label: "Hiatus", dotColor: "bg-amber-500" },
+  { value: "unavailable", label: "Tidak Tersedia", dotColor: "bg-red-500" },
 ];
 
 export function AvailabilitySelector({
@@ -25,12 +25,31 @@ export function AvailabilitySelector({
   currentAvailability,
 }: AvailabilitySelectorProps) {
   const [pending, startTransition] = useTransition();
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  function handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    const value = e.target.value as MemberAvailability;
-    if (value === currentAvailability) return;
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const currentOption = OPTIONS.find((opt) => opt.value === currentAvailability) ?? OPTIONS[0];
+
+  const handleSelect = (value: MemberAvailability) => {
+    if (value === currentAvailability) {
+      setIsOpen(false);
+      return;
+    }
 
     startTransition(async () => {
+      setIsOpen(false);
       const res = await updateAvailabilityAction(orgSlug, memberId, value);
       if (res.ok) {
         notify.success("Status ketersediaan diperbarui");
@@ -38,23 +57,57 @@ export function AvailabilitySelector({
         notify.error(res.message);
       }
     });
-  }
+  };
 
   return (
-    <div className="flex items-center gap-2">
-      <select
-        value={currentAvailability}
-        onChange={handleChange}
+    <div className="relative inline-block text-left" ref={containerRef}>
+      <button
+        type="button"
         disabled={pending}
-        className="h-8 rounded-md border border-white/10 bg-zinc-900 px-2 text-xs text-white focus:border-yellow-400 focus:outline-none disabled:opacity-50"
+        onClick={() => setIsOpen(!isOpen)}
+        className="inline-flex h-8 w-36 items-center justify-between gap-2 rounded-md border border-[#2D2D2D] bg-[#141414] px-3 text-xs text-white hover:bg-[#1A1A1A] transition focus:outline-none disabled:opacity-50"
       >
-        {OPTIONS.map((opt) => (
-          <option key={opt.value} value={opt.value}>
-            {opt.emoji} {opt.label}
-          </option>
-        ))}
-      </select>
-      {pending && <Loader2 className="h-3 w-3 animate-spin text-white/40" />}
+        <span className="flex items-center gap-2">
+          <span className={`h-2 w-2 rounded-full ${currentOption.dotColor}`} />
+          {currentOption.label}
+        </span>
+        {pending ? (
+          <Loader2 className="h-3 w-3 animate-spin text-white/40" />
+        ) : (
+          <svg
+            className="h-3 w-3 text-white/55 transition-transform duration-200"
+            style={{ transform: isOpen ? "rotate(180deg)" : "rotate(0deg)" }}
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        )}
+      </button>
+
+      {isOpen && (
+        <div className="absolute right-0 mt-1 z-50 w-36 origin-top-right rounded-md border border-[#2D2D2D] bg-[#141414] shadow-xl backdrop-blur-md focus:outline-none py-1">
+          {OPTIONS.map((opt) => {
+            const active = opt.value === currentAvailability;
+            return (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => handleSelect(opt.value)}
+                className={`flex w-full items-center gap-2 px-3 py-2 text-left text-xs transition duration-150 ${
+                  active
+                    ? "bg-[#1C1C1C] text-white font-medium"
+                    : "text-white/70 hover:bg-[#1A1A1A] hover:text-white"
+                }`}
+              >
+                <span className={`h-2 w-2 rounded-full ${opt.dotColor}`} />
+                {opt.label}
+              </button>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

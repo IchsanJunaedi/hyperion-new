@@ -11,15 +11,15 @@ const config: Record<
 > = {
   active: {
     label: "Aktif",
-    className: "bg-green-500/10 text-green-400 border-green-500/20",
+    className: "bg-green-500/10 text-green-400",
   },
   hiatus: {
     label: "Hiatus",
-    className: "bg-amber-500/10 text-amber-400 border-amber-500/20",
+    className: "bg-amber-500/10 text-amber-400",
   },
   unavailable: {
     label: "Tidak Tersedia",
-    className: "bg-red-500/10 text-red-400 border-red-500/20",
+    className: "bg-red-500/10 text-red-400",
   },
 };
 
@@ -29,7 +29,7 @@ export function AvailabilityBadge({ availability }: AvailabilityBadgeProps) {
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium",
+        "inline-flex items-center px-2.5 py-0.5 text-xs font-medium rounded-full",
         className,
       )}
     >

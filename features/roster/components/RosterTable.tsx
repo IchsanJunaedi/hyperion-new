@@ -74,8 +74,12 @@ export function RosterTable({
           // RLS: captain+ can update any non-owner member; cannot reassign owner role
           const canEditRole =
             isCaptainOrAbove && m.role !== "owner" && !isSelf;
-          // Self or captain+ can change availability
-          const canChangeAvailability = isSelf || isCaptainOrAbove;
+          // Self can change availability; Owner can change anyone; Manager can change anyone except Owner; Captain can change anyone except Owner/Manager
+          const canChangeAvailability =
+            isSelf ||
+            currentUserRole === "owner" ||
+            (currentUserRole === "manager" && m.role !== "owner") ||
+            (currentUserRole === "captain" && m.role !== "owner" && m.role !== "manager");
           // Owner can kick others; anyone (except owner) can self-leave
           const canKick =
             (currentUserRole === "owner" && !isSelf) ||
