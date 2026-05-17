@@ -7,6 +7,7 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { blastWaMessage } from "@/lib/utils/fonnte";
+import { logAudit } from "@/lib/audit";
 import { buildScrimWaMessage } from "@/lib/utils/wa-templates";
 import {
   cancelScrimSchema,
@@ -90,6 +91,14 @@ export async function createScrimAction(
           : (error?.message ?? "Gagal membuat scrim"),
     };
   }
+
+  await logAudit({
+    actorId: user.id,
+    action: "scrim.create",
+    entityType: "scrim",
+    entityId: scrim.id,
+    metadata: { opponent: scrim.opponent_name, format: scrim.format },
+  });
 
   await fanOutScrimNotifications(supabase, scrim, org.name);
 
@@ -357,6 +366,14 @@ export async function cancelScrimAction(
       message: "Scrim sudah selesai atau sudah dibatalkan",
     };
   }
+
+  await logAudit({
+    actorId: user.id,
+    action: "scrim.cancel",
+    entityType: "scrim",
+    entityId: parsed.data.scrim_id,
+  });
+
   revalidatePath(`/${orgSlug}/scrim/${parsed.data.scrim_id}`);
   revalidatePath(`/${orgSlug}/scrim`);
   return { ok: true };
@@ -412,6 +429,13 @@ export async function updateScrimAction(
           : error.message,
     };
   }
+
+  await logAudit({
+    actorId: user.id,
+    action: "scrim.update",
+    entityType: "scrim",
+    entityId: parsed.data.scrim_id,
+  });
 
   revalidatePath(`/${orgSlug}/scrim/${parsed.data.scrim_id}`);
   revalidatePath(`/${orgSlug}/scrim`);
