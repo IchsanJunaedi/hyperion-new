@@ -47,7 +47,7 @@ const NAV_GROUPS: NavGroup[] = [
     items: [
       { href: "/dashboard/managers", Icon: Shield, label: "Manager \u2014 Tim & Divisi" },
       { href: "/dashboard/users", Icon: Users, label: "User Active" },
-      { href: "/dashboard/teams", Icon: Building2, label: "Tim / Organisasi" },
+      { href: "/dashboard/teams", Icon: Building2, label: "Tim" },
       { href: "/dashboard/finances", Icon: DollarSign, label: "Kas Tim" },
     ],
   },

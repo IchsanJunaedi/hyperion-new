@@ -164,39 +164,48 @@ export default async function DashboardCalendarPage({
   allEvents.sort((a, b) => new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime());
 
   return (
-    <div className="space-y-6 px-4 py-6 sm:px-8">
-      <header className="flex items-center justify-between gap-4">
-        <div>
-          <p className="text-xs uppercase tracking-wide text-white/55">Calendar</p>
-          <h1 className="mt-1 text-2xl font-bold text-white sm:text-3xl">
-            {isOwner ? "Kalender Terpadu" : "Kalender Tim"}
-          </h1>
-          <p className="mt-0.5 text-xs text-white/40">
-            {canCreate ? "Klik tanggal untuk tambah event" : "Belum ada tim yang terdaftar"}
-          </p>
+    <>
+      <header className="h-12 flex items-center px-6 sticky top-0 bg-[#191919] z-40 border-b border-[#2D2D2D]">
+        <div className="flex items-center gap-2 text-[#9B9A97] text-sm">
+          <Link href="/dashboard" className="hover:text-[#D4D4D4]">Home</Link>
+          <span className="text-[#6B6A68]">/</span>
+          <span className="text-[#D4D4D4]">Kalender</span>
         </div>
-        {canCreate && activeOrgSlug && (
-          <Link
-            href={`/${activeOrgSlug}/calendar/new`}
-            className="inline-flex h-10 items-center gap-2 rounded-md bg-yellow-400 px-4 text-sm font-semibold text-black transition hover:bg-yellow-300"
-          >
-            <Plus className="h-4 w-4" />
-            Tambah event
-          </Link>
-        )}
       </header>
 
-      <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-4 sm:p-6">
-        <CalendarWithQuickAdd
-          orgSlug={activeOrgSlug ?? "dashboard"}
-          events={allEvents}
-          year={year}
-          month={month}
-          divisions={activeDivisions}
-          canCreate={canCreate}
-          navBasePath="/dashboard/calendar"
-        />
-      </div>
-    </div>
+      <main className="flex-1 px-8 py-6">
+        <div className="mb-6 flex items-center justify-between gap-4">
+          <div>
+            <h1 className="text-xl font-bold text-[#E5E2E1]">
+              {isOwner ? "Kalender Terpadu" : "Kalender Tim"}
+            </h1>
+            <p className="mt-0.5 text-sm text-[#9B9A97]">
+              {canCreate ? "Klik tanggal untuk tambah event" : "Belum ada tim yang terdaftar"}
+            </p>
+          </div>
+          {canCreate && activeOrgSlug && (
+            <Link
+              href={`/${activeOrgSlug}/calendar/new`}
+              className="inline-flex h-9 items-center gap-2 rounded px-4 text-sm font-medium bg-[#2C2C2C] text-[#D4D4D4] border border-[#2D2D2D] transition hover:bg-[#353434] hover:text-[#E5E2E1] cursor-pointer"
+            >
+              <Plus className="h-4 w-4" />
+              Tambah event
+            </Link>
+          )}
+        </div>
+
+        <div className="rounded-xl border border-[#2D2D2D] bg-[#202020] p-4 sm:p-6">
+          <CalendarWithQuickAdd
+            orgSlug={activeOrgSlug ?? "dashboard"}
+            events={allEvents}
+            year={year}
+            month={month}
+            divisions={activeDivisions}
+            canCreate={canCreate}
+            navBasePath="/dashboard/calendar"
+          />
+        </div>
+      </main>
+    </>
   );
 }

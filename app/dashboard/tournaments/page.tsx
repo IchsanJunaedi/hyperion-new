@@ -85,91 +85,96 @@ export default async function DashboardTournamentsPage({
   else if (tab === "all") filtered = tournaments;
 
   return (
-    <div className="space-y-6 px-4 py-6 sm:px-8">
-      <header className="flex items-center justify-between gap-4">
-        <div>
-          <p className="text-xs uppercase tracking-wide text-white/55">
-            Turnamen
-          </p>
-          <h1 className="mt-1 text-2xl font-bold text-white sm:text-3xl">
-            Info Turnamen
-          </h1>
+    <>
+      <header className="h-12 flex items-center px-6 sticky top-0 bg-[#191919] z-40 border-b border-[#2D2D2D]">
+        <div className="flex items-center gap-2 text-[#9B9A97] text-sm">
+          <Link href="/dashboard" className="hover:text-[#D4D4D4]">Home</Link>
+          <span className="text-[#6B6A68]">/</span>
+          <span className="text-[#D4D4D4]">Turnamen</span>
         </div>
-        {orgSlug && (
-          <Link
-            href={`/${orgSlug}/tournaments/new`}
-            className="inline-flex h-10 items-center gap-2 rounded-md bg-yellow-400 px-4 text-sm font-semibold text-black transition hover:bg-yellow-300"
-          >
-            <Plus className="h-4 w-4" />
-            Tambah
-          </Link>
-        )}
       </header>
 
-      {/* Tab filter */}
-      <nav aria-label="Filter turnamen" className="flex flex-wrap gap-2">
-        {TABS.map((t) => {
-          const active = tab === t.key;
-          const count = t.key === "upcoming" ? upcoming.length : 0;
-          return (
-            <Link
-              key={t.key}
-              href={`/dashboard/tournaments?tab=${t.key}`}
-              aria-current={active ? "page" : undefined}
-              className={`relative inline-flex h-9 items-center rounded-full px-4 text-xs font-medium transition ${
-                active
-                  ? "bg-white text-black"
-                  : "bg-zinc-800 text-white/70 hover:bg-zinc-700 hover:text-white"
-              }`}
-            >
-              {t.label}
-              {count > 0 && !active && (
-                <span className="ml-1.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-yellow-400 px-1 text-[10px] font-bold text-black">
-                  {count}
-                </span>
-              )}
-              {count > 0 && active && (
-                <span className="ml-1.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-black/20 px-1 text-[10px] font-bold text-black/70">
-                  {count}
-                </span>
-              )}
-            </Link>
-          );
-        })}
-      </nav>
-
-      {filtered.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-white/10 bg-zinc-900/30 p-10 text-center">
-          <Trophy className="mx-auto h-8 w-8 text-white/35" />
-          <p className="mt-3 text-sm text-white/65">
-            {tab === "ongoing"
-              ? "Tidak ada turnamen yang sedang berlangsung."
-              : tab === "upcoming"
-                ? "Tidak ada turnamen yang belum didaftarkan."
-                : tab === "registered"
-                  ? "Belum ada turnamen terdaftar."
-                  : tab === "completed"
-                    ? "Belum ada turnamen selesai."
-                    : "Belum ada turnamen."}
-          </p>
+      <main className="space-y-6 px-8 py-6">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <h1 className="text-xl font-bold text-[#E5E2E1]">Info Turnamen</h1>
+          </div>
           {orgSlug && (
             <Link
               href={`/${orgSlug}/tournaments/new`}
-              className="mt-4 inline-flex h-9 items-center rounded-md border border-white/15 px-4 text-sm font-medium text-white transition hover:bg-white/5"
+              className="inline-flex h-9 items-center gap-2 rounded px-4 text-sm font-medium bg-[#2C2C2C] text-[#D4D4D4] border border-[#2D2D2D] transition hover:bg-[#353434] hover:text-[#E5E2E1] cursor-pointer"
             >
-              Tambah turnamen pertama
+              <Plus className="h-4 w-4" />
+              Tambah
             </Link>
           )}
         </div>
-      ) : (
-        <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-          {filtered.map((t) => (
-            <li key={t.id}>
-              <TournamentCard tournament={t} orgSlug={orgSlug ?? ""} />
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+
+        {/* Tab filter */}
+        <nav aria-label="Filter turnamen" className="flex flex-wrap gap-2">
+          {TABS.map((t) => {
+            const active = tab === t.key;
+            const count = t.key === "upcoming" ? upcoming.length : 0;
+            return (
+              <Link
+                key={t.key}
+                href={`/dashboard/tournaments?tab=${t.key}`}
+                aria-current={active ? "page" : undefined}
+                className={`relative inline-flex h-8 items-center rounded-full px-3 text-xs font-medium transition ${
+                  active
+                    ? "bg-[#D4D4D4] text-[#191919]"
+                    : "bg-[#202020] text-[#9B9A97] hover:bg-[#2C2C2C] hover:text-[#E5E2E1]"
+                }`}
+              >
+                {t.label}
+                {count > 0 && !active && (
+                  <span className="ml-1.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-yellow-400 px-1 text-[10px] font-bold text-black">
+                    {count}
+                  </span>
+                )}
+                {count > 0 && active && (
+                  <span className="ml-1.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-[#2C2C2C] px-1 text-[10px] font-bold text-[#9B9A97]">
+                    {count}
+                  </span>
+                )}
+              </Link>
+            );
+          })}
+        </nav>
+
+        {filtered.length === 0 ? (
+          <div className="rounded-xl border border-dashed border-[#2D2D2D] bg-[#202020] p-10 text-center">
+            <Trophy className="mx-auto h-8 w-8 text-[#6B6A68]" />
+            <p className="mt-3 text-sm text-[#9B9A97]">
+              {tab === "ongoing"
+                ? "Tidak ada turnamen yang sedang berlangsung."
+                : tab === "upcoming"
+                  ? "Tidak ada turnamen yang belum didaftarkan."
+                  : tab === "registered"
+                    ? "Belum ada turnamen terdaftar."
+                    : tab === "completed"
+                      ? "Belum ada turnamen selesai."
+                      : "Belum ada turnamen."}
+            </p>
+            {orgSlug && (
+              <Link
+                href={`/${orgSlug}/tournaments/new`}
+                className="mt-4 inline-flex h-9 items-center rounded px-4 text-sm font-medium border border-[#2D2D2D] text-[#9B9A97] transition hover:bg-[#2C2C2C] hover:text-[#E5E2E1]"
+              >
+                Tambah turnamen pertama
+              </Link>
+            )}
+          </div>
+        ) : (
+          <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            {filtered.map((t) => (
+              <li key={t.id}>
+                <TournamentCard tournament={t} orgSlug={orgSlug ?? ""} />
+              </li>
+            ))}
+          </ul>
+        )}
+      </main>
+    </>
   );
 }
