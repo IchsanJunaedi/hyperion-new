@@ -43,6 +43,7 @@ export function QuickAddEventModal({
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [eventType, setEventType] = useState<string>("practice");
+  const [startsAt, setStartsAt] = useState<string>("");
   const titleRef = useRef<HTMLInputElement>(null);
 
   const visibilityOptions = [
@@ -83,6 +84,7 @@ export function QuickAddEventModal({
     if (isOpen) {
       setError(null);
       setEventType("practice");
+      setStartsAt(defaultStartsAt);
       setTimeout(() => titleRef.current?.focus(), 50);
     }
   }, [isOpen]);
@@ -111,6 +113,14 @@ export function QuickAddEventModal({
     if (pending) return;
     const fd = new FormData(e.currentTarget);
 
+    // Client-side guard: ends_at tidak boleh sebelum starts_at
+    const startsAtVal = fd.get("starts_at") as string;
+    const endsAtVal = fd.get("ends_at") as string;
+    if (endsAtVal && startsAtVal && new Date(endsAtVal) < new Date(startsAtVal)) {
+      setError("Waktu selesai tidak boleh sebelum waktu mulai.");
+      return;
+    }
+
     startTransition(async () => {
       setError(null);
       const res = await createCalendarEventAction(orgSlug, {
@@ -118,8 +128,8 @@ export function QuickAddEventModal({
         description: fd.get("description") || null,
         event_type: fd.get("event_type"),
         division_id: fd.get("division_id") || null,
-        starts_at: fd.get("starts_at"),
-        ends_at: fd.get("ends_at") || null,
+        starts_at: startsAtVal,
+        ends_at: endsAtVal || null,
         is_all_day: fd.get("is_all_day") === "on",
         location: null,
         visibility: fd.get("visibility") || "all",
@@ -230,6 +240,7 @@ export function QuickAddEventModal({
                 defaultValue={defaultStartsAt}
                 required
                 style={{ colorScheme: "dark" }}
+                onChange={(e) => setStartsAt(e.target.value)}
                 className="w-full rounded-lg border border-white/10 bg-zinc-900/60 px-3 py-2 text-xs text-white transition-all duration-300 focus:border-yellow-400/50 focus:outline-none"
               />
             </div>
@@ -241,6 +252,7 @@ export function QuickAddEventModal({
                 type="datetime-local"
                 name="ends_at"
                 defaultValue={defaultEndsAt}
+                min={startsAt || undefined}
                 style={{ colorScheme: "dark" }}
                 className="w-full rounded-lg border border-white/10 bg-zinc-900/60 px-3 py-2 text-xs text-white transition-all duration-300 focus:border-yellow-400/50 focus:outline-none"
               />

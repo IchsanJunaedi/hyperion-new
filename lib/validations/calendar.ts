@@ -58,7 +58,16 @@ export const createCalendarEventSchema = z.object({
     .optional()
     .transform((v) => (v && v.length > 0 ? v : null)),
   visibility: z.enum(["private", "management", "coach_up", "all"]).default("all"),
-});
+}).refine(
+  (data) => {
+    if (!data.ends_at) return true; // ends_at opsional, tidak divalidasi
+    return new Date(data.ends_at) >= new Date(data.starts_at);
+  },
+  {
+    message: "Waktu selesai tidak boleh sebelum waktu mulai",
+    path: ["ends_at"],
+  },
+);
 
 export const updateCalendarEventSchema = z.object({
   id: z.string().uuid("Event ID harus valid UUID"),
@@ -111,7 +120,16 @@ export const updateCalendarEventSchema = z.object({
   content: z.unknown().optional().nullable(),
   color: z.string().trim().max(20).optional().nullable(),
   visibility: z.enum(["private", "management", "coach_up", "all"]).optional(),
-});
+}).refine(
+  (data) => {
+    if (!data.starts_at || !data.ends_at) return true; // keduanya opsional di update
+    return new Date(data.ends_at) >= new Date(data.starts_at);
+  },
+  {
+    message: "Waktu selesai tidak boleh sebelum waktu mulai",
+    path: ["ends_at"],
+  },
+);
 
 export const updateEventPropertySchema = z.object({
   id: z.string().uuid(),
