@@ -13,6 +13,7 @@ import {
   Trophy,
   Users,
   Shield,
+  FolderOpen,
 } from "lucide-react";
 
 import { createClient } from "@/lib/supabase/server";
@@ -49,6 +50,7 @@ const NAV_GROUPS: NavGroup[] = [
       { href: "/dashboard/managers", Icon: Shield, label: "Manager \u2014 Tim & Divisi" },
       { href: "/dashboard/users", Icon: Users, label: "User Active" },
       { href: "/dashboard/teams", Icon: Building2, label: "Tim" },
+      { href: "/dashboard/files", Icon: FolderOpen, label: "File Tim" },
       { href: "/dashboard/finances", Icon: DollarSign, label: "Kas Tim" },
     ],
   },
