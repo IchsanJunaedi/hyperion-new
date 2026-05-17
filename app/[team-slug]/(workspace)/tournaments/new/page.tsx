@@ -25,7 +25,7 @@ export default async function NewTournamentPage({ params }: NewTournamentPagePro
   const divisionId = divisions[0]?.id;
 
   return (
-    <div className="space-y-6 px-4 py-6 sm:px-8 max-w-2xl mx-auto w-full">
+    <div className="space-y-6 px-4 py-6 sm:px-8 w-full">
       <header className="space-y-3">
         <div className="flex justify-start">
           <Link
@@ -39,7 +39,7 @@ export default async function NewTournamentPage({ params }: NewTournamentPagePro
         <h1 className="text-2xl font-bold text-white sm:text-3xl tracking-tight text-left">Tambah Turnamen</h1>
       </header>
 
-      <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5 sm:p-6 w-full shadow-xl shadow-black/20">
+      <div className="mx-auto max-w-2xl rounded-2xl border border-white/10 bg-zinc-900/40 p-5 sm:p-6 w-full shadow-xl shadow-black/20">
         {!divisionId ? (
           <p className="text-sm text-white/65 text-center">
             Tim belum punya divisi aktif. Tambah divisi terlebih dahulu.
