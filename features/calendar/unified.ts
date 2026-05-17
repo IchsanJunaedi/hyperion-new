@@ -109,6 +109,40 @@ export async function listUnifiedCalendarEvents(
     });
   }
 
+  // 3. Scrims not already linked
+  const linkedScrimIds = new Set(
+    events.filter((e) => e.ref_type === "scrim" && e.ref_id).map((e) => e.ref_id!),
+  );
+
+  const { data: scrims } = await supabase
+    .from("scrims")
+    .select("id, opponent_name, scheduled_at, format, division_id, created_by")
+    .eq("organization_id", orgId)
+    .in("status", ["scheduled", "ongoing"])
+    .gte("scheduled_at", from)
+    .lte("scheduled_at", to);
+
+  for (const s of scrims ?? []) {
+    if (linkedScrimIds.has(s.id)) continue;
+    events.push({
+      id: `scrim-${s.id}`,
+      organization_id: orgId,
+      division_id: s.division_id ?? null,
+      created_by: s.created_by,
+      title: `Scrim vs ${s.opponent_name}`,
+      description: `Format: ${s.format.toUpperCase()}`,
+      event_type: "scrim",
+      starts_at: s.scheduled_at,
+      ends_at: null,
+      is_all_day: false,
+      location: null,
+      ref_id: s.id,
+      ref_type: "scrim",
+      created_at: s.scheduled_at,
+      visibility: "all",
+    });
+  }
+
   // Sort by starts_at
   events.sort((a, b) => new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime());
 
