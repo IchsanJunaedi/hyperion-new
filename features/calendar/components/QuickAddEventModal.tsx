@@ -185,7 +185,7 @@ export function QuickAddEventModal({
         <form onSubmit={handleSubmit} className="space-y-5 px-6 py-5">
           {/* Tip Banner */}
           <div className="rounded-xl bg-zinc-900/60 p-3 text-[11px] leading-relaxed text-white/50 border border-white/5">
-            <span className="font-semibold text-yellow-400">💡 Tips Senior:</span> Scrimmage atau Turnamen resmi tim dibuat melalui menu <strong className="text-white">Scrim</strong> atau <strong className="text-white">Turnamen</strong> agar otomatis sinkron dengan sistem kehadiran dan rekapitulasi data.
+            <span className="font-semibold text-yellow-400">Tips Senior:</span> Turnamen resmi tim dibuat melalui menu <strong className="text-white">Turnamen</strong> agar otomatis sinkron dengan sistem kehadiran dan rekapitulasi data.
           </div>
 
           {/* Title */}

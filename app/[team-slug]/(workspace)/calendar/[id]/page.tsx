@@ -12,7 +12,6 @@ interface CalendarEventDetailPageProps {
 }
 
 const EVENT_TYPE_LABELS: Record<string, string> = {
-  scrim: "Scrim",
   tournament: "Turnamen",
   practice: "Latihan",
   meeting: "Meeting",

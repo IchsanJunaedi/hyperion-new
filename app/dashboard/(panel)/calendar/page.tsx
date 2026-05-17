@@ -97,38 +97,7 @@ export default async function DashboardCalendarPage({
 
     if (manualEvents) allEvents.push(...manualEvents);
 
-    const linkedScrimIds = new Set(
-      manualEvents?.filter((e) => e.ref_type === "scrim" && e.ref_id).map((e) => e.ref_id!) ?? [],
-    );
 
-    const { data: scrims } = await admin
-      .from("scrims")
-      .select("id, opponent_name, scheduled_at, format, created_by")
-      .eq("organization_id", org.id)
-      .gte("scheduled_at", from)
-      .lte("scheduled_at", to)
-      .in("status", ["scheduled", "ongoing", "completed"]);
-
-    for (const s of scrims ?? []) {
-      if (linkedScrimIds.has(s.id)) continue;
-      allEvents.push({
-        id: `scrim-${s.id}`,
-        organization_id: org.id,
-        division_id: null,
-        created_by: s.created_by,
-        title: `Scrim vs ${s.opponent_name}`,
-        description: s.format.toUpperCase(),
-        event_type: "scrim",
-        starts_at: s.scheduled_at,
-        ends_at: null,
-        is_all_day: false,
-        location: null,
-        ref_id: s.id,
-        ref_type: "scrim",
-        created_at: s.scheduled_at,
-        visibility: "all",
-      } as CalendarEvent);
-    }
 
     const linkedTournamentIds = new Set(
       manualEvents?.filter((e) => e.ref_type === "tournament" && e.ref_id).map((e) => e.ref_id!) ?? [],

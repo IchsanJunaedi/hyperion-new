@@ -76,41 +76,7 @@ export async function listUnifiedCalendarEvents(
 
   const events: CalendarEvent[] = manualEvents ?? [];
 
-  // 2. Scrims not already linked in calendar
-  const linkedScrimIds = new Set(
-    events.filter((e) => e.ref_type === "scrim" && e.ref_id).map((e) => e.ref_id!),
-  );
-
-  const { data: scrims } = await supabase
-    .from("scrims")
-    .select("id, opponent_name, scheduled_at, format, created_by")
-    .eq("organization_id", orgId)
-    .gte("scheduled_at", from)
-    .lte("scheduled_at", to)
-    .in("status", ["scheduled", "ongoing", "completed"]);
-
-  for (const s of scrims ?? []) {
-    if (linkedScrimIds.has(s.id)) continue;
-    events.push({
-      id: `scrim-${s.id}`,
-      organization_id: orgId,
-      division_id: null,
-      created_by: s.created_by,
-      title: `Scrim vs ${s.opponent_name}`,
-      description: s.format.toUpperCase(),
-      event_type: "scrim",
-      starts_at: s.scheduled_at,
-      ends_at: null,
-      is_all_day: false,
-      location: null,
-      ref_id: s.id,
-      ref_type: "scrim",
-      created_at: s.scheduled_at,
-      visibility: "all",
-    });
-  }
-
-  // 3. Tournaments not already linked
+  // 2. Tournaments not already linked
   const linkedTournamentIds = new Set(
     events.filter((e) => e.ref_type === "tournament" && e.ref_id).map((e) => e.ref_id!),
   );

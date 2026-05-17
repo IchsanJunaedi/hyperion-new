@@ -1,7 +1,6 @@
 import { z } from "zod";
 
 export const eventTypeSchema = z.enum([
-  "scrim",
   "tournament",
   "practice",
   "meeting",
