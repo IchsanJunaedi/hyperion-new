@@ -27,8 +27,10 @@ export function AvailabilityBadge({ availability }: AvailabilityBadgeProps) {
   const { label, className } = config[availability];
 
   return (
-    <span className={cn("text-xs font-semibold", className)}>
-      {label}
-    </span>
+    <div className="inline-flex h-8 w-36 items-center px-3">
+      <span className={cn("text-xs font-semibold", className)}>
+        {label}
+      </span>
+    </div>
   );
 }

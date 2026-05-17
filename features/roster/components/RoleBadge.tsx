@@ -27,8 +27,10 @@ const ROLE_CONFIG: Record<MemberRole, { label: string; className: string }> = {
 export function RoleBadge({ role }: { role: MemberRole }) {
   const { label, className } = ROLE_CONFIG[role];
   return (
-    <span className={cn("text-xs font-semibold", className)}>
-      {label}
-    </span>
+    <div className="inline-flex h-7 items-center px-2">
+      <span className={cn("text-xs font-semibold", className)}>
+        {label}
+      </span>
+    </div>
   );
 }

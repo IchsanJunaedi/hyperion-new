@@ -30,16 +30,23 @@ export async function kickMemberAction(
 
   const admin = createAdminClient();
 
-  // Fetch the target member's details
+  // Fetch the target member's details (query only columns existing in team_members)
   const { data: targetMember, error: targetError } = await admin
     .from("team_members")
-    .select("id, user_id, organization_id, role, display_name, username")
+    .select("id, user_id, organization_id, role")
     .eq("id", memberId)
     .maybeSingle();
 
   if (targetError || !targetMember) {
     return { ok: false, message: "Member tidak ditemukan" };
   }
+
+  // Fetch the profile for display name and username in audit logs
+  const { data: profile } = await admin
+    .from("profiles")
+    .select("display_name, username")
+    .eq("id", targetMember.user_id)
+    .maybeSingle();
 
   const isSelf = targetMember.user_id === user.id;
 
@@ -85,7 +92,7 @@ export async function kickMemberAction(
   }
 
   // Create Audit Log
-  const targetName = targetMember.display_name ?? targetMember.username ?? "Unnamed Member";
+  const targetName = profile?.display_name ?? profile?.username ?? "Unnamed Member";
   await logAudit({
     actorId: user.id,
     action: isSelf ? "member_left" : "member_kicked",
