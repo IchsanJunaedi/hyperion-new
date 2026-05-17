@@ -86,7 +86,7 @@ export function AvailabilitySelector({
         }`}
       >
         <span className={isInteractive ? "text-white font-medium" : statusTextColor}>
-          {currentOption.label}
+          {currentOption?.label ?? "Aktif"}
         </span>
         
         {pending ? (

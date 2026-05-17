@@ -28,9 +28,10 @@ interface HomeOrgSectionProps {
 }
 
 const roleColors: Record<string, string> = {
-  manager: "text-green-400",
-  coach: "text-blue-400",
+  owner: "text-yellow-400",
+  manager: "text-blue-400",
   captain: "text-purple-400",
+  coach: "text-pink-400",
   member: "text-[#9B9A97]",
 };
 
@@ -124,19 +125,43 @@ export function HomeOrgSection({ orgs }: HomeOrgSectionProps) {
               <p className="text-sm text-[#6B6A68] py-4">Belum ada anggota di tim ini.</p>
             ) : (
               <div className="flex flex-col gap-1">
-                {viewTarget.members.map((m, i) => (
-                  <div key={i} className="flex items-center justify-between py-2 px-3 -mx-3 hover:bg-[#2C2C2C] rounded">
-                    <span className="text-sm text-[#D4D4D4]">{m.name}</span>
-                    <div className="flex items-center gap-2">
-                      {m.division && (
-                        <span className="text-[11px] text-[#6B6A68]">{m.division}</span>
-                      )}
-                      <span className={`text-xs font-medium ${roleColors[m.role] ?? "text-[#9B9A97]"}`}>
-                        {m.role}
-                      </span>
+                {viewTarget.members.map((m, i) => {
+                  const initials = m.name
+                    .split(" ")
+                    .slice(0, 2)
+                    .map((w) => w[0] ?? "")
+                    .join("")
+                    .toUpperCase();
+
+                  return (
+                    <div
+                      key={i}
+                      className="flex items-center justify-between py-2 px-3 -mx-3 hover:bg-[#2C2C2C] rounded-lg transition-colors gap-4"
+                    >
+                      {/* Left: Avatar + Name (Flex-1 & Truncate) */}
+                      <div className="flex min-w-0 flex-1 items-center gap-3">
+                        <div className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-white/10 text-[10px] font-bold text-white/80">
+                          {initials}
+                        </div>
+                        <span className="truncate text-sm font-medium text-[#E5E2E1]">
+                          {m.name}
+                        </span>
+                      </div>
+
+                      {/* Right: Game/Division + Role (Fixed min-width columns) */}
+                      <div className="flex shrink-0 items-center justify-end gap-3 min-w-[160px] sm:min-w-[180px]">
+                        {m.division && (
+                          <span className="text-xs text-[#9B9A97] truncate max-w-[110px] text-right">
+                            {m.division}
+                          </span>
+                        )}
+                        <span className={`text-xs font-semibold ${roleColors[m.role] ?? "text-[#9B9A97]"} capitalize w-16 text-right`}>
+                          {m.role}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
