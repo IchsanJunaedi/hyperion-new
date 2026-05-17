@@ -1,79 +1,79 @@
-# EsportsOS — `esports-os/`
+# Hyperion
 
-Next.js 15 (App Router) workspace for [hyperionteam.id](https://hyperionteam.id).
-Replaces the Laravel + Inertia stack that lives in the parent directory.
+**Satu platform untuk semua kebutuhan tim esports kamu.**
 
-## Stack
+Hyperion adalah sistem manajemen tim esports berbasis web yang dibangun khusus untuk komunitas esports Indonesia. Tidak perlu lagi bolak-balik antara grup WhatsApp, spreadsheet, dan berbagai aplikasi yang berantakan — semua ada di satu tempat.
 
-| Layer            | Tool                                                    |
-| ---------------- | ------------------------------------------------------- |
-| Framework        | Next.js 15 (App Router) + React 19 + TypeScript strict  |
-| Styling          | Tailwind CSS v4 + shadcn/ui (new-york) + Lucide icons   |
-| Backend          | Supabase (Postgres + Auth + Storage + Realtime)         |
-| Server state     | TanStack Query v5                                       |
-| UI state         | Zustand                                                 |
-| Forms            | React Hook Form + Zod                                   |
-| WhatsApp         | [Fonnte](https://fonnte.com) (queued via Edge Function) |
-| Hosting          | Vercel (with custom-domain support for tier Pro)        |
+---
 
-## Folder structure
+## Kenapa Hyperion?
 
-```
-esports-os/
-├── app/
-│   ├── (public)/        ← visitor landing + public team profile
-│   ├── (auth)/          ← /login, /register, /callback
-│   ├── (app)/           ← /[team-slug]/...  workspace (auth-gated)
-│   └── api/webhooks/    ← Fonnte + Supabase webhooks
-├── components/
-│   ├── ui/              ← shadcn/ui primitives
-│   ├── layout/          ← WorkspaceSidebar, Topbar, MobileBottomNav
-│   ├── shared/          ← AvatarGroup, EmptyState, ...
-│   └── providers/       ← QueryProvider (TanStack Query)
-├── features/            ← feature-sliced (scrim/, roster/, ...)
-├── lib/
-│   ├── supabase/        ← client.ts, server.ts, middleware.ts, admin.ts
-│   ├── utils/           ← cn, format, slug
-│   ├── validations/     ← zod schemas
-│   └── fonnte/          ← WhatsApp client + templates
-├── stores/              ← Zustand
-├── types/               ← database.ts (auto-gen), jwt.ts
-└── middleware.ts        ← auth + custom-domain resolver
-```
+Tim esports profesional punya banyak kebutuhan: jadwal latihan, data roster, laporan keuangan, koordinasi scrim, hingga komunikasi antar anggota. Selama ini semua itu tersebar di banyak tempat dan sering kali tidak terorganisir.
 
-## Local development
+Hyperion menyatukannya. Semua orang di tim — dari owner sampai member — punya satu tempat yang sama untuk bekerja, berkoordinasi, dan berkembang bersama.
 
-```bash
-cd esports-os
-cp .env.example .env.local   # then fill the missing service-role / Fonnte secrets
-npm install
-npm run dev                  # http://localhost:3000
-```
+---
 
-## Scripts
+## Fitur Utama
 
-| Command             | What it does                                        |
-| ------------------- | --------------------------------------------------- |
-| `npm run dev`       | Start the dev server                                |
-| `npm run build`     | Production build                                    |
-| `npm run lint`      | ESLint                                              |
-| `npm run typecheck` | `tsc --noEmit` (strict mode)                        |
-| `npm run db:types`  | Regenerate `types/database.ts` from Supabase schema |
+### Manajemen Roster
+Kelola semua anggota tim dalam satu panel. Atur posisi, nomor jersey, status ketersediaan, dan lihat profil lengkap setiap pemain. Manager bisa mengundang anggota baru via link dan melakukan kick jika diperlukan.
 
-## Environment variables
+### Scrim & Jadwal
+Buat dan atur jadwal scrim dengan mudah. Catat hasil, lacak statistik, dan koordinasikan kehadiran anggota langsung dari platform.
 
-See [`.env.example`](./.env.example). Anything prefixed with `NEXT_PUBLIC_`
-is exposed to the browser; everything else is server-only.
+### Kalender Tim
+Kalender bersama untuk semua event tim — latihan, scrim, turnamen, hingga meeting internal. Setiap anggota bisa melihat jadwal sesuai dengan hak akses mereka.
 
-`SUPABASE_SERVICE_ROLE_KEY` must be set for:
+### Notifikasi WhatsApp Otomatis
+Update penting langsung dikirim ke WhatsApp anggota secara otomatis. Tidak perlu lagi broadcast manual atau mengandalkan grup WA yang ramai.
 
-- middleware custom-domain resolution
-- Edge Function — WhatsApp queue processor
-- invite acceptance route
-- any Server Action that needs to bypass RLS
+### Keuangan Tim
+Catat pemasukan dan pengeluaran tim dengan rapi. Owner dan Manager bisa memantau kondisi keuangan tim secara real-time.
 
-## Migration phases
+### Turnamen & Matchmaking
+Kelola bracket turnamen internal dan temukan lawan scrim dari tim lain yang terdaftar di platform.
 
-This repo is being migrated step-by-step. The current phase is tracked in
-`new-project/05_mvp_priority.md`. Step 1 (project setup) is complete; the
-landing page rebuild lives in Step 4.
+### Pengembangan Pemain
+Tetapkan target performa untuk setiap pemain dan pantau perkembangannya dari waktu ke waktu. Cocok untuk tim yang serius ingin berkembang.
+
+### Pengumuman & Strategi
+Buat pengumuman resmi untuk seluruh tim dan simpan catatan strategi yang bisa diakses oleh pemain yang berwenang.
+
+### File & Dokumen
+Simpan dan bagikan file tim — VOD review, dokumen kontrak, materi latihan — semuanya tersimpan rapi dan mudah diakses.
+
+### Polling Tim
+Buat voting internal untuk keputusan tim — pemilihan jadwal, nama lineup, atau apapun yang butuh suara dari anggota.
+
+---
+
+## Struktur Tim
+
+Hyperion menggunakan sistem peran yang jelas sehingga setiap orang tahu tanggung jawab dan batas aksesnya.
+
+| Peran | Tanggung Jawab |
+|-------|----------------|
+| **Owner** | Pemilik penuh platform — kontrol semua pengaturan dan anggota |
+| **Manager** | Kelola roster, assign peran, undang anggota baru |
+| **Coach** | Evaluasi scrim, tulis catatan strategi dan performa pemain |
+| **Captain** | Buat scrim, kelola kehadiran, koordinasi latihan harian |
+| **Member** | Lihat jadwal, RSVP kehadiran, akses informasi tim |
+
+---
+
+## Akses Platform
+
+Hyperion berbasis web — tidak perlu instal aplikasi apapun. Cukup buka browser dan masuk ke:
+
+**[hyperionteam.id](https://hyperionteam.id)**
+
+Tersedia di desktop maupun perangkat mobile.
+
+---
+
+## Dibuat oleh
+
+Hyperion dibangun dan dikembangkan oleh **ican** — dirancang dari nol khusus untuk kebutuhan tim esports Indonesia.
+
+Untuk pertanyaan atau demo, hubungi melalui platform.
