@@ -74,11 +74,12 @@ export function CalendarGrid({
 
   function navigateMonth(delta: number) {
     const newDate = new Date(year, month + delta, 1);
-    const params = new URLSearchParams();
+    const base = navBasePath ?? (readOnly ? "/dashboard/calendar" : `/${orgSlug}/calendar`);
+    const [pathOnly, existingQuery] = base.split("?");
+    const params = new URLSearchParams(existingQuery);
     params.set("y", String(newDate.getFullYear()));
     params.set("m", String(newDate.getMonth()));
-    const basePath = navBasePath ?? (readOnly ? "/dashboard/calendar" : `/${orgSlug}/calendar`);
-    router.push(`${basePath}?${params.toString()}`);
+    router.push(`${pathOnly}?${params.toString()}`);
   }
 
   const today = new Date();
