@@ -59,6 +59,7 @@ export async function createTournamentAction(
       registration_fee: parsed.data.registration_fee,
       registration_url: parsed.data.registration_url,
       notes: parsed.data.notes,
+      start_time: parsed.data.start_time ?? null,
       status: "upcoming",
     })
     .select("id")
@@ -130,6 +131,9 @@ export async function updateTournamentAction(
       registration_fee: parsed.data.registration_fee,
       registration_url: parsed.data.registration_url,
       notes: parsed.data.notes,
+      start_time: parsed.data.start_time ?? null,
+      h1_reminder_sent_at: null,
+      day_reminder_sent_at: null,
     })
     .eq("id", parsed.data.tournament_id);
 

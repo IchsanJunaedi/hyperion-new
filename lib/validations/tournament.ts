@@ -10,6 +10,7 @@ export const createTournamentSchema = z.object({
   registration_fee: z.string().trim().max(100).optional().transform((v) => (v && v.length > 0 ? v : null)),
   registration_url: z.string().trim().max(500).optional().transform((v) => (v && v.length > 0 ? v : null)),
   notes: z.string().trim().max(2000).optional().transform((v) => (v && v.length > 0 ? v : null)),
+  start_time: z.string().regex(/^\d{2}:\d{2}$/, "Format jam tidak valid").optional().transform((v) => (v && v.length > 0 ? v : null)),
 });
 
 export type CreateTournamentInput = z.infer<typeof createTournamentSchema>;

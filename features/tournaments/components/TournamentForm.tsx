@@ -28,6 +28,7 @@ export function TournamentForm({ orgSlug, divisionId, tournament, onSuccess }: T
   const [name, setName] = useState(tournament?.name ?? "");
   const [organizer, setOrganizer] = useState(tournament?.organizer ?? "");
   const [startDate, setStartDate] = useState(tournament?.start_date ?? "");
+  const [startTime, setStartTime] = useState(tournament?.start_time ?? "");
   const [endDate, setEndDate] = useState(tournament?.end_date ?? "");
   const [prizePool, setPrizePool] = useState(tournament?.prize_pool ?? "");
   const [registrationFee, setRegistrationFee] = useState(tournament?.registration_fee ?? "");
@@ -41,6 +42,7 @@ export function TournamentForm({ orgSlug, divisionId, tournament, onSuccess }: T
       name,
       organizer: organizer || undefined,
       start_date: startDate,
+      start_time: startTime || undefined,
       end_date: endDate || undefined,
       prize_pool: prizePool || undefined,
       registration_fee: registrationFee || undefined,
@@ -95,6 +97,18 @@ export function TournamentForm({ orgSlug, divisionId, tournament, onSuccess }: T
           />
         </div>
         <div>
+          <label className="text-xs text-[#9B9A97] mb-1 block">Jam Mulai <span className="text-[#6B6A68]">(opsional, untuk reminder H-1)</span></label>
+          <input
+            type="time"
+            value={startTime}
+            onChange={(e) => setStartTime(e.target.value)}
+            className="h-9 w-full rounded-md border border-[#2D2D2D] bg-[#202020] px-3 text-sm text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none"
+          />
+        </div>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div>
           <label className="text-xs text-[#9B9A97] mb-1 block">Tanggal Selesai</label>
           <input
             type="date"
@@ -103,6 +117,7 @@ export function TournamentForm({ orgSlug, divisionId, tournament, onSuccess }: T
             className="h-9 w-full rounded-md border border-[#2D2D2D] bg-[#202020] px-3 text-sm text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none"
           />
         </div>
+        <div />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
