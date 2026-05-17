@@ -164,9 +164,7 @@ export function QuickAddEventModal({
         {/* Header */}
         <div className="flex items-center justify-between border-b border-white/5 px-6 py-5">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-yellow-400/10 text-yellow-400 ring-1 ring-yellow-400/25">
-              <Calendar className="h-4.5 w-4.5" />
-            </div>
+            <Calendar className="h-5 w-5 text-yellow-400 shrink-0" />
             <div>
               <p className="text-[10px] uppercase tracking-wider font-semibold text-yellow-400">Tambah event</p>
               <p className="text-sm font-bold text-white tracking-tight">{dateLabel}</p>
