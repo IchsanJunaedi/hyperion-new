@@ -96,16 +96,18 @@ export function TeamHome({
           </h2>
           <ul className="space-y-3">
             {data.pinnedAnnouncements.map((a) => (
-              <li
-                key={a.id}
-                className="rounded-xl border border-yellow-500/15 bg-yellow-500/5 p-4"
-              >
-                <h3 className="text-base font-semibold text-white">
-                  {a.title}
-                </h3>
-                <p className="mt-1 line-clamp-3 text-sm text-white/75">
-                  {a.body}
-                </p>
+              <li key={a.id}>
+                <Link
+                  href={`/${slug}/announcements/${a.id}`}
+                  className="block rounded-xl border border-yellow-500/15 bg-yellow-500/5 p-4 transition-all duration-300 hover:bg-yellow-500/10 hover:border-yellow-500/30 hover:-translate-y-[1px] active:scale-[0.99]"
+                >
+                  <h3 className="text-base font-semibold text-white">
+                    {a.title}
+                  </h3>
+                  <p className="mt-1 line-clamp-3 text-sm text-white/75">
+                    {a.body}
+                  </p>
+                </Link>
               </li>
             ))}
           </ul>
@@ -125,45 +127,49 @@ export function TeamHome({
         ) : (
           <ul className="space-y-2">
             {data.recentAnnouncements.map((a) => (
-              <li
-                key={`a-${a.id}`}
-                className="flex items-start gap-3 rounded-lg border border-[#2D2D2D] bg-[#141414] p-3"
-              >
-                <span className="mt-0.5 grid h-7 w-7 flex-none place-items-center rounded-full bg-yellow-500/15 text-yellow-400">
-                  <Megaphone className="h-3.5 w-3.5" />
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-white">
-                    {a.title}
-                  </p>
-                  <p className="mt-0.5 line-clamp-2 text-xs text-white/60">
-                    {a.body}
-                  </p>
-                </div>
-                <time className="flex-none text-[10px] uppercase tracking-wide text-white/40">
-                  {formatRelative(a.created_at)}
-                </time>
+              <li key={`a-${a.id}`}>
+                <Link
+                  href={`/${slug}/announcements/${a.id}`}
+                  className="flex items-start gap-3 rounded-lg border border-[#2D2D2D] bg-[#141414] p-3 transition-all duration-300 hover:bg-zinc-800/40 hover:border-zinc-700/60 hover:-translate-y-[1px] active:scale-[0.99] cursor-pointer"
+                >
+                  <span className="mt-0.5 grid h-7 w-7 flex-none place-items-center rounded-full bg-yellow-500/15 text-yellow-400">
+                    <Megaphone className="h-3.5 w-3.5" />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium text-white">
+                      {a.title}
+                    </p>
+                    <p className="mt-0.5 line-clamp-2 text-xs text-white/60">
+                      {a.body}
+                    </p>
+                  </div>
+                  <time className="flex-none text-[10px] uppercase tracking-wide text-white/40">
+                    {formatRelative(a.created_at)}
+                  </time>
+                </Link>
               </li>
             ))}
             {data.recentCompletedScrims.map((s) => (
-              <li
-                key={`s-${s.id}`}
-                className="flex items-start gap-3 rounded-lg border border-[#2D2D2D] bg-[#141414] p-3"
-              >
-                <span className="mt-0.5 grid h-7 w-7 flex-none place-items-center rounded-full bg-emerald-500/15 text-emerald-400">
-                  <Swords className="h-3.5 w-3.5" />
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-white">
-                    Scrim vs {s.opponent_name}
-                  </p>
-                  <p className="mt-0.5 text-xs text-white/60">
-                    {s.format} · selesai
-                  </p>
-                </div>
-                <time className="flex-none text-[10px] uppercase tracking-wide text-white/40">
-                  {formatRelative(s.scheduled_at)}
-                </time>
+              <li key={`s-${s.id}`}>
+                <Link
+                  href={`/${slug}/scrim/${s.id}`}
+                  className="flex items-start gap-3 rounded-lg border border-[#2D2D2D] bg-[#141414] p-3 transition-all duration-300 hover:bg-zinc-800/40 hover:border-zinc-700/60 hover:-translate-y-[1px] active:scale-[0.99] cursor-pointer"
+                >
+                  <span className="mt-0.5 grid h-7 w-7 flex-none place-items-center rounded-full bg-emerald-500/15 text-emerald-400">
+                    <Swords className="h-3.5 w-3.5" />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium text-white">
+                      Scrim vs {s.opponent_name}
+                    </p>
+                    <p className="mt-0.5 text-xs text-white/60">
+                      {s.format} · selesai
+                    </p>
+                  </div>
+                  <time className="flex-none text-[10px] uppercase tracking-wide text-white/40">
+                    {formatRelative(s.scheduled_at)}
+                  </time>
+                </Link>
               </li>
             ))}
           </ul>
