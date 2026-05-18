@@ -11,6 +11,7 @@ interface InviteFormProps {
   orgSlug: string;
   orgId: string;
   divisions: Array<{ id: string; name: string }>;
+  members?: Array<{ role: string; division_id: string | null }>;
   onClose: () => void;
 }
 
@@ -25,8 +26,10 @@ export function InviteForm({
   orgSlug,
   orgId,
   divisions,
+  members = [],
   onClose,
 }: InviteFormProps) {
+  const [selectedDivisionId, setSelectedDivisionId] = useState<string>("");
   const [pending, startTransition] = useTransition();
   const [inviteUrl, setInviteUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -104,6 +107,8 @@ export function InviteForm({
         <Field label="Divisi (opsional)">
           <select
             name="division_id"
+            value={selectedDivisionId}
+            onChange={(e) => setSelectedDivisionId(e.target.value)}
             className="h-9 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
           >
             <option value="">— Tanpa divisi —</option>
@@ -122,7 +127,16 @@ export function InviteForm({
           defaultValue="member"
           className="h-9 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
         >
-          {ROLES.map((r) => (
+          {ROLES.filter((r) => {
+            if (r.value === "manager" || r.value === "captain") {
+              const divId = selectedDivisionId || null;
+              const hasRole = members.some(
+                (m) => m.role === r.value && m.division_id === divId
+              );
+              return !hasRole;
+            }
+            return true;
+          }).map((r) => (
             <option key={r.value} value={r.value}>
               {r.label}
             </option>

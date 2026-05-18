@@ -47,6 +47,7 @@ export function RosterTable({
                 orgSlug={orgSlug}
                 orgId={orgId}
                 divisions={divisions}
+                members={members}
                 onClose={() => setShowInviteForm(false)}
               />
             </div>
