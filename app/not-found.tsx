@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Gamepad2, Home, ArrowLeft } from "lucide-react";
+import { AlertCircle, Home, ArrowLeft } from "lucide-react";
 
 export default function NotFound() {
   return (
@@ -23,9 +23,9 @@ export default function NotFound() {
       <div className="absolute -right-1/4 -bottom-1/4 h-[500px] w-[500px] rounded-full bg-yellow-500/[0.03] blur-[120px] pointer-events-none" />
 
       <div className="relative z-10 flex flex-col items-center text-center max-w-md">
-        {/* Animated Floating Console Box */}
+        {/* Animated Floating Alert Box */}
         <div className="relative mb-6 flex h-20 w-20 items-center justify-center rounded-2xl border border-yellow-400/20 bg-zinc-900/60 shadow-[0_0_50px_-12px_rgba(234,179,8,0.2)] animate-bounce duration-1000">
-          <Gamepad2 className="h-10 w-10 text-yellow-400 animate-pulse" />
+          <AlertCircle className="h-10 w-10 text-yellow-400 animate-pulse" />
           <div className="absolute inset-0 rounded-2xl border border-yellow-400/10 animate-ping opacity-25" />
         </div>
 
@@ -35,16 +35,16 @@ export default function NotFound() {
             404
           </h1>
           <span className="absolute -top-2 -right-4 rounded bg-rose-500/10 border border-rose-500/20 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-rose-400 animate-pulse">
-            Defeated
+            Error
           </span>
         </div>
         
-        {/* Gaming Context */}
+        {/* Formal Premium Context */}
         <h2 className="mt-5 text-base font-bold text-yellow-400 uppercase tracking-widest sm:text-lg">
-          Kena Gank Musuh! (Game Over)
+          Halaman Tidak Ditemukan
         </h2>
         <p className="mt-2 text-xs text-white/50 leading-relaxed">
-          Sepertinya kamu keluar dari map pertandingan (Out of Bounds) atau link yang kamu tuju sudah ter-eliminate oleh sistem.
+          Mohon maaf, halaman yang Anda cari tidak dapat ditemukan. Mungkin tautan tersebut telah kedaluwarsa, dipindahkan, atau terjadi kesalahan pada penulisan alamat.
         </p>
 
         {/* Action Buttons */}
@@ -62,7 +62,7 @@ export default function NotFound() {
             className="inline-flex h-9 w-full sm:w-auto items-center justify-center gap-2 rounded-lg bg-yellow-400 px-6 text-xs font-bold text-black shadow-lg shadow-yellow-400/10 hover:bg-yellow-300 hover:shadow-yellow-400/25 transition-all active:scale-95"
           >
             <Home className="h-4 w-4" />
-            Respawn ke Home
+            Halaman Utama
           </Link>
         </div>
       </div>
