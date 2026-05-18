@@ -28,8 +28,8 @@ describe("waNumberSchema", () => {
   it("rejects number with letters", () => {
     expect(waNumberSchema.safeParse("0812abc4567").success).toBe(false);
   });
-  it("rejects number longer than 20 chars", () => {
-    expect(waNumberSchema.safeParse("0" + "8".repeat(21)).success).toBe(false);
+  it("rejects number longer than 15 chars", () => {
+    expect(waNumberSchema.safeParse("0" + "8".repeat(15)).success).toBe(false);
   });
 });
 
