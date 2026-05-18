@@ -1,16 +1,19 @@
 "use client";
 
-import { Calendar, Clock, MapPin, Swords } from "lucide-react";
+import { Calendar, Clock, MapPin, Swords, Check, Loader2 } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState, useTransition } from "react";
 
 import type { Database } from "@/types/database";
+import { updateAttendanceAction } from "@/features/scrim/actions";
 
 type Scrim = Database["public"]["Tables"]["scrims"]["Row"];
 
 export interface ScrimCountdownProps {
   scrim: Scrim;
   orgSlug: string;
+  myAttendanceStatus?: string;
 }
 
 interface CountdownParts {
@@ -34,13 +37,6 @@ function diffParts(target: Date): CountdownParts {
   };
 }
 
-/**
- * Stable, locale-independent fallback rendered on the server and during
- * the first client render so SSR and hydration agree. Node ICU and
- * browser ICU produce subtly different `toLocaleString` output even
- * with an explicit timeZone, which causes a hydration warning. We swap
- * in the localized version inside `useEffect` once we're past hydration.
- */
 function stableWibLabel(target: Date): string {
   const wib = new Date(target.getTime() + 7 * 60 * 60 * 1000);
   const dd = String(wib.getUTCDate()).padStart(2, "0");
@@ -50,15 +46,16 @@ function stableWibLabel(target: Date): string {
   return `${dd}/${mm} · ${hh}:${mi} WIB`;
 }
 
-export function ScrimCountdown({ scrim, orgSlug }: ScrimCountdownProps) {
+export function ScrimCountdown({ scrim, orgSlug, myAttendanceStatus }: ScrimCountdownProps) {
+  const router = useRouter();
+  const [pending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
+
   const target = useMemo(
     () => new Date(scrim.scheduled_at),
     [scrim.scheduled_at],
   );
-  // `parts` and `formatted` both depend on the current wall clock which
-  // differs between SSR and the first client render. Render a null/stable
-  // sentinel during SSR + the first client paint, then compute live values
-  // inside useEffect so React's hydration sees identical HTML on both sides.
+
   const [parts, setParts] = useState<CountdownParts | null>(null);
   const [formatted, setFormatted] = useState<string>(() =>
     stableWibLabel(target),
@@ -71,9 +68,6 @@ export function ScrimCountdown({ scrim, orgSlug }: ScrimCountdownProps) {
   }, [target]);
 
   useEffect(() => {
-    // After hydration, swap in the locale-formatted version. Pin to
-    // Asia/Jakarta so a user reading the page from another tz still
-    // sees the canonical scrim time.
     setFormatted(
       target.toLocaleString("id-ID", {
         weekday: "short",
@@ -85,6 +79,65 @@ export function ScrimCountdown({ scrim, orgSlug }: ScrimCountdownProps) {
       }),
     );
   }, [target]);
+
+  const handleQuickRSVP = () => {
+    if (pending || myAttendanceStatus === "confirmed") return;
+    setError(null);
+    startTransition(async () => {
+      const res = await updateAttendanceAction(orgSlug, {
+        scrim_id: scrim.id,
+        status: "confirmed",
+      });
+      if (res.ok) {
+        router.refresh();
+      } else {
+        setError(res.message);
+      }
+    });
+  };
+
+  const renderRsvpButton = () => {
+    // If we're on a view that has access to myAttendanceStatus (like detail page)
+    if (myAttendanceStatus !== undefined) {
+      if (myAttendanceStatus === "confirmed") {
+        return (
+          <div className="mt-5 inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 px-4 text-sm font-semibold text-emerald-400">
+            <Check className="h-4 w-4" />
+            Sudah Konfirmasi Hadir
+          </div>
+        );
+      }
+
+      return (
+        <div className="mt-5 space-y-2">
+          <button
+            type="button"
+            onClick={handleQuickRSVP}
+            disabled={pending}
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-yellow-400 px-5 text-sm font-bold text-black transition-all hover:bg-yellow-300 disabled:opacity-60 cursor-pointer shadow-lg shadow-yellow-400/10"
+          >
+            {pending ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Check className="h-4 w-4" />
+            )}
+            Konfirmasi kehadiran
+          </button>
+          {error && <p className="text-xs text-rose-400">{error}</p>}
+        </div>
+      );
+    }
+
+    // Default Link (for widgets on dashboard/landing page)
+    return (
+      <Link
+        href={`/${orgSlug}/scrim/${scrim.id}`}
+        className="mt-5 inline-flex h-10 items-center justify-center rounded-lg bg-yellow-400 px-5 text-sm font-bold text-black transition-all hover:bg-yellow-300 shadow-lg shadow-yellow-400/10"
+      >
+        Konfirmasi kehadiran
+      </Link>
+    );
+  };
 
   return (
     <article className="rounded-xl border border-white/10 bg-gradient-to-br from-yellow-500/[0.08] to-transparent p-5">
@@ -144,12 +197,7 @@ export function ScrimCountdown({ scrim, orgSlug }: ScrimCountdownProps) {
         )}
       </div>
 
-      <Link
-        href={`/${orgSlug}/scrim/${scrim.id}`}
-        className="mt-5 inline-flex h-10 items-center justify-center rounded-md bg-yellow-400 px-4 text-sm font-semibold text-black transition hover:bg-yellow-300"
-      >
-        Konfirmasi kehadiran
-      </Link>
+      {renderRsvpButton()}
     </article>
   );
 }

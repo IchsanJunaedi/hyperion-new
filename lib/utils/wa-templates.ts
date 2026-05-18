@@ -9,6 +9,7 @@ interface ScrimWaData {
   format: string;
   serverRegion?: string | null;
   roomInfo?: string | null;
+  notes?: string | null;
   scrimUrl: string;
 }
 
@@ -66,6 +67,9 @@ export function buildScrimWaMessage(data: ScrimWaData): string {
   }
   if (data.roomInfo) {
     lines.push(`*Room:* ${data.roomInfo}`);
+  }
+  if (data.notes) {
+    lines.push(`*Catatan:* ${data.notes}`);
   }
 
   lines.push("");

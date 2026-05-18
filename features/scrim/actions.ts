@@ -155,6 +155,7 @@ async function fanOutScrimNotifications(
     format: scrim.format,
     serverRegion: scrim.server_region,
     roomInfo: scrim.room_info,
+    notes: scrim.notes,
     scrimUrl,
   });
 

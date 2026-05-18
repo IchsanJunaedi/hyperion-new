@@ -68,7 +68,7 @@ export default async function ScrimDetailPage({
         <h1 className="text-3xl font-bold text-white">vs {scrim.opponent_name}</h1>
         {scrim.status === "scheduled" && (
           <div className="mt-3">
-            <ScrimCountdown scrim={scrim} orgSlug={slug} />
+            <ScrimCountdown scrim={scrim} orgSlug={slug} myAttendanceStatus={myAttendance?.status} />
           </div>
         )}
         <dl className="grid gap-1 text-sm text-white/70 sm:grid-cols-2">
