@@ -1,6 +1,6 @@
 "use client";
 
-import { Copy, Loader2, X } from "lucide-react";
+import { ChevronDown, Copy, Loader2, X } from "lucide-react";
 import { useState, useTransition } from "react";
 import { notify } from "@/features/dashboard/components/NotifyModal";
 
@@ -107,43 +107,49 @@ export function InviteForm({
 
       {divisions.length > 0 && (
         <Field label="Divisi">
-          <select
-            name="division_id"
-            value={selectedDivisionId}
-            onChange={(e) => setSelectedDivisionId(e.target.value)}
-            className="h-9 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
-            required
-          >
-            {divisions.map((d) => (
-              <option key={d.id} value={d.id}>
-                {d.name}
-              </option>
-            ))}
-          </select>
+          <div className="relative">
+            <select
+              name="division_id"
+              value={selectedDivisionId}
+              onChange={(e) => setSelectedDivisionId(e.target.value)}
+              className="h-9 w-full appearance-none rounded-md border border-white/10 bg-zinc-900 pl-3 pr-8 text-sm text-white focus:border-yellow-400 focus:outline-none"
+              required
+            >
+              {divisions.map((d) => (
+                <option key={d.id} value={d.id}>
+                  {d.name}
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 pointer-events-none text-white/50" />
+          </div>
         </Field>
       )}
 
       <Field label="Role">
-        <select
-          name="role"
-          defaultValue="member"
-          className="h-9 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
-        >
-          {ROLES.filter((r) => {
-            if (r.value === "manager" || r.value === "captain") {
-              const divId = selectedDivisionId || null;
-              const hasRole = members.some(
-                (m) => m.role === r.value && m.division_id === divId
-              );
-              return !hasRole;
-            }
-            return true;
-          }).map((r) => (
-            <option key={r.value} value={r.value}>
-              {r.label}
-            </option>
-          ))}
-        </select>
+        <div className="relative">
+          <select
+            name="role"
+            defaultValue="member"
+            className="h-9 w-full appearance-none rounded-md border border-white/10 bg-zinc-900 pl-3 pr-8 text-sm text-white focus:border-yellow-400 focus:outline-none"
+          >
+            {ROLES.filter((r) => {
+              if (r.value === "manager" || r.value === "captain") {
+                const divId = selectedDivisionId || null;
+                const hasRole = members.some(
+                  (m) => m.role === r.value && m.division_id === divId
+                );
+                return !hasRole;
+              }
+              return true;
+            }).map((r) => (
+              <option key={r.value} value={r.value}>
+                {r.label}
+              </option>
+            ))}
+          </select>
+          <ChevronDown className="absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 pointer-events-none text-white/50" />
+        </div>
       </Field>
 
       <Field label="Email">
