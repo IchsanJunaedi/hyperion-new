@@ -12,7 +12,7 @@ export default async function DashboardFilesPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/dashboard/login");
 
-  const ownerEmail = process.env.OWNER_EMAIL;
+  const ownerEmail = process.env.OWNER_EMAIL || process.env.E2E_OWNER_EMAIL;
   if (!ownerEmail || user.email !== ownerEmail) redirect("/");
 
   const admin = createAdminClient();
