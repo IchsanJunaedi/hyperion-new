@@ -33,11 +33,13 @@ export function RosterTable({
   const [showInviteForm, setShowInviteForm] = useState(false);
   const isCaptainOrAbove =
     currentUserRole === "owner" || currentUserRole === "captain";
+  const isManagerOrAbove =
+    currentUserRole === "owner" || currentUserRole === "manager";
 
   return (
     <div className="space-y-4">
       {/* Invite panel */}
-      {isCaptainOrAbove && (
+      {isManagerOrAbove && (
         <div>
           {showInviteForm ? (
             <div className="rounded-xl border border-white/10 bg-zinc-900/40 p-5">

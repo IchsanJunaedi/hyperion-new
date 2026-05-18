@@ -34,6 +34,18 @@ export async function createInviteAction(
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, message: "Anda harus login" };
 
+  const { data: member } = await supabase
+    .from("team_members")
+    .select("role")
+    .eq("organization_id", orgId)
+    .eq("user_id", user.id)
+    .eq("is_active", true)
+    .maybeSingle();
+
+  if (!member || !["owner", "manager"].includes(member.role)) {
+    return { ok: false, message: "Hanya manager atau owner yang bisa membuat undangan" };
+  }
+
   const { data, error } = await supabase
     .from("organization_invites")
     .insert({
@@ -52,7 +64,7 @@ export async function createInviteAction(
       ok: false,
       message:
         error?.code === "42501"
-          ? "Hanya captain atau owner yang bisa membuat undangan"
+          ? "Hanya manager atau owner yang bisa membuat undangan"
           : (error?.message ?? "Gagal membuat undangan"),
     };
   }
