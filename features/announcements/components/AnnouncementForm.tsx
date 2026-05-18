@@ -45,6 +45,7 @@ export function AnnouncementForm({ orgSlug, divisions }: AnnouncementFormProps) 
     >
       <Field label="Judul" name="title" errors={fieldErrors["title"]}>
         <input
+          id="title"
           name="title"
           required
           maxLength={200}
@@ -54,6 +55,7 @@ export function AnnouncementForm({ orgSlug, divisions }: AnnouncementFormProps) 
 
       <Field label="Isi pengumuman" name="body" errors={fieldErrors["body"]}>
         <textarea
+          id="body"
           name="body"
           required
           rows={6}
@@ -68,6 +70,7 @@ export function AnnouncementForm({ orgSlug, divisions }: AnnouncementFormProps) 
         errors={fieldErrors["division_id"]}
       >
         <select
+          id="division_id"
           name="division_id"
           defaultValue=""
           className="h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"

@@ -22,8 +22,10 @@ test.describe("Authentication Flow", () => {
   test("owner can log out", async ({ page }) => {
     test.skip(!OWNER_EMAIL || !OWNER_PASSWORD, "E2E credentials not configured");
     await loginAsOwner(page);
-    // Find and click the logout button
-    const logoutBtn = page.getByRole("button", { name: /logout|keluar/i });
+    // Open settings modal
+    await page.getByRole("button", { name: /settings/i }).click();
+    // Find and click the logout button inside the settings modal
+    const logoutBtn = page.getByRole("button", { name: /logout/i });
     await logoutBtn.click();
     await expect(page).toHaveURL(/\/login/);
   });

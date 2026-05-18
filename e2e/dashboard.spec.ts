@@ -7,6 +7,8 @@ test.describe("Dashboard", () => {
     await loginAsOwner(page);
     await page.goto("/dashboard");
     await page.waitForLoadState("networkidle");
+    // Verify that we successfully land on the dashboard and are not redirected
+    await expect(page).toHaveURL(/\/dashboard$/);
   });
 
   test("dashboard home renders stat cards", async ({ page }) => {
