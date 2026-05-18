@@ -1,4 +1,4 @@
-import { CheckCircle, XCircle } from "lucide-react";
+import { ArrowLeft, CheckCircle, XCircle } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -45,34 +45,40 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
   const losses = gamesWithUrls.filter((g) => !g.is_win).length;
 
   return (
-    <div className="space-y-6 px-4 py-6 sm:px-8">
-      <header className="space-y-2">
+    <div className="space-y-6 px-4 py-6 sm:px-8 w-full">
+      {/* Back button — pill style */}
+      <div className="flex justify-start">
         <Link
           href={`/${slug}/scrim/${id}`}
-          className="text-xs text-white/55 hover:text-white"
+          className="group inline-flex items-center gap-2 rounded-full border border-white/5 bg-zinc-900/40 px-3.5 py-1.5 text-xs font-semibold text-white/60 transition-all duration-300 hover:bg-zinc-800/60 hover:text-white"
         >
-          ← Kembali ke detail scrim
+          <ArrowLeft className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-x-0.5" />
+          Kembali ke detail scrim
         </Link>
-        <h1 className="text-2xl font-bold text-white">
+      </div>
+
+      {/* Centered header */}
+      <div className="mx-auto max-w-2xl w-full space-y-2">
+        <h1 className="text-2xl font-bold text-white sm:text-3xl tracking-tight">
           Hasil Pertandingan
         </h1>
-        <p className="text-sm text-white/65">
+        <p className="text-sm text-white/50">
           vs {scrim.opponent_name} · {scrim.format.toUpperCase()}
         </p>
-        <div className="flex items-center gap-3 mt-2">
+        <div className="flex items-center gap-3 pt-1">
           <span className="text-3xl font-bold text-white">{wins}</span>
-          <span className="text-xl text-white/40">—</span>
+          <span className="text-xl text-white/30">—</span>
           <span className="text-3xl font-bold text-white">{losses}</span>
-          <span className={`ml-3 text-sm font-medium uppercase ${
-            wins > losses ? "text-green-400" : wins < losses ? "text-red-400" : "text-white/50"
+          <span className={`ml-3 text-sm font-semibold uppercase tracking-wide ${
+            wins > losses ? "text-green-400" : wins < losses ? "text-red-400" : "text-white/40"
           }`}>
             {wins > losses ? "Menang" : wins < losses ? "Kalah" : "Imbang"}
           </span>
         </div>
-      </header>
+      </div>
 
       {/* Per-game results */}
-      <div className="space-y-4 max-w-2xl">
+      <div className="space-y-4 mx-auto max-w-2xl w-full">
         {gamesWithUrls.map((game) => (
           <div
             key={game.id}
@@ -118,7 +124,7 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
 
       {/* Coach notes */}
       {result?.coach_notes && (
-        <div className="max-w-2xl rounded-xl border border-blue-400/20 bg-blue-400/5 p-5">
+        <div className="mx-auto max-w-2xl w-full rounded-2xl border border-blue-400/20 bg-blue-400/5 p-5 shadow-xl shadow-black/20">
           <h3 className="text-sm font-semibold text-white mb-2">📋 Catatan Coach</h3>
           <p className="text-sm text-white/80 whitespace-pre-line">{result.coach_notes}</p>
         </div>
