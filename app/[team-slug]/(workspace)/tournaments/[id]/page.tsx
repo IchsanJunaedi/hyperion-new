@@ -1,4 +1,4 @@
-import { Calendar, ExternalLink, Trophy } from "lucide-react";
+import { ArrowLeft, Calendar, ExternalLink, Trophy } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -46,12 +46,15 @@ export default async function TournamentDetailPage({ params }: TournamentDetailP
   return (
     <div className="space-y-6 px-4 py-6 sm:px-8">
       <header className="space-y-2">
+      <div className="flex justify-start">
         <Link
           href={`/${slug}/tournaments`}
-          className="text-xs text-white/55 hover:text-white"
+          className="group inline-flex items-center gap-2 rounded-full border border-white/5 bg-zinc-900/40 px-3.5 py-1.5 text-xs font-semibold text-white/60 transition-all duration-300 hover:bg-zinc-800/60 hover:text-white"
         >
-          ← Daftar turnamen
+          <ArrowLeft className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-x-0.5" />
+          Kembali ke daftar turnamen
         </Link>
+      </div>
         <div className="flex items-center gap-2">
           <span className={`rounded-full border px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${badge.color}`}>
             {badge.label}

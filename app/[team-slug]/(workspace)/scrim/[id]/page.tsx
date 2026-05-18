@@ -1,4 +1,4 @@
-import { Calendar, MapPin, MessageCircle } from "lucide-react";
+import { ArrowLeft, Calendar, MapPin, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -52,12 +52,15 @@ export default async function ScrimDetailPage({
   return (
     <div className="space-y-6 px-4 py-6 sm:px-8">
       <header className="space-y-2">
+      <div className="flex justify-start">
         <Link
           href={`/${slug}/scrim`}
-          className="text-xs text-white/55 hover:text-white"
+          className="group inline-flex items-center gap-2 rounded-full border border-white/5 bg-zinc-900/40 px-3.5 py-1.5 text-xs font-semibold text-white/60 transition-all duration-300 hover:bg-zinc-800/60 hover:text-white"
         >
-          ← Daftar scrim
+          <ArrowLeft className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-x-0.5" />
+          Kembali ke daftar scrim
         </Link>
+      </div>
         <div className="flex items-center gap-2">
           <ScrimStatusBadge status={scrim.status} />
           <span className="text-xs uppercase tracking-wide text-white/55">
