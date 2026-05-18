@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { Copy, Loader2, X } from "lucide-react";
 import { useState, useTransition } from "react";
@@ -130,21 +130,19 @@ export function InviteForm({
         </select>
       </Field>
 
-      <Field label="Email (opsional)">
+      <Field label="Email">
         <input
           name="email"
           type="email"
-          placeholder="member@email.com"
-          className="h-9 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white placeholder:text-white/30 focus:border-yellow-400 focus:outline-none"
+          className="h-9 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
         />
       </Field>
 
-      <Field label="Nomor WA (opsional)">
+      <Field label="Nomor WA">
         <input
           name="phone_wa"
           type="tel"
-          placeholder="628xxxxxxxxxx"
-          className="h-9 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white placeholder:text-white/30 focus:border-yellow-400 focus:outline-none"
+          className="h-9 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
         />
       </Field>
 
