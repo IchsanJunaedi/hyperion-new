@@ -58,3 +58,8 @@ master_workspace_notion_style/
 
 # Scratch and temporary
 scratch/
+
+# Playwright
+/playwright-report/
+/test-results/
+

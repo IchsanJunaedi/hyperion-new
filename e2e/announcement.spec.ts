@@ -1,8 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { loginAsOwner } from "./auth.spec";
-
-const OWNER_EMAIL = process.env.E2E_OWNER_EMAIL ?? "";
-const OWNER_PASSWORD = process.env.E2E_OWNER_PASSWORD ?? "";
+import { loginAsOwner, OWNER_EMAIL, OWNER_PASSWORD } from "./auth-helper";
 
 // Replace with an actual team slug that exists in your Supabase
 const TEAM_SLUG = process.env.E2E_TEAM_SLUG ?? "hyperiontest";
