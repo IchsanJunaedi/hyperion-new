@@ -3,33 +3,45 @@ import type { MemberRole } from "@/types/database";
 
 const ROLE_CONFIG: Record<MemberRole, { label: string; className: string }> = {
   owner: {
-    label: "Owner",
+    label: "owner",
     className: "text-yellow-400",
   },
   captain: {
-    label: "Captain",
-    className: "text-purple-400",
+    label: "captain",
+    className: "text-green-400",
   },
   coach: {
-    label: "Pelatih",
-    className: "text-pink-400",
+    label: "coach",
+    className: "text-purple-400",
   },
   manager: {
-    label: "Manajer",
+    label: "manager",
     className: "text-blue-400",
   },
   member: {
-    label: "Member",
-    className: "text-[#9B9A97]",
+    label: "member",
+    className: "text-[#6B6A68]",
   },
 };
 
-export function RoleBadge({ role }: { role: MemberRole }) {
-  const { label, className } = ROLE_CONFIG[role];
+export function standardizeRole(role: string): MemberRole {
+  const lower = role.toLowerCase().trim();
+  if (lower === "pelatih") return "coach";
+  if (lower === "manajer") return "manager";
+  return lower as MemberRole;
+}
+
+export function RoleBadge({ role }: { role: MemberRole | string }) {
+  const cleanRole = standardizeRole(role);
+  const config = ROLE_CONFIG[cleanRole] || {
+    label: cleanRole,
+    className: "text-[#6B6A68]",
+  };
+
   return (
     <div className="inline-flex h-7 items-center px-2">
-      <span className={cn("text-xs font-semibold", className)}>
-        {label}
+      <span className={cn("text-xs font-semibold", config.className)}>
+        {config.label}
       </span>
     </div>
   );
