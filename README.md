@@ -1,5 +1,7 @@
 # Hyperion
 
+[![CI Status](https://github.com/IchsanJunaedi/hyperion-new/actions/workflows/ci.yml/badge.svg)](https://github.com/IchsanJunaedi/hyperion-new/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/IchsanJunaedi/hyperion-new/graph/badge.svg)](https://codecov.io/gh/IchsanJunaedi/hyperion-new)
 [![License: Proprietary](https://img.shields.io/badge/License-Proprietary-red.svg)](./LICENSE)
 
 **Satu platform untuk semua kebutuhan tim esports kamu.**
