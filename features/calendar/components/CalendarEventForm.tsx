@@ -18,6 +18,12 @@ const EVENT_TYPES = [
   { value: "other", label: "Lainnya" },
 ] as const;
 
+const inputCls =
+  "h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none [color-scheme:dark]";
+
+const selectCls =
+  "h-10 w-full appearance-none rounded-md border border-white/10 bg-zinc-900 px-3 pr-9 text-sm text-white focus:border-yellow-400 focus:outline-none";
+
 export function CalendarEventForm({ orgSlug, divisions }: CalendarEventFormProps) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -60,76 +66,97 @@ export function CalendarEventForm({ orgSlug, divisions }: CalendarEventFormProps
 
       <Field label="Judul event" name="title" errors={fieldErrors["title"]}>
         <input
+          id="title"
           name="title"
           required
           maxLength={200}
-          placeholder="mis. Latihan rutin Senin"
-          className="h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
+          className={inputCls}
         />
       </Field>
 
+      {/* Tipe event — custom select with proper arrow */}
       <Field label="Tipe event" name="event_type" errors={fieldErrors["event_type"]}>
-        <select
-          name="event_type"
-          required
-          defaultValue="practice"
-          className="h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
-        >
-          {EVENT_TYPES.map((t) => (
-            <option key={t.value} value={t.value}>
-              {t.label}
-            </option>
-          ))}
-        </select>
+        <div className="relative">
+          <select
+            id="event_type"
+            name="event_type"
+            required
+            defaultValue="practice"
+            className={selectCls}
+          >
+            {EVENT_TYPES.map((t) => (
+              <option key={t.value} value={t.value}>
+                {t.label}
+              </option>
+            ))}
+          </select>
+          {/* Custom chevron */}
+          <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-white/60">
+            <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M5.22 8.22a.75.75 0 011.06 0L10 11.94l3.72-3.72a.75.75 0 111.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 9.28a.75.75 0 010-1.06z" clipRule="evenodd" />
+            </svg>
+          </span>
+        </div>
       </Field>
 
       <Field label="Waktu mulai" name="starts_at" errors={fieldErrors["starts_at"]}>
         <input
+          id="starts_at"
           type="datetime-local"
           name="starts_at"
           required
-          className="h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
+          className={inputCls}
         />
       </Field>
 
       <Field label="Waktu selesai (opsional)" name="ends_at" errors={fieldErrors["ends_at"]}>
         <input
+          id="ends_at"
           type="datetime-local"
           name="ends_at"
-          className="h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
+          className={inputCls}
         />
       </Field>
 
+      {/* Divisi — custom select */}
       <Field label="Divisi (opsional)" name="division_id" errors={fieldErrors["division_id"]}>
-        <select
-          name="division_id"
-          defaultValue=""
-          className="h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
-        >
-          <option value="">Semua divisi</option>
-          {divisions.map((d) => (
-            <option key={d.id} value={d.id}>
-              {d.name}
-            </option>
-          ))}
-        </select>
+        <div className="relative">
+          <select
+            id="division_id"
+            name="division_id"
+            defaultValue=""
+            className={selectCls}
+          >
+            <option value="">Semua divisi</option>
+            {divisions.map((d) => (
+              <option key={d.id} value={d.id}>
+                {d.name}
+              </option>
+            ))}
+          </select>
+          <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-white/60">
+            <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M5.22 8.22a.75.75 0 011.06 0L10 11.94l3.72-3.72a.75.75 0 111.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 9.28a.75.75 0 010-1.06z" clipRule="evenodd" />
+            </svg>
+          </span>
+        </div>
       </Field>
 
       <Field label="Lokasi (opsional)" name="location" errors={fieldErrors["location"]}>
         <input
+          id="location"
           name="location"
           maxLength={200}
-          placeholder="mis. Discord server, Bootcamp"
-          className="h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
+          className={inputCls}
         />
       </Field>
 
       <Field label="Deskripsi (opsional)" name="description" errors={fieldErrors["description"]}>
         <textarea
+          id="description"
           name="description"
           rows={3}
           maxLength={2000}
-          placeholder="Detail tambahan tentang event..."
           className="w-full rounded-md border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-yellow-400 focus:outline-none"
         />
       </Field>

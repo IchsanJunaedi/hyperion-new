@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useParams } from "next/navigation";
-import { ArrowLeft, Settings, Eye, Users, History, Trash2, Loader2 } from "lucide-react";
+import { ArrowLeft, Settings, Eye, Users, History, Trash2 } from "lucide-react";
 import Link from "next/link";
 
 import { useAccessibleCalendars } from "@/features/calendar/hooks/useCalendarPermissions";
@@ -37,68 +37,53 @@ interface TabContentProps {
   teamSlug: string;
 }
 
-/**
- * Overview Tab - Show calendar info and stats
- */
-function OverviewTab({ calendar, teamSlug }: TabContentProps) {
+function OverviewTab({ calendar }: TabContentProps) {
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Calendar Info Card */}
-      <div className="rounded-lg border border-gray-200 dark:border-gray-800 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+      <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5 shadow-xl shadow-black/20">
+        <h3 className="text-sm font-semibold uppercase tracking-wider text-white/40 mb-4">
           Informasi Kalender
         </h3>
         <div className="space-y-4">
           <div>
-            <label className="text-sm font-medium text-gray-600 dark:text-gray-400">
-              Judul
-            </label>
-            <p className="mt-1 text-gray-900 dark:text-gray-100">{calendar.title}</p>
+            <p className="text-xs font-medium text-white/40 mb-1">Judul</p>
+            <p className="text-sm text-white/90">{calendar.title}</p>
           </div>
           {calendar.description && (
             <div>
-              <label className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                Deskripsi
-              </label>
-              <p className="mt-1 text-gray-900 dark:text-gray-100">
-                {calendar.description}
-              </p>
+              <p className="text-xs font-medium text-white/40 mb-1">Deskripsi</p>
+              <p className="text-sm text-white/90">{calendar.description}</p>
             </div>
           )}
           <div>
-            <label className="text-sm font-medium text-gray-600 dark:text-gray-400">
-              Visibilitas
-            </label>
-            <p className="mt-1 inline-flex items-center rounded-full bg-blue-100 dark:bg-blue-900/30 px-3 py-1 text-sm font-medium text-blue-900 dark:text-blue-200">
+            <p className="text-xs font-medium text-white/40 mb-1">Visibilitas</p>
+            <span className="inline-flex items-center rounded-full bg-white/5 border border-white/10 px-2.5 py-1 text-xs font-medium text-white/70">
               {calendar.visibility}
-            </p>
+            </span>
           </div>
           <div>
-            <label className="text-sm font-medium text-gray-600 dark:text-gray-400">
-              Status
-            </label>
-            <p className="mt-1 text-gray-900 dark:text-gray-100">
+            <p className="text-xs font-medium text-white/40 mb-1">Status</p>
+            <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium border ${calendar.is_active ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" : "bg-white/5 text-white/50 border-white/10"}`}>
               {calendar.is_active ? "Aktif" : "Nonaktif"}
-            </p>
+            </span>
           </div>
         </div>
       </div>
 
-      {/* Statistics Card */}
-      <div className="rounded-lg border border-gray-200 dark:border-gray-800 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+      {/* Statistics */}
+      <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5 shadow-xl shadow-black/20">
+        <h3 className="text-sm font-semibold uppercase tracking-wider text-white/40 mb-4">
           Statistik
         </h3>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <p className="text-sm text-gray-600 dark:text-gray-400">Total Event</p>
-            <p className="mt-2 text-3xl font-bold text-gray-900 dark:text-gray-100">
-              {calendar.eventCount}
-            </p>
+            <p className="text-xs text-white/40 mb-1">Total Event</p>
+            <p className="text-3xl font-bold text-white">{calendar.eventCount}</p>
           </div>
           <div>
-            <p className="text-sm text-gray-600 dark:text-gray-400">Dibuat</p>
-            <p className="mt-2 text-sm text-gray-900 dark:text-gray-100">
+            <p className="text-xs text-white/40 mb-1">Dibuat</p>
+            <p className="text-sm text-white/70">
               {new Date(calendar.created_at).toLocaleDateString("id-ID")}
             </p>
           </div>
@@ -106,14 +91,10 @@ function OverviewTab({ calendar, teamSlug }: TabContentProps) {
       </div>
 
       {/* Danger Zone */}
-      <div className="rounded-lg border-2 border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-900/10 p-6">
-        <h3 className="text-lg font-semibold text-red-900 dark:text-red-200 mb-2">
-          Zona Berbahaya
-        </h3>
-        <p className="text-sm text-red-800 dark:text-red-300 mb-4">
-          Tindakan di bawah ini tidak dapat diubah.
-        </p>
-        <button className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-medium transition-colors">
+      <div className="rounded-2xl border border-rose-500/20 bg-rose-500/5 p-5">
+        <h3 className="text-sm font-semibold text-rose-400 mb-1">Zona Berbahaya</h3>
+        <p className="text-xs text-white/40 mb-4">Tindakan di bawah ini tidak dapat diubah.</p>
+        <button className="inline-flex items-center gap-2 rounded-lg bg-rose-600 hover:bg-rose-700 px-4 py-2 text-sm font-medium text-white transition-colors">
           <Trash2 className="h-4 w-4" />
           Hapus Kalender
         </button>
@@ -122,19 +103,16 @@ function OverviewTab({ calendar, teamSlug }: TabContentProps) {
   );
 }
 
-/**
- * Visibility Tab - Manage calendar visibility
- */
-function VisibilityTab({ calendar, teamSlug }: TabContentProps) {
+function VisibilityTab({ calendar }: TabContentProps) {
   return (
-    <div className="rounded-lg border border-gray-200 dark:border-gray-800 p-6">
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+    <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5 shadow-xl shadow-black/20">
+      <h3 className="text-sm font-semibold uppercase tracking-wider text-white/40 mb-4">
         Atur Visibilitas Kalender
       </h3>
-      <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+      <p className="text-sm text-white/50 mb-4">
         Pilih siapa yang dapat melihat kalender ini dan event-eventnya.
       </p>
-      <div className="space-y-3">
+      <div className="space-y-2">
         {[
           { value: "private", label: "Pribadi", description: "Hanya Anda" },
           { value: "management-only", label: "Manajemen", description: "Owner, Manager, Coach" },
@@ -143,22 +121,18 @@ function VisibilityTab({ calendar, teamSlug }: TabContentProps) {
         ].map((option) => (
           <label
             key={option.value}
-            className="flex items-center p-4 border border-gray-200 dark:border-gray-800 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+            className="flex items-center p-4 border border-white/10 rounded-xl cursor-pointer hover:bg-white/5 transition-colors"
           >
             <input
               type="radio"
               name="visibility"
               value={option.value}
               defaultChecked={calendar.visibility === option.value}
-              className="h-4 w-4"
+              className="h-4 w-4 accent-yellow-400"
             />
             <div className="ml-3 flex-1">
-              <p className="font-medium text-gray-900 dark:text-gray-100">
-                {option.label}
-              </p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                {option.description}
-              </p>
+              <p className="text-sm font-medium text-white/90">{option.label}</p>
+              <p className="text-xs text-white/40">{option.description}</p>
             </div>
           </label>
         ))}
@@ -167,38 +141,32 @@ function VisibilityTab({ calendar, teamSlug }: TabContentProps) {
   );
 }
 
-/**
- * Members Tab - Manage member permissions
- */
-function MembersTab({ calendar, teamSlug }: TabContentProps) {
+function MembersTab({ }: TabContentProps) {
   return (
-    <div className="rounded-lg border border-gray-200 dark:border-gray-800 p-6">
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+    <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5 shadow-xl shadow-black/20">
+      <h3 className="text-sm font-semibold uppercase tracking-wider text-white/40 mb-4">
         Izin Anggota
       </h3>
-      <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+      <p className="text-sm text-white/50 mb-4">
         Kelola siapa yang dapat mengakses dan mengelola kalender ini.
       </p>
-      <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+      <div className="text-center py-8 text-white/30 text-sm">
         Member permissions feature akan segera hadir
       </div>
     </div>
   );
 }
 
-/**
- * Audit Tab - View audit logs
- */
-function AuditTab({ calendar, teamSlug }: TabContentProps) {
+function AuditTab({ }: TabContentProps) {
   return (
-    <div className="rounded-lg border border-gray-200 dark:border-gray-800 p-6">
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+    <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5 shadow-xl shadow-black/20">
+      <h3 className="text-sm font-semibold uppercase tracking-wider text-white/40 mb-4">
         Riwayat Audit
       </h3>
-      <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+      <p className="text-sm text-white/50 mb-4">
         Lihat semua perubahan yang dilakukan pada kalender ini.
       </p>
-      <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+      <div className="text-center py-8 text-white/30 text-sm">
         Audit logs akan segera hadir
       </div>
     </div>
@@ -217,172 +185,148 @@ export default function CalendarSettingsPage() {
   const { calendars, isLoading, error } = useAccessibleCalendars(teamSlug);
   const { canManageCalendars, isLoading: permLoading } = usePermissionContext(teamSlug);
 
-  // Check if user can manage calendars
   if (!permLoading && !canManageCalendars) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen p-4">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-          Akses Ditolak
-        </h1>
-        <p className="text-gray-600 dark:text-gray-400 mb-6">
-          Anda tidak memiliki izin untuk mengakses halaman ini.
-        </p>
-        <Link
-          href={`/${teamSlug}`}
-          className="text-blue-600 dark:text-blue-400 hover:underline"
-        >
-          Kembali ke Workspace
-        </Link>
+      <div className="space-y-6 px-4 py-6 sm:px-8 w-full">
+        <div className="flex justify-start">
+          <Link
+            href={`/${teamSlug}/calendar`}
+            className="group inline-flex items-center gap-2 rounded-full border border-white/5 bg-zinc-900/40 px-3.5 py-1.5 text-xs font-semibold text-white/60 transition-all duration-300 hover:bg-zinc-800/60 hover:text-white"
+          >
+            <ArrowLeft className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-x-0.5" />
+            Kembali ke kalender
+          </Link>
+        </div>
+        <div className="mx-auto max-w-2xl w-full text-center py-16">
+          <h1 className="text-xl font-bold text-white mb-2">Akses Ditolak</h1>
+          <p className="text-sm text-white/50">Anda tidak memiliki izin untuk mengakses halaman ini.</p>
+        </div>
       </div>
     );
   }
 
-  // Get first manageable calendar (default)
   const manageableCalendars = calendars.filter((cal) => cal.canManage);
   const selectedCalendar = manageableCalendars[0];
 
   if (isLoading || permLoading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-300 border-t-gray-900 dark:border-gray-600 dark:border-t-gray-100" />
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-white/10 border-t-white/60" />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="p-4 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-200">
-        Gagal memuat kalender: {error.message}
+      <div className="px-4 py-6 sm:px-8">
+        <div className="rounded-2xl border border-rose-500/20 bg-rose-500/5 p-5 text-sm text-rose-400">
+          Gagal memuat kalender: {error.message}
+        </div>
       </div>
     );
   }
 
   if (manageableCalendars.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen p-4">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-          Tidak Ada Kalender
-        </h1>
-        <p className="text-gray-600 dark:text-gray-400 mb-6">
-          Anda belum membuat atau mengelola kalender apapun.
-        </p>
-        <Link
-          href={`/${teamSlug}/calendar/new`}
-          className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors"
-        >
-          Buat Kalender
-        </Link>
+      <div className="space-y-6 px-4 py-6 sm:px-8 w-full">
+        <div className="flex justify-start">
+          <Link
+            href={`/${teamSlug}/calendar`}
+            className="group inline-flex items-center gap-2 rounded-full border border-white/5 bg-zinc-900/40 px-3.5 py-1.5 text-xs font-semibold text-white/60 transition-all duration-300 hover:bg-zinc-800/60 hover:text-white"
+          >
+            <ArrowLeft className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-x-0.5" />
+            Kembali ke kalender
+          </Link>
+        </div>
+        <div className="mx-auto max-w-2xl w-full text-center py-16 space-y-4">
+          <h1 className="text-xl font-bold text-white">Tidak Ada Kalender</h1>
+          <p className="text-sm text-white/50">Anda belum membuat atau mengelola kalender apapun.</p>
+          <Link
+            href={`/${teamSlug}/calendar/new`}
+            className="inline-flex items-center gap-2 rounded-lg bg-yellow-400 hover:bg-yellow-300 px-4 py-2 text-sm font-semibold text-black transition-colors"
+          >
+            Buat Kalender
+          </Link>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
-      {/* Header with Breadcrumb */}
-      <div className="border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mb-4">
-            <Link
-              href={`/${teamSlug}`}
-              className="hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
-            >
-              Workspace
-            </Link>
-            <span>/</span>
-            <Link
-              href={`/${teamSlug}/calendar`}
-              className="hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
-            >
-              Kalender
-            </Link>
-            <span>/</span>
-            <span className="text-gray-900 dark:text-gray-100">Pengaturan</span>
-          </div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-            Pengaturan Kalender
-          </h1>
-        </div>
+    <div className="space-y-6 px-4 py-6 sm:px-8 w-full">
+      {/* Tombol Kembali */}
+      <div className="flex justify-start">
+        <Link
+          href={`/${teamSlug}/calendar`}
+          className="group inline-flex items-center gap-2 rounded-full border border-white/5 bg-zinc-900/40 px-3.5 py-1.5 text-xs font-semibold text-white/60 transition-all duration-300 hover:bg-zinc-800/60 hover:text-white"
+        >
+          <ArrowLeft className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-x-0.5" />
+          Kembali ke kalender
+        </Link>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Sidebar - Calendar List */}
-          <div className="lg:col-span-1">
-            <div className="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4">
-              <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3 uppercase tracking-wide">
-                Kalender Saya
-              </h2>
-              <div className="space-y-2">
-                {manageableCalendars.map((cal) => (
-                  <button
-                    key={cal.id}
-                    onClick={() => setActiveTab("overview")}
-                    className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${
-                      selectedCalendar?.id === cal.id
-                        ? "bg-blue-100 dark:bg-blue-900/30 text-blue-900 dark:text-blue-200"
-                        : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-                    }`}
-                  >
-                    <p className="font-medium">{cal.title}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                      {cal.eventCount} event
-                    </p>
-                  </button>
-                ))}
-              </div>
+      {/* Konten Terpusat */}
+      <div className="mx-auto max-w-2xl w-full space-y-6">
+        <h1 className="text-2xl font-bold text-white sm:text-3xl tracking-tight">
+          Pengaturan Kalender
+        </h1>
+
+        {/* Calendar selector (if multiple) */}
+        {manageableCalendars.length > 1 && (
+          <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-4 shadow-xl shadow-black/20">
+            <p className="text-xs font-semibold uppercase tracking-wider text-white/40 mb-3">Kalender Saya</p>
+            <div className="space-y-1">
+              {manageableCalendars.map((cal) => (
+                <button
+                  key={cal.id}
+                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
+                    selectedCalendar?.id === cal.id
+                      ? "bg-yellow-400/10 text-yellow-400"
+                      : "text-white/60 hover:bg-white/5 hover:text-white"
+                  }`}
+                >
+                  <p className="font-medium">{cal.title}</p>
+                  <p className="text-xs text-white/40 mt-0.5">{cal.eventCount} event</p>
+                </button>
+              ))}
             </div>
           </div>
+        )}
 
-          {/* Main Content */}
-          <div className="lg:col-span-3">
-            {/* Tabs */}
-            <div className="mb-6 border-b border-gray-200 dark:border-gray-800">
-              <div className="flex gap-8 overflow-x-auto">
-                {TABS.map((tab) => {
-                  const Icon = tab.icon;
-                  return (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActiveTab(tab.id)}
-                      className={`flex items-center gap-2 px-1 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
-                        activeTab === tab.id
-                          ? "text-blue-600 dark:text-blue-400 border-blue-600 dark:border-blue-400"
-                          : "text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-gray-100"
-                      }`}
-                    >
-                      <Icon className="h-4 w-4" />
-                      {tab.label}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Tab Content */}
-            <div className="rounded-lg bg-white dark:bg-gray-900 p-6">
-              {selectedCalendar ? (
-                <>
-                  {activeTab === "overview" && (
-                    <OverviewTab calendar={selectedCalendar} teamSlug={teamSlug} />
-                  )}
-                  {activeTab === "visibility" && (
-                    <VisibilityTab calendar={selectedCalendar} teamSlug={teamSlug} />
-                  )}
-                  {activeTab === "members" && (
-                    <MembersTab calendar={selectedCalendar} teamSlug={teamSlug} />
-                  )}
-                  {activeTab === "audit" && (
-                    <AuditTab calendar={selectedCalendar} teamSlug={teamSlug} />
-                  )}
-                </>
-              ) : (
-                <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                  Pilih kalender untuk melihat pengaturannya
-                </div>
-              )}
-            </div>
-          </div>
+        {/* Tabs */}
+        <div className="flex gap-1 border-b border-white/10">
+          {TABS.map((tab) => {
+            const Icon = tab.icon;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-2 px-3 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+                  activeTab === tab.id
+                    ? "text-yellow-400 border-yellow-400"
+                    : "text-white/40 border-transparent hover:text-white/70"
+                }`}
+              >
+                <Icon className="h-3.5 w-3.5" />
+                {tab.label}
+              </button>
+            );
+          })}
         </div>
+
+        {/* Tab Content */}
+        {selectedCalendar ? (
+          <>
+            {activeTab === "overview" && <OverviewTab calendar={selectedCalendar} teamSlug={teamSlug} />}
+            {activeTab === "visibility" && <VisibilityTab calendar={selectedCalendar} teamSlug={teamSlug} />}
+            {activeTab === "members" && <MembersTab calendar={selectedCalendar} teamSlug={teamSlug} />}
+            {activeTab === "audit" && <AuditTab calendar={selectedCalendar} teamSlug={teamSlug} />}
+          </>
+        ) : (
+          <div className="text-center py-8 text-white/30 text-sm">
+            Pilih kalender untuk melihat pengaturannya
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import { Calendar, Clock, MapPin } from "lucide-react";
+import { ArrowLeft, Calendar, Clock, MapPin } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -52,49 +52,61 @@ export default async function CalendarEventDetailPage({
     : null;
 
   return (
-    <div className="space-y-6 px-4 py-6 sm:px-8">
-      <header className="space-y-2">
+    <div className="space-y-6 px-4 py-6 sm:px-8 w-full">
+      {/* Tombol Kembali */}
+      <div className="flex justify-start">
         <Link
           href={`/${slug}/calendar`}
-          className="text-xs text-white/55 hover:text-white"
+          className="group inline-flex items-center gap-2 rounded-full border border-white/5 bg-zinc-900/40 px-3.5 py-1.5 text-xs font-semibold text-white/60 transition-all duration-300 hover:bg-zinc-800/60 hover:text-white"
         >
-          ← Kalender
+          <ArrowLeft className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-x-0.5" />
+          Kembali ke kalender
         </Link>
+      </div>
+
+      {/* Konten Terpusat */}
+      <div className="mx-auto max-w-2xl w-full space-y-4">
+        {/* Badges */}
         <div className="flex flex-wrap gap-2">
-          <span className="inline-flex items-center rounded-full bg-white/5 px-2 py-0.5 text-xs font-medium text-white/60">
+          <span className="inline-flex items-center rounded-full bg-white/5 px-2.5 py-1 text-xs font-medium text-white/60 border border-white/10">
             {EVENT_TYPE_LABELS[event.event_type] ?? event.event_type}
           </span>
           {event.visibility && VISIBILITY_LABELS[event.visibility] && (
-            <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${VISIBILITY_LABELS[event.visibility]!.style}`}>
+            <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ${VISIBILITY_LABELS[event.visibility]!.style}`}>
               {VISIBILITY_LABELS[event.visibility]!.label}
             </span>
           )}
         </div>
-        <h1 className="text-3xl font-bold text-white">{event.title}</h1>
-        <dl className="grid gap-1 text-sm text-white/70 sm:grid-cols-2">
+
+        <h1 className="text-2xl font-bold text-white sm:text-3xl tracking-tight">{event.title}</h1>
+
+        {/* Meta info */}
+        <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-white/60">
           <div className="inline-flex items-center gap-2">
-            <Clock className="h-3.5 w-3.5 text-white/55" />
-            {startsAt}
-            {endsAt ? ` — ${endsAt}` : ""}
+            <Clock className="h-3.5 w-3.5 text-white/40" />
+            {startsAt}{endsAt ? ` — ${endsAt}` : ""}
           </div>
           {event.location && (
             <div className="inline-flex items-center gap-2">
-              <MapPin className="h-3.5 w-3.5 text-white/55" />
+              <MapPin className="h-3.5 w-3.5 text-white/40" />
               {event.location}
             </div>
           )}
-        </dl>
-      </header>
+        </div>
 
-      {event.description && (
-        <article className="max-w-3xl rounded-2xl border border-white/10 bg-zinc-900/40 p-5 sm:p-6">
-          <div className="whitespace-pre-line text-sm leading-relaxed text-white/85">
-            {event.description}
+        {/* Description card */}
+        {event.description && (
+          <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5 sm:p-6 w-full shadow-xl shadow-black/20">
+            <p className="text-xs font-semibold uppercase tracking-wider text-white/40 mb-3">Deskripsi</p>
+            <div className="whitespace-pre-line text-sm leading-relaxed text-white/85">
+              {event.description}
+            </div>
           </div>
-        </article>
-      )}
+        )}
 
-      <CalendarEventActions orgSlug={slug} eventId={event.id} />
+        {/* Actions */}
+        <CalendarEventActions orgSlug={slug} eventId={event.id} />
+      </div>
     </div>
   );
 }
