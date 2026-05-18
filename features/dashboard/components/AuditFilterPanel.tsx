@@ -6,7 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 
 import { Input } from "@/components/ui/input";
 import { CustomSelect } from "@/features/dashboard/components/CustomSelect";
-import { ENTITY_TYPE_LABELS } from "@/features/dashboard/actions/fetchAuditLogs";
+import { ENTITY_TYPE_LABELS } from "@/features/dashboard/constants";
 
 const PRESETS_KEY = "audit_filter_presets";
 const MAX_PRESETS = 5;

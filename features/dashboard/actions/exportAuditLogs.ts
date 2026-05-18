@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
-import { ACTION_LABELS } from "./fetchAuditLogs";
+import { ACTION_LABELS } from "../constants";
 
 export type ExportRow = {
   timestamp: string;
