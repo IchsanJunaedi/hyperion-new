@@ -29,7 +29,9 @@ export function InviteForm({
   members = [],
   onClose,
 }: InviteFormProps) {
-  const [selectedDivisionId, setSelectedDivisionId] = useState<string>("");
+  const [selectedDivisionId, setSelectedDivisionId] = useState<string>(
+    divisions[0]?.id ?? ""
+  );
   const [pending, startTransition] = useTransition();
   const [inviteUrl, setInviteUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -104,14 +106,14 @@ export function InviteForm({
       </div>
 
       {divisions.length > 0 && (
-        <Field label="Divisi (opsional)">
+        <Field label="Divisi">
           <select
             name="division_id"
             value={selectedDivisionId}
             onChange={(e) => setSelectedDivisionId(e.target.value)}
             className="h-9 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
+            required
           >
-            <option value="">— Tanpa divisi —</option>
             {divisions.map((d) => (
               <option key={d.id} value={d.id}>
                 {d.name}
