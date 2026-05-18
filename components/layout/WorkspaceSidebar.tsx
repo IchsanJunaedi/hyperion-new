@@ -226,9 +226,19 @@ export function WorkspaceSidebar({
     return pathname?.startsWith(full) ?? false;
   };
 
-  const allGroups: NavGroup[] = isManager
+  const hasFilesAccess =
+    user.role === "owner" || user.role === "manager" || user.role === "coach";
+
+  const allGroups: NavGroup[] = (isManager
     ? [MANAGER_NAV_GROUP, ...WORKSPACE_NAV_GROUPS]
-    : WORKSPACE_NAV_GROUPS;
+    : WORKSPACE_NAV_GROUPS)
+    .map((group) => ({
+      ...group,
+      items: group.items.filter((item) => {
+        if (item.key === "files") return hasFilesAccess;
+        return true;
+      }),
+    }));
 
   return (
     <aside className="hidden md:flex md:w-[280px] md:flex-col md:border-r md:border-[#2D2D2D] md:bg-[#202020] h-screen sticky top-0">

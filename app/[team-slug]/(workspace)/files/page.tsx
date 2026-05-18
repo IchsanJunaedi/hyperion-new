@@ -1,9 +1,9 @@
-import { FolderOpen } from "lucide-react";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 import { FileList } from "@/features/files/components/FileList";
 import { FileUpload } from "@/features/files/components/FileUpload";
 import { getOrgBySlug } from "@/features/teams/queries";
+import { getCurrentUserRole } from "@/features/roster/queries";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +15,15 @@ export default async function FilesPage({ params }: FilesPageProps) {
   const { "team-slug": slug } = await params;
   const organization = await getOrgBySlug(slug);
   if (!organization) notFound();
+
+  const currentUserRole = await getCurrentUserRole(organization.id);
+  if (
+    currentUserRole !== "owner" &&
+    currentUserRole !== "manager" &&
+    currentUserRole !== "coach"
+  ) {
+    redirect(`/${slug}`);
+  }
 
   return (
     <div className="space-y-6 px-4 py-6 sm:px-8">

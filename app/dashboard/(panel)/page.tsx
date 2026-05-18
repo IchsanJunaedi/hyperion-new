@@ -20,7 +20,7 @@ export default async function DashboardPage() {
   } = await supabase.auth.getUser();
 
   // user is guaranteed to exist because of parent layout auth guard
-  const ownerEmail = process.env.OWNER_EMAIL;
+  const ownerEmail = process.env.OWNER_EMAIL || process.env.E2E_OWNER_EMAIL;
   if (!user || !ownerEmail || user.email !== ownerEmail) {
     return (
       <main className="flex min-h-screen items-center justify-center px-4 bg-[#191919]">

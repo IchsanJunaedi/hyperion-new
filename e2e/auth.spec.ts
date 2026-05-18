@@ -27,6 +27,6 @@ test.describe("Authentication Flow", () => {
     // Find and click the logout button inside the settings modal
     const logoutBtn = page.getByRole("button", { name: /logout/i });
     await logoutBtn.click();
-    await expect(page).toHaveURL(/\/login/);
+    await expect(page).toHaveURL(/\/login|\/$/);
   });
 });

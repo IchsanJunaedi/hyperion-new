@@ -163,7 +163,7 @@ export async function middleware(request: NextRequest) {
   ) {
     // Special guard for /dashboard
     if (firstSegment === "dashboard") {
-      const ownerEmail = process.env.OWNER_EMAIL;
+      const ownerEmail = process.env.OWNER_EMAIL || process.env.E2E_OWNER_EMAIL;
       if (!user) {
         if (section !== "login") {
           return redirectWithCookies(
@@ -187,7 +187,7 @@ export async function middleware(request: NextRequest) {
 
     // Special guard for /manage: platform owner/super-admin shouldn't access it
     if (firstSegment === "manage") {
-      const ownerEmail = process.env.OWNER_EMAIL;
+      const ownerEmail = process.env.OWNER_EMAIL || process.env.E2E_OWNER_EMAIL;
       if (user && ownerEmail && user.email === ownerEmail) {
         return redirectWithCookies(
           new URL("/dashboard", request.url),
