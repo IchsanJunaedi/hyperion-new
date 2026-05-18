@@ -185,6 +185,17 @@ export async function middleware(request: NextRequest) {
       return response;
     }
 
+    // Special guard for /manage: platform owner/super-admin shouldn't access it
+    if (firstSegment === "manage") {
+      const ownerEmail = process.env.OWNER_EMAIL;
+      if (user && ownerEmail && user.email === ownerEmail) {
+        return redirectWithCookies(
+          new URL("/dashboard", request.url),
+          response,
+        );
+      }
+    }
+
     // Onboarding requires auth. Bounce visitors to /login with a
     // post-login redirect back to the originally requested path.
     if (!user && AUTH_REQUIRED_SEGMENTS.has(firstSegment)) {

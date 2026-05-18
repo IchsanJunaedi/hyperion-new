@@ -23,6 +23,8 @@ export default async function ManageLayout({
   const ownerEmail = process.env.OWNER_EMAIL;
   const isOwner = Boolean(ownerEmail && user.email === ownerEmail);
 
+  if (isOwner) redirect("/dashboard");
+
   const admin = createAdminClient();
 
   // Get manager's membership
@@ -35,7 +37,7 @@ export default async function ManageLayout({
     .limit(1)
     .maybeSingle();
 
-  if (!membership && !isOwner) redirect("/");
+  if (!membership) redirect("/");
 
   // Get org details
   let orgSlug = "";
