@@ -2,7 +2,7 @@
 
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useState, useTransition, useRef, useEffect } from "react";
 
 import { createCalendarEventAction } from "../actions";
 
@@ -21,14 +21,94 @@ const EVENT_TYPES = [
 const inputCls =
   "h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none [color-scheme:dark]";
 
-const selectCls =
-  "h-10 w-full appearance-none rounded-md border border-white/10 bg-zinc-900 px-3 pr-9 text-sm text-white focus:border-yellow-400 focus:outline-none";
+interface PremiumSelectProps {
+  id: string;
+  name: string;
+  options: Array<{ value: string; label: string }>;
+  defaultValue?: string;
+}
+
+function PremiumSelect({ id, name, options, defaultValue = "" }: PremiumSelectProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedValue, setSelectedValue] = useState(defaultValue);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (ref.current && !ref.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const selectedOption = options.find((o) => o.value === selectedValue) || options[0];
+
+  return (
+    <div ref={ref} className="relative w-full">
+      <input type="hidden" id={id} name={name} value={selectedValue} />
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex h-10 w-full items-center justify-between rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none transition-all duration-200 hover:bg-zinc-800/40 text-left"
+      >
+        <span className="truncate">{selectedOption?.label}</span>
+        <svg
+          className={`h-4 w-4 text-white/60 transition-transform duration-200 shrink-0 ml-2 ${
+            isOpen ? "rotate-180 text-yellow-400" : ""
+          }`}
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path
+            fillRule="evenodd"
+            d="M5.22 8.22a.75.75 0 011.06 0L10 11.94l3.72-3.72a.75.75 0 111.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 9.28a.75.75 0 010-1.06z"
+            clipRule="evenodd"
+          />
+        </svg>
+      </button>
+
+      {isOpen && (
+        <div className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md border border-white/10 bg-zinc-950/95 backdrop-blur-md p-1 shadow-xl shadow-black/40 focus:outline-none animate-in fade-in-50 slide-in-from-top-1 duration-100">
+          {options.map((opt) => {
+            const isSelected = opt.value === selectedValue;
+            return (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => {
+                  setSelectedValue(opt.value);
+                  setIsOpen(false);
+                }}
+                className={`flex w-full items-center rounded px-3 py-2 text-left text-sm transition-all duration-150 ${
+                  isSelected
+                    ? "bg-yellow-400 text-black font-semibold shadow-md"
+                    : "text-white/80 hover:bg-white/5 hover:text-white"
+                }`}
+              >
+                <span className="truncate">{opt.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export function CalendarEventForm({ orgSlug, divisions }: CalendarEventFormProps) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [globalError, setGlobalError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
+
+  const divisionOptions = [
+    { value: "", label: "Semua divisi" },
+    ...divisions.map((d) => ({ value: d.id, label: d.name })),
+  ];
 
   return (
     <form
@@ -74,29 +154,14 @@ export function CalendarEventForm({ orgSlug, divisions }: CalendarEventFormProps
         />
       </Field>
 
-      {/* Tipe event — custom select with proper arrow */}
+      {/* Tipe event — Premium Custom Dropdown */}
       <Field label="Tipe event" name="event_type" errors={fieldErrors["event_type"]}>
-        <div className="relative">
-          <select
-            id="event_type"
-            name="event_type"
-            required
-            defaultValue="practice"
-            className={selectCls}
-          >
-            {EVENT_TYPES.map((t) => (
-              <option key={t.value} value={t.value}>
-                {t.label}
-              </option>
-            ))}
-          </select>
-          {/* Custom chevron */}
-          <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-white/60">
-            <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M5.22 8.22a.75.75 0 011.06 0L10 11.94l3.72-3.72a.75.75 0 111.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 9.28a.75.75 0 010-1.06z" clipRule="evenodd" />
-            </svg>
-          </span>
-        </div>
+        <PremiumSelect
+          id="event_type"
+          name="event_type"
+          options={EVENT_TYPES.map((t) => ({ value: t.value, label: t.label }))}
+          defaultValue="practice"
+        />
       </Field>
 
       <Field label="Waktu mulai" name="starts_at" errors={fieldErrors["starts_at"]}>
@@ -118,28 +183,14 @@ export function CalendarEventForm({ orgSlug, divisions }: CalendarEventFormProps
         />
       </Field>
 
-      {/* Divisi — custom select */}
+      {/* Divisi — Premium Custom Dropdown */}
       <Field label="Divisi (opsional)" name="division_id" errors={fieldErrors["division_id"]}>
-        <div className="relative">
-          <select
-            id="division_id"
-            name="division_id"
-            defaultValue=""
-            className={selectCls}
-          >
-            <option value="">Semua divisi</option>
-            {divisions.map((d) => (
-              <option key={d.id} value={d.id}>
-                {d.name}
-              </option>
-            ))}
-          </select>
-          <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-white/60">
-            <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M5.22 8.22a.75.75 0 011.06 0L10 11.94l3.72-3.72a.75.75 0 111.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 9.28a.75.75 0 010-1.06z" clipRule="evenodd" />
-            </svg>
-          </span>
-        </div>
+        <PremiumSelect
+          id="division_id"
+          name="division_id"
+          options={divisionOptions}
+          defaultValue=""
+        />
       </Field>
 
       <Field label="Lokasi (opsional)" name="location" errors={fieldErrors["location"]}>
