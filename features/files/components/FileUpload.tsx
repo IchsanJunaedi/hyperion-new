@@ -72,14 +72,14 @@ export function FileUpload({
         file_size: file.size,
       });
       if (!dbResult.ok) {
-        // Non-fatal: storage upload succeeded; DB record failed.
-        notify.warning(
-          `File diupload tapi gagal dicatat ke database: ${dbResult.message}`,
+        notify.error(
+          `Gagal mencatat file ke database: ${dbResult.message}`,
         );
-      } else {
-        notify.success("File berhasil diupload");
+        setFileName(null);
+        return;
       }
 
+      notify.success("File berhasil diupload");
       onUpload?.(filePath, url);
     } catch {
       notify.error("Gagal mengupload file");
