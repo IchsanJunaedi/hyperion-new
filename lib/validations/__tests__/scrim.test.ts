@@ -16,8 +16,8 @@ describe("matchFormatSchema", () => {
       expect(matchFormatSchema.safeParse(format).success).toBe(true);
     },
   );
-  it("accepts 'scrimmage' (valid format)", () => {
-    expect(matchFormatSchema.safeParse("scrimmage").success).toBe(true);
+  it("rejects 'scrimmage' (removed format)", () => {
+    expect(matchFormatSchema.safeParse("scrimmage").success).toBe(false);
   });
   it("rejects unknown format 'bo4'", () => {
     expect(matchFormatSchema.safeParse("bo4").success).toBe(false);
