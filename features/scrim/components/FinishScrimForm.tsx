@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowLeft, CheckCircle, Loader2, Plus, Trophy, Upload, XCircle } from "lucide-react";
+import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useState, useTransition, useEffect } from "react";
 
@@ -155,7 +156,8 @@ export function FinishScrimForm({
         coachNotes: coachNotes || null,
       });
       if (res.ok) {
-        router.push(`/${orgSlug}/scrim/${scrimId}`);
+        toast.success("Hasil scrim disimpan!");
+        router.push(`/${orgSlug}/analytics`);
       } else {
         setError(res.message ?? "Gagal menyimpan hasil");
       }
