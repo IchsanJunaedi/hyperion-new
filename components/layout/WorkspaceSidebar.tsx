@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Activity,
   BarChart3,
   Calendar,
   CalendarClock,
@@ -148,6 +149,12 @@ const WORKSPACE_NAV_GROUPS: NavGroup[] = [
         href: "/tournaments",
         label: "Turnamen",
         Icon: Trophy,
+      },
+      {
+        key: "analytics",
+        href: "/analytics",
+        label: "Analytics",
+        Icon: Activity,
       },
     ],
   },
