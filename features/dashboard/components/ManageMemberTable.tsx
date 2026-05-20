@@ -52,7 +52,7 @@ export function ManageMemberTable({ members, orgName }: ManageMemberTableProps) 
 
   return (
     <>
-      <div className="overflow-x-auto rounded-lg border border-white/5">
+      <div className="overflow-x-auto md:overflow-visible sidebar-scroll rounded-lg border border-white/5">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-white/5 bg-white/[0.02]">
@@ -67,7 +67,7 @@ export function ManageMemberTable({ members, orgName }: ManageMemberTableProps) 
             </tr>
           </thead>
           <tbody className="divide-y divide-white/5">
-            {members.map((m) => (
+            {members.map((m, idx) => (
               <tr key={m.id} className="transition hover:bg-white/[0.04]">
                 <td
                   className="px-4 py-3 text-white/80 cursor-pointer hover:text-yellow-400"
@@ -101,9 +101,10 @@ export function ManageMemberTable({ members, orgName }: ManageMemberTableProps) 
                       orgSlug={m.orgSlug}
                       memberId={m.id}
                       currentMainRole={m.mainRole as MainRole}
+                      direction={idx >= members.length - 2 && idx > 0 ? "up" : "down"}
                     />
                   ) : (
-                    <span className="text-xs text-white/20">—</span>
+                    <MainRoleBadge mainRole={null} />
                   )}
                 </td>
                 <td className="px-4 py-3 text-white/60">{m.phoneWa ?? "—"}</td>

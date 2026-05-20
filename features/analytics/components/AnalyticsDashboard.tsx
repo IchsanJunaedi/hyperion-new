@@ -29,6 +29,7 @@ interface AnalyticsDashboardProps {
   recentScrims: RecentScrim[];
   playerStats: EnterprisePlayerStat[];
   draftData: DraftAnalyticsData;
+  orgId: string;
 }
 
 export function AnalyticsDashboard({
@@ -37,6 +38,7 @@ export function AnalyticsDashboard({
   recentScrims,
   playerStats,
   draftData,
+  orgId,
 }: AnalyticsDashboardProps) {
   const [activeTab, setActiveTab] = useState<TabKey>("overview");
 
@@ -70,7 +72,7 @@ export function AnalyticsDashboard({
         />
       )}
       {activeTab === "draft" && <DraftAnalyticsTab data={draftData} />}
-      {activeTab === "players" && <PlayerStatsTab playerStats={playerStats} />}
+      {activeTab === "players" && <PlayerStatsTab playerStats={playerStats} orgId={orgId} />}
       {activeTab === "ai" && <AIInsightsTab />}
     </div>
   );

@@ -71,7 +71,7 @@ export default async function ManagePage() {
     .from("profiles")
     .select("id", { count: "exact", head: true });
 
-  const ROLE_ORDER: Record<string, number> = { owner: 0, manager: 1, captain: 2, member: 3 };
+  const ROLE_ORDER: Record<string, number> = { owner: 0, manager: 1, coach: 2, captain: 3, member: 4 };
 
   return (
     <div className="space-y-8">
@@ -116,7 +116,17 @@ export default async function ManagePage() {
         {(orgs ?? []).map((org) => {
           const orgMembers = (members ?? [])
             .filter((m) => m.organization_id === org.id)
-            .sort((a, b) => (ROLE_ORDER[a.role] ?? 99) - (ROLE_ORDER[b.role] ?? 99));
+            .sort((a, b) => {
+              const roleA = ROLE_ORDER[a.role] ?? 99;
+              const roleB = ROLE_ORDER[b.role] ?? 99;
+              if (roleA !== roleB) return roleA - roleB;
+
+              const profileA = profileMap.get(a.user_id);
+              const profileB = profileMap.get(b.user_id);
+              const nameA = (profileA?.full_name ?? profileA?.display_name ?? profileA?.username ?? "").toLowerCase();
+              const nameB = (profileB?.full_name ?? profileB?.display_name ?? profileB?.username ?? "").toLowerCase();
+              return nameA.localeCompare(nameB);
+            });
           const orgDivisions = (divisions ?? [])
             .filter((d) => d.organization_id === org.id)
             .map((d) => ({ id: d.id, name: d.name }));

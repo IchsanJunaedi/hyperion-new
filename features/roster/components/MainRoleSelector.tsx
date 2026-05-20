@@ -10,6 +10,7 @@ interface MainRoleSelectorProps {
   orgSlug: string;
   memberId: string;
   currentMainRole: MainRole;
+  direction?: "up" | "down";
 }
 
 const ROLE_OPTIONS: Array<{ value: MainRole; label: string; shortLabel: string; color: string }> = [
@@ -20,7 +21,12 @@ const ROLE_OPTIONS: Array<{ value: MainRole; label: string; shortLabel: string; 
   { value: "roamer",    label: "Roamer",      shortLabel: "ROAM",   color: "text-rose-400"    },
 ];
 
-export function MainRoleSelector({ orgSlug, memberId, currentMainRole }: MainRoleSelectorProps) {
+export function MainRoleSelector({
+  orgSlug,
+  memberId,
+  currentMainRole,
+  direction = "down",
+}: MainRoleSelectorProps) {
   const [pending, startTransition] = useTransition();
   const [open, setOpen] = useState(false);
   const [hovered, setHovered] = useState(false);
@@ -95,7 +101,13 @@ export function MainRoleSelector({ orgSlug, memberId, currentMainRole }: MainRol
       </button>
 
       {open && (
-        <div className="absolute left-0 z-50 mt-1 w-36 origin-top-left rounded-md border border-[#2D2D2D] bg-[#141414] py-1 shadow-xl">
+        <div
+          className={`absolute left-0 z-50 w-36 rounded-md border border-[#2D2D2D] bg-[#141414] py-1 shadow-xl ${
+            direction === "up"
+              ? "bottom-full mb-1 origin-bottom-left"
+              : "top-full mt-1 origin-top-left"
+          }`}
+        >
           {/* Clear option */}
           <button
             type="button"
@@ -132,8 +144,11 @@ export function MainRoleSelector({ orgSlug, memberId, currentMainRole }: MainRol
 // Read-only badge for contexts where editing isn't allowed
 export function MainRoleBadge({ mainRole }: { mainRole: MainRole }) {
   const opt = ROLE_OPTIONS.find((o) => o.value === mainRole);
-  if (!opt) return <span className="text-xs text-white/30 italic">—</span>;
   return (
-    <span className={`text-xs font-semibold ${opt.color}`}>{opt.shortLabel}</span>
+    <div className="inline-flex h-8 w-28 items-center px-2.5">
+      <span className={opt ? `text-xs font-semibold ${opt.color}` : "text-xs text-white/20"}>
+        {opt?.shortLabel ?? "—"}
+      </span>
+    </div>
   );
 }

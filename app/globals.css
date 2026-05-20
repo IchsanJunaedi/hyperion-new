@@ -98,6 +98,7 @@
 /* Chrome / Safari / Edge */
 .sidebar-scroll::-webkit-scrollbar {
   width: 4px;
+  height: 4px;
 }
 
 .sidebar-scroll::-webkit-scrollbar-track {

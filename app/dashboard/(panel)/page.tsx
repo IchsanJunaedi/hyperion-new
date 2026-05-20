@@ -40,7 +40,7 @@ export default async function DashboardPage() {
   const { data: orgs } = await admin.from("organizations").select("id, name, slug").order("created_at", { ascending: false });
   const { data: members } = await admin.from("team_members").select("id, user_id, organization_id, division_id, role, is_active").eq("is_active", true);
   const { data: allDivisions } = await admin.from("divisions").select("id, name, organization_id");
-  const { data: profiles } = await admin.from("profiles").select("id, full_name, username, display_name, phone_wa, avatar_url").order("created_at", { ascending: false });
+  const { data: profiles } = await admin.from("profiles").select("id, full_name, username, display_name, phone_wa, avatar_url, date_of_birth, bio, social_links, game_ids").order("created_at", { ascending: false });
   const workspaceName = profiles?.find(p => p.id === user.id)?.full_name ?? "Hyperion Team";
 
   // Emails
@@ -155,37 +155,49 @@ export default async function DashboardPage() {
           icon={<Users className="h-4 w-4 text-[#9B9A97]" />}
           href="/dashboard/users"
           emptyText="Belum ada user"
-          rows={(profiles ?? []).map((p) => {
-            const role = roleMap.get(p.id) ?? "none";
-            const email = emailMap.get(p.id) ?? "—";
-            const userMembership = (members ?? []).find((m) => m.user_id === p.id);
-            const divName = userMembership?.division_id
-              ? (allDivisions ?? []).find((d) => d.id === userMembership.division_id)?.name ?? null
-              : null;
-            const orgName = userMembership
-              ? (orgs ?? []).find((o) => o.id === userMembership.organization_id)?.name ?? null
-              : null;
-            const detail: UserDetail = {
-              id: p.id,
-              fullName: p.full_name,
-              username: p.username,
-              email,
-              phoneWa: p.phone_wa,
-              dateOfBirth: null,
-              bio: null,
-              socialLinks: null,
-              gameIds: null,
-              role,
-              division: divName,
-              orgName,
-            };
-            return {
-              id: p.id,
-              cols: [p.full_name ?? p.display_name ?? "—", email, role],
-              roleCol: 2,
-              userDetail: detail,
-            };
-          })}
+          rows={(profiles ?? [])
+            .map((p) => {
+              const role = roleMap.get(p.id) ?? "none";
+              const email = emailMap.get(p.id) ?? "—";
+              const userMembership = (members ?? []).find((m) => m.user_id === p.id);
+              const divName = userMembership?.division_id
+                ? (allDivisions ?? []).find((d) => d.id === userMembership.division_id)?.name ?? null
+                : null;
+              const orgName = userMembership
+                ? (orgs ?? []).find((o) => o.id === userMembership.organization_id)?.name ?? null
+                : null;
+              const detail: UserDetail = {
+                id: p.id,
+                fullName: p.full_name,
+                username: p.username,
+                email,
+                phoneWa: p.phone_wa,
+                dateOfBirth: p.date_of_birth,
+                bio: p.bio,
+                socialLinks: p.social_links as Record<string, string> | null,
+                gameIds: p.game_ids as Record<string, string> | null,
+                role,
+                division: divName,
+                orgName,
+              };
+              return {
+                id: p.id,
+                cols: [p.full_name ?? p.display_name ?? "—", email, role],
+                roleCol: 2,
+                userDetail: detail,
+              };
+            })
+            .sort((a, b) => {
+              const roleA = a.cols[2] ?? "none";
+              const roleB = b.cols[2] ?? "none";
+              const pA = rolePriority[roleA] ?? 99;
+              const pB = rolePriority[roleB] ?? 99;
+              if (pA !== pB) return pA - pB;
+
+              const nameA = (a.cols[0] ?? "").toLowerCase();
+              const nameB = (b.cols[0] ?? "").toLowerCase();
+              return nameA.localeCompare(nameB);
+            })}
         />
 
         {/* Team Health Score */}

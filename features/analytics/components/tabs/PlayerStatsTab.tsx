@@ -1,10 +1,15 @@
+"use client";
+
+import { useState } from "react";
 import { Gamepad2, Star, Users } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { ROLE_LABELS } from "@/features/scrim/data/mlbb-heroes";
+import { PlayerHeroModal } from "@/features/analytics/components/PlayerHeroModal";
 import type { EnterprisePlayerStat, PlayerHeroStat } from "@/features/analytics/queries";
 
 interface PlayerStatsTabProps {
   playerStats: EnterprisePlayerStat[];
+  orgId: string;
 }
 
 function getInitials(name: string | null): string {
@@ -23,7 +28,9 @@ function ratingColor(r: number): string {
   return "text-rose-400";
 }
 
-export function PlayerStatsTab({ playerStats }: PlayerStatsTabProps) {
+export function PlayerStatsTab({ playerStats, orgId }: PlayerStatsTabProps) {
+  const [selectedPlayer, setSelectedPlayer] = useState<EnterprisePlayerStat | null>(null);
+
   if (playerStats.length === 0) {
     return (
       <div className="flex min-h-[320px] flex-col items-center justify-center gap-4 rounded-2xl border border-dashed border-[#2D2D2D] bg-[#1C1C1C] p-10 text-center">
@@ -41,15 +48,33 @@ export function PlayerStatsTab({ playerStats }: PlayerStatsTabProps) {
   }
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-      {playerStats.map((player) => (
-        <PlayerCard key={player.user_id} player={player} />
-      ))}
-    </div>
+    <>
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        {playerStats.map((player) => (
+          <PlayerCard
+            key={player.user_id}
+            player={player}
+            onClick={() => setSelectedPlayer(player)}
+          />
+        ))}
+      </div>
+
+      <PlayerHeroModal
+        player={selectedPlayer}
+        orgId={orgId}
+        onClose={() => setSelectedPlayer(null)}
+      />
+    </>
   );
 }
 
-function PlayerCard({ player }: { player: EnterprisePlayerStat }) {
+function PlayerCard({
+  player,
+  onClick,
+}: {
+  player: EnterprisePlayerStat;
+  onClick: () => void;
+}) {
   const streakPositive = player.streak > 0;
   const streakText =
     player.streak === 0
@@ -59,7 +84,13 @@ function PlayerCard({ player }: { player: EnterprisePlayerStat }) {
         : `${Math.abs(player.streak)} absen terakhir`;
 
   return (
-    <div className="space-y-4 rounded-2xl border border-[#2D2D2D] bg-[#1C1C1C] p-5 transition-colors hover:border-[#3D3D3D]">
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={onClick}
+      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") onClick(); }}
+      className="group space-y-4 rounded-2xl border border-[#2D2D2D] bg-[#1C1C1C] p-5 transition-colors cursor-pointer hover:border-yellow-400/40 hover:bg-[#202020] focus:outline-none focus:ring-2 focus:ring-yellow-400/30"
+    >
       {/* Header */}
       <div className="flex items-center gap-3">
         {player.avatar_url ? (
@@ -74,7 +105,7 @@ function PlayerCard({ player }: { player: EnterprisePlayerStat }) {
           </div>
         )}
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-semibold text-[#E5E2E1]">
+          <p className="truncate text-sm font-semibold text-[#E5E2E1] group-hover:text-white transition-colors">
             {player.display_name ?? "Unknown"}
           </p>
           <p className="text-[11px] text-[#6B6A68]">
@@ -164,8 +195,13 @@ function PlayerCard({ player }: { player: EnterprisePlayerStat }) {
         {streakText}
       </p>
 
-      {/* Hero pool */}
+      {/* Hero pool (preview — top 5) */}
       {player.heroPool.length > 0 && <HeroPool pool={player.heroPool} />}
+
+      {/* Click hint */}
+      <p className="text-center text-[10px] text-[#4B4A48] group-hover:text-[#6B6A68] transition-colors">
+        Klik untuk melihat history lengkap →
+      </p>
     </div>
   );
 }

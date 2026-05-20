@@ -47,6 +47,7 @@ export default async function AnalyticsPage({ params }: AnalyticsPageProps) {
         recentScrims={recentScrims}
         playerStats={playerStats}
         draftData={draftData}
+        orgId={organization.id}
       />
     </div>
   );

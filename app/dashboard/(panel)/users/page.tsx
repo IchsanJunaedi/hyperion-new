@@ -120,7 +120,12 @@ export default async function DashboardUsersPage({ searchParams }: UsersPageProp
     });
   }
 
-  rows.sort((a, b) => (rolePriority[a.role] ?? 99) - (rolePriority[b.role] ?? 99));
+  rows.sort((a, b) => {
+    const pA = rolePriority[a.role] ?? 99;
+    const pB = rolePriority[b.role] ?? 99;
+    if (pA !== pB) return pA - pB;
+    return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
+  });
 
   // Search filtering
   const filteredRows = query

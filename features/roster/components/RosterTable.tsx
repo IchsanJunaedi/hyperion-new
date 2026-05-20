@@ -42,6 +42,18 @@ export function RosterTable({
     currentUserRole === "manager" ||
     currentUserRole === "coach";
 
+  const ROLE_ORDER: Record<string, number> = { owner: 0, manager: 1, coach: 2, captain: 3, member: 4 };
+
+  const sortedMembers = [...members].sort((a, b) => {
+    const roleA = ROLE_ORDER[a.role] ?? 99;
+    const roleB = ROLE_ORDER[b.role] ?? 99;
+    if (roleA !== roleB) return roleA - roleB;
+
+    const nameA = (a.display_name ?? a.username ?? "").toLowerCase();
+    const nameB = (b.display_name ?? b.username ?? "").toLowerCase();
+    return nameA.localeCompare(nameB);
+  });
+
   return (
     <div className="space-y-4">
       {/* Invite panel */}
@@ -78,7 +90,7 @@ export function RosterTable({
           </p>
         )}
 
-        {members.map((m) => {
+        {sortedMembers.map((m, idx) => {
           const isSelf = m.user_id === currentUserId;
           // RLS: captain+ can update any non-owner member; cannot reassign owner role
           const canEditRole =
@@ -161,6 +173,7 @@ export function RosterTable({
                         orgSlug={orgSlug}
                         memberId={m.id}
                         currentMainRole={m.main_role as MainRole}
+                        direction={idx >= sortedMembers.length - 2 && idx > 0 ? "up" : "down"}
                       />
                     ) : (
                       <MainRoleBadge mainRole={m.main_role as MainRole} />
@@ -178,6 +191,7 @@ export function RosterTable({
                       orgSlug={orgSlug}
                       memberId={m.id}
                       currentAvailability={m.availability}
+                      direction={idx >= sortedMembers.length - 2 && idx > 0 ? "up" : "down"}
                     />
                   ) : (
                     <AvailabilityBadge availability={m.availability} />

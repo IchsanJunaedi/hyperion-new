@@ -11,6 +11,7 @@ interface AvailabilitySelectorProps {
   orgSlug: string;
   memberId: string;
   currentAvailability: MemberAvailability;
+  direction?: "up" | "down";
 }
 
 const OPTIONS: Array<{ value: MemberAvailability; label: string; dotColor: string }> = [
@@ -23,6 +24,7 @@ export function AvailabilitySelector({
   orgSlug,
   memberId,
   currentAvailability,
+  direction = "down",
 }: AvailabilitySelectorProps) {
   const [pending, startTransition] = useTransition();
   const [isOpen, setIsOpen] = useState(false);
@@ -107,7 +109,13 @@ export function AvailabilitySelector({
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-1 z-50 w-36 origin-top-right rounded-md border border-[#2D2D2D] bg-[#141414] shadow-xl backdrop-blur-md focus:outline-none py-1">
+        <div
+          className={`absolute right-0 z-50 w-36 rounded-md border border-[#2D2D2D] bg-[#141414] shadow-xl backdrop-blur-md focus:outline-none py-1 ${
+            direction === "up"
+              ? "bottom-full mb-1 origin-bottom-right"
+              : "top-full mt-1 origin-top-right"
+          }`}
+        >
           {OPTIONS.map((opt) => {
             const active = opt.value === currentAvailability;
             return (
