@@ -7,6 +7,7 @@ import {
   DollarSign,
   Download,
   FileText,
+  Handshake,
   Home,
   ListChecks,
   LogOut,
@@ -52,6 +53,7 @@ const NAV_GROUPS: NavGroup[] = [
       { href: "/dashboard/teams", Icon: Building2, label: "Tim" },
       { href: "/dashboard/files", Icon: FolderOpen, label: "File Tim" },
       { href: "/dashboard/finances", Icon: DollarSign, label: "Kas Tim" },
+      { href: "/dashboard/sponsors", Icon: Handshake, label: "Sponsor" },
     ],
   },
   {

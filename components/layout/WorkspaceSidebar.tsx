@@ -8,6 +8,7 @@ import {
   ChevronDown,
   DollarSign,
   FolderOpen,
+  Handshake,
   Home,
   LayoutDashboard,
   Lightbulb,
@@ -107,6 +108,13 @@ const MANAGER_NAV_GROUP: NavGroup = {
       absoluteHref: "/manage/finances",
       label: "Kas Tim",
       Icon: DollarSign,
+    },
+    {
+      key: "manage-sponsors",
+      href: "",
+      absoluteHref: "/manage/sponsors",
+      label: "Sponsor",
+      Icon: Handshake,
     },
     {
       key: "manage-content",
