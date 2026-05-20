@@ -1,0 +1,208 @@
+import { format } from "date-fns";
+import { id } from "date-fns/locale";
+import type { OverviewStats, FormatStat, RecentScrim } from "@/features/analytics/queries";
+
+interface OverviewTabProps {
+  stats: OverviewStats;
+  formatBreakdown: FormatStat[];
+  recentScrims: RecentScrim[];
+}
+
+const FORMAT_LABELS: Record<string, string> = {
+  bo1: "BO1",
+  bo2: "BO2",
+  bo3: "BO3",
+  bo5: "BO5",
+  bo7: "BO7",
+  "4match": "4 Match",
+};
+
+export function OverviewTab({ stats, formatBreakdown, recentScrims }: OverviewTabProps) {
+  return (
+    <div className="space-y-6">
+      {/* Stat Cards */}
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <StatCard label="Total Scrim" value={String(stats.total)} sub="completed" />
+        <StatCard
+          label="Menang"
+          value={String(stats.wins)}
+          sub="kemenangan"
+          valueClass="text-emerald-400"
+        />
+        <StatCard
+          label="Kalah"
+          value={String(stats.losses)}
+          sub="kekalahan"
+          valueClass="text-rose-400"
+        />
+        <StatCard
+          label="Win Rate"
+          value={`${stats.winRate}%`}
+          sub="keseluruhan"
+          valueClass={stats.winRate >= 50 ? "text-yellow-400" : "text-rose-400"}
+        />
+      </div>
+
+      {/* Win Rate Bar + Format Breakdown */}
+      <div className="grid gap-4 sm:grid-cols-2">
+        {/* Win Rate Bar */}
+        <div className="rounded-2xl border border-[#2D2D2D] bg-[#1C1C1C] p-5 space-y-4">
+          <p className="text-xs font-semibold uppercase tracking-wider text-[#9B9A97]">
+            Win Rate Keseluruhan
+          </p>
+          <div className="space-y-2">
+            <div className="flex items-baseline justify-between">
+              <span
+                className={`text-3xl font-bold ${
+                  stats.winRate >= 50 ? "text-emerald-400" : "text-rose-400"
+                }`}
+              >
+                {stats.winRate}%
+              </span>
+              <span className="text-xs text-[#6B6A68]">
+                {stats.wins}W · {stats.losses}L · {stats.draws}D
+              </span>
+            </div>
+            <div className="flex h-2 w-full overflow-hidden rounded-full bg-[#252525]">
+              <div
+                style={{ width: `${(stats.wins / (stats.total || 1)) * 100}%` }}
+                className="h-full bg-emerald-500/70"
+              />
+              <div
+                style={{ width: `${(stats.draws / (stats.total || 1)) * 100}%` }}
+                className="h-full bg-zinc-500/40"
+              />
+              <div
+                style={{ width: `${(stats.losses / (stats.total || 1)) * 100}%` }}
+                className="h-full bg-rose-500/70"
+              />
+            </div>
+            <div className="flex gap-4 text-[11px]">
+              <span className="flex items-center gap-1.5 text-[#9B9A97]">
+                <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                Menang
+              </span>
+              <span className="flex items-center gap-1.5 text-[#9B9A97]">
+                <span className="inline-block h-1.5 w-1.5 rounded-full bg-zinc-500" />
+                Seri
+              </span>
+              <span className="flex items-center gap-1.5 text-[#9B9A97]">
+                <span className="inline-block h-1.5 w-1.5 rounded-full bg-rose-500" />
+                Kalah
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Format Breakdown */}
+        <div className="rounded-2xl border border-[#2D2D2D] bg-[#1C1C1C] p-5 space-y-3">
+          <p className="text-xs font-semibold uppercase tracking-wider text-[#9B9A97]">
+            Per Format
+          </p>
+          {formatBreakdown.length === 0 ? (
+            <p className="text-xs text-[#6B6A68]">Belum ada data.</p>
+          ) : (
+            <div className="space-y-3">
+              {formatBreakdown.map((f) => (
+                <div key={f.format} className="space-y-1">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-medium text-[#E5E2E1]">
+                      {FORMAT_LABELS[f.format] ?? f.format.toUpperCase()}
+                    </span>
+                    <span className="text-[#6B6A68]">
+                      {f.wins}W / {f.losses}L · {f.winRate}%
+                    </span>
+                  </div>
+                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#252525]">
+                    <div
+                      style={{ width: `${f.winRate}%` }}
+                      className={`h-full rounded-full ${
+                        f.winRate >= 50 ? "bg-emerald-500/60" : "bg-rose-500/60"
+                      }`}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Recent Scrims */}
+      <div className="rounded-2xl border border-[#2D2D2D] bg-[#1C1C1C] overflow-hidden">
+        <div className="border-b border-[#2D2D2D] px-5 py-4">
+          <p className="text-xs font-semibold uppercase tracking-wider text-[#9B9A97]">
+            10 Scrim Terakhir
+          </p>
+        </div>
+        {recentScrims.length === 0 ? (
+          <p className="px-5 py-8 text-center text-xs text-[#6B6A68]">
+            Belum ada scrim selesai.
+          </p>
+        ) : (
+          <div className="divide-y divide-[#2D2D2D]">
+            {recentScrims.map((s) => (
+              <div
+                key={s.id}
+                className="grid grid-cols-[1fr_auto_auto_auto] items-center gap-4 px-5 py-3"
+              >
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium text-[#E5E2E1]">
+                    vs {s.opponent_name}
+                  </p>
+                  <p className="text-xs text-[#6B6A68]">
+                    {format(new Date(s.scheduled_at), "d MMM yyyy", { locale: id })}
+                    {s.division_name ? ` · ${s.division_name}` : ""}
+                  </p>
+                </div>
+                <span className="font-mono text-xs text-[#9B9A97]">
+                  {FORMAT_LABELS[s.format.toLowerCase()] ?? s.format.toUpperCase()}
+                </span>
+                {s.our_score !== null && s.opponent_score !== null ? (
+                  <span className="text-xs font-medium text-[#9B9A97]">
+                    {s.our_score}–{s.opponent_score}
+                  </span>
+                ) : (
+                  <span />
+                )}
+                <span
+                  className={`inline-flex h-6 items-center rounded-full border px-2.5 text-[10px] font-bold ${
+                    s.is_win === true
+                      ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-400"
+                      : s.is_win === false
+                        ? "border-rose-500/20 bg-rose-500/10 text-rose-400"
+                        : "border-zinc-500/20 bg-zinc-500/10 text-zinc-400"
+                  }`}
+                >
+                  {s.is_win === true ? "W" : s.is_win === false ? "L" : "D"}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function StatCard({
+  label,
+  value,
+  sub,
+  valueClass = "text-[#E5E2E1]",
+}: {
+  label: string;
+  value: string;
+  sub: string;
+  valueClass?: string;
+}) {
+  return (
+    <div className="space-y-1 rounded-2xl border border-[#2D2D2D] bg-[#1C1C1C] p-4">
+      <p className="text-[10px] font-semibold uppercase tracking-wider text-[#9B9A97]">
+        {label}
+      </p>
+      <p className={`text-3xl font-bold tracking-tight ${valueClass}`}>{value}</p>
+      <p className="text-[11px] text-[#6B6A68]">{sub}</p>
+    </div>
+  );
+}
