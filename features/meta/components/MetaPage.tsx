@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { Plus, Pencil, X, Trash2, Shield, Star } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils/cn";
@@ -107,6 +108,7 @@ interface MetaPageProps {
 }
 
 export function MetaPage({ orgSlug, orgId, patches, initialPatch, canEdit }: MetaPageProps) {
+  const router = useRouter();
   const [activePatch, setActivePatch] = useState<PatchWithHeroes | null>(initialPatch);
   const [patchList, setPatchList] = useState<MetaPatch[]>(patches);
   const [activeTab, setActiveTab] = useState<"tier" | "ban" | "learn">("tier");
@@ -193,8 +195,7 @@ export function MetaPage({ orgSlug, orgId, patches, initialPatch, canEdit }: Met
 
   function handleModalClose() {
     setModalOpen(false);
-    // Reload to show server-revalidated data
-    window.location.reload();
+    router.refresh();
   }
 
   const banHeroes = heroes.filter((h) => h.is_ban_priority);
