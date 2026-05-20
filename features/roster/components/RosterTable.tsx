@@ -5,6 +5,7 @@ import { useState } from "react";
 
 import { AvailabilityBadge } from "@/features/roster/components/AvailabilityBadge";
 import { AvailabilitySelector } from "@/features/roster/components/AvailabilitySelector";
+import { MainRoleBadge, MainRoleSelector } from "@/features/roster/components/MainRoleSelector";
 import type { MemberRole } from "@/types/database";
 
 import type { RosterMember } from "../queries";
@@ -12,6 +13,7 @@ import { InviteForm } from "./InviteForm";
 import { KickMemberButton } from "./KickMemberButton";
 import { RoleBadge } from "./RoleBadge";
 import { RoleSelector } from "./RoleSelector";
+import type { MainRole } from "../actions/updateMainRole";
 
 interface RosterTableProps {
   members: RosterMember[];
@@ -35,6 +37,10 @@ export function RosterTable({
     currentUserRole === "owner" || currentUserRole === "captain";
   const isManagerOrAbove =
     currentUserRole === "owner" || currentUserRole === "manager";
+  const canAssignMainRole =
+    currentUserRole === "owner" ||
+    currentUserRole === "manager" ||
+    currentUserRole === "coach";
 
   return (
     <div className="space-y-4">
@@ -146,6 +152,24 @@ export function RosterTable({
                     <RoleBadge role={m.role} />
                   )}
                 </div>
+
+                {/* In-game role (only for captain/member) */}
+                {(m.role === "captain" || m.role === "member") && (
+                  <div className="flex shrink-0 items-center justify-start sm:w-28">
+                    {canAssignMainRole ? (
+                      <MainRoleSelector
+                        orgSlug={orgSlug}
+                        memberId={m.id}
+                        currentMainRole={m.main_role as MainRole}
+                      />
+                    ) : (
+                      <MainRoleBadge mainRole={m.main_role as MainRole} />
+                    )}
+                  </div>
+                )}
+                {m.role !== "captain" && m.role !== "member" && (
+                  <div className="shrink-0 sm:w-28" />
+                )}
 
                 {/* Availability */}
                 <div className="flex shrink-0 justify-start sm:w-36">

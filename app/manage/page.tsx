@@ -40,7 +40,7 @@ export default async function ManagePage() {
   const { data: members } = orgIds.length > 0
     ? await admin
         .from("team_members")
-        .select("id, user_id, organization_id, division_id, role, is_active, availability")
+        .select("id, user_id, organization_id, division_id, role, is_active, availability, main_role")
         .in("organization_id", orgIds)
         .eq("is_active", true)
         .order("role", { ascending: true })
@@ -161,7 +161,9 @@ export default async function ManagePage() {
                     role: m.role,
                     division: div?.name ?? null,
                     orgName: org.name,
+                    orgSlug: org.slug,
                     availability: m.availability ?? "active",
+                    mainRole: (m as { main_role?: string | null }).main_role ?? null,
                   };
                 })}
               />

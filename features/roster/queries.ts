@@ -10,6 +10,7 @@ export type RosterMember = {
   jersey_number: number | null;
   position: string | null;
   availability: MemberAvailability;
+  main_role: string | null;
   joined_at: string;
   division_id: string | null;
   division_name: string | null;
@@ -26,7 +27,7 @@ export async function getRosterMembers(orgId: string): Promise<RosterMember[]> {
   const { data: members, error } = await supabase
     .from("team_members")
     .select(
-      "id, user_id, role, jersey_number, position, availability, joined_at, division_id",
+      "id, user_id, role, jersey_number, position, availability, main_role, joined_at, division_id",
     )
     .eq("organization_id", orgId)
     .eq("is_active", true)
@@ -70,6 +71,7 @@ export async function getRosterMembers(orgId: string): Promise<RosterMember[]> {
       jersey_number: m.jersey_number,
       position: m.position,
       availability: m.availability,
+      main_role: m.main_role,
       joined_at: m.joined_at,
       division_id: m.division_id,
       division_name: division?.name ?? null,
