@@ -1316,6 +1316,126 @@ export type Database = {
         }
         Relationships: []
       }
+      sponsors: {
+        Row: {
+          id: string;
+          organization_id: string;
+          name: string;
+          logo_url: string | null;
+          status: "prospect" | "active" | "inactive" | "ended";
+          contact_name: string | null;
+          contact_email: string | null;
+          contact_phone: string | null;
+          deal_value: number | null;
+          currency: string;
+          start_date: string | null;
+          end_date: string | null;
+          notes: string | null;
+          created_by: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          name: string;
+          logo_url?: string | null;
+          status?: "prospect" | "active" | "inactive" | "ended";
+          contact_name?: string | null;
+          contact_email?: string | null;
+          contact_phone?: string | null;
+          deal_value?: number | null;
+          currency?: string;
+          start_date?: string | null;
+          end_date?: string | null;
+          notes?: string | null;
+          created_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          organization_id?: string;
+          name?: string;
+          logo_url?: string | null;
+          status?: "prospect" | "active" | "inactive" | "ended";
+          contact_name?: string | null;
+          contact_email?: string | null;
+          contact_phone?: string | null;
+          deal_value?: number | null;
+          currency?: string;
+          start_date?: string | null;
+          end_date?: string | null;
+          notes?: string | null;
+          created_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      sponsor_deliverables: {
+        Row: {
+          id: string;
+          sponsor_id: string;
+          title: string;
+          description: string | null;
+          category: "content" | "post" | "branding" | "event" | "other";
+          status: "pending" | "in_progress" | "done" | "cancelled";
+          due_date: string | null;
+          completed_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          sponsor_id: string;
+          title: string;
+          description?: string | null;
+          category?: "content" | "post" | "branding" | "event" | "other";
+          status?: "pending" | "in_progress" | "done" | "cancelled";
+          due_date?: string | null;
+          completed_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          sponsor_id?: string;
+          title?: string;
+          description?: string | null;
+          category?: "content" | "post" | "branding" | "event" | "other";
+          status?: "pending" | "in_progress" | "done" | "cancelled";
+          due_date?: string | null;
+          completed_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      sponsor_notes: {
+        Row: {
+          id: string;
+          sponsor_id: string;
+          content: string;
+          created_by: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          sponsor_id: string;
+          content: string;
+          created_by?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          sponsor_id?: string;
+          content?: string;
+          created_by?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       strategy_notes: {
         Row: {
           content: string
