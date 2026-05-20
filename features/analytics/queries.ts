@@ -44,6 +44,7 @@ export interface EnterprisePlayerStat {
   avatar_url: string | null;
   jersey_number: number | null;
   position: string | null;
+  main_role: string | null;
   attendanceRate: number;
   totalPresent: number;
   totalScrims: number;
@@ -306,6 +307,7 @@ export async function getEnterprisePlayerStats(orgId: string): Promise<Enterpris
     avatar_url: profileMap.get(m.user_id)?.avatar_url ?? null,
     jersey_number: m.jersey_number,
     position: m.position,
+    main_role: m.main_role,
   }));
 
   const attendances = (attendancesRes.data ?? []).map((a) => ({
@@ -314,6 +316,7 @@ export async function getEnterprisePlayerStats(orgId: string): Promise<Enterpris
     status: a.status as "confirmed" | "declined" | "tentative" | "pending",
   }));
 
+  const mainRoleMap = new Map(members.map((m) => [m.user_id, m.main_role ?? null]));
   const baseStats = computePlayerStats(players, attendances, results);
 
   return baseStats.map((base) => {
@@ -337,6 +340,6 @@ export async function getEnterprisePlayerStats(orgId: string): Promise<Enterpris
           .slice(0, 5)
       : [];
 
-    return { ...base, avgRating, heroPool };
+    return { ...base, main_role: mainRoleMap.get(base.user_id) ?? null, avgRating, heroPool };
   });
 }

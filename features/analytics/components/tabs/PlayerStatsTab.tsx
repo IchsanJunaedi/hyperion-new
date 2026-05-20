@@ -1,4 +1,4 @@
-import { Star, Users } from "lucide-react";
+import { Gamepad2, Star, Users } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { ROLE_LABELS } from "@/features/scrim/data/mlbb-heroes";
 import type { EnterprisePlayerStat, PlayerHeroStat } from "@/features/analytics/queries";
@@ -82,6 +82,12 @@ function PlayerCard({ player }: { player: EnterprisePlayerStat }) {
               .filter(Boolean)
               .join(" · ") || "—"}
           </p>
+          {player.main_role && (
+            <span className="mt-0.5 inline-flex items-center gap-1 rounded bg-[#252525] px-1.5 py-0.5 text-[10px] font-medium text-[#9B9A97]">
+              <Gamepad2 className="h-2.5 w-2.5" />
+              {ROLE_LABELS[player.main_role as keyof typeof ROLE_LABELS] ?? player.main_role}
+            </span>
+          )}
         </div>
         {/* Coach rating badge */}
         {player.avgRating !== null && (
