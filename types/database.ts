@@ -934,24 +934,30 @@ export type Database = {
       }
       scrim_attendances: {
         Row: {
+          coach_notes: string | null
           id: string
           note: string | null
+          rating: number | null
           scrim_id: string
           status: Database["public"]["Enums"]["attendance_status"]
           updated_at: string
           user_id: string
         }
         Insert: {
+          coach_notes?: string | null
           id?: string
           note?: string | null
+          rating?: number | null
           scrim_id: string
           status?: Database["public"]["Enums"]["attendance_status"]
           updated_at?: string
           user_id: string
         }
         Update: {
+          coach_notes?: string | null
           id?: string
           note?: string | null
+          rating?: number | null
           scrim_id?: string
           status?: Database["public"]["Enums"]["attendance_status"]
           updated_at?: string
@@ -1074,31 +1080,34 @@ export type Database = {
       }
       scrim_draft_picks: {
         Row: {
-          id: string
-          scrim_id: string
-          game_number: number
-          side: string
-          role: string
-          hero_name: string
           created_at: string
+          game_number: number
+          hero_name: string
+          id: string
+          player_id: string | null
+          role: string
+          scrim_id: string
+          side: string
         }
         Insert: {
-          id?: string
-          scrim_id: string
-          game_number: number
-          side: string
-          role: string
-          hero_name: string
           created_at?: string
+          game_number: number
+          hero_name: string
+          id?: string
+          player_id?: string | null
+          role: string
+          scrim_id: string
+          side: string
         }
         Update: {
-          id?: string
-          scrim_id?: string
-          game_number?: number
-          side?: string
-          role?: string
-          hero_name?: string
           created_at?: string
+          game_number?: number
+          hero_name?: string
+          id?: string
+          player_id?: string | null
+          role?: string
+          scrim_id?: string
+          side?: string
         }
         Relationships: [
           {
@@ -1303,6 +1312,7 @@ export type Database = {
           is_active: boolean
           jersey_number: number | null
           joined_at: string
+          main_role: string | null
           organization_id: string
           position: string | null
           role: Database["public"]["Enums"]["member_role"]
@@ -1315,6 +1325,7 @@ export type Database = {
           is_active?: boolean
           jersey_number?: number | null
           joined_at?: string
+          main_role?: string | null
           organization_id: string
           position?: string | null
           role?: Database["public"]["Enums"]["member_role"]
@@ -1327,6 +1338,7 @@ export type Database = {
           is_active?: boolean
           jersey_number?: number | null
           joined_at?: string
+          main_role?: string | null
           organization_id?: string
           position?: string | null
           role?: Database["public"]["Enums"]["member_role"]

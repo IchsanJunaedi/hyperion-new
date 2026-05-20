@@ -10,7 +10,7 @@ import type {
   OverviewStats,
   FormatStat,
   RecentScrim,
-  PlayerStat,
+  EnterprisePlayerStat,
   DraftAnalyticsData,
 } from "@/features/analytics/queries";
 
@@ -27,7 +27,7 @@ interface AnalyticsDashboardProps {
   overviewStats: OverviewStats;
   formatBreakdown: FormatStat[];
   recentScrims: RecentScrim[];
-  playerStats: PlayerStat[];
+  playerStats: EnterprisePlayerStat[];
   draftData: DraftAnalyticsData;
 }
 

@@ -5,7 +5,7 @@ import { AnalyticsDashboard } from "@/features/analytics/components/AnalyticsDas
 import {
   getOverviewStats,
   getRecentScrims,
-  getPlayerStats,
+  getEnterprisePlayerStats,
   getDraftAnalytics,
 } from "@/features/analytics/queries";
 import { getOrgBySlug } from "@/features/teams/queries";
@@ -25,7 +25,7 @@ export default async function AnalyticsPage({ params }: AnalyticsPageProps) {
     await Promise.all([
       getOverviewStats(organization.id),
       getRecentScrims(organization.id),
-      getPlayerStats(organization.id),
+      getEnterprisePlayerStats(organization.id),
       getDraftAnalytics(organization.id),
     ]);
 

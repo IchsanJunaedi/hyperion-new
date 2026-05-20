@@ -192,6 +192,8 @@ export async function getScrimDetail(
         user_id: m.user_id,
         status: "pending" as const,
         note: null,
+        rating: null,
+        coach_notes: null,
         updated_at: scrim.created_at,
       } satisfies ScrimAttendance);
     return {
