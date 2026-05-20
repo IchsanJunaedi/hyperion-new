@@ -104,6 +104,90 @@ export async function getRecentScrims(orgId: string): Promise<RecentScrim[]> {
   });
 }
 
+export interface HeroStat {
+  hero_name: string;
+  picks: number;
+  wins: number;
+  winRate: number;
+}
+
+export interface DraftAnalyticsData {
+  byRole: Record<string, HeroStat[]>;
+  topOverall: HeroStat[];
+}
+
+export async function getDraftAnalytics(orgId: string): Promise<DraftAnalyticsData> {
+  const supabase = await createClient();
+
+  // Get completed scrims for this org
+  const { data: scrims } = await supabase
+    .from("scrims")
+    .select("id, scrim_results(is_win)")
+    .eq("organization_id", orgId)
+    .eq("status", "completed");
+
+  if (!scrims || scrims.length === 0) {
+    return { byRole: {}, topOverall: [] };
+  }
+
+  const scrimIds = scrims.map((s) => s.id);
+  const winMap = new Map<string, boolean | null>(
+    scrims.map((s) => {
+      const arr = Array.isArray(s.scrim_results) ? s.scrim_results : [s.scrim_results];
+      const first = arr[0] as { is_win?: boolean | null } | undefined;
+      return [s.id, first?.is_win ?? null];
+    }),
+  );
+
+  // Only our side picks
+  const { data: picks } = await supabase
+    .from("scrim_draft_picks")
+    .select("scrim_id, role, hero_name")
+    .in("scrim_id", scrimIds)
+    .eq("side", "our");
+
+  if (!picks || picks.length === 0) return { byRole: {}, topOverall: [] };
+
+  // Aggregate per role
+  const roleMap = new Map<string, Map<string, { picks: number; wins: number }>>();
+  for (const pick of picks) {
+    if (!roleMap.has(pick.role)) roleMap.set(pick.role, new Map());
+    const heroMap = roleMap.get(pick.role)!;
+    const entry = heroMap.get(pick.hero_name) ?? { picks: 0, wins: 0 };
+    entry.picks++;
+    if (winMap.get(pick.scrim_id) === true) entry.wins++;
+    heroMap.set(pick.hero_name, entry);
+  }
+
+  const toStats = (map: Map<string, { picks: number; wins: number }>): HeroStat[] =>
+    Array.from(map.entries())
+      .map(([hero_name, { picks, wins }]) => ({
+        hero_name,
+        picks,
+        wins,
+        winRate: picks === 0 ? 0 : Math.round((wins / picks) * 100),
+      }))
+      .sort((a, b) => b.picks - a.picks || b.winRate - a.winRate)
+      .slice(0, 8);
+
+  const byRole: Record<string, HeroStat[]> = {};
+  for (const [role, map] of roleMap.entries()) {
+    byRole[role] = toStats(map);
+  }
+
+  // Top overall (deduplicate across roles)
+  const overallMap = new Map<string, { picks: number; wins: number }>();
+  for (const pick of picks) {
+    const entry = overallMap.get(pick.hero_name) ?? { picks: 0, wins: 0 };
+    entry.picks++;
+    if (winMap.get(pick.scrim_id) === true) entry.wins++;
+    overallMap.set(pick.hero_name, entry);
+  }
+  const topOverall = toStats(overallMap);
+
+  return { byRole, topOverall };
+}
+
 export async function getPlayerStats(
   orgId: string,
 ): Promise<ReturnType<typeof computePlayerStats>> {

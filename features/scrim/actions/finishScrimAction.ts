@@ -5,11 +5,18 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
+interface DraftPickInput {
+  side: "our" | "enemy";
+  role: string;
+  hero_name: string;
+}
+
 interface GameInput {
   gameNumber: number;
   isWin: boolean;
   notes: string | null;
   imageUrl: string | null;
+  draftPicks?: DraftPickInput[];
 }
 
 interface FinishScrimInput {
@@ -86,6 +93,22 @@ export async function finishScrimAction(
     .neq("status", "cancelled");
 
   if (statusErr) return { ok: false, message: statusErr.message };
+
+  // Save draft picks (optional — skip silently if none)
+  const draftRows = input.games.flatMap((g) =>
+    (g.draftPicks ?? []).map((p) => ({
+      scrim_id: input.scrimId,
+      game_number: g.gameNumber,
+      side: p.side,
+      role: p.role,
+      hero_name: p.hero_name,
+    })),
+  );
+  if (draftRows.length > 0) {
+    await admin
+      .from("scrim_draft_picks")
+      .upsert(draftRows, { onConflict: "scrim_id,game_number,side,role" });
+  }
 
   revalidatePath(`/${input.orgSlug}/scrim/${input.scrimId}`);
   revalidatePath(`/${input.orgSlug}/scrim`);

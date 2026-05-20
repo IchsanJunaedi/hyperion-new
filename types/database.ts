@@ -1072,6 +1072,44 @@ export type Database = {
           },
         ]
       }
+      scrim_draft_picks: {
+        Row: {
+          id: string
+          scrim_id: string
+          game_number: number
+          side: string
+          role: string
+          hero_name: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          scrim_id: string
+          game_number: number
+          side: string
+          role: string
+          hero_name: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          scrim_id?: string
+          game_number?: number
+          side?: string
+          role?: string
+          hero_name?: string
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scrim_draft_picks_scrim_id_fkey"
+            columns: ["scrim_id"]
+            isOneToOne: false
+            referencedRelation: "scrims"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       scrim_results: {
         Row: {
           coach_notes: string | null

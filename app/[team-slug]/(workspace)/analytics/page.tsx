@@ -6,6 +6,7 @@ import {
   getOverviewStats,
   getRecentScrims,
   getPlayerStats,
+  getDraftAnalytics,
 } from "@/features/analytics/queries";
 import { getOrgBySlug } from "@/features/teams/queries";
 
@@ -20,11 +21,12 @@ export default async function AnalyticsPage({ params }: AnalyticsPageProps) {
   const organization = await getOrgBySlug(slug);
   if (!organization) notFound();
 
-  const [{ stats, formatBreakdown }, recentScrims, playerStats] =
+  const [{ stats, formatBreakdown }, recentScrims, playerStats, draftData] =
     await Promise.all([
       getOverviewStats(organization.id),
       getRecentScrims(organization.id),
       getPlayerStats(organization.id),
+      getDraftAnalytics(organization.id),
     ]);
 
   return (
@@ -44,6 +46,7 @@ export default async function AnalyticsPage({ params }: AnalyticsPageProps) {
         formatBreakdown={formatBreakdown}
         recentScrims={recentScrims}
         playerStats={playerStats}
+        draftData={draftData}
       />
     </div>
   );

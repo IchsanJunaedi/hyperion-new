@@ -11,6 +11,7 @@ import type {
   FormatStat,
   RecentScrim,
   PlayerStat,
+  DraftAnalyticsData,
 } from "@/features/analytics/queries";
 
 type TabKey = "overview" | "draft" | "players" | "ai";
@@ -27,6 +28,7 @@ interface AnalyticsDashboardProps {
   formatBreakdown: FormatStat[];
   recentScrims: RecentScrim[];
   playerStats: PlayerStat[];
+  draftData: DraftAnalyticsData;
 }
 
 export function AnalyticsDashboard({
@@ -34,6 +36,7 @@ export function AnalyticsDashboard({
   formatBreakdown,
   recentScrims,
   playerStats,
+  draftData,
 }: AnalyticsDashboardProps) {
   const [activeTab, setActiveTab] = useState<TabKey>("overview");
 
@@ -66,7 +69,7 @@ export function AnalyticsDashboard({
           recentScrims={recentScrims}
         />
       )}
-      {activeTab === "draft" && <DraftAnalyticsTab />}
+      {activeTab === "draft" && <DraftAnalyticsTab data={draftData} />}
       {activeTab === "players" && <PlayerStatsTab playerStats={playerStats} />}
       {activeTab === "ai" && <AIInsightsTab />}
     </div>

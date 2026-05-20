@@ -7,6 +7,8 @@ import { useState, useTransition, useEffect } from "react";
 
 import { finishScrimAction } from "../actions/finishScrimAction";
 import { createClient } from "@/lib/supabase/client";
+import { DraftSection, makeBlankDraft, type DraftPicks } from "./DraftSection";
+import type { RoleName } from "@/features/scrim/data/mlbb-heroes";
 
 interface FinishScrimFormProps {
   scrimId: string;
@@ -21,6 +23,7 @@ interface GameResult {
   notes: string;
   imageUrl: string | null;
   uploading: boolean;
+  draft: DraftPicks;
 }
 
 // ============================================================================
@@ -72,7 +75,7 @@ function isSeriesOver(games: GameResult[], config: ReturnType<typeof getConfig>)
 }
 
 function makeBlankGame(): GameResult {
-  return { isWin: null, notes: "", imageUrl: null, uploading: false };
+  return { isWin: null, notes: "", imageUrl: null, uploading: false, draft: makeBlankDraft() };
 }
 
 export function FinishScrimForm({
@@ -99,6 +102,16 @@ export function FinishScrimForm({
 
   function updateGame(index: number, update: Partial<GameResult>) {
     setGames((prev) => prev.map((g, i) => (i === index ? { ...g, ...update } : g)));
+  }
+
+  function updateDraft(index: number, side: "our" | "enemy", role: RoleName, hero: string) {
+    setGames((prev) =>
+      prev.map((g, i) =>
+        i === index
+          ? { ...g, draft: { ...g.draft, [side]: { ...g.draft[side], [role]: hero } } }
+          : g,
+      ),
+    );
   }
 
   function addGame() {
@@ -152,6 +165,14 @@ export function FinishScrimForm({
           isWin: g.isWin!,
           notes: g.notes || null,
           imageUrl: g.imageUrl,
+          draftPicks: [
+            ...Object.entries(g.draft.our)
+              .filter(([, hero]) => hero)
+              .map(([role, hero]) => ({ side: "our" as const, role, hero_name: hero })),
+            ...Object.entries(g.draft.enemy)
+              .filter(([, hero]) => hero)
+              .map(([role, hero]) => ({ side: "enemy" as const, role, hero_name: hero })),
+          ],
         })),
         coachNotes: coachNotes || null,
       });
@@ -235,6 +256,12 @@ export function FinishScrimForm({
               Kalah
             </button>
           </div>
+
+          {/* Draft */}
+          <DraftSection
+            draft={game.draft}
+            onChange={(side, role, hero) => updateDraft(i, side, role, hero)}
+          />
 
           {/* Notes */}
           <textarea
