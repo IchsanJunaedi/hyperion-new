@@ -270,7 +270,7 @@ export function FinishScrimForm({
     <div className="mx-auto w-full max-w-2xl space-y-5">
       {/* ── Header greeting ─────────────────────────────────────────────── */}
       <div className="rounded-2xl border border-white/10 bg-zinc-900/40 px-5 py-4 shadow-xl shadow-black/20">
-        <p className="text-xs font-medium text-yellow-400/80">Assalamu'alaikum, Coach</p>
+        <p className="text-xs font-medium text-yellow-400/80">Assalamu&apos;alaikum, Coach</p>
         <div className="mt-2 flex items-center gap-3">
           <Trophy className="h-5 w-5 shrink-0 text-yellow-400" />
           <div className="flex items-center gap-2 text-sm">
