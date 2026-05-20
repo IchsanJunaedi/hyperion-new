@@ -21,6 +21,16 @@ interface DraftSectionProps {
 }
 
 export function DraftSection({ draft, onChange }: DraftSectionProps) {
+  const allPicked = new Set<string>();
+  for (const hero of Object.values(draft.our)) if (hero) allPicked.add(hero);
+  for (const hero of Object.values(draft.enemy)) if (hero) allPicked.add(hero);
+
+  function getExcluded(currentValue: string): Set<string> {
+    const excluded = new Set(allPicked);
+    if (currentValue) excluded.delete(currentValue);
+    return excluded;
+  }
+
   return (
     <div className="space-y-2">
       <p className="text-[10px] font-semibold uppercase tracking-wider text-[#6B6A68]">
@@ -36,6 +46,7 @@ export function DraftSection({ draft, onChange }: DraftSectionProps) {
               <HeroPicker
                 value={draft.our[role]}
                 onChange={(hero) => onChange("our", role, hero)}
+                excludedHeroes={getExcluded(draft.our[role])}
               />
             </div>
           ))}
@@ -50,6 +61,7 @@ export function DraftSection({ draft, onChange }: DraftSectionProps) {
               <HeroPicker
                 value={draft.enemy[role]}
                 onChange={(hero) => onChange("enemy", role, hero)}
+                excludedHeroes={getExcluded(draft.enemy[role])}
               />
             </div>
           ))}

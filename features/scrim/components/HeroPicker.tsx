@@ -41,17 +41,28 @@ interface HeroPickerProps {
   value: string;
   onChange: (hero: string) => void;
   placeholder?: string;
+  /** Heroes already picked elsewhere in this game — hidden from dropdown */
+  excludedHeroes?: Set<string>;
 }
 
-export function HeroPicker({ value, onChange, placeholder = "Pilih hero…" }: HeroPickerProps) {
+export function HeroPicker({
+  value,
+  onChange,
+  placeholder = "Pilih hero…",
+  excludedHeroes,
+}: HeroPickerProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const filtered = query.trim()
-    ? MLBB_HEROES.filter((h) => h.toLowerCase().includes(query.toLowerCase()))
+  const available = excludedHeroes
+    ? MLBB_HEROES.filter((h) => !excludedHeroes.has(h))
     : MLBB_HEROES;
+
+  const filtered = query.trim()
+    ? available.filter((h) => h.toLowerCase().includes(query.toLowerCase()))
+    : available;
 
   useEffect(() => {
     if (open) {
@@ -129,7 +140,7 @@ export function HeroPicker({ value, onChange, placeholder = "Pilih hero…" }: H
           </div>
 
           {/* Hero list */}
-          <ul className="max-h-48 overflow-y-auto">
+          <ul className="max-h-48 overflow-y-auto sidebar-scroll">
             {filtered.length === 0 ? (
               <li className="px-3 py-4 text-center text-xs text-[#6B6A68]">
                 Hero tidak ditemukan
