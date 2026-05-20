@@ -1247,6 +1247,75 @@ export type Database = {
           },
         ]
       }
+      meta_patches: {
+        Row: {
+          id: string
+          organization_id: string
+          patch_version: string
+          notes: string | null
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          organization_id: string
+          patch_version: string
+          notes?: string | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          organization_id?: string
+          patch_version?: string
+          notes?: string | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      meta_hero_ratings: {
+        Row: {
+          id: string
+          patch_id: string
+          hero_name: string
+          tier: "S" | "A" | "B" | "C" | "D"
+          role_tag: "exp_lane" | "jungler" | "mid_lane" | "gold_lane" | "roamer" | null
+          is_ban_priority: boolean
+          priority_to_learn: boolean
+          notes: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          patch_id: string
+          hero_name: string
+          tier: "S" | "A" | "B" | "C" | "D"
+          role_tag?: "exp_lane" | "jungler" | "mid_lane" | "gold_lane" | "roamer" | null
+          is_ban_priority?: boolean
+          priority_to_learn?: boolean
+          notes?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          patch_id?: string
+          hero_name?: string
+          tier?: "S" | "A" | "B" | "C" | "D"
+          role_tag?: "exp_lane" | "jungler" | "mid_lane" | "gold_lane" | "roamer" | null
+          is_ban_priority?: boolean
+          priority_to_learn?: boolean
+          notes?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       strategy_notes: {
         Row: {
           content: string
