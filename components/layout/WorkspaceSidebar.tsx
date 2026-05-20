@@ -21,6 +21,7 @@ import {
   Trophy,
   UserPlus,
   Users,
+  Zap,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -156,6 +157,7 @@ const WORKSPACE_NAV_GROUPS: NavGroup[] = [
         label: "Analytics",
         Icon: Activity,
       },
+      { key: "meta", href: "/meta", label: "Meta", Icon: Zap },
     ],
   },
   {
