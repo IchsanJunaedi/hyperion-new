@@ -18,7 +18,8 @@ export async function listFinances(
 ): Promise<FinanceRow[]> {
   const admin = createAdminClient();
   const start = `${year}-${String(month).padStart(2, "0")}-01`;
-  const end = new Date(year, month, 0).toISOString().slice(0, 10);
+  const lastDay = new Date(year, month, 0).getDate();
+  const end = `${year}-${String(month).padStart(2, "0")}-${String(lastDay).padStart(2, "0")}`;
 
   const { data } = await admin
     .from("finances")
