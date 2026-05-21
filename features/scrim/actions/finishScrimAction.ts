@@ -120,7 +120,7 @@ export async function finishScrimAction(
     (e) => e.rating !== null || e.coachNotes,
   );
   if (evals.length > 0) {
-    await admin
+    const { error: evalErr } = await admin
       .from("scrim_attendances")
       .upsert(
         evals.map((e) => ({
@@ -131,6 +131,7 @@ export async function finishScrimAction(
         })),
         { onConflict: "scrim_id,user_id", ignoreDuplicates: false },
       );
+    if (evalErr) return { ok: false, message: evalErr.message };
   }
 
   revalidatePath(`/${input.orgSlug}/scrim/${input.scrimId}`);

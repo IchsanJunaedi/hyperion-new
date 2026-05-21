@@ -18,6 +18,9 @@ async function verifyManagerOrOwner(orgId: string) {
   } = await supabase.auth.getUser();
   if (!user) return null;
 
+  const ownerEmail = process.env.OWNER_EMAIL;
+  if (ownerEmail && user.email === ownerEmail) return user;
+
   const admin = createAdminClient();
   const { data: membership } = await admin
     .from("team_members")

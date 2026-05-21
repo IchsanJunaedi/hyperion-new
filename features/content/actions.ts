@@ -27,17 +27,22 @@ export async function createContentAction(
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { ok: false, message: "Anda harus login." };
 
-  const admin = createAdminClient();
-  const { data: membership } = await admin
-    .from("team_members")
-    .select("role")
-    .eq("organization_id", orgId)
-    .eq("user_id", user.id)
-    .eq("is_active", true)
-    .in("role", ["manager", "owner"])
-    .maybeSingle();
+  const ownerEmail = process.env.OWNER_EMAIL;
+  const isOwnerByEmail = ownerEmail && user.email === ownerEmail;
 
-  if (!membership) return { ok: false, message: "Hanya manager/owner yang bisa membuat konten." };
+  const admin = createAdminClient();
+  if (!isOwnerByEmail) {
+    const { data: membership } = await admin
+      .from("team_members")
+      .select("role")
+      .eq("organization_id", orgId)
+      .eq("user_id", user.id)
+      .eq("is_active", true)
+      .in("role", ["manager", "owner"])
+      .maybeSingle();
+
+    if (!membership) return { ok: false, message: "Hanya manager/owner yang bisa membuat konten." };
+  }
 
   const { error } = await admin.from("content_calendar").insert({
     organization_id: orgId,
