@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Plus, Pencil, X, Trash2, Shield, Star } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils/cn";
+import { getHeroImageUrl } from "@/features/scrim/data/mlbb-heroes";
 import { AddHeroModal } from "./AddHeroModal";
 import { deleteHeroRatingAction, createMetaPatchAction, deleteMetaPatchAction } from "../actions";
 import type { MetaHeroRating, MetaPatch, PatchWithHeroes } from "../queries";
@@ -58,43 +59,74 @@ function HeroChip({
 }) {
   const style = TIER_STYLES[hero.tier];
   return (
-    <div
-      className={cn(
-        "group relative inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs transition",
-        style.bg,
-        style.border,
-      )}
-    >
+    <div className="group relative h-12 w-12 shrink-0 transition select-none">
+      {/* Circle Hero Portrait */}
+      <div
+        className={cn(
+          "h-full w-full overflow-hidden rounded-full border-2 transition group-hover:scale-105 group-hover:border-white/40",
+          style.border,
+        )}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={getHeroImageUrl(hero.hero_name)}
+          alt={hero.hero_name}
+          className="h-full w-full object-cover"
+        />
+      </div>
+
+      {/* Flag Indicator Badges */}
       {hero.is_ban_priority && (
-        <Shield className="h-3 w-3 shrink-0 text-red-400" />
+        <div className="absolute -left-1 -top-1 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-red-500 text-white shadow-md">
+          <Shield className="h-2.5 w-2.5" />
+        </div>
       )}
       {hero.priority_to_learn && (
-        <Star className="h-3 w-3 shrink-0 text-yellow-400" />
+        <div className="absolute -right-1 -top-1 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-yellow-500 text-black shadow-md">
+          <Star className="h-2.5 w-2.5 fill-black" />
+        </div>
       )}
-      <span className="font-medium text-white/90">{hero.hero_name}</span>
+
+      {/* Role tag pill */}
       {hero.role_tag && (
-        <span className={cn("font-mono text-[10px]", ROLE_COLORS[hero.role_tag])}>
+        <span
+          className={cn(
+            "absolute -bottom-1 left-1/2 -translate-x-1/2 rounded bg-black/80 px-1 py-0.5 text-[8px] font-bold border border-white/5 whitespace-nowrap shadow-sm",
+            ROLE_COLORS[hero.role_tag]
+          )}
+        >
           {ROLE_LABELS[hero.role_tag]}
         </span>
       )}
+
+      {/* Edit mode hover overlay */}
       {editMode && (
-        <div className="absolute -right-1 -top-1 hidden gap-0.5 group-hover:flex">
+        <div className="absolute inset-0 flex items-center justify-center gap-1 rounded-full bg-black/75 opacity-0 group-hover:opacity-100 transition z-10">
           <button
             type="button"
             onClick={() => onEdit(hero)}
-            className="grid h-4 w-4 cursor-pointer place-items-center rounded-full bg-[#2D2D2D] text-white/60 hover:text-white"
+            className="flex h-5 w-5 cursor-pointer items-center justify-center rounded-full bg-white/20 text-white hover:bg-white/40"
           >
             <Pencil className="h-2.5 w-2.5" />
           </button>
           <button
             type="button"
             onClick={() => onDelete(hero.id, hero.hero_name)}
-            className="grid h-4 w-4 cursor-pointer place-items-center rounded-full bg-red-500/20 text-red-400 hover:bg-red-500/40"
+            className="flex h-5 w-5 cursor-pointer items-center justify-center rounded-full bg-red-500/30 text-red-400 hover:bg-red-500/50"
           >
             <X className="h-2.5 w-2.5" />
           </button>
         </div>
       )}
+
+      {/* Tooltip */}
+      <div className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-2 -translate-x-1/2 rounded bg-black/95 px-2 py-1 text-[10px] font-medium text-white opacity-0 transition group-hover:opacity-100 whitespace-nowrap border border-white/10 shadow-lg">
+        <span className="font-bold">{hero.hero_name}</span>
+        {hero.role_tag && (
+          <span className="ml-1 text-white/50">({ROLE_DISPLAY[hero.role_tag]})</span>
+        )}
+        {hero.notes && <span className="block text-[9px] text-white/40 mt-0.5 italic">{hero.notes}</span>}
+      </div>
     </div>
   );
 }
@@ -413,22 +445,41 @@ export function MetaPage({ orgSlug, orgId, patches, initialPatch, canEdit }: Met
                   {canEdit && " Tandai hero di Tier List dengan flag Ban Priority."}
                 </p>
               ) : (
-                <div className="flex flex-wrap gap-2">
-                  {banHeroes.map((h) => (
-                    <div
-                      key={h.id}
-                      className="inline-flex items-center gap-2 rounded-lg border border-red-500/20 bg-red-500/5 px-3 py-2"
-                    >
-                      <Shield className="h-3.5 w-3.5 text-red-400" />
-                      <span className="text-sm font-medium text-white/90">{h.hero_name}</span>
-                      <span className={cn("rounded px-1.5 py-0.5 text-[10px] font-bold", TIER_STYLES[h.tier].badge)}>
-                        {h.tier}
-                      </span>
-                      {h.notes && (
-                        <span className="max-w-[200px] truncate text-xs text-white/40">{h.notes}</span>
-                      )}
-                    </div>
-                  ))}
+                <div className="flex flex-wrap gap-3">
+                  {banHeroes.map((h) => {
+                    const style = TIER_STYLES[h.tier];
+                    return (
+                      <div
+                        key={h.id}
+                        className="group relative h-12 w-12 shrink-0 transition select-none"
+                      >
+                        <div className={cn("h-full w-full overflow-hidden rounded-full border-2", style.border)}>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={getHeroImageUrl(h.hero_name)}
+                            alt={h.hero_name}
+                            className="h-full w-full object-cover"
+                          />
+                        </div>
+                        <div className="absolute -left-1 -top-1 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-red-500 text-white shadow-md">
+                          <Shield className="h-2.5 w-2.5" />
+                        </div>
+                        <div
+                          className={cn(
+                            "absolute -bottom-1 -right-1 flex h-4.5 w-4.5 items-center justify-center rounded-full text-[9px] font-black shadow-md border border-white/10",
+                            style.badge
+                          )}
+                        >
+                          {h.tier}
+                        </div>
+                        {/* Tooltip */}
+                        <div className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-2 -translate-x-1/2 rounded bg-black/95 px-2 py-1 text-[10px] font-medium text-white opacity-0 transition group-hover:opacity-100 whitespace-nowrap border border-white/10 shadow-lg">
+                          <span className="font-bold">{h.hero_name}</span>
+                          {h.notes && <span className="block text-[9px] text-white/40 mt-0.5 italic">{h.notes}</span>}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -450,19 +501,41 @@ export function MetaPage({ orgSlug, orgId, patches, initialPatch, canEdit }: Met
                   return (
                     <div key={role} className="space-y-2">
                       <p className={cn("text-xs font-semibold uppercase tracking-wide", color)}>{label}</p>
-                      <div className="flex flex-wrap gap-2">
-                        {roleHeroes.map((h) => (
-                          <div
-                            key={h.id}
-                            className="inline-flex items-center gap-2 rounded-lg border border-yellow-500/20 bg-yellow-500/5 px-3 py-2"
-                          >
-                            <Star className="h-3.5 w-3.5 text-yellow-400" />
-                            <span className="text-sm font-medium text-white/90">{h.hero_name}</span>
-                            <span className={cn("rounded px-1.5 py-0.5 text-[10px] font-bold", TIER_STYLES[h.tier].badge)}>
-                              {h.tier}
-                            </span>
-                          </div>
-                        ))}
+                      <div className="flex flex-wrap gap-3">
+                        {roleHeroes.map((h) => {
+                          const style = TIER_STYLES[h.tier];
+                          return (
+                            <div
+                              key={h.id}
+                              className="group relative h-12 w-12 shrink-0 transition select-none"
+                            >
+                              <div className={cn("h-full w-full overflow-hidden rounded-full border-2", style.border)}>
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
+                                  src={getHeroImageUrl(h.hero_name)}
+                                  alt={h.hero_name}
+                                  className="h-full w-full object-cover"
+                                />
+                              </div>
+                              <div className="absolute -left-1 -top-1 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-yellow-500 text-black shadow-md">
+                                <Star className="h-2.5 w-2.5 fill-black" />
+                              </div>
+                              <div
+                                className={cn(
+                                  "absolute -bottom-1 -right-1 flex h-4.5 w-4.5 items-center justify-center rounded-full text-[9px] font-black shadow-md border border-white/10",
+                                  style.badge
+                                )}
+                              >
+                                {h.tier}
+                              </div>
+                              {/* Tooltip */}
+                              <div className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-2 -translate-x-1/2 rounded bg-black/95 px-2 py-1 text-[10px] font-medium text-white opacity-0 transition group-hover:opacity-100 whitespace-nowrap border border-white/10 shadow-lg">
+                                <span className="font-bold">{h.hero_name}</span>
+                                {h.notes && <span className="block text-[9px] text-white/40 mt-0.5 italic">{h.notes}</span>}
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
                   );
