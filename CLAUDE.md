@@ -230,12 +230,13 @@ Applied in Zod schema (`lib/validations/calendar.ts`) via `.refine()` on both cr
 Valid formats: `"bo1" | "bo2" | "bo3" | "bo5" | "bo7" | "4match"`.
 `"scrimmage"` is **NOT** a valid format — removed from `ScrimForm.tsx` and `ScrimEditForm.tsx`.
 
-## Current State (as of 2026-05-17)
-- Owner dashboard: fully functional with Notion-style UI
-- Manager panel: functional with assign, divisions, captains, invite system
-- Workspace: scrim CRUD, roster, calendar (v2 with visibility permissions + date validation), announcements, strategy, files, polls
-- Calendar: unified view (manual events + tournaments), QuickAddEventModal with premium switch toggle, date range validation (starts_at ≤ ends_at)
-- Auth: register, login, Google OAuth, role-based redirect
-- Features: finances, content calendar, invite system, tournaments, matchmaking, player development, scouting, notifications (bell + WA delivery), audit logging
-- Infrastructure: custom domain support, audit logging, calendar permission system (visibility: all/management/coach_up/private)
-- UI: Notion dark theme, custom switch toggles, consistent dropdown labels, responsive datetime grids
+## Current State
+See **`progress.md`** in the project root for the full, up-to-date feature inventory, new DB tables, technical gotchas, dead features, and what's not yet done.
+
+**Always read `progress.md` at the start of a new session before making any changes.**
+
+Quick summary (as of 2026-05-21):
+- All workspace routes functional: scrim, calendar (RSVP), tournaments (match tracking), announcements (read receipts), strategy (comments), polls, analytics (PDF export), roster, files, development (member self-view)
+- 5 new tables applied: calendar_event_rsvps, strategy_comments, announcement_reads, tournament_matches, scrim_review_requests
+- `npx supabase gen types` is broken — edit `types/database.ts` manually for new tables
+- Dead features (do not revive): scouting, AI insights, matchmaking, reports (not public)
