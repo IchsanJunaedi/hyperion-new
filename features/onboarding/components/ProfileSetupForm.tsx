@@ -174,7 +174,6 @@ export function ProfileSetupForm({ lockedValues, defaultValues }: ProfileSetupFo
             required
             defaultValue={defaultValues.username}
             maxLength={24}
-            placeholder="huruf kecil, angka, underscore (3-24 karakter)"
             className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm focus:border-primary focus:outline-none"
           />
         </Field>
