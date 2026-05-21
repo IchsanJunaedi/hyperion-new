@@ -1,20 +1,6 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
-import {
-  BarChart3,
-  Building2,
-  Calendar,
-  DollarSign,
-  Download,
-  FileText,
-  Handshake,
-  Home,
-  ListChecks,
-  LogOut,
-  Trophy,
-  Users,
-  Shield,
-  FolderOpen,
-} from "lucide-react";
+import { LogOut } from "lucide-react";
 
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -23,56 +9,9 @@ import { NotifyProvider } from "@/features/dashboard/components/NotifyModal";
 import { DashboardSettingsButton } from "@/components/layout/DashboardSettingsButton";
 import { NotificationBell } from "@/features/notifications/components/NotificationBell";
 import { NotificationRealtimeProvider } from "@/features/notifications/components/NotificationRealtimeProvider";
-import { DashboardNavLink } from "@/components/layout/DashboardNavLink";
+import { DashboardSidebarNav } from "@/components/layout/DashboardSidebarNav";
 
 export const dynamic = "force-dynamic";
-
-interface NavItemProps {
-  href: string;
-  Icon: React.ComponentType<{ className?: string }>;
-  label: string;
-}
-
-interface NavGroup {
-  label: string;
-  items: NavItemProps[];
-}
-
-const NAV_GROUPS: NavGroup[] = [
-  {
-    label: "OVERVIEW",
-    items: [
-      { href: "/dashboard", Icon: Home, label: "Home" },
-      { href: "/dashboard/calendar", Icon: Calendar, label: "Calendar" },
-      { href: "/dashboard/tournaments", Icon: Trophy, label: "Turnamen" },
-    ],
-  },
-  {
-    label: "MANAJEMEN",
-    items: [
-      { href: "/dashboard/managers", Icon: Shield, label: "Manager \u2014 Tim & Divisi" },
-      { href: "/dashboard/users", Icon: Users, label: "User Active" },
-      { href: "/dashboard/teams", Icon: Building2, label: "Tim" },
-      { href: "/dashboard/files", Icon: FolderOpen, label: "File Tim" },
-      { href: "/dashboard/finances", Icon: DollarSign, label: "Kas Tim" },
-      { href: "/dashboard/sponsors", Icon: Handshake, label: "Sponsor" },
-    ],
-  },
-  {
-    label: "KONTEN & LAPORAN",
-    items: [
-      { href: "/dashboard/content", Icon: FileText, label: "Konten" },
-      { href: "/dashboard/reports", Icon: BarChart3, label: "Laporan" },
-    ],
-  },
-  {
-    label: "ADMIN",
-    items: [
-      { href: "/dashboard/audit", Icon: ListChecks, label: "Audit Log" },
-      { href: "/dashboard/export", Icon: Download, label: "Export Data" },
-    ],
-  },
-];
 
 export default async function DashboardLayout({
   children,
@@ -128,40 +67,47 @@ export default async function DashboardLayout({
         <aside className="w-[280px] h-screen fixed left-0 top-0 bg-[#202020] flex flex-col border-r border-[#2D2D2D] text-sm">
           {/* Org header */}
           <div className="flex h-12 shrink-0 items-center border-b border-[#2D2D2D]">
-            <div className="flex h-full min-w-0 flex-1 items-center gap-3 px-4">
-              {orgLogoUrl ? (
-                <img src={orgLogoUrl} alt="Logo" className="h-5 w-5 rounded object-cover" />
-              ) : (
-                <div className="grid h-5 w-5 place-items-center rounded bg-[#353434] text-xs font-semibold text-[#E5E2E1]">
-                  {orgName.slice(0, 1).toUpperCase()}
-                </div>
-              )}
-              <p className="min-w-0 flex-1 truncate text-sm font-medium text-[#D4D4D4]">
-                {orgName}
-              </p>
-              <span className="shrink-0 text-[10px] font-bold uppercase tracking-widest text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.5)]">
-                owner
-              </span>
-            </div>
+            {orgSlug ? (
+              <Link
+                href={`/${orgSlug}`}
+                className="flex h-full min-w-0 flex-1 items-center gap-3 px-4 transition hover:bg-[#2C2C2C]"
+                title="Buka Workspace"
+              >
+                {orgLogoUrl ? (
+                  <img src={orgLogoUrl} alt="Logo" className="h-5 w-5 rounded object-cover" />
+                ) : (
+                  <div className="grid h-5 w-5 place-items-center rounded bg-[#353434] text-xs font-semibold text-[#E5E2E1]">
+                    {orgName.slice(0, 1).toUpperCase()}
+                  </div>
+                )}
+                <p className="min-w-0 flex-1 truncate text-sm font-medium text-[#D4D4D4]">
+                  {orgName}
+                </p>
+                <span className="shrink-0 text-[10px] font-bold uppercase tracking-widest text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.5)]">
+                  owner
+                </span>
+              </Link>
+            ) : (
+              <div className="flex h-full min-w-0 flex-1 items-center gap-3 px-4">
+                {orgLogoUrl ? (
+                  <img src={orgLogoUrl} alt="Logo" className="h-5 w-5 rounded object-cover" />
+                ) : (
+                  <div className="grid h-5 w-5 place-items-center rounded bg-[#353434] text-xs font-semibold text-[#E5E2E1]">
+                    {orgName.slice(0, 1).toUpperCase()}
+                  </div>
+                )}
+                <p className="min-w-0 flex-1 truncate text-sm font-medium text-[#D4D4D4]">
+                  {orgName}
+                </p>
+                <span className="shrink-0 text-[10px] font-bold uppercase tracking-widest text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.5)]">
+                  owner
+                </span>
+              </div>
+            )}
           </div>
 
           {/* Nav groups */}
-          <nav aria-label="Dashboard" className="sidebar-scroll flex-1 overflow-y-auto px-2 pt-4 space-y-5">
-            {NAV_GROUPS.map((group) => (
-              <div key={group.label}>
-                <p className="mb-1.5 px-3 text-[11px] font-semibold uppercase tracking-wide text-[#6B6A68]">
-                  {group.label}
-                </p>
-                <ul className="space-y-0.5">
-                  {group.items.map((item) => (
-                    <li key={item.href}>
-                      <DashboardNavLink href={item.href} Icon={item.Icon} label={item.label} />
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </nav>
+          <DashboardSidebarNav />
 
           {/* Settings */}
           <div className="border-t border-[#2D2D2D] px-2 py-3 shrink-0">

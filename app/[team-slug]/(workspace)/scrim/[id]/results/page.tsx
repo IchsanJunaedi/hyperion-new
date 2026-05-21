@@ -1,4 +1,4 @@
-import { ArrowLeft, CheckCircle, XCircle } from "lucide-react";
+import { ArrowLeft, CheckCircle, XCircle, Swords, Shield } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -6,6 +6,16 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { getScrimDetail } from "@/features/scrim/queries";
 
 export const dynamic = "force-dynamic";
+
+const ROLE_LABELS: Record<string, string> = {
+  exp_lane: "EXP",
+  jungler: "JGL",
+  mid_lane: "MID",
+  gold_lane: "GOLD",
+  roamer: "ROAM",
+};
+
+const ROLE_ORDER = ["exp_lane", "jungler", "mid_lane", "gold_lane", "roamer"];
 
 interface ScrimResultsPageProps {
   params: Promise<{ "team-slug": string; id: string }>;
@@ -20,14 +30,20 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
 
   const admin = createAdminClient();
 
-  // Get per-game results
-  const { data: gameResults } = await admin
-    .from("scrim_game_results")
-    .select("*")
-    .eq("scrim_id", id)
-    .order("game_number", { ascending: true });
+  const [{ data: gameResults }, { data: draftPicks }] = await Promise.all([
+    admin
+      .from("scrim_game_results")
+      .select("*")
+      .eq("scrim_id", id)
+      .order("game_number", { ascending: true }),
+    admin
+      .from("scrim_draft_picks")
+      .select("*")
+      .eq("scrim_id", id)
+      .order("game_number", { ascending: true }),
+  ]);
 
-  // Get signed URLs for images
+  // Get signed URLs for game screenshots
   const gamesWithUrls = await Promise.all(
     (gameResults ?? []).map(async (g) => {
       let signedUrl: string | null = null;
@@ -41,12 +57,26 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
     }),
   );
 
+  // Group draft picks by game_number → side → role
+  type DraftPick = { role: string; hero_name: string; player_id: string | null };
+  const draftByGame: Record<number, { our: DraftPick[]; enemy: DraftPick[] }> = {};
+  for (const pick of draftPicks ?? []) {
+    if (!draftByGame[pick.game_number]) {
+      draftByGame[pick.game_number] = { our: [], enemy: [] };
+    }
+    if (pick.side === "our") {
+      draftByGame[pick.game_number].our.push({ role: pick.role, hero_name: pick.hero_name, player_id: pick.player_id });
+    } else {
+      draftByGame[pick.game_number].enemy.push({ role: pick.role, hero_name: pick.hero_name, player_id: pick.player_id });
+    }
+  }
+
   const wins = gamesWithUrls.filter((g) => g.is_win).length;
   const losses = gamesWithUrls.filter((g) => !g.is_win).length;
 
   return (
     <div className="space-y-6 px-4 py-6 sm:px-8 w-full">
-      {/* Back button — pill style */}
+      {/* Back */}
       <div className="flex justify-start">
         <Link
           href={`/${slug}/scrim/${id}`}
@@ -57,7 +87,7 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
         </Link>
       </div>
 
-      {/* Centered header */}
+      {/* Header */}
       <div className="mx-auto max-w-2xl w-full space-y-2">
         <h1 className="text-2xl font-bold text-white sm:text-3xl tracking-tight">
           Hasil Pertandingan
@@ -79,59 +109,122 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
 
       {/* Per-game results */}
       <div className="space-y-4 mx-auto max-w-2xl w-full">
-        {gamesWithUrls.map((game) => (
-          <div
-            key={game.id}
-            className="rounded-xl border border-white/10 bg-zinc-900/40 p-5 space-y-3"
-          >
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-white">Game {game.game_number}</h3>
-              <div className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium ${
-                game.is_win
-                  ? "bg-green-500/10 text-green-400"
-                  : "bg-red-500/10 text-red-400"
-              }`}>
-                {game.is_win ? (
-                  <><CheckCircle className="h-3.5 w-3.5" /> Menang</>
-                ) : (
-                  <><XCircle className="h-3.5 w-3.5" /> Kalah</>
+        {gamesWithUrls.map((game) => {
+          const draft = draftByGame[game.game_number];
+          const ourPicks = draft?.our ?? [];
+          const enemyPicks = draft?.enemy ?? [];
+          const hasDraft = ourPicks.length > 0 || enemyPicks.length > 0;
+
+          return (
+            <div
+              key={game.id}
+              className="rounded-xl border border-white/10 bg-zinc-900/40 overflow-hidden"
+            >
+              {/* Game header */}
+              <div className="flex items-center justify-between px-5 py-3.5 border-b border-white/5">
+                <h3 className="text-sm font-semibold text-white">Game {game.game_number}</h3>
+                <div className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium ${
+                  game.is_win
+                    ? "bg-green-500/10 text-green-400"
+                    : "bg-red-500/10 text-red-400"
+                }`}>
+                  {game.is_win ? (
+                    <><CheckCircle className="h-3.5 w-3.5" /> Menang</>
+                  ) : (
+                    <><XCircle className="h-3.5 w-3.5" /> Kalah</>
+                  )}
+                </div>
+              </div>
+
+              <div className="p-5 space-y-4">
+                {/* Draft picks */}
+                {hasDraft && (
+                  <div className="grid grid-cols-2 gap-3">
+                    {/* Our team */}
+                    <div className="space-y-1.5">
+                      <div className="flex items-center gap-1.5 mb-2">
+                        <Shield className="h-3.5 w-3.5 text-blue-400" />
+                        <span className="text-[11px] font-semibold uppercase tracking-wide text-blue-400">
+                          Tim Kita
+                        </span>
+                      </div>
+                      {ROLE_ORDER.map((role) => {
+                        const pick = ourPicks.find((p) => p.role === role);
+                        return (
+                          <div key={role} className="flex items-center gap-2 rounded-md bg-white/[0.04] px-2.5 py-1.5">
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-white/30 w-9 shrink-0">
+                              {ROLE_LABELS[role] ?? role}
+                            </span>
+                            <span className={`text-xs font-medium truncate ${pick ? "text-white/90" : "text-white/20"}`}>
+                              {pick?.hero_name ?? "—"}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Enemy team */}
+                    <div className="space-y-1.5">
+                      <div className="flex items-center gap-1.5 mb-2">
+                        <Swords className="h-3.5 w-3.5 text-red-400" />
+                        <span className="text-[11px] font-semibold uppercase tracking-wide text-red-400">
+                          Lawan
+                        </span>
+                      </div>
+                      {ROLE_ORDER.map((role) => {
+                        const pick = enemyPicks.find((p) => p.role === role);
+                        return (
+                          <div key={role} className="flex items-center gap-2 rounded-md bg-white/[0.04] px-2.5 py-1.5">
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-white/30 w-9 shrink-0">
+                              {ROLE_LABELS[role] ?? role}
+                            </span>
+                            <span className={`text-xs font-medium truncate ${pick ? "text-white/90" : "text-white/20"}`}>
+                              {pick?.hero_name ?? "—"}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Notes */}
+                {game.notes && (
+                  <p className="text-sm text-white/70 whitespace-pre-line">{game.notes}</p>
+                )}
+
+                {/* Screenshot */}
+                {game.signedUrl && (
+                  <a
+                    href={game.signedUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={game.signedUrl}
+                      alt={`Screenshot Game ${game.game_number}`}
+                      className="rounded-lg border border-white/10 w-full max-h-[300px] object-contain"
+                    />
+                  </a>
                 )}
               </div>
             </div>
-
-            {game.notes && (
-              <p className="text-sm text-white/70 whitespace-pre-line">{game.notes}</p>
-            )}
-
-            {game.signedUrl && (
-              <a
-                href={game.signedUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block"
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={game.signedUrl}
-                  alt={`Screenshot Game ${game.game_number}`}
-                  className="rounded-lg border border-white/10 max-h-[300px] object-contain"
-                />
-              </a>
-            )}
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Coach notes */}
       {result?.coach_notes && (
         <div className="mx-auto max-w-2xl w-full rounded-2xl border border-blue-400/20 bg-blue-400/5 p-5 shadow-xl shadow-black/20">
-          <h3 className="text-sm font-semibold text-white mb-2">📋 Catatan Coach</h3>
+          <h3 className="text-sm font-semibold text-white mb-2">Catatan Coach</h3>
           <p className="text-sm text-white/80 whitespace-pre-line">{result.coach_notes}</p>
         </div>
       )}
 
       {gamesWithUrls.length === 0 && (
-        <p className="text-sm text-white/40">Belum ada detail per-game.</p>
+        <p className="text-sm text-white/40 mx-auto max-w-2xl">Belum ada detail per-game.</p>
       )}
     </div>
   );
