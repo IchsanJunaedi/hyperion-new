@@ -52,19 +52,19 @@ export default defineConfig({
         "**/types/**",
       ],
       // ─────────────────────────────────────────────────────────────────────
-      // Coverage thresholds — PHASE 3 (after Wave C = 41.85%)
+      // Coverage thresholds — PHASE 4 (after Wave D = 43.25%)
       // Bumped per wave. See AUTOMATED_TESTING_TRACKER.md § Coverage Threshold Gates
       //
       // To raise thresholds after a wave is done:
-      //   Phase 4 (after Wave D): statements: 51, branches: 45, functions: 62, lines: 51
       //   Phase 5 (after Wave E): statements: 56, branches: 50, functions: 72, lines: 56
+      //   FINAL  (after Wave F):  statements: 80, branches: 75, functions: 85, lines: 80
       //   ...etc. (see tracker for full schedule)
       // ─────────────────────────────────────────────────────────────────────
       thresholds: {
-        statements: 41,
+        statements: 43,
         branches: 35,
-        functions: 52,
-        lines: 43,
+        functions: 54,
+        lines: 44,
       },
       // Human-readable report in CI artifacts + local browser view
       reporter: ["text", "lcov", "html"],

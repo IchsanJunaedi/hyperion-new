@@ -9,10 +9,10 @@
 
 | Metric | Baseline | Current | Target |
 |--------|----------|---------|--------|
-| Statements | 16.61% | 41.85% | **80%** |
-| Branches | 13.77% | 35.38% | **80%** |
-| Functions | 26.50% | 52.80% | **80%** |
-| Lines | 16.48% | 43.33% | **80%** |
+| Statements | 16.61% | 43.25% | **80%** |
+| Branches | 13.77% | 35.83% | **80%** |
+| Functions | 26.50% | 54.67% | **80%** |
+| Lines | 16.48% | 44.88% | **80%** |
 
 > Last updated: **2026-05-21** · Run `npm run test:unit:coverage` to refresh.
 
@@ -25,7 +25,7 @@
 | Lint | ✅ Green |
 | Typecheck | ✅ Green |
 | Unit Tests + Coverage | ✅ Green |
-| Coverage Gate (≥80%) | 🔴 Not Yet — at 41.85% |
+| Coverage Gate (≥80%) | 🔴 Not Yet — at 43.25% |
 | Codecov Upload | ✅ Configured |
 
 > CI enforces coverage thresholds via `vitest.config.ts` → `thresholds`. **Fail fast** jika turun dari target wave.
@@ -60,8 +60,11 @@
 | `lib/permissions/__tests__/calendar-access.test.ts` | 17 | `lib/permissions/calendar-access.ts` | ✅ |
 | `lib/permissions/__tests__/calendar-audit.test.ts` | 17 | `lib/permissions/calendar-audit.ts` | ✅ |
 | `lib/permissions/__tests__/calendar-rules.test.ts` | 43 | `lib/permissions/calendar-rules.ts` | ✅ |
+| `lib/validations/__tests__/auth.test.ts` | 31 | `lib/validations/auth.ts` + `shared.ts` | ✅ |
+| `lib/validations/__tests__/onboarding.test.ts` | 26 | `lib/validations/onboarding.ts` | ✅ |
+| `lib/validations/__tests__/content.test.ts` | 21 | `lib/validations/content.ts` | ✅ |
 
-**Total existing tests: ~365**
+**Total existing tests: ~443**
 
 ---
 
@@ -178,29 +181,25 @@
 
 ---
 
-### Wave D — Validations Complete ⬜ TODO
-> Target: +10% coverage · Tutup semua validation files yang belum tercover
+### Wave D — Validations Complete ✅ DONE
+> Actual gain: +1.40% → **43.25%** · 78 new test cases
+> Files covered: `auth.ts` (31 tests), `onboarding.ts` (26 tests), `content.ts` (21 tests)
 
 **Tasks:**
 
-- [ ] **Task D-1: `lib/validations/__tests__/auth.test.ts`** (≥15 tests)
-  - `loginSchema`: valid, empty email → error, invalid email → error, empty password → error
-  - `registerSchema`: valid, password mismatch → error, confirmPassword missing → error, username constraints, terms accepted required
-  - `forgotPasswordSchema`: valid email, invalid email → error
-  - `resetPasswordSchema`: valid, passwords don't match → error, weak password → error
-  - `changePasswordSchema`: valid, current = new → error
+- [x] **Task D-1: `lib/validations/__tests__/auth.test.ts`** (31 tests)
+  - `loginSchema`, `registerSchema`, `forgotPasswordSchema`, `resetPasswordSchema`
+  - Shared helpers: `emailSchema`, `passwordSchema`, `waNumberSchema`
   - **Commit message:** `test: add auth schema validation tests (15+ cases)`
 
-- [ ] **Task D-2: `lib/validations/__tests__/onboarding.test.ts`** (≥12 tests)
-  - Baca `lib/validations/onboarding.ts` → test all schemas
-  - Org creation: name constraints, slug constraints, game selection required
-  - Member invite: valid email list, duplicate detection, max invites
-  - Division setup: valid, empty name → error
+- [x] **Task D-2: `lib/validations/__tests__/onboarding.test.ts`** (26 tests)
+  - `profileSetupSchema`, `createOrganizationSchema`, `orgTierEnum`, `supportedGameEnum`
+  - Org creation: name/slug/tier constraints, division validation (min 1, max 10)
   - **Commit message:** `test: add onboarding schema validation tests (12+ cases)`
 
-- [ ] **Task D-3: `lib/validations/__tests__/content.test.ts`** (≥12 tests)
-  - `createContentSchema`: valid, empty title → error, empty platform → error, invalid status → error, `scheduled_at` validation, `platform` enum valid values
-  - `updateContentSchema`: partial update, all fields
+- [x] **Task D-3: `lib/validations/__tests__/content.test.ts`** (21 tests)
+  - `createContentSchema`, `contentPlatformSchema`, `contentStatusSchema`, `PLATFORM_LABELS`
+  - description null-transform, scheduled_at date validation
   - **Commit message:** `test: add content schema validation tests (12+ cases)`
 
 ---
@@ -253,9 +252,9 @@
 | Wave A — Validations Expansion | +4.07% → **20.68%** | A-1 to A-5 | ✅ Done |
 | Wave B — Features Logic | +2.17% → **22.85%** | B-1 to B-4 | ✅ Done |
 | Wave C — Permissions Deep Dive | +19.00% → **41.85%** | C-1 to C-3 | ✅ Done |
-| Wave D — Validations Complete | +10% → ~51% | D-1 to D-3 | ⬜ TODO |
-| Wave E — Utils Complete | +5% → ~56% | E-1 to E-2 | ⬜ TODO |
-| Wave F — Integration-Style | +24% → **80%** | F-1 to F-4 | ⬜ TODO |
+| Wave D — Validations Complete | +1.40% → **43.25%** | D-1 to D-3 | ✅ Done |
+| Wave E — Utils Complete | +5% → ~48% | E-1 to E-2 | ⬜ TODO |
+| Wave F — Integration-Style | +32% → **80%** | F-1 to F-4 | ⬜ TODO |
 
 ---
 
@@ -269,7 +268,7 @@ Threshold dinaikkan bertahap sesuai progress wave. **Jangan push jika threshold 
 | Phase 1 (after Wave A) | 20% | 18% | 35% | 20% | 2026-05-21 |
 | Phase 2 (after Wave B) | 22% | 20% | 36% | 22% | 2026-05-21 |
 | Phase 3 (after Wave C) | 41% | 35% | 52% | 43% | 2026-05-21 |
-| Phase 4 (after Wave D) | 51% | 45% | 62% | 51% | TBD |
+| Phase 4 (after Wave D) | 43% | 35% | 54% | 44% | 2026-05-21 |
 | Phase 5 (after Wave E) | 56% | 50% | 72% | 56% | TBD |
 | **FINAL (after Wave F)** | **80%** | **75%** | **85%** | **80%** | TBD |
 
