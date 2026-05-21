@@ -111,10 +111,10 @@ function HeroRow({
       <span className="flex-1 truncate text-xs font-medium text-[#E5E2E1]">
         {hero.hero_name}
       </span>
-      <span className="text-[11px] text-[#6B6A68]">{hero.picks}×</span>
+      <span className="w-8 shrink-0 text-right text-[11px] text-[#6B6A68]">{hero.picks}×</span>
       <span
         className={cn(
-          "text-[11px] font-semibold",
+          "w-12 shrink-0 text-right text-[11px] font-semibold",
           hero.winRate >= 50 ? "text-emerald-400" : "text-rose-400",
         )}
       >
