@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
   BarChart3,
@@ -24,6 +23,7 @@ import { NotifyProvider } from "@/features/dashboard/components/NotifyModal";
 import { DashboardSettingsButton } from "@/components/layout/DashboardSettingsButton";
 import { NotificationBell } from "@/features/notifications/components/NotificationBell";
 import { NotificationRealtimeProvider } from "@/features/notifications/components/NotificationRealtimeProvider";
+import { DashboardNavLink } from "@/components/layout/DashboardNavLink";
 
 export const dynamic = "force-dynamic";
 
@@ -155,7 +155,7 @@ export default async function DashboardLayout({
                 <ul className="space-y-0.5">
                   {group.items.map((item) => (
                     <li key={item.href}>
-                      <NavLink href={item.href} Icon={item.Icon} label={item.label} />
+                      <DashboardNavLink href={item.href} Icon={item.Icon} label={item.label} />
                     </li>
                   ))}
                 </ul>
@@ -213,25 +213,5 @@ export default async function DashboardLayout({
         </div>
       </div>
     </NotifyProvider>
-  );
-}
-
-function NavLink({
-  href,
-  Icon,
-  label,
-}: {
-  href: string;
-  Icon: React.ComponentType<{ className?: string }>;
-  label: string;
-}) {
-  return (
-    <Link
-      href={href}
-      className="flex items-center gap-3 rounded px-3 py-1.5 text-sm text-[#9B9A97] transition hover:bg-[#2C2C2C] hover:text-[#D4D4D4]"
-    >
-      <Icon className="h-[18px] w-[18px] shrink-0" />
-      {label}
-    </Link>
   );
 }
