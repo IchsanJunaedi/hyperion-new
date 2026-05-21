@@ -1,9 +1,10 @@
 "use client";
 
 import { Loader2, MessageSquare, Trash2 } from "lucide-react";
-import { useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
 
+import { createClient } from "@/lib/supabase/client";
 import {
   addStrategyCommentAction,
   deleteStrategyCommentAction,
@@ -14,6 +15,7 @@ interface StrategyCommentsProps {
   orgSlug: string;
   noteId: string;
   currentUserId: string;
+  currentUserDisplayName: string;
   comments: StrategyCommentWithProfile[];
 }
 
@@ -21,18 +23,73 @@ export function StrategyComments({
   orgSlug,
   noteId,
   currentUserId,
+  currentUserDisplayName,
   comments: initialComments,
 }: StrategyCommentsProps) {
   const [comments, setComments] = useState(initialComments);
   const [text, setText] = useState("");
   const [addPending, startAdd] = useTransition();
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  // Track IDs we inserted locally so realtime doesn't duplicate them
+  const localIds = useRef<Set<string>>(new Set());
+
+  useEffect(() => {
+    const supabase = createClient();
+    const channel = supabase
+      .channel(`strategy-comments-${noteId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "strategy_comments",
+          filter: `note_id=eq.${noteId}`,
+        },
+        (payload) => {
+          const row = payload.new as {
+            id: string;
+            note_id: string;
+            user_id: string;
+            content: string;
+            created_at: string;
+          };
+          // Skip if we already added it optimistically
+          if (localIds.current.has(row.id)) return;
+          setComments((prev) => {
+            if (prev.some((c) => c.id === row.id)) return prev;
+            return [
+              ...prev,
+              { ...row, display_name: row.user_id === currentUserId ? currentUserDisplayName : null },
+            ];
+          });
+        },
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "DELETE",
+          schema: "public",
+          table: "strategy_comments",
+          filter: `note_id=eq.${noteId}`,
+        },
+        (payload) => {
+          const id = (payload.old as { id: string }).id;
+          setComments((prev) => prev.filter((c) => c.id !== id));
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [noteId, currentUserId, currentUserDisplayName]);
 
   function handleAdd() {
     if (!text.trim()) return;
     startAdd(async () => {
       const res = await addStrategyCommentAction(orgSlug, noteId, text);
       if (res.ok) {
+        localIds.current.add(res.id);
         setComments((prev) => [
           ...prev,
           {
@@ -41,7 +98,7 @@ export function StrategyComments({
             user_id: currentUserId,
             content: text.trim(),
             created_at: new Date().toISOString(),
-            display_name: null,
+            display_name: currentUserDisplayName,
           },
         ]);
         setText("");

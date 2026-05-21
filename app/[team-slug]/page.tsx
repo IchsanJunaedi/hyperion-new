@@ -1,4 +1,4 @@
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 
 import { Header } from "@/components/landing/Header";
 import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
@@ -41,9 +41,6 @@ export default async function TeamSlugPage({ params }: TeamSlugPageProps) {
   const member = isOwner || await isCurrentUserMember(organization.id);
 
   if (!member) {
-    if (!user) {
-      redirect(`/login?next=/${encodeURIComponent(slug)}`);
-    }
     const publicData = await getPublicTeamData(organization);
     return (
       <>

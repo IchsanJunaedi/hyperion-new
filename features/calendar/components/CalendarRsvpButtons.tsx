@@ -10,6 +10,7 @@ interface CalendarRsvpButtonsProps {
   orgSlug: string;
   eventId: string;
   currentStatus: string | null;
+  rsvpCounts?: { hadir: number; tentative: number; tidak_hadir: number };
 }
 
 const OPTIONS = [
@@ -36,10 +37,17 @@ const OPTIONS = [
   },
 ];
 
+const COUNT_KEY: Record<string, keyof { hadir: number; tentative: number; tidak_hadir: number }> = {
+  hadir: "hadir",
+  tentative: "tentative",
+  tidak_hadir: "tidak_hadir",
+};
+
 export function CalendarRsvpButtons({
   orgSlug,
   eventId,
   currentStatus,
+  rsvpCounts,
 }: CalendarRsvpButtonsProps) {
   const [pending, startTransition] = useTransition();
 
@@ -77,6 +85,11 @@ export function CalendarRsvpButtons({
               <Icon className="h-3.5 w-3.5" />
             )}
             {label}
+            {rsvpCounts && (
+              <span className="ml-0.5 opacity-60">
+                {rsvpCounts[COUNT_KEY[value]!]}
+              </span>
+            )}
           </button>
         );
       })}

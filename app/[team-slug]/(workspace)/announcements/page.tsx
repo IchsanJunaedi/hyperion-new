@@ -2,9 +2,11 @@ import { Megaphone, Plus } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { createClient } from "@/lib/supabase/server";
 import { AnnouncementCard } from "@/features/announcements/components/AnnouncementCard";
 import {
   listAnnouncements,
+  getAnnouncementReadCountsBatch,
   type AnnouncementListFilter,
 } from "@/features/announcements/queries";
 import { getOrgBySlug } from "@/features/teams/queries";
@@ -29,10 +31,30 @@ export default async function AnnouncementsPage({
   const organization = await getOrgBySlug(slug);
   if (!organization) notFound();
 
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
   const filter: AnnouncementListFilter =
     sp.tab === "pinned" ? "pinned" : "all";
 
   const announcements = await listAnnouncements(organization.id, filter);
+
+  // Fetch read counts for captain+ roles only
+  let readCounts: Map<string, number> = new Map();
+  if (user && announcements.length > 0) {
+    const { data: membership } = await supabase
+      .from("team_members")
+      .select("role")
+      .eq("user_id", user.id)
+      .eq("organization_id", organization.id)
+      .eq("is_active", true)
+      .maybeSingle();
+    const role = membership?.role ?? "";
+    const canSeeReadCounts = ["captain", "coach", "manager", "owner"].includes(role);
+    if (canSeeReadCounts) {
+      readCounts = await getAnnouncementReadCountsBatch(announcements.map((a) => a.id));
+    }
+  }
 
   return (
     <div className="space-y-6 px-4 py-6 sm:px-8">
@@ -89,7 +111,12 @@ export default async function AnnouncementsPage({
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
           {announcements.map((a) => (
-            <AnnouncementCard key={a.id} announcement={a} orgSlug={slug} />
+            <AnnouncementCard
+              key={a.id}
+              announcement={a}
+              orgSlug={slug}
+              readCount={readCounts.size > 0 ? (readCounts.get(a.id) ?? 0) : undefined}
+            />
           ))}
         </div>
       )}

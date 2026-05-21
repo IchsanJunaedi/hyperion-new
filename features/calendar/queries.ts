@@ -145,6 +145,29 @@ export async function getMyRsvp(
 }
 
 /**
+ * Get RSVP status counts for a calendar event.
+ */
+export async function getRsvpCounts(
+  eventId: string,
+): Promise<{ hadir: number; tentative: number; tidak_hadir: number }> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const supabase = await createClient();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data } = await (supabase as any)
+    .from("calendar_event_rsvps")
+    .select("status")
+    .eq("event_id", eventId);
+
+  const counts = { hadir: 0, tentative: 0, tidak_hadir: 0 };
+  for (const row of (data ?? []) as Array<{ status: string }>) {
+    if (row.status === "hadir") counts.hadir++;
+    else if (row.status === "tentative") counts.tentative++;
+    else if (row.status === "tidak_hadir") counts.tidak_hadir++;
+  }
+  return counts;
+}
+
+/**
  * Fetch comments for an event (for realtime updates)
  */
 export async function getEventComments(

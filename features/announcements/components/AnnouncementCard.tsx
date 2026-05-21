@@ -1,4 +1,4 @@
-import { Megaphone, Pin } from "lucide-react";
+import { Eye, Megaphone, Pin } from "lucide-react";
 import Link from "next/link";
 
 import type { Database } from "@/types/database";
@@ -8,11 +8,13 @@ type Announcement = Database["public"]["Tables"]["announcements"]["Row"];
 interface AnnouncementCardProps {
   announcement: Announcement;
   orgSlug: string;
+  readCount?: number;
 }
 
 export function AnnouncementCard({
   announcement,
   orgSlug,
+  readCount,
 }: AnnouncementCardProps) {
   const date = new Date(announcement.created_at).toLocaleDateString("id-ID", {
     day: "numeric",
@@ -40,7 +42,15 @@ export function AnnouncementCard({
       <p className="mt-2 line-clamp-2 text-sm text-white/60">
         {announcement.body}
       </p>
-      <p className="mt-3 text-xs text-white/40">{date}</p>
+      <div className="mt-3 flex items-center justify-between gap-2">
+        <p className="text-xs text-white/40">{date}</p>
+        {readCount !== undefined && (
+          <span className="inline-flex items-center gap-1 text-[10px] text-white/35">
+            <Eye className="h-3 w-3" />
+            {readCount}
+          </span>
+        )}
+      </div>
     </Link>
   );
 }

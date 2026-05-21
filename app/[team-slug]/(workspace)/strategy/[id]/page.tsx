@@ -91,6 +91,7 @@ export default async function StrategyNoteDetailPage({
           orgSlug={slug}
           noteId={note.id}
           currentUserId={user?.id ?? ""}
+          currentUserDisplayName={(user?.user_metadata?.["display_name"] as string | undefined) ?? user?.email ?? "Member"}
           comments={comments}
         />
       </div>

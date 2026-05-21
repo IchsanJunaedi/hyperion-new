@@ -81,3 +81,25 @@ export async function getAnnouncementReadCount(announcementId: string): Promise<
     .eq("announcement_id", announcementId);
   return count ?? 0;
 }
+
+/**
+ * Batch-fetch read counts for a list of announcement IDs.
+ * Returns a Map<announcement_id, count>.
+ */
+export async function getAnnouncementReadCountsBatch(
+  announcementIds: string[],
+): Promise<Map<string, number>> {
+  if (announcementIds.length === 0) return new Map();
+  const supabase = await createClient();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data } = await (supabase as any)
+    .from("announcement_reads")
+    .select("announcement_id")
+    .in("announcement_id", announcementIds);
+
+  const counts = new Map<string, number>();
+  for (const row of (data ?? []) as Array<{ announcement_id: string }>) {
+    counts.set(row.announcement_id, (counts.get(row.announcement_id) ?? 0) + 1);
+  }
+  return counts;
+}

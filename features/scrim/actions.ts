@@ -446,6 +446,7 @@ export async function updateScrimAction(
 
 /**
  * Request a coach review for a scrim. Any authenticated member can request.
+ * Fans out bell + WA notifications to all active coaches in the org.
  */
 export async function requestScrimReviewAction(
   orgSlug: string,
@@ -457,6 +458,14 @@ export async function requestScrimReviewAction(
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, message: "Anda harus login" };
+
+  // Resolve org id from slug
+  const { data: org } = await supabase
+    .from("organizations")
+    .select("id, name")
+    .eq("slug", orgSlug)
+    .maybeSingle();
+  if (!org) return { ok: false, message: "Organisasi tidak ditemukan" };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { error } = await (supabase as any).from("scrim_review_requests").insert({
@@ -470,6 +479,50 @@ export async function requestScrimReviewAction(
       return { ok: false, message: "Review sudah diminta sebelumnya" };
     }
     return { ok: false, message: error.message };
+  }
+
+  // Best-effort: fan out bell + WA to coaches
+  try {
+    const admin = createAdminClient();
+    const { data: coaches } = await admin
+      .from("team_members")
+      .select("user_id")
+      .eq("organization_id", org.id)
+      .eq("role", "coach")
+      .eq("is_active", true);
+
+    if (coaches && coaches.length > 0) {
+      const coachIds = coaches.map((c) => c.user_id);
+      const { data: profiles } = await admin
+        .from("profiles")
+        .select("id, phone_wa")
+        .in("id", coachIds);
+      const phoneMap = new Map(
+        (profiles ?? []).map((p) => [p.id, p.phone_wa]),
+      );
+
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+      const scrimUrl = `${appUrl}/${orgSlug}/scrim/${scrimId}`;
+      const title = `Review scrim diminta`;
+      const body = `Seseorang meminta review scrim. Cek detail dan tulis catatanmu.`;
+      const waText = `*[${org.name}] Review Scrim Diminta*\n\nSeseorang meminta review untuk scrim. Buka link berikut untuk menulis catatanmu:\n${scrimUrl}`;
+
+      const rows = coaches.map((c) => ({
+        organization_id: org.id,
+        user_id: c.user_id,
+        type: "scrim_invite" as const,
+        title,
+        body,
+        ref_id: scrimId,
+        ref_type: "scrim",
+        wa_number: phoneMap.get(c.user_id) ?? null,
+        wa_message: phoneMap.get(c.user_id) ? waText : null,
+      }));
+
+      await admin.from("notifications").insert(rows);
+    }
+  } catch {
+    // Non-blocking — review request already created above
   }
 
   revalidatePath(`/${orgSlug}/scrim/${scrimId}`);

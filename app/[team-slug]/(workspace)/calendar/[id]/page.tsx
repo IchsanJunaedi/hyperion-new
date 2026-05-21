@@ -2,7 +2,7 @@ import { ArrowLeft, Clock, MapPin } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { getCalendarEvent, getMyRsvp } from "@/features/calendar/queries";
+import { getCalendarEvent, getMyRsvp, getRsvpCounts } from "@/features/calendar/queries";
 import { CalendarEventActions } from "@/features/calendar/components/CalendarEventActions";
 import { CalendarRsvpButtons } from "@/features/calendar/components/CalendarRsvpButtons";
 
@@ -31,9 +31,10 @@ export default async function CalendarEventDetailPage({
   params,
 }: CalendarEventDetailPageProps) {
   const { "team-slug": slug, id } = await params;
-  const [event, myRsvp] = await Promise.all([
+  const [event, myRsvp, rsvpCounts] = await Promise.all([
     getCalendarEvent(id),
     getMyRsvp(id),
+    getRsvpCounts(id),
   ]);
   if (!event) notFound();
 
@@ -113,6 +114,7 @@ export default async function CalendarEventDetailPage({
           orgSlug={slug}
           eventId={event.id}
           currentStatus={myRsvp}
+          rsvpCounts={rsvpCounts}
         />
 
         {/* Actions */}
