@@ -220,7 +220,7 @@ function HeroPool({ pool }: { pool: PlayerHeroStat[] }) {
             <span className="text-[10px] text-[#6B6A68]">
               {ROLE_LABELS[h.role as keyof typeof ROLE_LABELS] ?? h.role}
             </span>
-            <span className="w-8 text-right text-[10px] text-[#6B6A68]">{h.picks}×</span>
+            <span className="w-8 text-right text-[10px] text-white">{h.picks}×</span>
             <span
               className={cn(
                 "w-9 text-right text-[10px] font-semibold",
