@@ -22,31 +22,33 @@ const DELAY_MS = 500;
 
 // ── Official hero ID → name mapping (from Fandom wiki) ───────────────────────
 const HERO_IDS = {
-  "Miya": 1, "Balmond": 2, "Saber": 3, "Nana": 5, "Tigreal": 6,
-  "Alucard": 7, "Akai": 9, "Franco": 10, "Bruno": 12, "Clint": 13,
-  "Rafaela": 14, "Eudora": 15, "Zilong": 16, "Fanny": 17, "Layla": 18,
-  "Minotaur": 19, "Lolita": 20, "Hayabusa": 21, "Freya": 22, "Gord": 23,
-  "Natalia": 24, "Kagura": 25, "Chou": 26, "Sun": 27, "Alpha": 28,
+  "Miya": 1, "Balmond": 2, "Saber": 3, "Alice": 4, "Nana": 5, "Tigreal": 6,
+  "Alucard": 7, "Karina": 11, "Akai": 9, "Franco": 10, "Bane": 8, "Bruno": 12,
+  "Clint": 13, "Rafaela": 14, "Eudora": 15, "Zilong": 16, "Fanny": 17,
+  "Layla": 18, "Minotaur": 19, "Lolita": 20, "Hayabusa": 21, "Freya": 22,
+  "Gord": 23, "Natalia": 24, "Kagura": 25, "Chou": 26, "Sun": 27, "Alpha": 28,
   "Ruby": 29, "Yi Sun-shin": 30, "Moskov": 31, "Johnson": 32, "Cyclops": 33,
   "Estes": 34, "Hilda": 35, "Aurora": 36, "Lapu-Lapu": 37, "Vexana": 38,
   "Roger": 39, "Karrie": 40, "Gatotkaca": 41, "Harley": 42, "Irithel": 43,
-  "Grock": 44, "Odette": 46, "Lancelot": 47, "Diggie": 48, "Hylos": 49,
-  "Zhask": 50, "Helcurt": 51, "Pharsa": 52, "Lesley": 53, "Jawhead": 54,
-  "Angela": 55, "Gusion": 56, "Valir": 57, "Uranus": 59, "Hanabi": 60,
-  "Chang'e": 61, "Aldous": 64, "Claude": 65, "Vale": 66, "Leomord": 67,
-  "Lunox": 68, "Hanzo": 69, "Belerick": 70, "Kimmy": 71, "Thamuz": 72,
-  "Harith": 73, "Minsitthar": 74, "Faramis": 76, "Badang": 77, "Khufra": 78,
-  "Granger": 79, "Guinevere": 80, "Esmeralda": 81, "Terizla": 82,
-  "X.Borg": 83, "Ling": 84, "Dyrroth": 85, "Lylia": 86, "Baxia": 87,
+  "Grock": 44, "Argus": 45, "Odette": 46, "Lancelot": 47, "Diggie": 48,
+  "Hylos": 49, "Zhask": 50, "Helcurt": 51, "Pharsa": 52, "Lesley": 53,
+  "Jawhead": 54, "Angela": 55, "Gusion": 56, "Valir": 57, "Martis": 58,
+  "Uranus": 59, "Hanabi": 60, "Chang'e": 61, "Kaja": 62, "Selena": 63,
+  "Aldous": 64, "Claude": 65, "Vale": 66, "Leomord": 67, "Lunox": 68,
+  "Hanzo": 69, "Belerick": 70, "Kimmy": 71, "Thamuz": 72, "Harith": 73,
+  "Minsitthar": 74, "Kadita": 75, "Faramis": 76, "Badang": 77, "Khufra": 78,
+  "Granger": 79, "Guinevere": 80, "Esmeralda": 81, "Terizla": 82, "X.Borg": 83,
+  "Ling": 84, "Dyrroth": 85, "Lylia": 86, "Baxia": 87, "Masha": 88,
   "Wanwan": 89, "Silvanna": 90, "Cecilion": 91, "Carmilla": 92, "Atlas": 93,
-  "Popol and Kupa": 94, "Yu Zhong": 95, "Khaleed": 97, "Barats": 98,
-  "Brody": 99, "Yve": 100, "Mathilda": 101, "Paquito": 102, "Beatrix": 103,
-  "Phoveus": 104, "Aulus": 105, "Natan": 106, "Floryn": 107, "Aamon": 109,
-  "Valentina": 110, "Yin": 111, "Xavier": 112, "Julian": 113, "Melissa": 114,
-  "Joy": 116, "Novaria": 117, "Ixia": 119, "Nolan": 120, "Cici": 121,
-  "Chip": 122, "Zhuxin": 123, "Suyou": 124, "Lukas": 125,
+  "Popol and Kupa": 94, "Yu Zhong": 95, "Luo Yi": 96, "Khaleed": 97,
+  "Barats": 98, "Brody": 99, "Yve": 100, "Mathilda": 101, "Paquito": 102,
+  "Beatrix": 103, "Phoveus": 104, "Aulus": 105, "Natan": 106, "Floryn": 107,
+  "Edith": 108, "Aamon": 109, "Valentina": 110, "Yin": 111, "Xavier": 112,
+  "Julian": 113, "Melissa": 114, "Fredrinn": 115, "Joy": 116, "Novaria": 117,
+  "Arlott": 118, "Ixia": 119, "Nolan": 120, "Cici": 121, "Chip": 122,
+  "Zhuxin": 123, "Suyou": 124, "Lukas": 125, "Sora": 131, "Marcel": 132,
   // Heroes that may have different IDs — fallback to name search
-  "Benedetta": 118, "Talon": 88, "Fredrinn": 115,
+  "Benedetta": 118, "Talon": 88,
 };
 
 const HEROES = [
@@ -67,6 +69,9 @@ const HEROES = [
   "Tigreal", "Uranus", "Vale", "Valentina", "Valir", "Vexana", "Wanwan",
   "X.Borg", "Xavier", "Yi Sun-shin", "Yin", "Yu Zhong", "Yve", "Zhask",
   "Zhuxin", "Zilong",
+  // New added heroes
+  "Alice", "Bane", "Karina", "Argus", "Martis", "Kaja", "Selena", "Kadita",
+  "Masha", "Luo Yi", "Edith", "Fredrinn", "Arlott", "Sora", "Marcel"
 ];
 
 function heroToSlug(name) {

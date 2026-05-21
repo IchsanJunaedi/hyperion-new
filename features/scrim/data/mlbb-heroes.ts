@@ -17,6 +17,9 @@ export const MLBB_HEROES: string[] = [
   "Tigreal", "Uranus", "Vale", "Valentina", "Valir", "Vexana", "Wanwan",
   "X.Borg", "Xavier", "Yi Sun-shin", "Yin", "Yu Zhong", "Yve", "Zhask",
   "Zhuxin", "Zilong",
+  // New added heroes
+  "Alice", "Bane", "Karina", "Argus", "Martis", "Kaja", "Selena", "Kadita",
+  "Masha", "Luo Yi", "Edith", "Fredrinn", "Arlott", "Sora", "Marcel"
 ].sort((a, b) => a.localeCompare(b));
 
 /** Convert hero name to the slug used for /public/heroes/<slug>.webp */
