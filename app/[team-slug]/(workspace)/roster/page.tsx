@@ -59,7 +59,7 @@ export default async function RosterPage({ params }: RosterPageProps) {
         currentUserRole={currentUserRole}
         orgSlug={slug}
         orgId={organization.id}
-        divisions={divisions.map((d) => ({ id: d.id, name: d.name }))}
+        divisions={divisions.map((d: { id: string; name: string }) => ({ id: d.id, name: d.name }))}
       />
     </div>
   );

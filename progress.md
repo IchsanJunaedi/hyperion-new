@@ -70,11 +70,13 @@ All types are in `types/database.ts`. `npx supabase gen types` is broken (API er
 
 ## Key Technical Decisions & Gotchas
 
-### Supabase type gen is broken
-`npx supabase gen types typescript` returns "Resource has been removed". Always edit `types/database.ts` manually. Use `(supabase as any)` casts for new tables until the type is added manually.
+### Supabase type gen — FIXED (was broken due to wrong project ID)
+The old project ID in CLAUDE.md was wrong (`tbuxtlbtjpoholcflmoy`). Correct ID is `pqzdukrlmbwjjgjyoqva`.
+Run: `npx supabase gen types typescript --project-id pqzdukrlmbwjjgjyoqva --schema public > types/database.ts`
+After running gen, also commit the updated `types/database.ts`. TypeScript will catch any `(supabase as any)` casts that can now be removed.
 
-### New tables use `(supabase as any)` pattern
-Because the auto-gen fails, new tables added after the last successful gen require the `as any` cast in queries/actions. This is intentional and not a bug.
+### Existing `(supabase as any)` casts
+Some queries still use `as any` for tables that were added before the type gen was fixed. These are safe to remove once you verify the table type is now in `types/database.ts`.
 
 ### `markAnnouncementRead` is idempotent
 Called on every render of announcement detail page. Uses `upsert` with `ignoreDuplicates: true`. Safe to call multiple times.

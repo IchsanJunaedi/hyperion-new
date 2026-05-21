@@ -67,7 +67,8 @@ export async function GET(request: NextRequest) {
     const supabase = await createClient();
 
     // Build query
-    let query = supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let query = (supabase as any)
       .from("calendar_audit_logs")
       .select("*", { count: "exact" })
       .eq("organization_id", orgId!)

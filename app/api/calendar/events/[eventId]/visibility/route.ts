@@ -61,17 +61,21 @@ export async function GET(
     }
 
     // Get event visibility override if exists
-    const { data: override } = await supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: override } = await (supabase as any)
       .from("event_visibility")
       .select("*")
       .eq("event_id", eventId)
       .maybeSingle();
 
     // Get calendar visibility (default)
-    const { data: calendar } = event.calendar_id ? await supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const eventAny = event as any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: calendar } = eventAny.calendar_id ? await (supabase as any)
       .from("calendar_configs")
       .select("visibility")
-      .eq("id", event.calendar_id)
+      .eq("id", eventAny.calendar_id)
       .maybeSingle() : { data: null };
 
     return success({

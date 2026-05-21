@@ -188,7 +188,7 @@ FONNTE_WEBHOOK_SECRET=
 - Always use `createAdminClient()` for cross-user operations (bypasses RLS)
 - Always use `createClient()` (server) for user-scoped operations (respects RLS)
 - RLS is enabled on all tables — admin client bypasses RLS
-- Generate types: `npx supabase gen types typescript --project-id tbuxtlbtjpoholcflmoy --schema public > types/database.ts`
+- Generate types: `npx supabase gen types typescript --project-id pqzdukrlmbwjjgjyoqva --schema public > types/database.ts`
 
 ### API Routes
 - Permission middleware at `lib/api/permission-middleware.ts` — use `validateRequest()`, `isOwner()`, `getUserRole()`, `requireRole()`

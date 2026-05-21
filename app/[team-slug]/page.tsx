@@ -69,7 +69,7 @@ export default async function TeamSlugPage({ params }: TeamSlugPageProps) {
         orgId={organization.id}
         orgName={organization.name}
         orgLogoUrl={organization.logo_url}
-        divisions={data.divisions.map((d) => ({ id: d.id, name: d.name }))}
+        divisions={data.divisions.map((d: { id: string; name: string }) => ({ id: d.id, name: d.name }))}
         user={{
           userId: user.id,
           displayName:
