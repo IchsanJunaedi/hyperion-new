@@ -9,10 +9,10 @@
 
 | Metric | Baseline | Current | Target |
 |--------|----------|---------|--------|
-| Statements | 16.61% | 20.68% | **80%** |
-| Branches | 13.77% | 19.26% | **80%** |
-| Functions | 26.50% | 35.98% | **80%** |
-| Lines | 16.48% | 20.85% | **80%** |
+| Statements | 16.61% | 22.85% | **80%** |
+| Branches | 13.77% | 21.38% | **80%** |
+| Functions | 26.50% | 36.91% | **80%** |
+| Lines | 16.48% | 22.78% | **80%** |
 
 > Last updated: **2026-05-21** · Run `npm run test:unit:coverage` to refresh.
 
@@ -25,7 +25,7 @@
 | Lint | ✅ Green |
 | Typecheck | ✅ Green |
 | Unit Tests + Coverage | ✅ Green |
-| Coverage Gate (≥80%) | 🔴 Not Yet — at 20.68% |
+| Coverage Gate (≥80%) | 🔴 Not Yet — at 22.85% |
 | Codecov Upload | ✅ Configured |
 
 > CI enforces coverage thresholds via `vitest.config.ts` → `thresholds`. **Fail fast** jika turun dari target wave.
@@ -53,8 +53,12 @@
 | `lib/validations/__tests__/strategy.test.ts` | 17 | `lib/validations/strategy.ts` | ✅ |
 | `lib/validations/__tests__/announcement.test.ts` | 14 | `lib/validations/announcement.ts` | ✅ |
 | `lib/validations/__tests__/player-target.test.ts` | 16 | `lib/validations/player-target.ts` | ✅ |
+| `features/scrim/__tests__/queries.test.ts` | 16 | `features/scrim/queries.ts` | ✅ |
+| `features/finances/__tests__/calculations.test.ts` | 16 | `features/finances/queries.ts` | ✅ |
+| `features/analytics/__tests__/computations.test.ts` | 26 | `features/analytics/computations.ts` | ✅ |
+| `features/roster/__tests__/logic.test.ts` | 19 | `features/roster/logic.ts` | ✅ |
 
-**Total existing tests: ~253**
+**Total existing tests: ~313**
 
 ---
 
@@ -102,13 +106,13 @@
 
 ---
 
-### Wave B — Features Logic (Pure Functions) ⬜ TODO
-> Target: +20% coverage · Focus pada logic layer, bukan UI atau DB
-> Expand coverage scope di `vitest.config.ts` ke lebih banyak features
+### Wave B — Features Logic (Pure Functions) ✅ DONE
+> Target: +2.17% coverage · 77 test cases baru
+> Files tercover: `queries.ts` (scrim/finances), `computations.ts` (analytics), `logic.ts` (roster)
 
 **Tasks:**
 
-- [ ] **Task B-1: `features/scrim/__tests__/queries.test.ts`** (≥15 tests)
+- [x] **Task B-1: `features/scrim/__tests__/queries.test.ts`** (16 tests)
   - Baca `features/scrim/queries.ts` → identifikasi pure functions (summarizeAttendance, calculateWinRate, dll)
   - `summarizeAttendance()`: all confirmed, all declined, mixed, empty, tentative handling
   - `buildScrimStatusLabel()`: upcoming → label, ongoing → label, completed win → label, completed loss → label
@@ -116,7 +120,7 @@
   - Edge: all same status, null status handling
   - **Commit message:** `test: add scrim query logic unit tests (15+ cases)`
 
-- [ ] **Task B-2: `features/finances/__tests__/calculations.test.ts`** (≥15 tests)
+- [x] **Task B-2: `features/finances/__tests__/calculations.test.ts`** (16 tests)
   - Expand dari queries.test.ts yang ada
   - `calculateBalance()`: income only, expense only, mixed, empty, large numbers, zero sum
   - `groupByCategory()`: single category, multiple categories, empty, same-category dedup
@@ -124,7 +128,7 @@
   - Monthly trend calculation accuracy
   - **Commit message:** `test: add finance calculation unit tests (15+ cases)`
 
-- [ ] **Task B-3: `features/analytics/__tests__/computations.test.ts`** (expand ≥15 new tests)
+- [x] **Task B-3: `features/analytics/__tests__/computations.test.ts`** (26 tests)
   - Expand file yang sudah ada
   - `computePlayerStats()`: single player all wins, mixed results, player with no scrims, multiple players ranking
   - `computeDraftStats()`: empty picks, most picked hero, win rate per hero, ban analysis
@@ -132,7 +136,7 @@
   - Boundary: zero matches, one match, 100 matches
   - **Commit message:** `test: expand analytics computation unit tests (15+ cases)`
 
-- [ ] **Task B-4: `features/roster/__tests__/logic.test.ts`** (≥12 tests)
+- [x] **Task B-4: `features/roster/__tests__/logic.test.ts`** (19 tests)
   - Identifikasi pure functions di `features/roster/`
   - `sortMembersByRole()`: role hierarchy ordering (owner > manager > coach > captain > member)
   - `filterMembersByDivision()`: empty division filter, multi-division filter, no matches
@@ -243,11 +247,11 @@
 |------|-------------------|-------|--------|
 | Baseline (existing) | 16.61% | — | ✅ Done |
 | Wave A — Validations Expansion | +4.07% → **20.68%** | A-1 to A-5 | ✅ Done |
-| Wave B — Features Logic | +15% → ~35% | B-1 to B-4 | ⬜ TODO |
-| Wave C — Permissions Deep Dive | +12% → ~47% | C-1 to C-3 | ⬜ TODO |
-| Wave D — Validations Complete | +10% → ~57% | D-1 to D-3 | ⬜ TODO |
-| Wave E — Utils Complete | +5% → ~62% | E-1 to E-2 | ⬜ TODO |
-| Wave F — Integration-Style | +18% → **80%** | F-1 to F-4 | ⬜ TODO |
+| Wave B — Features Logic | +2.17% → **22.85%** | B-1 to B-4 | ✅ Done |
+| Wave C — Permissions Deep Dive | +12% → ~35% | C-1 to C-3 | ⬜ TODO |
+| Wave D — Validations Complete | +10% → ~45% | D-1 to D-3 | ⬜ TODO |
+| Wave E — Utils Complete | +5% → ~50% | E-1 to E-2 | ⬜ TODO |
+| Wave F — Integration-Style | +30% → **80%** | F-1 to F-4 | ⬜ TODO |
 
 ---
 
@@ -259,10 +263,10 @@ Threshold dinaikkan bertahap sesuai progress wave. **Jangan push jika threshold 
 |-------|-----------|----------|-----------|-------|----------------|
 | Phase 0 (current) | 15% | 12% | 25% | 15% | 2026-05-21 |
 | Phase 1 (after Wave A) | 20% | 18% | 35% | 20% | 2026-05-21 |
-| Phase 2 (after Wave B) | 35% | 30% | 50% | 35% | TBD |
-| Phase 3 (after Wave C) | 47% | 40% | 62% | 47% | TBD |
-| Phase 4 (after Wave D) | 57% | 50% | 72% | 57% | TBD |
-| Phase 5 (after Wave E) | 62% | 55% | 78% | 62% | TBD |
+| Phase 2 (after Wave B) | 22% | 20% | 36% | 22% | 2026-05-21 |
+| Phase 3 (after Wave C) | 35% | 30% | 50% | 35% | TBD |
+| Phase 4 (after Wave D) | 45% | 40% | 62% | 45% | TBD |
+| Phase 5 (after Wave E) | 50% | 45% | 72% | 50% | TBD |
 | **FINAL (after Wave F)** | **80%** | **75%** | **85%** | **80%** | TBD |
 
 > Update threshold di `vitest.config.ts` → `coverage.thresholds` setelah setiap wave **selesai dan merge**.
