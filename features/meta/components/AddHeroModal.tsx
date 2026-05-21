@@ -8,6 +8,9 @@ import { cn } from "@/lib/utils/cn";
 import { upsertHeroRatingAction } from "../actions";
 import type { MetaHeroRating } from "../queries";
 
+// AddHeroModal is now used for EDIT only (role, tier, flags, notes).
+// Adding new heroes uses the inline HeroPickerPanel in MetaPage.
+
 type Tier = "S" | "A" | "B" | "C" | "D";
 type RoleTag = "exp_lane" | "jungler" | "mid_lane" | "gold_lane" | "roamer" | null;
 
@@ -30,7 +33,7 @@ const ROLE_OPTIONS: Array<{ value: RoleTag; label: string }> = [
 
 interface AddHeroModalProps {
   open: boolean;
-  onClose: () => void;
+  onClose: (updated?: MetaHeroRating) => void;
   orgSlug: string;
   orgId: string;
   patchId: string;
@@ -94,7 +97,7 @@ export function AddHeroModal({
       });
       if (res.ok) {
         toast.success(editing ? "Hero diperbarui" : `${selectedHero} ditambahkan ke Tier ${tier}`);
-        onClose();
+        onClose(res.hero);
       } else {
         toast.error(res.message);
       }
@@ -109,7 +112,7 @@ export function AddHeroModal({
           <h2 className="text-sm font-semibold text-white">
             {editing ? `Edit — ${editing.hero_name}` : "Tambah Hero ke Meta"}
           </h2>
-          <button type="button" onClick={onClose} className="cursor-pointer text-white/40 hover:text-white">
+          <button type="button" onClick={() => onClose()} className="cursor-pointer text-white/40 hover:text-white">
             <X className="h-4 w-4" />
           </button>
         </div>
@@ -239,7 +242,7 @@ export function AddHeroModal({
           <div className="flex gap-2 pt-1">
             <button
               type="button"
-              onClick={onClose}
+              onClick={() => onClose()}
               className="flex-1 cursor-pointer rounded-md border border-[#2D2D2D] py-2 text-sm text-white/60 transition hover:bg-white/5"
             >
               Batal

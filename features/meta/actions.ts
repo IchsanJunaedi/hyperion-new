@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import type { MetaHeroRating } from "./queries";
 
 type ActionResult = { ok: true } | { ok: false; message: string };
 
@@ -67,13 +68,13 @@ export async function upsertHeroRatingAction(
     priority_to_learn: boolean;
     notes: string;
   },
-): Promise<ActionResult> {
+): Promise<{ ok: true; hero: MetaHeroRating } | { ok: false; message: string }> {
   const { user, isCoachPlus } = await getCoachRole(orgId);
   if (!user) return { ok: false, message: "Anda harus login" };
   if (!isCoachPlus) return { ok: false, message: "Hanya coach ke atas yang bisa mengedit meta" };
 
   const admin = createAdminClient();
-  const { error } = await admin
+  const { data, error } = await admin
     .from("meta_hero_ratings")
     .upsert(
       {
@@ -87,11 +88,13 @@ export async function upsertHeroRatingAction(
         updated_at: new Date().toISOString(),
       },
       { onConflict: "patch_id,hero_name" },
-    );
+    )
+    .select()
+    .single();
 
   if (error) return { ok: false, message: error.message };
   revalidatePath(`/${orgSlug}/meta`);
-  return { ok: true };
+  return { ok: true, hero: data };
 }
 
 export async function deleteHeroRatingAction(
