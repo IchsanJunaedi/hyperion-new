@@ -11,15 +11,16 @@ import { deleteHeroRatingAction, createMetaPatchAction, deleteMetaPatchAction } 
 import type { MetaHeroRating, MetaPatch, PatchWithHeroes } from "../queries";
 
 type Tier = "S" | "A" | "B" | "C" | "D";
+type RoleFilter = "all" | "exp_lane" | "jungler" | "mid_lane" | "gold_lane" | "roamer";
 
 const TIERS: Tier[] = ["S", "A", "B", "C", "D"];
 
-const TIER_STYLES: Record<Tier, { bg: string; border: string; badge: string }> = {
-  S: { bg: "bg-red-500/5", border: "border-red-500/20", badge: "bg-red-500/20 text-red-400" },
-  A: { bg: "bg-orange-500/5", border: "border-orange-500/20", badge: "bg-orange-500/20 text-orange-400" },
-  B: { bg: "bg-yellow-500/5", border: "border-yellow-500/20", badge: "bg-yellow-500/20 text-yellow-400" },
-  C: { bg: "bg-green-500/5", border: "border-green-500/20", badge: "bg-green-500/20 text-green-400" },
-  D: { bg: "bg-blue-500/5", border: "border-blue-500/20", badge: "bg-blue-500/20 text-blue-400" },
+const TIER_STYLES: Record<Tier, { bg: string; border: string; badge: string; label: string }> = {
+  S: { bg: "bg-red-500/5", border: "border-red-500/30", badge: "bg-red-500/20 text-red-400", label: "text-red-400" },
+  A: { bg: "bg-orange-500/5", border: "border-orange-500/30", badge: "bg-orange-500/20 text-orange-400", label: "text-orange-400" },
+  B: { bg: "bg-yellow-500/5", border: "border-yellow-500/30", badge: "bg-yellow-500/20 text-yellow-400", label: "text-yellow-400" },
+  C: { bg: "bg-green-500/5", border: "border-green-500/30", badge: "bg-green-500/20 text-green-400", label: "text-green-400" },
+  D: { bg: "bg-blue-500/5", border: "border-blue-500/30", badge: "bg-blue-500/20 text-blue-400", label: "text-blue-400" },
 };
 
 const ROLE_LABELS: Record<string, string> = {
@@ -38,6 +39,14 @@ const ROLE_COLORS: Record<string, string> = {
   roamer: "text-rose-400",
 };
 
+const ROLE_BG: Record<string, string> = {
+  exp_lane: "bg-amber-500/20",
+  jungler: "bg-violet-500/20",
+  mid_lane: "bg-cyan-500/20",
+  gold_lane: "bg-yellow-500/20",
+  roamer: "bg-rose-500/20",
+};
+
 const ROLE_DISPLAY: Record<string, string> = {
   exp_lane: "EXP Lane",
   jungler: "Jungler",
@@ -46,7 +55,16 @@ const ROLE_DISPLAY: Record<string, string> = {
   roamer: "Roamer",
 };
 
-function HeroChip({
+const ROLE_FILTERS: Array<{ value: RoleFilter; label: string }> = [
+  { value: "all", label: "Semua" },
+  { value: "exp_lane", label: "EXP Lane" },
+  { value: "jungler", label: "Jungler" },
+  { value: "mid_lane", label: "Mid Lane" },
+  { value: "gold_lane", label: "Gold Lane" },
+  { value: "roamer", label: "Roamer" },
+];
+
+function HeroCard({
   hero,
   editMode,
   onEdit,
@@ -59,11 +77,11 @@ function HeroChip({
 }) {
   const style = TIER_STYLES[hero.tier];
   return (
-    <div className="group relative h-12 w-12 shrink-0 transition select-none">
-      {/* Circle Hero Portrait */}
+    <div className="group relative w-[72px] shrink-0 select-none">
+      {/* Portrait */}
       <div
         className={cn(
-          "h-full w-full overflow-hidden rounded-full border-2 transition group-hover:scale-105 group-hover:border-white/40",
+          "relative aspect-square w-full overflow-hidden rounded-xl border-2 transition group-hover:scale-105",
           style.border,
         )}
       >
@@ -73,60 +91,76 @@ function HeroChip({
           alt={hero.hero_name}
           className="h-full w-full object-cover"
         />
-      </div>
 
-      {/* Flag Indicator Badges */}
-      {hero.is_ban_priority && (
-        <div className="absolute -left-1 -top-1 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-red-500 text-white shadow-md">
-          <Shield className="h-2.5 w-2.5" />
-        </div>
-      )}
-      {hero.priority_to_learn && (
-        <div className="absolute -right-1 -top-1 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-yellow-500 text-black shadow-md">
-          <Star className="h-2.5 w-2.5 fill-black" />
-        </div>
-      )}
-
-      {/* Role tag pill */}
-      {hero.role_tag && (
-        <span
+        {/* Tier badge bottom-left */}
+        <div
           className={cn(
-            "absolute -bottom-1 left-1/2 -translate-x-1/2 rounded bg-black/80 px-1 py-0.5 text-[8px] font-bold border border-white/5 whitespace-nowrap shadow-sm",
-            ROLE_COLORS[hero.role_tag]
+            "absolute bottom-1 left-1 flex h-4 min-w-4 items-center justify-center rounded px-1 text-[8px] font-black shadow",
+            style.badge,
           )}
         >
-          {ROLE_LABELS[hero.role_tag]}
-        </span>
-      )}
+          {hero.tier}
+        </div>
 
-      {/* Edit mode hover overlay */}
-      {editMode && (
-        <div className="absolute inset-0 flex items-center justify-center gap-1 rounded-full bg-black/75 opacity-0 group-hover:opacity-100 transition z-10">
-          <button
-            type="button"
-            onClick={() => onEdit(hero)}
-            className="flex h-5 w-5 cursor-pointer items-center justify-center rounded-full bg-white/20 text-white hover:bg-white/40"
+        {/* Flag badges */}
+        {hero.is_ban_priority && (
+          <div className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 shadow-md">
+            <Shield className="h-2.5 w-2.5 text-white" />
+          </div>
+        )}
+        {hero.priority_to_learn && (
+          <div className={cn("absolute top-1 flex h-4 w-4 items-center justify-center rounded-full bg-yellow-500 shadow-md", hero.is_ban_priority ? "right-6" : "right-1")}>
+            <Star className="h-2.5 w-2.5 fill-black text-black" />
+          </div>
+        )}
+
+        {/* Edit mode overlay */}
+        {editMode && (
+          <div className="absolute inset-0 z-10 flex items-center justify-center gap-1.5 bg-black/75 opacity-0 transition group-hover:opacity-100">
+            <button
+              type="button"
+              onClick={() => onEdit(hero)}
+              className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-full bg-white/20 text-white hover:bg-white/40"
+            >
+              <Pencil className="h-3 w-3" />
+            </button>
+            <button
+              type="button"
+              onClick={() => onDelete(hero.id, hero.hero_name)}
+              className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-full bg-red-500/30 text-red-400 hover:bg-red-500/50"
+            >
+              <X className="h-3 w-3" />
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Hero name */}
+      <p className="mt-1.5 truncate px-0.5 text-center text-[10px] font-medium leading-tight text-white/75">
+        {hero.hero_name}
+      </p>
+
+      {/* Role tag */}
+      {hero.role_tag && (
+        <div className="mt-0.5 flex justify-center">
+          <span
+            className={cn(
+              "rounded-sm px-1 py-0.5 text-[7px] font-bold leading-none",
+              ROLE_COLORS[hero.role_tag],
+              ROLE_BG[hero.role_tag],
+            )}
           >
-            <Pencil className="h-2.5 w-2.5" />
-          </button>
-          <button
-            type="button"
-            onClick={() => onDelete(hero.id, hero.hero_name)}
-            className="flex h-5 w-5 cursor-pointer items-center justify-center rounded-full bg-red-500/30 text-red-400 hover:bg-red-500/50"
-          >
-            <X className="h-2.5 w-2.5" />
-          </button>
+            {ROLE_LABELS[hero.role_tag]}
+          </span>
         </div>
       )}
 
-      {/* Tooltip */}
-      <div className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-2 -translate-x-1/2 rounded bg-black/95 px-2 py-1 text-[10px] font-medium text-white opacity-0 transition group-hover:opacity-100 whitespace-nowrap border border-white/10 shadow-lg">
-        <span className="font-bold">{hero.hero_name}</span>
-        {hero.role_tag && (
-          <span className="ml-1 text-white/50">({ROLE_DISPLAY[hero.role_tag]})</span>
-        )}
-        {hero.notes && <span className="block text-[9px] text-white/40 mt-0.5 italic">{hero.notes}</span>}
-      </div>
+      {/* Tooltip on hover */}
+      {hero.notes && (
+        <div className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-2 -translate-x-1/2 whitespace-nowrap rounded border border-white/10 bg-black/95 px-2 py-1.5 text-[10px] font-medium text-white opacity-0 shadow-lg transition group-hover:opacity-100">
+          <span className="block text-[9px] italic text-white/50">{hero.notes}</span>
+        </div>
+      )}
     </div>
   );
 }
@@ -144,6 +178,7 @@ export function MetaPage({ orgSlug, orgId, patches, initialPatch, canEdit }: Met
   const [activePatch, setActivePatch] = useState<PatchWithHeroes | null>(initialPatch);
   const [patchList, setPatchList] = useState<MetaPatch[]>(patches);
   const [activeTab, setActiveTab] = useState<"tier" | "ban" | "learn">("tier");
+  const [roleFilter, setRoleFilter] = useState<RoleFilter>("all");
   const [editMode, setEditMode] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingHero, setEditingHero] = useState<MetaHeroRating | null>(null);
@@ -155,6 +190,9 @@ export function MetaPage({ orgSlug, orgId, patches, initialPatch, canEdit }: Met
 
   const heroes = activePatch?.heroes ?? [];
   const existingHeroNames = new Set(heroes.map((h) => h.hero_name));
+
+  const filteredHeroes =
+    roleFilter === "all" ? heroes : heroes.filter((h) => h.role_tag === roleFilter);
 
   function openAddModal(tier: Tier) {
     setEditingHero(null);
@@ -292,7 +330,7 @@ export function MetaPage({ orgSlug, orgId, patches, initialPatch, canEdit }: Met
             </button>
           ))}
           {patchList.length === 0 && (
-            <span className="text-xs text-white/30 italic">Belum ada patch</span>
+            <span className="text-xs italic text-white/30">Belum ada patch</span>
           )}
         </div>
         {canEdit && (
@@ -364,7 +402,10 @@ export function MetaPage({ orgSlug, orgId, patches, initialPatch, canEdit }: Met
               <button
                 key={tab}
                 type="button"
-                onClick={() => setActiveTab(tab)}
+                onClick={() => {
+                  setActiveTab(tab);
+                  setRoleFilter("all");
+                }}
                 className={cn(
                   "-mb-px cursor-pointer border-b-2 px-4 py-2 text-sm transition",
                   activeTab === tab
@@ -381,44 +422,86 @@ export function MetaPage({ orgSlug, orgId, patches, initialPatch, canEdit }: Met
 
           {/* Tier List tab */}
           {activeTab === "tier" && (
-            <div className="space-y-3">
-              {TIERS.map((tier) => {
-                const style = TIER_STYLES[tier];
-                const tierHeroes = heroes.filter((h) => h.tier === tier);
-                return (
-                  <div key={tier} className={cn("rounded-xl border p-4", style.bg, style.border)}>
-                    <div className="flex items-start gap-4">
-                      <div className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-lg font-black", style.badge)}>
-                        {tier}
-                      </div>
-                      <div className="flex flex-1 flex-wrap gap-2">
-                        {tierHeroes.map((h) => (
-                          <HeroChip
-                            key={h.id}
-                            hero={h}
-                            editMode={editMode}
-                            onEdit={openEditModal}
-                            onDelete={handleDelete}
-                          />
-                        ))}
-                        {tierHeroes.length === 0 && !editMode && (
-                          <span className="text-xs italic text-white/20">Belum ada hero</span>
-                        )}
-                        {editMode && (
-                          <button
-                            type="button"
-                            onClick={() => openAddModal(tier)}
-                            className="inline-flex cursor-pointer items-center gap-1 rounded-lg border border-dashed border-white/10 px-2.5 py-1.5 text-xs text-white/30 transition hover:border-white/30 hover:text-white/60"
+            <div className="space-y-4">
+              {/* Role filter bar */}
+              <div className="flex flex-wrap items-center gap-1.5">
+                <span className="text-xs text-white/40">Filter lane:</span>
+                {ROLE_FILTERS.map((rf) => (
+                  <button
+                    key={rf.value}
+                    type="button"
+                    onClick={() => setRoleFilter(rf.value)}
+                    className={cn(
+                      "cursor-pointer rounded-full border px-3 py-1 text-xs font-medium transition",
+                      roleFilter === rf.value
+                        ? "border-yellow-500/50 bg-yellow-500/10 text-yellow-400"
+                        : "border-[#2D2D2D] text-white/40 hover:border-white/20 hover:text-white/70",
+                    )}
+                  >
+                    {rf.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Tier rows */}
+              <div className="space-y-3">
+                {TIERS.map((tier) => {
+                  const style = TIER_STYLES[tier];
+                  const tierHeroes = filteredHeroes.filter((h) => h.tier === tier);
+                  const totalInTier = heroes.filter((h) => h.tier === tier).length;
+
+                  if (roleFilter !== "all" && tierHeroes.length === 0) return null;
+
+                  return (
+                    <div key={tier} className={cn("rounded-xl border p-4", style.bg, style.border)}>
+                      <div className="flex items-start gap-4">
+                        {/* Tier badge */}
+                        <div className="flex shrink-0 flex-col items-center gap-1">
+                          <div
+                            className={cn(
+                              "flex h-10 w-10 items-center justify-center rounded-lg text-xl font-black",
+                              style.badge,
+                            )}
                           >
-                            <Plus className="h-3 w-3" />
-                            Tambah
-                          </button>
-                        )}
+                            {tier}
+                          </div>
+                          <span className="text-[9px] text-white/30">
+                            {roleFilter === "all" ? totalInTier : `${tierHeroes.length}/${totalInTier}`}
+                          </span>
+                        </div>
+
+                        {/* Heroes */}
+                        <div className="flex flex-1 flex-wrap gap-3">
+                          {tierHeroes.map((h) => (
+                            <HeroCard
+                              key={h.id}
+                              hero={h}
+                              editMode={editMode}
+                              onEdit={openEditModal}
+                              onDelete={handleDelete}
+                            />
+                          ))}
+                          {tierHeroes.length === 0 && !editMode && (
+                            <span className="self-center text-xs italic text-white/20">
+                              Belum ada hero
+                            </span>
+                          )}
+                          {editMode && roleFilter === "all" && (
+                            <button
+                              type="button"
+                              onClick={() => openAddModal(tier)}
+                              className="inline-flex h-[72px] w-[72px] shrink-0 cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-white/10 text-white/30 transition hover:border-white/30 hover:text-white/60"
+                            >
+                              <Plus className="h-4 w-4" />
+                              <span className="text-[9px]">Tambah</span>
+                            </button>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
 
               {editMode && canEdit && (
                 <div className="flex justify-end pt-2">
@@ -451,32 +534,47 @@ export function MetaPage({ orgSlug, orgId, patches, initialPatch, canEdit }: Met
                     return (
                       <div
                         key={h.id}
-                        className="group relative h-12 w-12 shrink-0 transition select-none"
+                        className="group relative w-[72px] shrink-0 select-none"
                       >
-                        <div className={cn("h-full w-full overflow-hidden rounded-full border-2", style.border)}>
+                        <div
+                          className={cn(
+                            "relative aspect-square w-full overflow-hidden rounded-xl border-2 transition group-hover:scale-105",
+                            style.border,
+                          )}
+                        >
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
                             src={getHeroImageUrl(h.hero_name)}
                             alt={h.hero_name}
                             className="h-full w-full object-cover"
                           />
+                          <div className="absolute left-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 shadow-md">
+                            <Shield className="h-2.5 w-2.5 text-white" />
+                          </div>
+                          <div
+                            className={cn(
+                              "absolute bottom-1 right-1 flex h-4 min-w-4 items-center justify-center rounded px-1 text-[8px] font-black shadow",
+                              style.badge,
+                            )}
+                          >
+                            {h.tier}
+                          </div>
                         </div>
-                        <div className="absolute -left-1 -top-1 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-red-500 text-white shadow-md">
-                          <Shield className="h-2.5 w-2.5" />
-                        </div>
-                        <div
-                          className={cn(
-                            "absolute -bottom-1 -right-1 flex h-4.5 w-4.5 items-center justify-center rounded-full text-[9px] font-black shadow-md border border-white/10",
-                            style.badge
-                          )}
-                        >
-                          {h.tier}
-                        </div>
-                        {/* Tooltip */}
-                        <div className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-2 -translate-x-1/2 rounded bg-black/95 px-2 py-1 text-[10px] font-medium text-white opacity-0 transition group-hover:opacity-100 whitespace-nowrap border border-white/10 shadow-lg">
-                          <span className="font-bold">{h.hero_name}</span>
-                          {h.notes && <span className="block text-[9px] text-white/40 mt-0.5 italic">{h.notes}</span>}
-                        </div>
+                        <p className="mt-1.5 truncate px-0.5 text-center text-[10px] font-medium leading-tight text-white/75">
+                          {h.hero_name}
+                        </p>
+                        {h.role_tag && (
+                          <div className="mt-0.5 flex justify-center">
+                            <span className={cn("rounded-sm px-1 py-0.5 text-[7px] font-bold leading-none", ROLE_COLORS[h.role_tag], ROLE_BG[h.role_tag])}>
+                              {ROLE_LABELS[h.role_tag]}
+                            </span>
+                          </div>
+                        )}
+                        {h.notes && (
+                          <div className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-2 -translate-x-1/2 whitespace-nowrap rounded border border-white/10 bg-black/95 px-2 py-1.5 text-[9px] italic text-white/50 opacity-0 shadow-lg transition group-hover:opacity-100">
+                            {h.notes}
+                          </div>
+                        )}
                       </div>
                     );
                   })}
@@ -499,7 +597,7 @@ export function MetaPage({ orgSlug, orgId, patches, initialPatch, canEdit }: Met
                   const label = role === "untagged" ? "Tanpa Lane" : (ROLE_DISPLAY[role] ?? role);
                   const color = role === "untagged" ? "text-white/60" : (ROLE_COLORS[role] ?? "text-white/60");
                   return (
-                    <div key={role} className="space-y-2">
+                    <div key={role} className="space-y-3">
                       <p className={cn("text-xs font-semibold uppercase tracking-wide", color)}>{label}</p>
                       <div className="flex flex-wrap gap-3">
                         {roleHeroes.map((h) => {
@@ -507,32 +605,47 @@ export function MetaPage({ orgSlug, orgId, patches, initialPatch, canEdit }: Met
                           return (
                             <div
                               key={h.id}
-                              className="group relative h-12 w-12 shrink-0 transition select-none"
+                              className="group relative w-[72px] shrink-0 select-none"
                             >
-                              <div className={cn("h-full w-full overflow-hidden rounded-full border-2", style.border)}>
+                              <div
+                                className={cn(
+                                  "relative aspect-square w-full overflow-hidden rounded-xl border-2 transition group-hover:scale-105",
+                                  style.border,
+                                )}
+                              >
                                 {/* eslint-disable-next-line @next/next/no-img-element */}
                                 <img
                                   src={getHeroImageUrl(h.hero_name)}
                                   alt={h.hero_name}
                                   className="h-full w-full object-cover"
                                 />
+                                <div className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-yellow-500 shadow-md">
+                                  <Star className="h-2.5 w-2.5 fill-black text-black" />
+                                </div>
+                                <div
+                                  className={cn(
+                                    "absolute bottom-1 right-1 flex h-4 min-w-4 items-center justify-center rounded px-1 text-[8px] font-black shadow",
+                                    style.badge,
+                                  )}
+                                >
+                                  {h.tier}
+                                </div>
                               </div>
-                              <div className="absolute -left-1 -top-1 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-yellow-500 text-black shadow-md">
-                                <Star className="h-2.5 w-2.5 fill-black" />
-                              </div>
-                              <div
-                                className={cn(
-                                  "absolute -bottom-1 -right-1 flex h-4.5 w-4.5 items-center justify-center rounded-full text-[9px] font-black shadow-md border border-white/10",
-                                  style.badge
-                                )}
-                              >
-                                {h.tier}
-                              </div>
-                              {/* Tooltip */}
-                              <div className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-2 -translate-x-1/2 rounded bg-black/95 px-2 py-1 text-[10px] font-medium text-white opacity-0 transition group-hover:opacity-100 whitespace-nowrap border border-white/10 shadow-lg">
-                                <span className="font-bold">{h.hero_name}</span>
-                                {h.notes && <span className="block text-[9px] text-white/40 mt-0.5 italic">{h.notes}</span>}
-                              </div>
+                              <p className="mt-1.5 truncate px-0.5 text-center text-[10px] font-medium leading-tight text-white/75">
+                                {h.hero_name}
+                              </p>
+                              {h.role_tag && (
+                                <div className="mt-0.5 flex justify-center">
+                                  <span className={cn("rounded-sm px-1 py-0.5 text-[7px] font-bold leading-none", ROLE_COLORS[h.role_tag], ROLE_BG[h.role_tag])}>
+                                    {ROLE_LABELS[h.role_tag]}
+                                  </span>
+                                </div>
+                          )}
+                              {h.notes && (
+                                <div className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-2 -translate-x-1/2 whitespace-nowrap rounded border border-white/10 bg-black/95 px-2 py-1.5 text-[9px] italic text-white/50 opacity-0 shadow-lg transition group-hover:opacity-100">
+                                  {h.notes}
+                                </div>
+                              )}
                             </div>
                           );
                         })}
