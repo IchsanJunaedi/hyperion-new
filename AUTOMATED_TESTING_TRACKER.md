@@ -9,10 +9,10 @@
 
 | Metric | Baseline | Current | Target |
 |--------|----------|---------|--------|
-| Statements | 16.61% | 22.85% | **80%** |
-| Branches | 13.77% | 21.38% | **80%** |
-| Functions | 26.50% | 36.91% | **80%** |
-| Lines | 16.48% | 22.78% | **80%** |
+| Statements | 16.61% | 41.85% | **80%** |
+| Branches | 13.77% | 35.38% | **80%** |
+| Functions | 26.50% | 52.80% | **80%** |
+| Lines | 16.48% | 43.33% | **80%** |
 
 > Last updated: **2026-05-21** · Run `npm run test:unit:coverage` to refresh.
 
@@ -25,7 +25,7 @@
 | Lint | ✅ Green |
 | Typecheck | ✅ Green |
 | Unit Tests + Coverage | ✅ Green |
-| Coverage Gate (≥80%) | 🔴 Not Yet — at 22.85% |
+| Coverage Gate (≥80%) | 🔴 Not Yet — at 41.85% |
 | Codecov Upload | ✅ Configured |
 
 > CI enforces coverage thresholds via `vitest.config.ts` → `thresholds`. **Fail fast** jika turun dari target wave.
@@ -57,8 +57,11 @@
 | `features/finances/__tests__/calculations.test.ts` | 16 | `features/finances/queries.ts` | ✅ |
 | `features/analytics/__tests__/computations.test.ts` | 26 | `features/analytics/computations.ts` | ✅ |
 | `features/roster/__tests__/logic.test.ts` | 19 | `features/roster/logic.ts` | ✅ |
+| `lib/permissions/__tests__/calendar-access.test.ts` | 17 | `lib/permissions/calendar-access.ts` | ✅ |
+| `lib/permissions/__tests__/calendar-audit.test.ts` | 17 | `lib/permissions/calendar-audit.ts` | ✅ |
+| `lib/permissions/__tests__/calendar-rules.test.ts` | 43 | `lib/permissions/calendar-rules.ts` | ✅ |
 
-**Total existing tests: ~313**
+**Total existing tests: ~365**
 
 ---
 
@@ -146,24 +149,25 @@
 
 ---
 
-### Wave C — Permissions Deep Dive ⬜ TODO  
-> Target: +15% coverage · `lib/permissions/` sudah partial, perlu complete
+### Wave C — Permissions Deep Dive ✅ DONE
+> Target: +19.00% coverage · 77 new test cases
+> Files tercover: `calendar-access.ts` (17 tests), `calendar-audit.ts` (17 tests), `calendar-rules.ts` (43 tests)
 
 **Tasks:**
 
-- [ ] **Task C-1: `lib/permissions/__tests__/calendar-access.test.ts`** (≥15 tests)
+- [x] **Task C-1: `lib/permissions/__tests__/calendar-access.test.ts`** (17 tests)
   - Baca `lib/permissions/calendar-access.ts` — identifikasi exported functions
   - Test setiap exported function: `canUserAccessCalendar()`, `getCalendarAccessLevel()`, dll
   - Edge: null user, null calendar, expired permissions
   - **Commit message:** `test: add calendar-access permission unit tests (15+ cases)`
 
-- [ ] **Task C-2: `lib/permissions/__tests__/calendar-audit.test.ts`** (≥12 tests)
+- [x] **Task C-2: `lib/permissions/__tests__/calendar-audit.test.ts`** (17 tests)
   - `lib/permissions/calendar-audit.ts` exported functions
   - Audit log structure validation
   - Action categorization (create/update/delete/view)
   - **Commit message:** `test: add calendar-audit unit tests (12+ cases)`
 
-- [ ] **Task C-3: expand `lib/permissions/__tests__/calendar-rules.test.ts`** (≥15 new tests)
+- [x] **Task C-3: expand `lib/permissions/__tests__/calendar-rules.test.ts`** (43 tests total)
   - `getVisibilityDescription()`: semua 6 visibility levels
   - `getAllowedActionsForRole()`: semua combinations role × visibility (5×6 = 30, pilih critical 15)
   - `canPerformAction()`, `canViewCalendar()`, `canCreateEvents()`, dll — semua helper functions
@@ -248,10 +252,10 @@
 | Baseline (existing) | 16.61% | — | ✅ Done |
 | Wave A — Validations Expansion | +4.07% → **20.68%** | A-1 to A-5 | ✅ Done |
 | Wave B — Features Logic | +2.17% → **22.85%** | B-1 to B-4 | ✅ Done |
-| Wave C — Permissions Deep Dive | +12% → ~35% | C-1 to C-3 | ⬜ TODO |
-| Wave D — Validations Complete | +10% → ~45% | D-1 to D-3 | ⬜ TODO |
-| Wave E — Utils Complete | +5% → ~50% | E-1 to E-2 | ⬜ TODO |
-| Wave F — Integration-Style | +30% → **80%** | F-1 to F-4 | ⬜ TODO |
+| Wave C — Permissions Deep Dive | +19.00% → **41.85%** | C-1 to C-3 | ✅ Done |
+| Wave D — Validations Complete | +10% → ~51% | D-1 to D-3 | ⬜ TODO |
+| Wave E — Utils Complete | +5% → ~56% | E-1 to E-2 | ⬜ TODO |
+| Wave F — Integration-Style | +24% → **80%** | F-1 to F-4 | ⬜ TODO |
 
 ---
 
@@ -264,9 +268,9 @@ Threshold dinaikkan bertahap sesuai progress wave. **Jangan push jika threshold 
 | Phase 0 (current) | 15% | 12% | 25% | 15% | 2026-05-21 |
 | Phase 1 (after Wave A) | 20% | 18% | 35% | 20% | 2026-05-21 |
 | Phase 2 (after Wave B) | 22% | 20% | 36% | 22% | 2026-05-21 |
-| Phase 3 (after Wave C) | 35% | 30% | 50% | 35% | TBD |
-| Phase 4 (after Wave D) | 45% | 40% | 62% | 45% | TBD |
-| Phase 5 (after Wave E) | 50% | 45% | 72% | 50% | TBD |
+| Phase 3 (after Wave C) | 41% | 35% | 52% | 43% | 2026-05-21 |
+| Phase 4 (after Wave D) | 51% | 45% | 62% | 51% | TBD |
+| Phase 5 (after Wave E) | 56% | 50% | 72% | 56% | TBD |
 | **FINAL (after Wave F)** | **80%** | **75%** | **85%** | **80%** | TBD |
 
 > Update threshold di `vitest.config.ts` → `coverage.thresholds` setelah setiap wave **selesai dan merge**.
