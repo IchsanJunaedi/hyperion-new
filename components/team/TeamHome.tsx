@@ -2,6 +2,7 @@ import {
   CalendarDays,
   Megaphone,
   Pin,
+  Star,
   Swords,
   TrendingUp,
   Users,
@@ -9,14 +10,24 @@ import {
 import Link from "next/link";
 
 import { ScrimCountdown } from "@/components/team/ScrimCountdown";
-import type { TeamHomeData } from "@/features/teams/queries";
+import { cn } from "@/lib/utils/cn";
+import type { TeamHomeData, PersonalPlayerStats } from "@/features/teams/queries";
+
+function ratingColor(r: number): string {
+  if (r >= 8) return "text-emerald-400";
+  if (r >= 6) return "text-yellow-400";
+  if (r >= 4) return "text-amber-500";
+  return "text-rose-400";
+}
 
 export function TeamHome({
   data,
   canManageScrims,
+  personalStats,
 }: {
   data: TeamHomeData;
   canManageScrims: boolean;
+  personalStats?: PersonalPlayerStats | null;
 }) {
   const slug = data.organization.slug;
 
@@ -36,6 +47,95 @@ export function TeamHome({
           </p>
         ) : null}
       </section>
+
+      {/* Personal stats — only shown to captain/member */}
+      {personalStats && (
+        <section className="rounded-2xl border border-[#2D2D2D] bg-[#141414] p-5">
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-sm font-semibold text-white">Statistik Kamu</h2>
+            {personalStats.avgRating !== null && (
+              <div className="flex items-center gap-1.5">
+                <Star className="h-3.5 w-3.5 text-yellow-400" />
+                <span className={cn("text-sm font-bold tabular-nums", ratingColor(personalStats.avgRating))}>
+                  {personalStats.avgRating.toFixed(1)}
+                </span>
+                <span className="text-xs text-white/40">avg rating</span>
+              </div>
+            )}
+          </div>
+
+          {/* Attendance bar */}
+          <div className="mb-4 space-y-1.5">
+            <div className="flex justify-between text-xs">
+              <span className="text-white/55">Kehadiran</span>
+              <span className="font-semibold text-white">{personalStats.attendanceRate}%</span>
+            </div>
+            <div className="h-2 w-full overflow-hidden rounded-full bg-[#2D2D2D]">
+              <div
+                style={{ width: `${personalStats.attendanceRate}%` }}
+                className={cn(
+                  "h-full rounded-full",
+                  personalStats.attendanceRate >= 75
+                    ? "bg-emerald-500/70"
+                    : personalStats.attendanceRate >= 50
+                      ? "bg-yellow-400/70"
+                      : "bg-rose-500/70",
+                )}
+              />
+            </div>
+          </div>
+
+          {/* Stats grid */}
+          <div className={cn("grid gap-2 rounded-xl bg-[#1C1C1C] p-3", personalStats.targets.length > 0 ? "mb-4" : "")}>
+            <div className="grid grid-cols-3">
+              <div className="text-center">
+                <p className="text-[10px] text-white/40">Hadir</p>
+                <p className="text-sm font-bold text-white">
+                  {personalStats.totalPresent}/{personalStats.totalScrims}
+                </p>
+              </div>
+              <div className="border-x border-[#2D2D2D] text-center">
+                <p className="text-[10px] text-white/40">WR Hadir</p>
+                <p className={cn("text-sm font-bold", personalStats.winRateWhenPresent >= 50 ? "text-emerald-400" : "text-rose-400")}>
+                  {personalStats.scrimsWhenPresent === 0 ? "—" : `${personalStats.winRateWhenPresent}%`}
+                </p>
+              </div>
+              <div className="text-center">
+                <p className="text-[10px] text-white/40">Streak</p>
+                <p className={cn(
+                  "text-sm font-bold",
+                  personalStats.streak > 0 ? "text-emerald-400" : personalStats.streak < 0 ? "text-rose-400" : "text-white/40",
+                )}>
+                  {personalStats.streak === 0 ? "—" : Math.abs(personalStats.streak)}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Improvement targets */}
+          {personalStats.targets.length > 0 && (
+            <div>
+              <p className="mb-2.5 text-xs font-medium text-white/55">Target Peningkatan</p>
+              <div className="space-y-2.5">
+                {personalStats.targets.map((t) => (
+                  <div key={t.id}>
+                    <div className="mb-1 flex justify-between text-[11px]">
+                      <span className="text-white/70">{t.skill_name}</span>
+                      <span className="tabular-nums text-white/40">{t.current_level}/{t.target_level}</span>
+                    </div>
+                    <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#2D2D2D]">
+                      <div
+                        style={{ width: `${Math.min(100, Math.round((t.current_level / Math.max(t.target_level, 1)) * 100))}%` }}
+                        className="h-full rounded-full bg-blue-400/60"
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </section>
+      )}
 
       {/* Top row: next scrim + quick stats */}
       <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">

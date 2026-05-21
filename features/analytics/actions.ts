@@ -24,21 +24,31 @@ export interface PlayerScrimGame {
   role: string;
 }
 
+export interface PlayerRatingEntry {
+  scrim_id: string;
+  opponent_name: string;
+  scheduled_at: string;
+  rating: number;
+  coach_notes: string | null;
+}
+
 export interface PlayerHeroHistory {
   heroStats: PlayerHeroStatExtended[];
   recentGames: PlayerScrimGame[];
+  ratingHistory: PlayerRatingEntry[];
 }
 
 export async function fetchPlayerHeroHistory(
   orgId: string,
   userId: string,
 ): Promise<PlayerHeroHistory> {
+  const empty: PlayerHeroHistory = { heroStats: [], recentGames: [], ratingHistory: [] };
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) return { heroStats: [], recentGames: [] };
+  if (!user) return empty;
 
   // Validate: caller must be a member of this org (or owner)
   const ownerEmail = process.env.OWNER_EMAIL;
@@ -53,7 +63,7 @@ export async function fetchPlayerHeroHistory(
       .eq("is_active", true)
       .maybeSingle();
 
-    if (!membership) return { heroStats: [], recentGames: [] };
+    if (!membership) return empty;
   }
 
   const admin = createAdminClient();
@@ -66,7 +76,7 @@ export async function fetchPlayerHeroHistory(
     .eq("status", "completed")
     .order("scheduled_at", { ascending: false });
 
-  if (!scrims?.length) return { heroStats: [], recentGames: [] };
+  if (!scrims?.length) return empty;
 
   const scrimIds = scrims.map((s) => s.id);
 
@@ -78,24 +88,51 @@ export async function fetchPlayerHeroHistory(
     scrimResultMap.set(s.id, first?.is_win ?? null);
   }
 
-  // 2. Fetch all draft picks for this player across all completed scrims
-  const { data: picks } = await admin
-    .from("scrim_draft_picks")
-    .select("scrim_id, game_number, hero_name, role")
-    .in("scrim_id", scrimIds)
-    .eq("player_id", userId)
-    .eq("side", "our");
+  // 2. Parallel: draft picks + game results + attendances for this player
+  const [picksRes, gameResultsRes, attendancesRes] = await Promise.all([
+    admin
+      .from("scrim_draft_picks")
+      .select("scrim_id, game_number, hero_name, role")
+      .in("scrim_id", scrimIds)
+      .eq("player_id", userId)
+      .eq("side", "our"),
+    admin
+      .from("scrim_game_results")
+      .select("scrim_id, game_number, is_win")
+      .in("scrim_id", scrimIds),
+    admin
+      .from("scrim_attendances")
+      .select("scrim_id, rating, coach_notes")
+      .in("scrim_id", scrimIds)
+      .eq("user_id", userId),
+  ]);
 
-  if (!picks?.length) return { heroStats: [], recentGames: [] };
+  // 3. Build rating history (chronological, rated entries only, last 15)
+  const attendanceByScrim = new Map(
+    (attendancesRes.data ?? []).map((a) => [a.scrim_id, a]),
+  );
+  const ratingHistory: PlayerRatingEntry[] = [...scrims]
+    .reverse() // oldest first for left-to-right trend
+    .reduce<PlayerRatingEntry[]>((acc, s) => {
+      const att = attendanceByScrim.get(s.id);
+      if (att?.rating != null) {
+        acc.push({
+          scrim_id: s.id,
+          opponent_name: s.opponent_name,
+          scheduled_at: s.scheduled_at,
+          rating: att.rating as number,
+          coach_notes: (att.coach_notes as string | null) ?? null,
+        });
+      }
+      return acc;
+    }, [])
+    .slice(-15); // keep at most 15 most recent rated entries
 
-  // 3. Fetch game results to know per-game win/loss
-  const { data: gameResults } = await admin
-    .from("scrim_game_results")
-    .select("scrim_id, game_number, is_win")
-    .in("scrim_id", scrimIds);
+  const picks = picksRes.data ?? [];
+  if (!picks.length) return { heroStats: [], recentGames: [], ratingHistory };
 
   const gameWinMap = new Map<string, boolean>(
-    (gameResults ?? []).map((g) => [`${g.scrim_id}:${g.game_number}`, g.is_win]),
+    (gameResultsRes.data ?? []).map((g) => [`${g.scrim_id}:${g.game_number}`, g.is_win]),
   );
 
   // ── Aggregate hero stats ──────────────────────────────────────────────────
@@ -154,5 +191,5 @@ export async function fetchPlayerHeroHistory(
     })
     .slice(0, 30);
 
-  return { heroStats, recentGames };
+  return { heroStats, recentGames, ratingHistory };
 }

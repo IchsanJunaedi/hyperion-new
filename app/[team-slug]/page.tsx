@@ -9,6 +9,7 @@ import { PublicTeamProfile } from "@/components/team/PublicTeamProfile";
 import { TeamHome } from "@/components/team/TeamHome";
 import {
   getOrgBySlug,
+  getPersonalPlayerStats,
   getPublicTeamData,
   getTeamHomeData,
   isCurrentUserMember,
@@ -54,9 +55,15 @@ export default async function TeamSlugPage({ params }: TeamSlugPageProps) {
 
   if (!user) notFound();
 
-  const data = await getTeamHomeData(organization);
-  const currentUserRole = await getCurrentUserRole(organization.id);
+  const [data, currentUserRole] = await Promise.all([
+    getTeamHomeData(organization),
+    getCurrentUserRole(organization.id),
+  ]);
   const canManageScrims = ["captain", "manager", "owner"].includes(currentUserRole ?? "");
+  const personalStats =
+    !isOwner && (currentUserRole === "captain" || currentUserRole === "member")
+      ? await getPersonalPlayerStats(organization.id, user.id)
+      : null;
 
   return (
     <div className="flex min-h-screen flex-1">
@@ -86,7 +93,7 @@ export default async function TeamSlugPage({ params }: TeamSlugPageProps) {
           className="hidden md:flex"
         />
         <main className="flex-1">
-          <TeamHome data={data} canManageScrims={canManageScrims} />
+          <TeamHome data={data} canManageScrims={canManageScrims} personalStats={personalStats} />
         </main>
         <MobileBottomNav orgSlug={organization.slug} />
       </div>
