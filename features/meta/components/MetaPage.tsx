@@ -150,6 +150,17 @@ function HeroCard({
 
 // ─── Inline hero picker panel ──────────────────────────────────────────────
 
+type RoleTag = "exp_lane" | "jungler" | "mid_lane" | "gold_lane" | "roamer" | null;
+
+const ROLE_CONFIG: Array<{ value: RoleTag; label: string }> = [
+  { value: null, label: "—" },
+  { value: "exp_lane", label: "EXP" },
+  { value: "jungler", label: "JGL" },
+  { value: "mid_lane", label: "MID" },
+  { value: "gold_lane", label: "GOLD" },
+  { value: "roamer", label: "ROAM" },
+];
+
 function HeroPickerPanel({
   tier,
   orgSlug,
@@ -168,7 +179,11 @@ function HeroPickerPanel({
   style: typeof TIER_STYLES[Tier];
 }) {
   const [search, setSearch] = useState("");
-  const [adding, setAdding] = useState<Set<string>>(new Set());
+  const [selected, setSelected] = useState<string | null>(null);
+  const [configRole, setConfigRole] = useState<RoleTag>(null);
+  const [configBan, setConfigBan] = useState(false);
+  const [configLearn, setConfigLearn] = useState(false);
+  const [adding, setAdding] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -180,29 +195,41 @@ function HeroPickerPanel({
     ? available.filter((h) => h.toLowerCase().includes(search.toLowerCase()))
     : available;
 
-  async function handleAdd(heroName: string) {
-    if (adding.has(heroName)) return;
-    setAdding((prev) => new Set(prev).add(heroName));
+  function selectHero(heroName: string) {
+    setSelected(heroName);
+    setConfigRole(null);
+    setConfigBan(false);
+    setConfigLearn(false);
+  }
+
+  function clearSelection() {
+    setSelected(null);
+    setConfigRole(null);
+    setConfigBan(false);
+    setConfigLearn(false);
+  }
+
+  async function handleConfirm() {
+    if (!selected || adding) return;
+    setAdding(true);
 
     const res = await upsertHeroRatingAction(orgSlug, orgId, patchId, {
-      hero_name: heroName,
+      hero_name: selected,
       tier,
-      role_tag: null,
-      is_ban_priority: false,
-      priority_to_learn: false,
+      role_tag: configRole,
+      is_ban_priority: configBan,
+      priority_to_learn: configLearn,
       notes: "",
     });
 
     if (res.ok) {
       onAdd(res.hero);
+      clearSelection();
+      searchRef.current?.focus();
     } else {
       toast.error(res.message);
-      setAdding((prev) => {
-        const n = new Set(prev);
-        n.delete(heroName);
-        return n;
-      });
     }
+    setAdding(false);
   }
 
   return (
@@ -224,24 +251,118 @@ function HeroPickerPanel({
         )}
       </div>
 
+      {/* Config strip — shown after hero is selected */}
+      {selected && (
+        <div className="mb-3 rounded-lg border border-[#2D2D2D] bg-[#1C1C1C] p-3 space-y-3">
+          {/* Hero identity + action buttons */}
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-white/10">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={getHeroImageUrl(selected)}
+                alt={selected}
+                className="h-full w-full object-cover"
+              />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="truncate text-sm font-semibold text-white">{selected}</p>
+              <p className={cn("text-xs", style.label)}>Tier {tier}</p>
+            </div>
+            <button
+              type="button"
+              onClick={clearSelection}
+              className="cursor-pointer text-white/30 hover:text-white shrink-0"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+
+          {/* Role selector */}
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className="text-[10px] text-white/40 w-8 shrink-0">Lane</span>
+            {ROLE_CONFIG.map((r) => (
+              <button
+                key={String(r.value)}
+                type="button"
+                onClick={() => setConfigRole(r.value)}
+                className={cn(
+                  "cursor-pointer rounded-full border px-2.5 py-0.5 text-xs font-medium transition",
+                  configRole === r.value
+                    ? r.value
+                      ? cn(ROLE_COLORS[r.value], ROLE_BG[r.value], "border-transparent")
+                      : "border-white/30 bg-white/10 text-white/80"
+                    : "border-[#2D2D2D] text-white/40 hover:border-white/20 hover:text-white/70",
+                )}
+              >
+                {r.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Flags + confirm */}
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setConfigBan((v) => !v)}
+              className={cn(
+                "inline-flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition",
+                configBan
+                  ? "border-red-500/50 bg-red-500/10 text-red-400"
+                  : "border-[#2D2D2D] text-white/40 hover:border-white/20 hover:text-white/60",
+              )}
+            >
+              <Shield className="h-3 w-3" />
+              Ban Priority
+            </button>
+            <button
+              type="button"
+              onClick={() => setConfigLearn((v) => !v)}
+              className={cn(
+                "inline-flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition",
+                configLearn
+                  ? "border-yellow-500/50 bg-yellow-500/10 text-yellow-400"
+                  : "border-[#2D2D2D] text-white/40 hover:border-white/20 hover:text-white/60",
+              )}
+            >
+              <Star className="h-3 w-3" />
+              Priority to Learn
+            </button>
+            <button
+              type="button"
+              onClick={handleConfirm}
+              disabled={adding}
+              className="ml-auto inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-yellow-400 px-4 py-1.5 text-xs font-bold text-black transition hover:bg-yellow-300 disabled:opacity-60"
+            >
+              {adding ? (
+                <div className="h-3 w-3 animate-spin rounded-full border-2 border-black/20 border-t-black" />
+              ) : (
+                <Plus className="h-3.5 w-3.5" />
+              )}
+              Tambahkan
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Hero grid */}
-      <div className="sidebar-scroll max-h-52 overflow-y-auto">
+      <div className="sidebar-scroll max-h-48 overflow-y-auto">
         {filtered.length === 0 ? (
           <p className="py-4 text-center text-xs text-white/30">Hero tidak ditemukan</p>
         ) : (
           <div className="flex flex-wrap gap-2">
             {filtered.map((heroName) => {
-              const isAdding = adding.has(heroName);
+              const isSelected = selected === heroName;
               return (
                 <button
                   key={heroName}
                   type="button"
-                  onClick={() => handleAdd(heroName)}
-                  disabled={isAdding}
+                  onClick={() => selectHero(heroName)}
                   title={heroName}
                   className={cn(
-                    "group relative w-14 shrink-0 cursor-pointer rounded-lg border border-transparent p-0.5 transition hover:border-white/25 hover:bg-white/5 focus:outline-none",
-                    isAdding && "cursor-wait opacity-60",
+                    "group relative w-14 shrink-0 cursor-pointer rounded-lg border p-0.5 transition focus:outline-none",
+                    isSelected
+                      ? cn(style.border, "bg-white/5 scale-105")
+                      : "border-transparent hover:border-white/20 hover:bg-white/5",
                   )}
                 >
                   <div className="aspect-square overflow-hidden rounded-md">
@@ -252,14 +373,12 @@ function HeroPickerPanel({
                       className="h-full w-full object-cover transition group-hover:scale-110"
                     />
                   </div>
-                  <p className="mt-0.5 truncate text-center text-[8px] text-white/50 group-hover:text-white/80">
+                  <p className={cn(
+                    "mt-0.5 truncate text-center text-[8px] transition",
+                    isSelected ? "text-white/90 font-semibold" : "text-white/50 group-hover:text-white/80",
+                  )}>
                     {heroName}
                   </p>
-                  {isAdding && (
-                    <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/60">
-                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white/80" />
-                    </div>
-                  )}
                 </button>
               );
             })}
@@ -268,7 +387,7 @@ function HeroPickerPanel({
       </div>
 
       <p className="mt-3 text-[10px] text-white/25">
-        {available.length} hero tersedia · Klik untuk langsung tambah ke Tier {tier} · Atur role & flag via tombol edit
+        {available.length} hero tersedia · Pilih hero → atur lane & flag → Tambahkan
       </p>
     </div>
   );
