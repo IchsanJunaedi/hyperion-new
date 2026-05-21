@@ -1,12 +1,22 @@
 import { describe, it, expect } from "vitest";
 import {
   resolvePermissions,
+  hasPermission,
   isRoleHigherOrEqual,
+  getVisibilityDescription,
+  getAllowedActionsForRole,
+  canPerformAction,
   canViewCalendar,
   canCreateEvents,
+  canEditEvents,
+  canDeleteEvents,
   canManageCalendar,
   canManagePermissions,
-} from "@/lib/permissions/calendar-rules";
+  getViewableByRoles,
+  getCreationAllowedByRoles,
+  analyzeActionRequirements,
+} from "../calendar-rules";
+import type { CalendarMemberPermission, CalendarPermission } from "../calendar-types";
 
 describe("resolvePermissions — owner", () => {
   it("has all permissions on public-workspace", () => {
@@ -112,6 +122,50 @@ describe("resolvePermissions — null role", () => {
   });
 });
 
+describe("resolvePermissions — selected-members with explicit permissions", () => {
+  const dummyPerms = (overrides: Partial<CalendarMemberPermission>): CalendarMemberPermission => ({
+    id: "p1",
+    calendar_id: "c1",
+    member_user_id: "u1",
+    can_view: false,
+    can_create_event: false,
+    can_edit_event: false,
+    can_delete_event: false,
+    can_manage_permissions: false,
+    created_at: "",
+    updated_at: "",
+    deleted_at: null,
+    created_by: "u2",
+    updated_by: null,
+    ...overrides,
+  });
+
+  it("resolves view permission when explicitly granted", () => {
+    const perms = resolvePermissions("member", "selected-members", dummyPerms({ can_view: true }));
+    expect(canViewCalendar(perms)).toBe(true);
+  });
+
+  it("resolves create-event permission when explicitly granted", () => {
+    const perms = resolvePermissions("member", "selected-members", dummyPerms({ can_create_event: true }));
+    expect(canCreateEvents(perms)).toBe(true);
+  });
+
+  it("resolves edit-event permission when explicitly granted", () => {
+    const perms = resolvePermissions("member", "selected-members", dummyPerms({ can_edit_event: true }));
+    expect(canEditEvents(perms)).toBe(true);
+  });
+
+  it("resolves delete-event permission when explicitly granted", () => {
+    const perms = resolvePermissions("member", "selected-members", dummyPerms({ can_delete_event: true }));
+    expect(canDeleteEvents(perms)).toBe(true);
+  });
+
+  it("resolves manage-permissions when explicitly granted", () => {
+    const perms = resolvePermissions("member", "selected-members", dummyPerms({ can_manage_permissions: true }));
+    expect(canManagePermissions(perms)).toBe(true);
+  });
+});
+
 describe("isRoleHigherOrEqual", () => {
   it("owner >= owner", () => expect(isRoleHigherOrEqual("owner", "owner")).toBe(true));
   it("owner >= manager", () => expect(isRoleHigherOrEqual("owner", "manager")).toBe(true));
@@ -121,4 +175,86 @@ describe("isRoleHigherOrEqual", () => {
   it("member is NOT >= captain", () => expect(isRoleHigherOrEqual("member", "captain")).toBe(false));
   it("captain >= captain", () => expect(isRoleHigherOrEqual("captain", "captain")).toBe(true));
   it("returns false for null role", () => expect(isRoleHigherOrEqual(null, "member")).toBe(false));
+});
+
+describe("getVisibilityDescription", () => {
+  it("returns the correct description for private", () => {
+    expect(getVisibilityDescription("private")).toBe("Only you can see this calendar");
+  });
+
+  it("returns the correct description for management-only", () => {
+    expect(getVisibilityDescription("management-only")).toBe("Owner, managers, and coaches can see this calendar");
+  });
+
+  it("returns the correct description for captain-only", () => {
+    expect(getVisibilityDescription("captain-only")).toBe("Captains, managers, coaches, and owner can see this calendar");
+  });
+
+  it("returns the correct description for team-only", () => {
+    expect(getVisibilityDescription("team-only")).toBe("All team members can see this calendar");
+  });
+
+  it("returns the correct description for selected-members", () => {
+    expect(getVisibilityDescription("selected-members")).toBe("Only selected members can see this calendar");
+  });
+
+  it("returns the correct description for public-workspace", () => {
+    expect(getVisibilityDescription("public-workspace")).toBe("Everyone in the workspace can see this calendar");
+  });
+});
+
+describe("getAllowedActionsForRole", () => {
+  it("returns empty array for null role", () => {
+    expect(getAllowedActionsForRole(null, "public-workspace")).toEqual([]);
+  });
+
+  it("returns correct permissions list for member on public-workspace", () => {
+    const actions = getAllowedActionsForRole("member", "public-workspace");
+    expect(actions).toContain("view");
+    expect(actions).not.toContain("create-event");
+  });
+});
+
+describe("Permission Helpers", () => {
+  it("validates hasPermission and canPerformAction", () => {
+    const perms = new Set<CalendarPermission>(["view", "create-event"]);
+    expect(hasPermission(perms, "view")).toBe(true);
+    expect(hasPermission(perms, "edit-event")).toBe(false);
+    expect(canPerformAction(perms, "create-event")).toBe(true);
+  });
+});
+
+describe("getViewableByRoles", () => {
+  it("identifies viewable roles for private (owner and captain in matrix)", () => {
+    expect(getViewableByRoles("private")).toEqual(["owner", "captain"]);
+  });
+
+  it("identifies viewable roles for management-only", () => {
+    const roles = getViewableByRoles("management-only");
+    expect(roles).toContain("owner");
+    expect(roles).toContain("manager");
+    expect(roles).toContain("coach");
+    expect(roles).not.toContain("member");
+  });
+});
+
+describe("getCreationAllowedByRoles", () => {
+  it("identifies creation allowed roles for team-only", () => {
+    const roles = getCreationAllowedByRoles("team-only");
+    expect(roles).toContain("owner");
+    expect(roles).toContain("manager");
+    expect(roles).toContain("coach");
+    expect(roles).toContain("captain");
+    expect(roles).not.toContain("member");
+  });
+});
+
+describe("analyzeActionRequirements", () => {
+  it("analyzes manage-calendar requirements correctly", () => {
+    const analysis = analyzeActionRequirements("manage-calendar");
+    expect(analysis.minimumRole).toBe("owner");
+    expect(analysis.visibilityRecommendations).toContain("public-workspace");
+    expect(analysis.visibilityRecommendations).toContain("private");
+    expect(analysis.restrictedVisibilities).toEqual([]);
+  });
 });
