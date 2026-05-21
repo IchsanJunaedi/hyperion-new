@@ -32,7 +32,11 @@ export default async function WorkspaceDevelopmentPage({ params }: Props) {
     .maybeSingle();
 
   const role = membership?.role ?? "member";
-  const canManage = role === "coach" || role === "manager" || role === "owner";
+  const canManage =
+    role === "coach" ||
+    role === "captain" ||
+    role === "manager" ||
+    role === "owner";
 
   const targets = await getPlayerTargets(organization.id, user.id);
 

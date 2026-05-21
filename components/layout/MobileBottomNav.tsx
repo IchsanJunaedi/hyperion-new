@@ -22,7 +22,7 @@ export function MobileBottomNav({ orgSlug }: { orgSlug: string }) {
   return (
     <nav
       aria-label="Workspace"
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-white/5 bg-zinc-950/95 backdrop-blur md:hidden"
+      className="print-hide fixed inset-x-0 bottom-0 z-40 border-t border-white/5 bg-zinc-950/95 backdrop-blur md:hidden"
     >
       <ul className="grid grid-cols-5">
         {ITEMS.map(({ key, href, label, Icon }) => {
