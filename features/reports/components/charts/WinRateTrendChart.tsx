@@ -15,7 +15,7 @@ export function WinRateTrendChart({ data }: { data: TrendPoint[] }) {
         <Tooltip
           contentStyle={{ background: "#202020", border: "1px solid #2D2D2D", borderRadius: 8, fontSize: 12 }}
           labelStyle={{ color: "#E5E2E1" }}
-          formatter={(v: number) => [`${v}%`, "Win Rate"]}
+          formatter={(v) => [`${v ?? 0}%`, "Win Rate"]}
         />
         <Bar dataKey="winRate" radius={[4, 4, 0, 0]}>
           {data.map((entry, i) => (

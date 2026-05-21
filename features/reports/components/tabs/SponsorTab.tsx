@@ -47,7 +47,7 @@ export function SponsorTab({ sponsors }: { sponsors: NonNullable<MonthlyReport["
           </div>
           <div className="divide-y divide-[#2D2D2D]">
             {sponsors.list.map((s) => {
-              const cfg = STATUS_CONFIG[s.status] ?? STATUS_CONFIG.inactive;
+              const cfg = STATUS_CONFIG[s.status] ?? STATUS_CONFIG["inactive"]!;
               return (
                 <div key={s.id} className="px-5 py-3.5 flex items-start justify-between gap-4">
                   <div className="min-w-0 space-y-0.5">

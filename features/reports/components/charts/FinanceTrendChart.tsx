@@ -21,8 +21,8 @@ export function FinanceTrendChart({ data }: { data: FinanceTrendPoint[] }) {
         <Tooltip
           contentStyle={{ background: "#202020", border: "1px solid #2D2D2D", borderRadius: 8, fontSize: 12 }}
           labelStyle={{ color: "#E5E2E1" }}
-          formatter={(v: number, name: string) => [
-            `Rp ${v.toLocaleString("id-ID")}`,
+          formatter={(v, name) => [
+            `Rp ${(Number(v) || 0).toLocaleString("id-ID")}`,
             name === "income" ? "Pemasukan" : "Pengeluaran",
           ]}
         />
