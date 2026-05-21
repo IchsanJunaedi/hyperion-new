@@ -225,6 +225,7 @@ export default async function DashboardPage() {
             return {
               id: org.id,
               name: org.name,
+              slug: org.slug,
               divisions: (allDivisions ?? []).filter((d) => d.organization_id === org.id).map((d) => d.name).join(", "),
               memberCount: orgMembers.length,
               members: orgMembers,

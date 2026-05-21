@@ -32,7 +32,19 @@ export default async function RosterPage({ params }: RosterPageProps) {
     getPublicTeamData(organization),
   ]);
 
-  if (!currentUserRole) notFound();
+  if (!currentUserRole) {
+    return (
+      <div className="flex min-h-[50vh] flex-col items-center justify-center px-4 text-center">
+        <div className="rounded-full bg-zinc-900/50 p-4 border border-white/5 mb-4">
+          <Users className="h-10 w-10 text-white/30" />
+        </div>
+        <h1 className="text-xl font-bold text-white sm:text-2xl">Roster Belum Diisi</h1>
+        <p className="mt-2 text-sm text-white/60 max-w-md">
+          Roster tim ini belum diisi atau Anda belum terdaftar sebagai anggota aktif. Silakan hubungi Owner atau Manager tim untuk mengelola Roster.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 px-4 py-6 sm:px-8">

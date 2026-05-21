@@ -1,4 +1,4 @@
-import { ArrowLeft, CheckCircle, XCircle, Swords, Shield } from "lucide-react";
+import { ArrowLeft, Swords, Shield } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -61,13 +61,15 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
   type DraftPick = { role: string; hero_name: string; player_id: string | null };
   const draftByGame: Record<number, { our: DraftPick[]; enemy: DraftPick[] }> = {};
   for (const pick of draftPicks ?? []) {
-    if (!draftByGame[pick.game_number]) {
-      draftByGame[pick.game_number] = { our: [], enemy: [] };
+    let gameDraft = draftByGame[pick.game_number];
+    if (!gameDraft) {
+      gameDraft = { our: [], enemy: [] };
+      draftByGame[pick.game_number] = gameDraft;
     }
     if (pick.side === "our") {
-      draftByGame[pick.game_number].our.push({ role: pick.role, hero_name: pick.hero_name, player_id: pick.player_id });
+      gameDraft.our.push({ role: pick.role, hero_name: pick.hero_name, player_id: pick.player_id });
     } else {
-      draftByGame[pick.game_number].enemy.push({ role: pick.role, hero_name: pick.hero_name, player_id: pick.player_id });
+      gameDraft.enemy.push({ role: pick.role, hero_name: pick.hero_name, player_id: pick.player_id });
     }
   }
 
@@ -123,16 +125,12 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
               {/* Game header */}
               <div className="flex items-center justify-between px-5 py-3.5 border-b border-white/5">
                 <h3 className="text-sm font-semibold text-white">Game {game.game_number}</h3>
-                <div className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium ${
+                <div className={`text-xs font-semibold ${
                   game.is_win
-                    ? "bg-green-500/10 text-green-400"
-                    : "bg-red-500/10 text-red-400"
+                    ? "text-green-400"
+                    : "text-red-400"
                 }`}>
-                  {game.is_win ? (
-                    <><CheckCircle className="h-3.5 w-3.5" /> Menang</>
-                  ) : (
-                    <><XCircle className="h-3.5 w-3.5" /> Kalah</>
-                  )}
+                  {game.is_win ? "Menang" : "Kalah"}
                 </div>
               </div>
 

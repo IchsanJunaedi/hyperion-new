@@ -93,6 +93,22 @@ export async function getCurrentUserRole(
   } = await supabase.auth.getUser();
   if (!user) return null;
 
+  // 1. Check if global owner by email
+  const ownerEmail = process.env.OWNER_EMAIL || process.env.E2E_OWNER_EMAIL;
+  if (user.email && user.email === ownerEmail) {
+    return "owner";
+  }
+
+  // 2. Check if organization owner by owner_id
+  const { data: org } = await supabase
+    .from("organizations")
+    .select("owner_id")
+    .eq("id", orgId)
+    .maybeSingle();
+  if (org?.owner_id === user.id) {
+    return "owner";
+  }
+
   const { data } = await supabase
     .from("team_members")
     .select("role")
@@ -102,5 +118,5 @@ export async function getCurrentUserRole(
     .limit(1)
     .maybeSingle();
 
-  return data?.role ?? null;
+  return (data?.role as MemberRole | null) ?? null;
 }

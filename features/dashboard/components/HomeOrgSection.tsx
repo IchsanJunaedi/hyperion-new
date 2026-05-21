@@ -18,6 +18,7 @@ interface OrgMember {
 interface OrgRow {
   id: string;
   name: string;
+  slug: string;
   divisions: string;
   memberCount: number;
   members: OrgMember[];
@@ -76,7 +77,7 @@ export function HomeOrgSection({ orgs }: HomeOrgSectionProps) {
             orgs.map((org) => (
               <div
                 key={org.id}
-                className="grid grid-cols-[200px_1fr_100px_32px] items-center py-2 px-3 -mx-3 hover:bg-[#2C2C2C] rounded transition-colors gap-4 group"
+                className="grid grid-cols-[200px_1fr_100px_120px_32px] items-center py-2 px-3 -mx-3 hover:bg-[#2C2C2C] rounded transition-colors gap-4 group"
               >
                 <span
                   className="text-sm text-[#D4D4D4] truncate cursor-pointer hover:text-white"
@@ -86,11 +87,21 @@ export function HomeOrgSection({ orgs }: HomeOrgSectionProps) {
                 </span>
                 <span className="text-sm text-[#9B9A97] truncate">{org.divisions || "—"}</span>
                 <span className="text-sm text-[#9B9A97]">{org.memberCount} member</span>
+                {org.slug ? (
+                  <Link
+                    href={`/${org.slug}`}
+                    className="text-xs text-yellow-400 hover:underline opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer font-medium"
+                  >
+                    Buka Workspace
+                  </Link>
+                ) : (
+                  <span />
+                )}
                 <button
                   type="button"
                   disabled={pending}
                   onClick={(e) => { e.stopPropagation(); setDeleteTarget(org); }}
-                  className="opacity-0 group-hover:opacity-100 rounded p-1 text-[#9B9A97] hover:text-red-400 hover:bg-[#353434] transition-all disabled:opacity-40"
+                  className="opacity-0 group-hover:opacity-100 rounded p-1 text-[#9B9A97] hover:text-red-400 hover:bg-[#353434] transition-all disabled:opacity-40 cursor-pointer"
                   title="Hapus tim"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
@@ -116,10 +127,21 @@ export function HomeOrgSection({ orgs }: HomeOrgSectionProps) {
                 <h3 className="text-lg font-bold text-[#E5E2E1]">{viewTarget.name}</h3>
                 <p className="text-xs text-[#9B9A97] mt-0.5">{viewTarget.members.length} anggota</p>
               </div>
-              <button onClick={() => setViewTarget(null)} className="rounded p-1 text-[#9B9A97] hover:bg-[#2C2C2C] hover:text-white">
+              <button onClick={() => setViewTarget(null)} className="rounded p-1 text-[#9B9A97] hover:bg-[#2C2C2C] hover:text-white cursor-pointer">
                 <X className="h-4 w-4" />
               </button>
             </div>
+
+            {viewTarget.slug && (
+              <div className="mb-4">
+                <Link
+                  href={`/${viewTarget.slug}`}
+                  className="flex items-center justify-center gap-2 w-full rounded bg-[#E5E2E1] text-[#191919] hover:bg-white px-4 py-2 text-sm font-medium transition-colors cursor-pointer"
+                >
+                  Buka Halaman Workspace
+                </Link>
+              </div>
+            )}
 
             {viewTarget.members.length === 0 ? (
               <p className="text-sm text-[#6B6A68] py-4">Belum ada anggota di tim ini.</p>

@@ -1,6 +1,6 @@
-﻿"use client";
+"use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { notify } from "@/features/dashboard/components/NotifyModal";
 
@@ -50,6 +50,7 @@ export function NotificationItem({
   onNavigate,
 }: NotificationItemProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const queryClient = useQueryClient();
 
   const isUnread = notification.read_at === null;
@@ -59,7 +60,7 @@ export function NotificationItem({
     if (isUnread) {
       // Optimistically update notification list
       queryClient.setQueryData(
-        ["notifications", userId, 10],
+         ["notifications", userId, 10],
         (old: Notification[] | undefined) =>
           old?.map((n) =>
             n.id === notification.id
@@ -88,8 +89,15 @@ export function NotificationItem({
     // 2. Navigate if ref_type and ref_id exist, always close popup
     onNavigate();
     if (notification.ref_type && notification.ref_id) {
-      const route = resolveRoute(orgSlug, notification.ref_type, notification.ref_id);
-      if (route) router.push(route);
+      const targetOrgSlug =
+        (notification.organizations as { slug: string } | null)?.slug || orgSlug;
+      const route = resolveRoute(targetOrgSlug, notification.ref_type, notification.ref_id);
+      if (route) {
+        if (pathname?.startsWith("/dashboard")) {
+          notify.info("Beralih ke halaman workspace...");
+        }
+        router.push(route);
+      }
     }
   }
 
@@ -97,7 +105,7 @@ export function NotificationItem({
     <button
       type="button"
       onClick={handleClick}
-      className={`flex w-full gap-3 px-4 py-3 text-left transition hover:bg-white/[0.05] ${
+      className={`cursor-pointer flex w-full gap-3 px-4 py-3 text-left transition hover:bg-white/[0.05] ${
         isUnread ? "bg-white/[0.03]" : ""
       }`}
     >

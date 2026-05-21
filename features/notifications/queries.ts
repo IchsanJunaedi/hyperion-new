@@ -10,7 +10,7 @@ export async function getNotifications(limit = 10) {
   const supabase = await createClient();
   const { data } = await supabase
     .from("notifications")
-    .select("*")
+    .select("*, organizations(slug)")
     .order("created_at", { ascending: false })
     .limit(limit);
   return data ?? [];

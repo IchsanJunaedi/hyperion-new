@@ -8,7 +8,7 @@ export function useNotifications(userId: string, limit = 10) {
       const supabase = createClient();
       const { data, error } = await supabase
         .from("notifications")
-        .select("*")
+        .select("*, organizations(slug)")
         .eq("user_id", userId)
         .order("created_at", { ascending: false })
         .limit(limit);
