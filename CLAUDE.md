@@ -157,7 +157,7 @@ FONNTE_WEBHOOK_SECRET=
 - Batch related changes together
 
 ### Git Workflow
-- ALWAYS commit and push after completing a task
+- ALWAYS commit and push after completing a task — **always use `rtk commit`** (never run `git commit` or push manually)
 - Use conventional commits: `feat:`, `fix:`, `chore:`, `refactor:`
 - Push to `main` branch (this is a solo dev project)
 - Stage specific files, not `git add .` blindly
