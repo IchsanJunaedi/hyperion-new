@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { X, Swords, TrendingUp, Gamepad2, Star } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { ROLE_LABELS } from "@/features/scrim/data/mlbb-heroes";
+import { getHeroImageUrl } from "@/features/scrim/data/mlbb-heroes";
 import { fetchPlayerHeroHistory } from "@/features/analytics/actions";
 import type { EnterprisePlayerStat } from "@/features/analytics/queries";
 import type { PlayerHeroHistory, PlayerHeroStatExtended, PlayerScrimGame, PlayerRatingEntry } from "@/features/analytics/actions";
@@ -251,9 +252,14 @@ export function PlayerHeroModal({ player, orgId, onClose }: PlayerHeroModalProps
                             {/* Hero name + winrate bar */}
                             <div className="min-w-0">
                               <div className="flex items-center gap-2">
-                                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#252525] text-[9px] font-bold text-[#9B9A97]">
-                                  {idx + 1}
-                                </span>
+                                <div className="h-5 w-5 shrink-0 overflow-hidden rounded-full">
+                                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                                  <img
+                                    src={getHeroImageUrl(h.hero_name)}
+                                    alt={h.hero_name}
+                                    className="h-full w-full object-cover"
+                                  />
+                                </div>
                                 <span className="truncate text-xs font-medium text-[#E5E2E1]">
                                   {h.hero_name}
                                 </span>

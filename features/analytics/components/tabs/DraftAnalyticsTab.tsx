@@ -1,6 +1,6 @@
 import { FlaskConical } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
-import { ROLE_LABELS, ROLES } from "@/features/scrim/data/mlbb-heroes";
+import { ROLE_LABELS, ROLES, getHeroImageUrl } from "@/features/scrim/data/mlbb-heroes";
 import type { DraftAnalyticsData, HeroStat } from "@/features/analytics/queries";
 
 interface DraftAnalyticsTabProps {
@@ -101,12 +101,16 @@ function HeroRow({
       </span>
       <div
         className={cn(
-          "flex shrink-0 items-center justify-center rounded-full text-[9px] font-bold",
-          heroColour(hero.hero_name),
-          compact ? "h-5 w-5" : "h-6 w-6 text-[10px]",
+          "shrink-0 overflow-hidden rounded-full",
+          compact ? "h-5 w-5" : "h-6 w-6",
         )}
       >
-        {hero.hero_name.slice(0, 2).toUpperCase()}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={getHeroImageUrl(hero.hero_name)}
+          alt={hero.hero_name}
+          className="h-full w-full object-cover"
+        />
       </div>
       <span className="flex-1 truncate text-xs font-medium text-[#E5E2E1]">
         {hero.hero_name}

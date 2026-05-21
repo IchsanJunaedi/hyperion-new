@@ -2,10 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ChevronDown, Search, X } from "lucide-react";
-import { MLBB_HEROES } from "@/features/scrim/data/mlbb-heroes";
+import { MLBB_HEROES, getHeroImageUrl } from "@/features/scrim/data/mlbb-heroes";
 import { cn } from "@/lib/utils/cn";
 
-// Deterministic avatar colour from hero name
+// Deterministic fallback colour when image is unavailable
 const AVATAR_COLOURS = [
   "bg-violet-500/30 text-violet-300",
   "bg-blue-500/30 text-blue-300",
@@ -24,15 +24,33 @@ function heroColour(name: string): string {
 
 function HeroAvatar({ name, size = "sm" }: { name: string; size?: "sm" | "md" }) {
   const initials = name.slice(0, 2).toUpperCase();
+  const sizeClass = size === "sm" ? "h-5 w-5" : "h-6 w-6";
   return (
     <div
       className={cn(
-        "flex shrink-0 items-center justify-center rounded-full font-bold",
-        heroColour(name),
-        size === "sm" ? "h-5 w-5 text-[9px]" : "h-6 w-6 text-[10px]",
+        "relative flex shrink-0 items-center justify-center overflow-hidden rounded-full",
+        sizeClass,
       )}
     >
-      {initials}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={getHeroImageUrl(name)}
+        alt={name}
+        className="h-full w-full object-cover"
+        onError={(e) => {
+          // Fallback: hide img, show initials bg
+          const el = e.currentTarget;
+          el.style.display = "none";
+          const parent = el.parentElement;
+          if (parent) {
+            parent.classList.add(...heroColour(name).split(" "));
+            const span = document.createElement("span");
+            span.className = size === "sm" ? "text-[9px] font-bold" : "text-[10px] font-bold";
+            span.textContent = initials;
+            parent.appendChild(span);
+          }
+        }}
+      />
     </div>
   );
 }

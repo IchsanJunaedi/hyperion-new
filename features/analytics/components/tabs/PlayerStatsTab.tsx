@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Gamepad2, Star, Users } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { ROLE_LABELS } from "@/features/scrim/data/mlbb-heroes";
+import { getHeroImageUrl } from "@/features/scrim/data/mlbb-heroes";
 import { PlayerHeroModal } from "@/features/analytics/components/PlayerHeroModal";
 import type { EnterprisePlayerStat, PlayerHeroStat } from "@/features/analytics/queries";
 
@@ -213,8 +214,13 @@ function HeroPool({ pool }: { pool: PlayerHeroStat[] }) {
       <div className="space-y-1">
         {pool.map((h) => (
           <div key={`${h.hero_name}:${h.role}`} className="flex items-center gap-2">
-            <div className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#252525] text-[8px] font-bold text-[#9B9A97]">
-              {h.hero_name.slice(0, 2).toUpperCase()}
+            <div className="h-5 w-5 shrink-0 overflow-hidden rounded-full">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={getHeroImageUrl(h.hero_name)}
+                alt={h.hero_name}
+                className="h-full w-full object-cover"
+              />
             </div>
             <span className="flex-1 truncate text-[11px] text-[#E5E2E1]">{h.hero_name}</span>
             <span className="text-[10px] text-[#6B6A68]">

@@ -19,6 +19,21 @@ export const MLBB_HEROES: string[] = [
   "Zhuxin", "Zilong",
 ].sort((a, b) => a.localeCompare(b));
 
+/** Convert hero name to the slug used for /public/heroes/<slug>.webp */
+export function heroToSlug(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/'/g, "")
+    .replace(/\./g, "")
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, "");
+}
+
+/** Returns the path to the hero's WebP avatar image stored in /public/heroes/. */
+export function getHeroImageUrl(name: string): string {
+  return `/heroes/${heroToSlug(name)}.webp`;
+}
+
 export const ROLE_LABELS: Record<string, string> = {
   exp_lane: "EXP Lane",
   jungler: "Jungler",
