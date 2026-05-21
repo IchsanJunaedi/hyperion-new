@@ -7,10 +7,12 @@ import { AttendanceList } from "@/features/scrim/components/AttendanceList";
 import { AttendanceTracker } from "@/features/scrim/components/AttendanceTracker";
 import { CancelScrimButton } from "@/features/scrim/components/CancelScrimButton";
 import { FinishScrimSection } from "@/features/scrim/components/FinishScrimSection";
+import { ScrimReviewSection } from "@/features/scrim/components/ScrimReviewSection";
 import { ScrimStatusBadge } from "@/features/scrim/components/StatusBadge";
 import { getCurrentUserRole } from "@/features/roster/queries";
 import {
   getScrimDetail,
+  getScrimReviewRequest,
   summarizeAttendance,
 } from "@/features/scrim/queries";
 import { findOpponentByName } from "@/features/scouting/queries";
@@ -36,8 +38,10 @@ export default async function ScrimDetailPage({
   const canManageScrims = ["captain", "manager", "owner"].includes(currentUserRole ?? "");
   const isCoach = currentUserRole === "coach";
 
-  // Auto-show scouting info if opponent profile exists
-  const opponentProfile = await findOpponentByName(scrim.organization_id, scrim.opponent_name);
+  const [opponentProfile, reviewRequest] = await Promise.all([
+    findOpponentByName(scrim.organization_id, scrim.opponent_name),
+    getScrimReviewRequest(id),
+  ]);
 
   const scheduled = new Date(scrim.scheduled_at).toLocaleString("id-ID", {
     weekday: "long",
@@ -174,6 +178,17 @@ export default async function ScrimDetailPage({
             initialResult={result}
             resultImageUrl={resultImageUrl}
           />
+
+          {/* Review request (shown for coaches, captains, and members on completed scrims) */}
+          {(isCoach || currentUserRole === "captain" || currentUserRole === "member") && (
+            <ScrimReviewSection
+              orgSlug={slug}
+              scrimId={scrim.id}
+              role={currentUserRole}
+              reviewRequest={reviewRequest}
+              scrimCompleted={scrim.status === "completed"}
+            />
+          )}
 
           {/* Scouting info (auto-shown if opponent profile exists) */}
           {opponentProfile && (

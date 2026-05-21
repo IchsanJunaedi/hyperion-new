@@ -30,6 +30,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { SettingsModal } from "@/features/settings/components/SettingsModal";
+import { NotificationBell } from "@/features/notifications/components/NotificationBell";
 import { useWorkspaceStore } from "@/stores/useWorkspaceStore";
 
 interface SidebarDivision {
@@ -173,6 +174,12 @@ const WORKSPACE_NAV_GROUPS: NavGroup[] = [
     items: [
       { key: "roster", href: "/roster", label: "Roster", Icon: Users },
       { key: "polls", href: "/polls", label: "Polling", Icon: BarChart3 },
+      {
+        key: "development",
+        href: "/development",
+        label: "Development",
+        Icon: TrendingUp,
+      },
     ],
   },
   {
@@ -258,37 +265,42 @@ export function WorkspaceSidebar({
     }));
 
   return (
-    <aside className="hidden md:flex md:w-[280px] md:flex-col md:border-r md:border-[#2D2D2D] md:bg-[#202020] h-screen sticky top-0">
+    <aside className="print-hide hidden md:flex md:w-[280px] md:flex-col md:border-r md:border-[#2D2D2D] md:bg-[#202020] h-screen sticky top-0">
       {/* Org header */}
-      <Link
-        href={`/${orgSlug}`}
-        className="flex h-12 shrink-0 items-center gap-3 border-b border-[#2D2D2D] px-4 transition hover:bg-[#2C2C2C]"
-      >
-        {orgLogoUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={orgLogoUrl}
-            alt={orgName}
-            className="h-5 w-5 rounded object-cover"
-          />
-        ) : (
-          <div className="grid h-5 w-5 place-items-center rounded bg-[#353434] text-xs font-semibold text-[#E5E2E1]">
-            {orgName.slice(0, 1).toUpperCase()}
+      <div className="flex h-12 shrink-0 items-center border-b border-[#2D2D2D]">
+        <Link
+          href={`/${orgSlug}`}
+          className="flex h-full min-w-0 flex-1 items-center gap-3 px-4 transition hover:bg-[#2C2C2C]"
+        >
+          {orgLogoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={orgLogoUrl}
+              alt={orgName}
+              className="h-5 w-5 rounded object-cover"
+            />
+          ) : (
+            <div className="grid h-5 w-5 place-items-center rounded bg-[#353434] text-xs font-semibold text-[#E5E2E1]">
+              {orgName.slice(0, 1).toUpperCase()}
+            </div>
+          )}
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-medium text-[#D4D4D4]">
+              {orgName}
+            </p>
           </div>
-        )}
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-medium text-[#D4D4D4]">
-            {orgName}
-          </p>
+          {user.role && (
+            <span
+              className={`shrink-0 text-[10px] font-bold uppercase tracking-widest ${ROLE_BADGE[user.role] ?? "text-white/50"}`}
+            >
+              {user.role}
+            </span>
+          )}
+        </Link>
+        <div className="shrink-0 px-2">
+          <NotificationBell userId={user.userId} orgSlug={orgSlug} />
         </div>
-        {user.role && (
-          <span
-            className={`shrink-0 text-[10px] font-bold uppercase tracking-widest ${ROLE_BADGE[user.role] ?? "text-white/50"}`}
-          >
-            {user.role}
-          </span>
-        )}
-      </Link>
+      </div>
 
       {/* Division switcher */}
       {divisions.length > 1 && (

@@ -2,8 +2,10 @@ import { Eye, Lock, Users } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { getStrategyNote } from "@/features/strategy/queries";
+import { createClient } from "@/lib/supabase/server";
+import { getStrategyNote, listStrategyComments } from "@/features/strategy/queries";
 import { StrategyNoteActions } from "@/features/strategy/components/StrategyNoteActions";
+import { StrategyComments } from "@/features/strategy/components/StrategyComments";
 
 export const dynamic = "force-dynamic";
 
@@ -21,7 +23,15 @@ export default async function StrategyNoteDetailPage({
   params,
 }: StrategyNoteDetailPageProps) {
   const { "team-slug": slug, id } = await params;
-  const note = await getStrategyNote(id);
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const [note, comments] = await Promise.all([
+    getStrategyNote(id),
+    listStrategyComments(id),
+  ]);
   if (!note) notFound();
 
   const date = new Date(note.updated_at).toLocaleString("id-ID", {
@@ -75,6 +85,15 @@ export default async function StrategyNoteDetailPage({
       </article>
 
       <StrategyNoteActions orgSlug={slug} noteId={note.id} />
+
+      <div className="max-w-3xl">
+        <StrategyComments
+          orgSlug={slug}
+          noteId={note.id}
+          currentUserId={user?.id ?? ""}
+          comments={comments}
+        />
+      </div>
     </div>
   );
 }

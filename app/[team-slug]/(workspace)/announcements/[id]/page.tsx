@@ -1,8 +1,13 @@
-import { Calendar, Pin } from "lucide-react";
+import { Calendar, Eye, Pin } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { getAnnouncement } from "@/features/announcements/queries";
+import { createClient } from "@/lib/supabase/server";
+import {
+  getAnnouncement,
+  markAnnouncementRead,
+  getAnnouncementReadCount,
+} from "@/features/announcements/queries";
 import { AnnouncementActions } from "@/features/announcements/components/AnnouncementActions";
 
 export const dynamic = "force-dynamic";
@@ -15,8 +20,33 @@ export default async function AnnouncementDetailPage({
   params,
 }: AnnouncementDetailPageProps) {
   const { "team-slug": slug, id } = await params;
-  const announcement = await getAnnouncement(id);
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const [announcement] = await Promise.all([
+    getAnnouncement(id),
+    markAnnouncementRead(id),
+  ]);
   if (!announcement) notFound();
+
+  const { data: membership } = user
+    ? await supabase
+        .from("team_members")
+        .select("role")
+        .eq("user_id", user.id)
+        .eq("is_active", true)
+        .maybeSingle()
+    : { data: null };
+
+  const isManager =
+    membership?.role === "manager" ||
+    membership?.role === "owner" ||
+    user?.email === process.env.OWNER_EMAIL;
+
+  const readCount = isManager ? await getAnnouncementReadCount(id) : null;
 
   const date = new Date(announcement.created_at).toLocaleString("id-ID", {
     weekday: "long",
@@ -46,9 +76,17 @@ export default async function AnnouncementDetailPage({
           )}
         </div>
         <h1 className="text-3xl font-bold text-white">{announcement.title}</h1>
-        <div className="inline-flex items-center gap-2 text-sm text-white/55">
-          <Calendar className="h-3.5 w-3.5" />
-          {date}
+        <div className="flex flex-wrap items-center gap-4 text-sm text-white/55">
+          <div className="inline-flex items-center gap-2">
+            <Calendar className="h-3.5 w-3.5" />
+            {date}
+          </div>
+          {readCount !== null && (
+            <div className="inline-flex items-center gap-1.5">
+              <Eye className="h-3.5 w-3.5" />
+              <span>{readCount} dibaca</span>
+            </div>
+          )}
         </div>
       </header>
 

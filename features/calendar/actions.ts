@@ -301,6 +301,33 @@ export async function deleteEventCommentAction(
 }
 
 /**
+ * Upsert RSVP for current user on a calendar event.
+ */
+export async function upsertCalendarRsvpAction(
+  orgSlug: string,
+  eventId: string,
+  status: "hadir" | "tidak_hadir" | "tentative",
+): Promise<ActionError | { ok: true }> {
+  const { user, db } = await getAuthContext();
+  if (!user) return { ok: false, message: "Anda harus login" };
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (db as any)
+    .from("calendar_event_rsvps")
+    .upsert(
+      { event_id: eventId, user_id: user.id, status },
+      { onConflict: "event_id,user_id" },
+    );
+
+  if (error) {
+    return { ok: false, message: error.message };
+  }
+
+  revalidatePath(`/${orgSlug}/calendar/${eventId}`);
+  return { ok: true };
+}
+
+/**
  * Reschedule event via drag & drop. Captain+ or owner.
  */
 export async function dragRescheduleEventAction(

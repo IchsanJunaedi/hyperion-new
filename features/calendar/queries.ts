@@ -122,6 +122,29 @@ export async function getEventDetailWithRelations(
 }
 
 /**
+ * Get current user's RSVP status for an event.
+ */
+export async function getMyRsvp(
+  eventId: string,
+): Promise<string | null> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return null;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data } = await (supabase as any)
+    .from("calendar_event_rsvps")
+    .select("status")
+    .eq("event_id", eventId)
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  return data?.status ?? null;
+}
+
+/**
  * Fetch comments for an event (for realtime updates)
  */
 export async function getEventComments(

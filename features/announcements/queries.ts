@@ -48,3 +48,36 @@ export async function getAnnouncement(
   if (error || !data) return null;
   return data;
 }
+
+/**
+ * Mark an announcement as read for the current user.
+ * Idempotent — safe to call every time the page renders.
+ */
+export async function markAnnouncementRead(announcementId: string): Promise<void> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await (supabase as any)
+    .from("announcement_reads")
+    .upsert(
+      { announcement_id: announcementId, user_id: user.id },
+      { onConflict: "announcement_id,user_id", ignoreDuplicates: true },
+    );
+}
+
+/**
+ * Get the read count for an announcement (for managers).
+ */
+export async function getAnnouncementReadCount(announcementId: string): Promise<number> {
+  const supabase = await createClient();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { count } = await (supabase as any)
+    .from("announcement_reads")
+    .select("*", { count: "exact", head: true })
+    .eq("announcement_id", announcementId);
+  return count ?? 0;
+}

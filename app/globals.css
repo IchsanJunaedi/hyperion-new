@@ -119,3 +119,18 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   filter: invert(1);
   cursor: pointer;
 }
+
+/* ── Print styles (analytics export) ─────────────────────────────────────── */
+@media print {
+  .print-hide {
+    display: none !important;
+  }
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  .print-main {
+    width: 100% !important;
+    padding-bottom: 0 !important;
+  }
+}

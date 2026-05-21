@@ -284,6 +284,34 @@ export async function getScrimWinLossRecord(orgId: string): Promise<WinLossRecor
   return { wins, losses, draws, total: wins + losses + draws };
 }
 
+export interface ScrimReviewRequest {
+  id: string;
+  scrim_id: string;
+  requested_by: string;
+  notes: string | null;
+  status: "pending" | "reviewed";
+  review_notes: string | null;
+  reviewed_at: string | null;
+  reviewed_by: string | null;
+  created_at: string;
+}
+
+/**
+ * Get the review request for a scrim (if any).
+ */
+export async function getScrimReviewRequest(
+  scrimId: string,
+): Promise<ScrimReviewRequest | null> {
+  const supabase = await createClient();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data } = await (supabase as any)
+    .from("scrim_review_requests")
+    .select("*")
+    .eq("scrim_id", scrimId)
+    .maybeSingle();
+  return data ?? null;
+}
+
 export function summarizeAttendance(
   rows: ScrimDetail["attendances"],
 ): Record<AttendanceStatus, number> {

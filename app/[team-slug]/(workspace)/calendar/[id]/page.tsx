@@ -1,9 +1,10 @@
-import { ArrowLeft, Calendar, Clock, MapPin } from "lucide-react";
+import { ArrowLeft, Clock, MapPin } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { getCalendarEvent } from "@/features/calendar/queries";
+import { getCalendarEvent, getMyRsvp } from "@/features/calendar/queries";
 import { CalendarEventActions } from "@/features/calendar/components/CalendarEventActions";
+import { CalendarRsvpButtons } from "@/features/calendar/components/CalendarRsvpButtons";
 
 export const dynamic = "force-dynamic";
 
@@ -30,7 +31,10 @@ export default async function CalendarEventDetailPage({
   params,
 }: CalendarEventDetailPageProps) {
   const { "team-slug": slug, id } = await params;
-  const event = await getCalendarEvent(id);
+  const [event, myRsvp] = await Promise.all([
+    getCalendarEvent(id),
+    getMyRsvp(id),
+  ]);
   if (!event) notFound();
 
   const startsAt = new Date(event.starts_at).toLocaleString("id-ID", {
@@ -103,6 +107,13 @@ export default async function CalendarEventDetailPage({
             </div>
           </div>
         )}
+
+        {/* RSVP */}
+        <CalendarRsvpButtons
+          orgSlug={slug}
+          eventId={event.id}
+          currentStatus={myRsvp}
+        />
 
         {/* Actions */}
         <CalendarEventActions orgSlug={slug} eventId={event.id} />

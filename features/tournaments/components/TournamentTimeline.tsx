@@ -1,14 +1,19 @@
 "use client";
 
-import { CheckCircle2, Circle, Loader2, Plus } from "lucide-react";
+import { CheckCircle2, Circle, Loader2, Plus, Swords, Trash2 } from "lucide-react";
 import { useState, useTransition } from "react";
 
 import { useNotify } from "@/features/dashboard/components/NotifyModal";
-import { createTournamentStageAction, toggleStageCompleteAction } from "@/features/tournaments/actions";
-import type { TournamentStage } from "@/features/tournaments/queries";
+import {
+  createTournamentStageAction,
+  toggleStageCompleteAction,
+  addTournamentMatchAction,
+  deleteTournamentMatchAction,
+} from "@/features/tournaments/actions";
+import type { TournamentStageWithMatches, TournamentMatch } from "@/features/tournaments/queries";
 
 interface TournamentTimelineProps {
-  stages: TournamentStage[];
+  stages: TournamentStageWithMatches[];
   tournamentId: string;
   orgSlug: string;
   canManage: boolean;
@@ -46,7 +51,13 @@ export function TournamentTimeline({ stages, tournamentId, orgSlug, canManage }:
       ) : (
         <div className="relative ml-3 border-l border-[#2D2D2D] pl-4 space-y-3">
           {stages.map((stage) => (
-            <StageItem key={stage.id} stage={stage} orgSlug={orgSlug} canManage={canManage} />
+            <StageItem
+              key={stage.id}
+              stage={stage}
+              orgSlug={orgSlug}
+              tournamentId={tournamentId}
+              canManage={canManage}
+            />
           ))}
         </div>
       )}
@@ -57,13 +68,16 @@ export function TournamentTimeline({ stages, tournamentId, orgSlug, canManage }:
 function StageItem({
   stage,
   orgSlug,
+  tournamentId,
   canManage,
 }: {
-  stage: TournamentStage;
+  stage: TournamentStageWithMatches;
   orgSlug: string;
+  tournamentId: string;
   canManage: boolean;
 }) {
   const [pending, startTransition] = useTransition();
+  const [showMatchForm, setShowMatchForm] = useState(false);
   const { success, error } = useNotify();
 
   function handleToggle() {
@@ -83,32 +97,223 @@ function StageItem({
     timeZone: "Asia/Jakarta",
   });
 
+  const wins = stage.matches.filter((m) => m.is_win === true).length;
+  const losses = stage.matches.filter((m) => m.is_win === false).length;
+
   return (
-    <div className="relative flex items-start gap-3">
-      <div className="absolute -left-[21px] top-0.5">
-        {stage.is_completed ? (
-          <CheckCircle2 className="h-4 w-4 text-green-400" />
-        ) : (
-          <Circle className="h-4 w-4 text-[#6B6A68]" />
+    <div className="relative space-y-2">
+      <div className="flex items-start gap-3">
+        <div className="absolute -left-[21px] top-0.5">
+          {stage.is_completed ? (
+            <CheckCircle2 className="h-4 w-4 text-green-400" />
+          ) : (
+            <Circle className="h-4 w-4 text-[#6B6A68]" />
+          )}
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className={`text-sm font-medium ${stage.is_completed ? "text-green-400 line-through" : "text-[#E5E2E1]"}`}>
+            {stage.stage_name}
+          </p>
+          <p className="text-xs text-[#6B6A68]">{date}</p>
+          {stage.notes && <p className="text-xs text-[#9B9A97] mt-0.5">{stage.notes}</p>}
+          {stage.matches.length > 0 && (
+            <p className="text-[10px] text-[#6B6A68] mt-0.5">
+              {stage.matches.length} match · {wins}W {losses}L
+            </p>
+          )}
+        </div>
+        <div className="shrink-0 flex items-center gap-2">
+          {canManage && (
+            <button
+              type="button"
+              onClick={() => setShowMatchForm((v) => !v)}
+              className="text-xs text-[#9B9A97] hover:text-[#E5E2E1] cursor-pointer"
+              title="Tambah hasil match"
+            >
+              <Swords className="h-3.5 w-3.5" />
+            </button>
+          )}
+          {canManage && (
+            <button
+              type="button"
+              disabled={pending}
+              onClick={handleToggle}
+              className="text-xs text-[#9B9A97] hover:text-[#E5E2E1] disabled:opacity-50 cursor-pointer"
+            >
+              {pending ? <Loader2 className="h-3 w-3 animate-spin" /> : stage.is_completed ? "Buka" : "Selesai"}
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Match results */}
+      {stage.matches.length > 0 && (
+        <div className="ml-1 space-y-1">
+          {stage.matches.map((match) => (
+            <MatchRow
+              key={match.id}
+              match={match}
+              orgSlug={orgSlug}
+              tournamentId={tournamentId}
+              canManage={canManage}
+            />
+          ))}
+        </div>
+      )}
+
+      {showMatchForm && canManage && (
+        <AddMatchForm
+          stageId={stage.id}
+          orgSlug={orgSlug}
+          tournamentId={tournamentId}
+          onDone={() => setShowMatchForm(false)}
+        />
+      )}
+    </div>
+  );
+}
+
+function MatchRow({
+  match,
+  orgSlug,
+  tournamentId,
+  canManage,
+}: {
+  match: TournamentMatch;
+  orgSlug: string;
+  tournamentId: string;
+  canManage: boolean;
+}) {
+  const [pending, startTransition] = useTransition();
+  const { error } = useNotify();
+
+  function handleDelete() {
+    startTransition(async () => {
+      const res = await deleteTournamentMatchAction(orgSlug, tournamentId, match.id);
+      if (!res.ok) error(res.message);
+    });
+  }
+
+  return (
+    <div className="group flex items-center gap-2 rounded-md border border-[#2D2D2D] bg-[#191919] px-2 py-1.5">
+      <span className={`shrink-0 text-[10px] font-bold ${match.is_win === true ? "text-green-400" : match.is_win === false ? "text-red-400" : "text-[#6B6A68]"}`}>
+        {match.is_win === true ? "W" : match.is_win === false ? "L" : "—"}
+      </span>
+      <span className="flex-1 min-w-0 text-xs text-[#9B9A97] truncate">
+        {match.round_label}
+        {match.our_score != null && match.opponent_score != null && (
+          <span className="ml-1 text-[#6B6A68]">
+            {match.our_score}–{match.opponent_score}
+          </span>
         )}
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className={`text-sm font-medium ${stage.is_completed ? "text-green-400 line-through" : "text-[#E5E2E1]"}`}>
-          {stage.stage_name}
-        </p>
-        <p className="text-xs text-[#6B6A68]">{date}</p>
-        {stage.notes && <p className="text-xs text-[#9B9A97] mt-0.5">{stage.notes}</p>}
-      </div>
+      </span>
       {canManage && (
         <button
           type="button"
           disabled={pending}
-          onClick={handleToggle}
-          className="shrink-0 text-xs text-[#9B9A97] hover:text-[#E5E2E1] disabled:opacity-50 cursor-pointer"
+          onClick={handleDelete}
+          className="opacity-0 group-hover:opacity-100 shrink-0 text-[#6B6A68] hover:text-red-400 transition cursor-pointer"
         >
-          {pending ? <Loader2 className="h-3 w-3 animate-spin" /> : stage.is_completed ? "Buka" : "Selesai"}
+          {pending ? <Loader2 className="h-3 w-3 animate-spin" /> : <Trash2 className="h-3 w-3" />}
         </button>
       )}
+    </div>
+  );
+}
+
+function AddMatchForm({
+  stageId,
+  orgSlug,
+  tournamentId,
+  onDone,
+}: {
+  stageId: string;
+  orgSlug: string;
+  tournamentId: string;
+  onDone: () => void;
+}) {
+  const [roundLabel, setRoundLabel] = useState("");
+  const [ourScore, setOurScore] = useState("");
+  const [oppScore, setOppScore] = useState("");
+  const [isWin, setIsWin] = useState<string>("");
+  const [pending, startTransition] = useTransition();
+  const { success, error } = useNotify();
+
+  function handleSubmit() {
+    startTransition(async () => {
+      const res = await addTournamentMatchAction(orgSlug, tournamentId, {
+        stage_id: stageId,
+        round_label: roundLabel,
+        our_score: ourScore !== "" ? Number(ourScore) : null,
+        opponent_score: oppScore !== "" ? Number(oppScore) : null,
+        is_win: isWin === "win" ? true : isWin === "lose" ? false : null,
+      });
+      if (res.ok) {
+        success("Hasil match disimpan!");
+        setRoundLabel("");
+        setOurScore("");
+        setOppScore("");
+        setIsWin("");
+        onDone();
+      } else {
+        error(res.message);
+      }
+    });
+  }
+
+  return (
+    <div className="rounded-lg border border-[#2D2D2D] bg-[#202020] p-3 space-y-2">
+      <input
+        value={roundLabel}
+        onChange={(e) => setRoundLabel(e.target.value)}
+        placeholder="Label ronde (misal: Babak Grup vs TeamX)"
+        className="h-8 w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-xs text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none"
+      />
+      <div className="grid grid-cols-3 gap-2">
+        <input
+          type="number"
+          min={0}
+          value={ourScore}
+          onChange={(e) => setOurScore(e.target.value)}
+          placeholder="Skor kita"
+          className="h-8 rounded-md border border-[#2D2D2D] bg-[#191919] px-2 text-xs text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none"
+        />
+        <input
+          type="number"
+          min={0}
+          value={oppScore}
+          onChange={(e) => setOppScore(e.target.value)}
+          placeholder="Skor lawan"
+          className="h-8 rounded-md border border-[#2D2D2D] bg-[#191919] px-2 text-xs text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none"
+        />
+        <select
+          value={isWin}
+          onChange={(e) => setIsWin(e.target.value)}
+          className="h-8 rounded-md border border-[#2D2D2D] bg-[#191919] px-2 text-xs text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none"
+        >
+          <option value="">Hasil</option>
+          <option value="win">Menang</option>
+          <option value="lose">Kalah</option>
+        </select>
+      </div>
+      <div className="flex gap-2">
+        <button
+          type="button"
+          disabled={pending || !roundLabel.trim()}
+          onClick={handleSubmit}
+          className="inline-flex h-7 items-center gap-1 rounded-md bg-yellow-400 px-3 text-xs font-semibold text-black hover:bg-yellow-300 disabled:opacity-50 cursor-pointer"
+        >
+          {pending && <Loader2 className="h-3 w-3 animate-spin" />}
+          Simpan
+        </button>
+        <button
+          type="button"
+          onClick={onDone}
+          className="h-7 rounded-md border border-[#2D2D2D] px-3 text-xs text-[#9B9A97] hover:bg-[#2C2C2C] cursor-pointer"
+        >
+          Batal
+        </button>
+      </div>
     </div>
   );
 }

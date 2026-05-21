@@ -89,7 +89,7 @@ export default async function WorkspaceLayout({
           role: userRole,
         }}
       />
-      <div className="flex min-w-0 flex-1 flex-col bg-[#191919] min-h-screen pb-20 md:pb-0">
+      <div className="print-main flex min-w-0 flex-1 flex-col bg-[#191919] min-h-screen pb-20 md:pb-0">
         <WorkspaceTopbar organization={organization} userId={user.id} />
         <WorkspaceBreadcrumb
           orgName={organization.name}

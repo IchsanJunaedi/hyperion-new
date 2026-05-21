@@ -146,6 +146,68 @@ export async function updateStrategyNoteAction(
 }
 
 /**
+ * Add a comment to a strategy note. All authenticated members.
+ */
+export async function addStrategyCommentAction(
+  orgSlug: string,
+  noteId: string,
+  content: string,
+): Promise<ActionError | { ok: true; id: string }> {
+  const trimmed = content?.trim();
+  if (!trimmed) return { ok: false, message: "Komentar tidak boleh kosong" };
+  if (trimmed.length > 2000) return { ok: false, message: "Komentar terlalu panjang" };
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, message: "Anda harus login" };
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: comment, error } = await (supabase as any)
+    .from("strategy_comments")
+    .insert({ note_id: noteId, user_id: user.id, content: trimmed })
+    .select("id")
+    .single();
+
+  if (error || !comment) {
+    return { ok: false, message: error?.message ?? "Gagal menambah komentar" };
+  }
+
+  revalidatePath(`/${orgSlug}/strategy/${noteId}`);
+  return { ok: true, id: comment.id };
+}
+
+/**
+ * Delete a strategy comment. Owner of comment only.
+ */
+export async function deleteStrategyCommentAction(
+  orgSlug: string,
+  noteId: string,
+  commentId: string,
+): Promise<ActionError | { ok: true }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, message: "Anda harus login" };
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase as any)
+    .from("strategy_comments")
+    .delete()
+    .eq("id", commentId)
+    .eq("user_id", user.id);
+
+  if (error) {
+    return { ok: false, message: error.message };
+  }
+
+  revalidatePath(`/${orgSlug}/strategy/${noteId}`);
+  return { ok: true };
+}
+
+/**
  * Delete a strategy note. Captain+ or creator only (RLS enforced).
  */
 export async function deleteStrategyNoteAction(

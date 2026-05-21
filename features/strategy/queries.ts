@@ -44,3 +44,42 @@ export async function getStrategyNote(
   if (error || !data) return null;
   return data;
 }
+
+export interface StrategyCommentWithProfile {
+  id: string;
+  note_id: string;
+  user_id: string;
+  content: string;
+  created_at: string;
+  display_name: string | null;
+}
+
+/**
+ * Fetch comments for a strategy note with author display names.
+ */
+export async function listStrategyComments(
+  noteId: string,
+): Promise<StrategyCommentWithProfile[]> {
+  const supabase = await createClient();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: comments } = await (supabase as any)
+    .from("strategy_comments")
+    .select("*")
+    .eq("note_id", noteId)
+    .order("created_at", { ascending: true });
+
+  if (!comments || comments.length === 0) return [];
+
+  const userIds = [...new Set(comments.map((c: { user_id: string }) => c.user_id))];
+  const { data: profiles } = await supabase
+    .from("profiles")
+    .select("id, display_name")
+    .in("id", userIds as string[]);
+
+  const profileMap = new Map((profiles ?? []).map((p) => [p.id, p.display_name]));
+
+  return comments.map((c: { id: string; note_id: string; user_id: string; content: string; created_at: string }) => ({
+    ...c,
+    display_name: profileMap.get(c.user_id) ?? null,
+  }));
+}

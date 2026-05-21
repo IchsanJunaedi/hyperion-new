@@ -444,6 +444,73 @@ export async function updateScrimAction(
   return { ok: true };
 }
 
+/**
+ * Request a coach review for a scrim. Any authenticated member can request.
+ */
+export async function requestScrimReviewAction(
+  orgSlug: string,
+  scrimId: string,
+  notes?: string,
+): Promise<ActionError | { ok: true }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, message: "Anda harus login" };
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase as any).from("scrim_review_requests").insert({
+    scrim_id: scrimId,
+    requested_by: user.id,
+    notes: notes?.trim() || null,
+  });
+
+  if (error) {
+    if (error.code === "23505") {
+      return { ok: false, message: "Review sudah diminta sebelumnya" };
+    }
+    return { ok: false, message: error.message };
+  }
+
+  revalidatePath(`/${orgSlug}/scrim/${scrimId}`);
+  return { ok: true };
+}
+
+/**
+ * Coach submits review notes and marks the request as reviewed.
+ */
+export async function submitScrimReviewAction(
+  orgSlug: string,
+  scrimId: string,
+  reviewNotes: string,
+): Promise<ActionError | { ok: true }> {
+  if (!reviewNotes?.trim()) {
+    return { ok: false, message: "Catatan review wajib diisi" };
+  }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, message: "Anda harus login" };
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase as any)
+    .from("scrim_review_requests")
+    .update({
+      status: "reviewed",
+      review_notes: reviewNotes.trim(),
+      reviewed_at: new Date().toISOString(),
+      reviewed_by: user.id,
+    })
+    .eq("scrim_id", scrimId);
+
+  if (error) return { ok: false, message: error.message };
+
+  revalidatePath(`/${orgSlug}/scrim/${scrimId}`);
+  return { ok: true };
+}
+
 export async function createScrimFormAction(
   orgSlug: string,
   formData: FormData,
