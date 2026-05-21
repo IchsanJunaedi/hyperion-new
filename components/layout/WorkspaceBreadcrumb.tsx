@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+
 import { NotificationBell } from "@/features/notifications/components/NotificationBell";
 
 interface WorkspaceBreadcrumbProps {
@@ -49,9 +50,7 @@ export function WorkspaceBreadcrumb({
         <span className="text-[#6B6A68]">/</span>
         <span className="text-white font-medium">{activeLabel}</span>
       </div>
-      <div className="flex items-center">
-        <NotificationBell userId={userId} orgSlug={orgSlug} />
-      </div>
+      <NotificationBell userId={userId} orgSlug={orgSlug} />
     </header>
   );
 }

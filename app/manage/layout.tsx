@@ -131,7 +131,7 @@ export default async function ManageLayout({
         {/* Main content */}
         <div className="flex min-h-screen flex-1 flex-col">
           {/* Breadcrumb header */}
-          <ManageBreadcrumb orgName={orgName} orgSlug={orgSlug} />
+          <ManageBreadcrumb orgName={orgName} orgSlug={orgSlug} userId={user.id} />
           <main className="mx-auto w-full max-w-7xl flex-1 px-6 py-10">
             {children}
           </main>

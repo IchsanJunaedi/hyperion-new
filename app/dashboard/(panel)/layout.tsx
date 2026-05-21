@@ -22,6 +22,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { dashboardLogoutAction } from "@/lib/actions/auth";
 import { NotifyProvider } from "@/features/dashboard/components/NotifyModal";
 import { DashboardSettingsButton } from "@/components/layout/DashboardSettingsButton";
+import { NotificationBell } from "@/features/notifications/components/NotificationBell";
+import { NotificationRealtimeProvider } from "@/features/notifications/components/NotificationRealtimeProvider";
 
 export const dynamic = "force-dynamic";
 
@@ -91,6 +93,7 @@ export default async function DashboardLayout({
   let orgName = "Hyperion Team";
   let dashboardOrgId = "";
   let orgLogoUrl: string | null = null;
+  let orgSlug = "";
 
   if (user) {
     const { data: profile } = await supabase
@@ -108,12 +111,13 @@ export default async function DashboardLayout({
 
     const { data: org } = await supabase
       .from("organizations")
-      .select("id")
+      .select("id, slug")
       .eq("owner_id", user.id)
       .limit(1)
       .maybeSingle();
     if (org) {
       dashboardOrgId = org.id;
+      orgSlug = org.slug ?? "";
     }
   }
 
@@ -123,20 +127,22 @@ export default async function DashboardLayout({
         {/* Sidebar */}
         <aside className="w-[280px] h-screen fixed left-0 top-0 bg-[#202020] flex flex-col border-r border-[#2D2D2D] text-sm">
           {/* Org header */}
-          <div className="flex items-center gap-3 border-b border-[#2D2D2D] px-4 h-12 shrink-0">
-            {orgLogoUrl ? (
-              <img src={orgLogoUrl} alt="Logo" className="h-5 w-5 rounded object-cover" />
-            ) : (
-              <div className="grid h-5 w-5 place-items-center rounded bg-[#353434] text-xs font-semibold text-[#E5E2E1]">
-                {orgName.slice(0, 1).toUpperCase()}
-              </div>
-            )}
-            <p className="min-w-0 flex-1 truncate text-sm font-medium text-[#D4D4D4]">
-              {orgName}
-            </p>
-            <span className="shrink-0 text-[10px] font-bold uppercase tracking-widest text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.5)]">
-              owner
-            </span>
+          <div className="flex h-12 shrink-0 items-center border-b border-[#2D2D2D]">
+            <div className="flex h-full min-w-0 flex-1 items-center gap-3 px-4">
+              {orgLogoUrl ? (
+                <img src={orgLogoUrl} alt="Logo" className="h-5 w-5 rounded object-cover" />
+              ) : (
+                <div className="grid h-5 w-5 place-items-center rounded bg-[#353434] text-xs font-semibold text-[#E5E2E1]">
+                  {orgName.slice(0, 1).toUpperCase()}
+                </div>
+              )}
+              <p className="min-w-0 flex-1 truncate text-sm font-medium text-[#D4D4D4]">
+                {orgName}
+              </p>
+              <span className="shrink-0 text-[10px] font-bold uppercase tracking-widest text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.5)]">
+                owner
+              </span>
+            </div>
           </div>
 
           {/* Nav groups */}
@@ -198,7 +204,12 @@ export default async function DashboardLayout({
 
         {/* Main content */}
         <div className="flex-1 ml-[280px] flex flex-col min-h-screen">
-          {children}
+          <NotificationRealtimeProvider userId={user?.id ?? ""}>
+            <header className="sticky top-0 z-40 flex h-12 items-center justify-end border-b border-[#2D2D2D] bg-[#191919] px-6">
+              <NotificationBell userId={user.id} orgSlug={orgSlug} />
+            </header>
+            {children}
+          </NotificationRealtimeProvider>
         </div>
       </div>
     </NotifyProvider>

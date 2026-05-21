@@ -27,7 +27,7 @@ const makeMember = (
   username,
   jersey_number,
   position: null,
-  availability: "available",
+  availability: "active",
   main_role: null,
   avatar_url: null,
   phone_wa: null,

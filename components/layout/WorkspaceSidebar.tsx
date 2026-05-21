@@ -30,7 +30,6 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { SettingsModal } from "@/features/settings/components/SettingsModal";
-import { NotificationBell } from "@/features/notifications/components/NotificationBell";
 import { useWorkspaceStore } from "@/stores/useWorkspaceStore";
 
 interface SidebarDivision {
@@ -297,9 +296,6 @@ export function WorkspaceSidebar({
             </span>
           )}
         </Link>
-        <div className="shrink-0 px-2">
-          <NotificationBell userId={user.userId} orgSlug={orgSlug} />
-        </div>
       </div>
 
       {/* Division switcher */}

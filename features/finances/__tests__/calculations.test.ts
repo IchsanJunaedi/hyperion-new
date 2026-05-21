@@ -33,11 +33,9 @@ describe("Finance Calculations and Queries", () => {
         category: "iuran",
         description: null,
         date: "2026-05-05",
-        member_id: null,
         organization_id: "org-123",
         created_at: "",
         created_by: "",
-        balance_after: 0,
       },
       {
         id: "c2",
@@ -46,11 +44,9 @@ describe("Finance Calculations and Queries", () => {
         category: "operasional",
         description: null,
         date: "2026-05-10",
-        member_id: null,
         organization_id: "org-123",
         created_at: "",
         created_by: "",
-        balance_after: 0,
       },
     ];
 
@@ -101,7 +97,7 @@ describe("Finance Calculations and Queries", () => {
     it("calculates balance with zero opening balance and only income current rows", async () => {
       mockFrom.then = vi.fn((resolve) => resolve({ data: [], error: null }));
 
-      const onlyIncome = [mockCurrentRows[0]];
+      const onlyIncome = [mockCurrentRows[0]!];
       const summary = await getFinanceSummary("org-123", 2026, 5, onlyIncome);
       expect(summary).toEqual({
         openingBalance: 0,
@@ -114,7 +110,7 @@ describe("Finance Calculations and Queries", () => {
     it("calculates balance with zero opening balance and only expense current rows", async () => {
       mockFrom.then = vi.fn((resolve) => resolve({ data: [], error: null }));
 
-      const onlyExpense = [mockCurrentRows[1]];
+      const onlyExpense = [mockCurrentRows[1]!];
       const summary = await getFinanceSummary("org-123", 2026, 5, onlyExpense);
       expect(summary).toEqual({
         openingBalance: 0,
@@ -180,7 +176,7 @@ describe("Finance Calculations and Queries", () => {
 
       const largeRows = [
         {
-          ...mockCurrentRows[0],
+          ...mockCurrentRows[0]!,
           amount: 5000000000.25,
         },
       ];

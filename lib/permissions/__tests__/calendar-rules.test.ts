@@ -125,6 +125,7 @@ describe("resolvePermissions — null role", () => {
 describe("resolvePermissions — selected-members with explicit permissions", () => {
   const dummyPerms = (overrides: Partial<CalendarMemberPermission>): CalendarMemberPermission => ({
     id: "p1",
+    organization_id: "org-1",
     calendar_id: "c1",
     member_user_id: "u1",
     can_view: false,
