@@ -36,6 +36,8 @@ function resolveRoute(
       return `/${orgSlug}/scrim/${refId}`;
     case "announcement":
       return `/${orgSlug}/announcements/${refId}`;
+    case "tournament":
+      return `/${orgSlug}/tournaments/${refId}`;
     default:
       return null;
   }
@@ -83,13 +85,11 @@ export function NotificationItem({
       }
     }
 
-    // 2. Navigate if ref_type and ref_id exist
+    // 2. Navigate if ref_type and ref_id exist, always close popup
+    onNavigate();
     if (notification.ref_type && notification.ref_id) {
       const route = resolveRoute(orgSlug, notification.ref_type, notification.ref_id);
-      if (route) {
-        onNavigate();
-        router.push(route);
-      }
+      if (route) router.push(route);
     }
   }
 
