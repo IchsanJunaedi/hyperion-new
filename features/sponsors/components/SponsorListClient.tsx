@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Plus, Users, TrendingUp, DollarSign, AlertTriangle } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { cn } from "@/lib/utils/cn";
 import { SponsorCard } from "./SponsorCard";
 import { SponsorFormModal } from "./SponsorFormModal";
 import type { SponsorWithStats } from "../queries";
@@ -54,9 +55,6 @@ function StatsRow({ sponsors }: StatsRowProps) {
   );
 }
 
-function cn(...classes: (string | false | null | undefined)[]) {
-  return classes.filter(Boolean).join(" ");
-}
 
 interface SponsorListClientProps {
   sponsors: SponsorWithStats[];

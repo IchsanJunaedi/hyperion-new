@@ -2,7 +2,8 @@
 
 import { Loader2 } from "lucide-react";
 import { useEffect, useRef, useState, useTransition } from "react";
-import { toast } from "sonner";
+import { notify } from "@/features/dashboard/components/NotifyModal";
+import { cn } from "@/lib/utils/cn";
 
 import { updateMainRoleAction, type MainRole } from "../actions/updateMainRole";
 
@@ -49,13 +50,13 @@ export function MainRoleSelector({
       setOpen(false);
       const res = await updateMainRoleAction(orgSlug, memberId, value);
       if (res.ok) {
-        toast.success(
+        notify.success(
           value
             ? `Role ingame diubah ke ${ROLE_OPTIONS.find((o) => o.value === value)?.label}`
             : "Role ingame dihapus",
         );
       } else {
-        toast.error(res.message ?? "Gagal mengubah role ingame");
+        notify.error(res.message ?? "Gagal mengubah role ingame");
       }
     });
   }
@@ -68,18 +69,17 @@ export function MainRoleSelector({
         onClick={() => setOpen((v) => !v)}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        className={`inline-flex h-8 w-28 items-center justify-between gap-1.5 rounded-md px-2.5 text-xs transition-all duration-200 focus:outline-none disabled:opacity-50 cursor-pointer ${
+        className={cn(
+          "inline-flex h-8 w-28 cursor-pointer items-center justify-between gap-1.5 rounded-md px-2.5 text-xs transition-all duration-200 focus:outline-none disabled:opacity-50",
           isInteractive
             ? "border border-[#2D2D2D] bg-[#141414] text-white"
-            : "border border-transparent bg-transparent"
-        }`}
+            : "border border-transparent bg-transparent",
+        )}
       >
         <span
-          className={
-            isInteractive
-              ? "font-medium text-white"
-              : (selected?.color ?? "text-white/30 italic")
-          }
+          className={cn(
+            isInteractive ? "font-medium text-white" : (selected?.color ?? "text-white/30 italic"),
+          )}
         >
           {selected?.shortLabel ?? "—"}
         </span>
@@ -87,9 +87,10 @@ export function MainRoleSelector({
           <Loader2 className="h-3 w-3 animate-spin text-white/40" />
         ) : (
           <svg
-            className={`h-3 w-3 text-white/55 transition-all duration-200 ${
-              isInteractive ? "opacity-100" : "opacity-0"
-            }`}
+            className={cn(
+              "h-3 w-3 text-white/55 transition-all duration-200",
+              isInteractive ? "opacity-100" : "opacity-0",
+            )}
             style={{ transform: open ? "rotate(180deg)" : "rotate(0deg)" }}
             fill="none"
             viewBox="0 0 24 24"
@@ -102,21 +103,21 @@ export function MainRoleSelector({
 
       {open && (
         <div
-          className={`absolute left-0 z-50 w-36 rounded-md border border-[#2D2D2D] bg-[#141414] py-1 shadow-xl ${
-            direction === "up"
-              ? "bottom-full mb-1 origin-bottom-left"
-              : "top-full mt-1 origin-top-left"
-          }`}
+          className={cn(
+          "absolute left-0 z-50 w-36 rounded-md border border-[#2D2D2D] bg-[#141414] py-1 shadow-xl",
+          direction === "up" ? "bottom-full mb-1 origin-bottom-left" : "top-full mt-1 origin-top-left",
+        )}
         >
           {/* Clear option */}
           <button
             type="button"
             onClick={() => handleSelect(null)}
-            className={`flex w-full items-center px-3 py-2 text-left text-xs transition ${
+            className={cn(
+              "flex w-full items-center px-3 py-2 text-left text-xs transition",
               currentMainRole === null
                 ? "bg-[#1C1C1C] text-white/50"
-                : "text-white/40 hover:bg-[#1A1A1A] hover:text-white/60"
-            }`}
+                : "text-white/40 hover:bg-[#1A1A1A] hover:text-white/60",
+            )}
           >
             — Tidak ada —
           </button>
@@ -125,11 +126,12 @@ export function MainRoleSelector({
               key={opt.value}
               type="button"
               onClick={() => handleSelect(opt.value)}
-              className={`flex w-full items-center justify-between px-3 py-2 text-left text-xs transition ${
+              className={cn(
+                "flex w-full items-center justify-between px-3 py-2 text-left text-xs transition",
                 currentMainRole === opt.value
                   ? "bg-[#1C1C1C] font-medium text-white"
-                  : "text-white/70 hover:bg-[#1A1A1A] hover:text-white"
-              }`}
+                  : "text-white/70 hover:bg-[#1A1A1A] hover:text-white",
+              )}
             >
               <span>{opt.label}</span>
               <span className={`font-mono text-[10px] ${opt.color}`}>{opt.shortLabel}</span>
