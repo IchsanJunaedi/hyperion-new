@@ -23,7 +23,7 @@ const DELAY_MS = 500;
 // ── Official hero ID → name mapping (from Fandom wiki) ───────────────────────
 const HERO_IDS = {
   "Miya": 1, "Balmond": 2, "Saber": 3, "Alice": 4, "Nana": 5, "Tigreal": 6,
-  "Alucard": 7, "Karina": 11, "Akai": 9, "Franco": 10, "Bane": 8, "Bruno": 12,
+  "Alucard": 7, "Karina": 8, "Akai": 9, "Franco": 10, "Bane": 11, "Bruno": 12,
   "Clint": 13, "Rafaela": 14, "Eudora": 15, "Zilong": 16, "Fanny": 17,
   "Layla": 18, "Minotaur": 19, "Lolita": 20, "Hayabusa": 21, "Freya": 22,
   "Gord": 23, "Natalia": 24, "Kagura": 25, "Chou": 26, "Sun": 27, "Alpha": 28,
@@ -46,9 +46,9 @@ const HERO_IDS = {
   "Edith": 108, "Aamon": 109, "Valentina": 110, "Yin": 111, "Xavier": 112,
   "Julian": 113, "Melissa": 114, "Fredrinn": 115, "Joy": 116, "Novaria": 117,
   "Arlott": 118, "Ixia": 119, "Nolan": 120, "Cici": 121, "Chip": 122,
-  "Zhuxin": 123, "Suyou": 124, "Lukas": 125, "Sora": 131, "Marcel": 132,
+  "Zhuxin": 123, "Suyou": 124, "Lukas": 127, "Gloo": 126, "Sora": 131, "Marcel": 132,
   // Heroes that may have different IDs — fallback to name search
-  "Benedetta": 118, "Talon": 88,
+  "Benedetta": 118, "Kalea": 133, "Zetian": 129, "Obsidia": 130,
 };
 
 const HEROES = [
@@ -65,13 +65,14 @@ const HEROES = [
   "Mathilda", "Melissa", "Minsitthar", "Minotaur", "Miya", "Moskov",
   "Nana", "Natalia", "Natan", "Nolan", "Novaria", "Odette", "Paquito",
   "Pharsa", "Phoveus", "Popol and Kupa", "Rafaela", "Roger", "Ruby",
-  "Saber", "Silvanna", "Sun", "Suyou", "Talon", "Terizla", "Thamuz",
+  "Saber", "Silvanna", "Sun", "Suyou", "Terizla", "Thamuz",
   "Tigreal", "Uranus", "Vale", "Valentina", "Valir", "Vexana", "Wanwan",
   "X.Borg", "Xavier", "Yi Sun-shin", "Yin", "Yu Zhong", "Yve", "Zhask",
   "Zhuxin", "Zilong",
   // New added heroes
   "Alice", "Bane", "Karina", "Argus", "Martis", "Kaja", "Selena", "Kadita",
-  "Masha", "Luo Yi", "Edith", "Fredrinn", "Arlott", "Sora", "Marcel"
+  "Masha", "Luo Yi", "Edith", "Fredrinn", "Arlott", "Sora", "Marcel",
+  "Gloo", "Kalea", "Zetian", "Obsidia"
 ];
 
 function heroToSlug(name) {
@@ -127,7 +128,8 @@ function sleep(ms) { return new Promise((r) => setTimeout(r, ms)); }
 // ── Get icon URL via wiki imageinfo API ───────────────────────────────────────
 // This hits api.php directly (not Special:FilePath) to avoid 403 blocks
 async function getIconUrl(heroId) {
-  const filename = `Hero${heroId}1-icon.png`;
+  const paddedId = String(heroId).padStart(2, "0");
+  const filename = `Hero${paddedId}1-icon.png`;
   const apiUrl = `https://mobile-legends.fandom.com/api.php?action=query&titles=File:${encodeURIComponent(filename)}&prop=imageinfo&iiprop=url&format=json`;
   try {
     const data = await fetchJson(apiUrl);
