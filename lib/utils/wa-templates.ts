@@ -79,6 +79,43 @@ export function buildScrimWaMessage(data: ScrimWaData): string {
   return lines.join("\n");
 }
 
+interface TournamentRegisteredWaData {
+  orgName: string;
+  tournamentName: string;
+  organizer?: string | null;
+  startDate: string;
+  registrationUrl?: string | null;
+  tournamentUrl: string;
+}
+
+/**
+ * Build WA message when registration is confirmed for a tournament.
+ */
+export function buildTournamentRegisteredWaMessage(data: TournamentRegisteredWaData): string {
+  const lines = [
+    `[${data.orgName}] ✅ *Pendaftaran Dikonfirmasi!*`,
+    "",
+    `*Turnamen:* ${data.tournamentName}`,
+  ];
+
+  if (data.organizer) {
+    lines.push(`*Organizer:* ${data.organizer}`);
+  }
+
+  lines.push(`*Mulai:* ${formatDateOnly(data.startDate)}`);
+  lines.push("");
+  lines.push("Tim kita sudah resmi terdaftar. Persiapkan dirimu!");
+  lines.push("");
+
+  if (data.registrationUrl) {
+    lines.push(`Link registrasi: ${data.registrationUrl}`);
+  }
+
+  lines.push(`Info turnamen: ${data.tournamentUrl}`);
+
+  return lines.join("\n");
+}
+
 /**
  * Build WA message for a new tournament.
  */

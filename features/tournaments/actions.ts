@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { logAudit } from "@/lib/audit";
 import { blastWaMessage } from "@/lib/utils/fonnte";
-import { buildTournamentWaMessage } from "@/lib/utils/wa-templates";
+import { buildTournamentWaMessage, buildTournamentRegisteredWaMessage } from "@/lib/utils/wa-templates";
 import {
   createTournamentSchema,
   updateTournamentSchema,
@@ -60,6 +60,7 @@ export async function createTournamentAction(
       registration_url: parsed.data.registration_url,
       notes: parsed.data.notes,
       start_time: parsed.data.start_time ?? null,
+      registration_deadline: parsed.data.registration_deadline ?? null,
       status: "upcoming",
     })
     .select("id")
@@ -132,6 +133,7 @@ export async function updateTournamentAction(
       registration_url: parsed.data.registration_url,
       notes: parsed.data.notes,
       start_time: parsed.data.start_time ?? null,
+      registration_deadline: parsed.data.registration_deadline ?? null,
       h1_reminder_sent_at: null,
       day_reminder_sent_at: null,
     })
@@ -217,27 +219,41 @@ export async function updateTournamentStatusAction(
 
   if (error) return { ok: false, message: error.message };
 
-  // When confirming registration (upcoming → ongoing), auto-add finance expense
+  // When confirming registration (upcoming → ongoing)
   if (status === "ongoing") {
     const { data: tournament } = await supabase
       .from("tournaments")
-      .select("organization_id, name, registration_fee")
+      .select("organization_id, name, organizer, start_date, registration_fee, registration_url")
       .eq("id", tournamentId)
       .maybeSingle();
 
-    if (tournament?.registration_fee) {
-      const amount = parseInt(tournament.registration_fee.replace(/\D/g, ""), 10);
-      if (amount > 0) {
-        await supabase.from("finances").insert({
-          organization_id: tournament.organization_id,
-          type: "expense",
-          amount,
-          category: "Turnamen",
-          description: `Biaya registrasi: ${tournament.name}`,
-          date: new Date().toISOString().slice(0, 10),
-          created_by: user.id,
-        });
+    if (tournament) {
+      // Auto-add finance expense if there's a registration fee
+      if (tournament.registration_fee) {
+        const amount = parseInt(tournament.registration_fee.replace(/\D/g, ""), 10);
+        if (amount > 0) {
+          await supabase.from("finances").insert({
+            organization_id: tournament.organization_id,
+            type: "expense",
+            amount,
+            category: "Turnamen",
+            description: `Biaya registrasi: ${tournament.name}`,
+            date: new Date().toISOString().slice(0, 10),
+            created_by: user.id,
+          });
+        }
       }
+
+      // WA + in-app notification blast to all members
+      fanOutRegistrationNotification(createAdminClient(), {
+        tournamentId,
+        orgId: tournament.organization_id,
+        orgSlug,
+        name: tournament.name,
+        organizer: tournament.organizer ?? null,
+        startDate: tournament.start_date,
+        registrationUrl: tournament.registration_url ?? null,
+      }).catch((err) => console.error("[WA] Registration notification error:", err));
     }
   }
 
@@ -368,6 +384,85 @@ export async function deleteTournamentMatchAction(
   return { ok: true };
 }
 
+
+// ---------------------------------------------------------------------------
+// WA Blast for Registration Confirmed
+// ---------------------------------------------------------------------------
+
+interface RegistrationNotifData {
+  tournamentId: string;
+  orgId: string;
+  orgSlug: string;
+  name: string;
+  organizer: string | null;
+  startDate: string;
+  registrationUrl: string | null;
+}
+
+async function fanOutRegistrationNotification(
+  admin: ReturnType<typeof createAdminClient>,
+  data: RegistrationNotifData,
+) {
+  const { data: org } = await admin
+    .from("organizations")
+    .select("name")
+    .eq("id", data.orgId)
+    .maybeSingle();
+  const orgName = org?.name ?? "Tim";
+
+  const { data: members } = await admin
+    .from("team_members")
+    .select("user_id")
+    .eq("organization_id", data.orgId)
+    .eq("is_active", true);
+  if (!members || members.length === 0) return;
+
+  const userIds = members.map((m) => m.user_id);
+  const { data: profiles } = await admin
+    .from("profiles")
+    .select("id, phone_wa")
+    .in("id", userIds);
+  const phoneMap = new Map((profiles ?? []).map((p) => [p.id, p.phone_wa]));
+
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  const tournamentUrl = `${appUrl}/${data.orgSlug}/tournaments/${data.tournamentId}`;
+
+  const waMessage = buildTournamentRegisteredWaMessage({
+    orgName,
+    tournamentName: data.name,
+    organizer: data.organizer,
+    startDate: data.startDate,
+    registrationUrl: data.registrationUrl,
+    tournamentUrl,
+  });
+
+  const title = `Terdaftar: ${data.name}`;
+  const body = `${orgName} sudah resmi terdaftar di turnamen ${data.name}.`;
+
+  const rows = members.map((m) => ({
+    organization_id: data.orgId,
+    user_id: m.user_id,
+    type: "system" as const,
+    title,
+    body,
+    ref_id: data.tournamentId,
+    ref_type: "tournament",
+    wa_number: phoneMap.get(m.user_id) ?? null,
+    wa_message: phoneMap.get(m.user_id) ? waMessage : null,
+  }));
+
+  await admin.from("notifications").insert(rows);
+
+  const recipients = members
+    .map((m) => ({ phone: phoneMap.get(m.user_id), message: waMessage }))
+    .filter((r): r is { phone: string; message: string } => Boolean(r.phone));
+
+  if (recipients.length > 0) {
+    blastWaMessage(recipients).catch((err) =>
+      console.error("[WA Blast] Registration notification error:", err),
+    );
+  }
+}
 
 // ---------------------------------------------------------------------------
 // WA Blast for Tournament Creation
