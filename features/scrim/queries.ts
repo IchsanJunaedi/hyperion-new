@@ -56,8 +56,10 @@ export async function listScrims(
       .gte("scheduled_at", new Date().toISOString())
       .order("scheduled_at", { ascending: true });
   } else if (filter === "ongoing") {
+    // Show explicitly-ongoing scrims + scheduled scrims whose time has passed
+    // (result not yet submitted — they "fell through" from upcoming).
     q = q
-      .eq("status", "ongoing")
+      .or(`status.eq.ongoing,and(status.eq.scheduled,scheduled_at.lt.${new Date().toISOString()})`)
       .order("scheduled_at", { ascending: false });
   } else if (filter === "completed") {
     q = q
