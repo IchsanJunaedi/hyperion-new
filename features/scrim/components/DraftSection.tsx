@@ -293,14 +293,20 @@ export function DraftSection({ draft, attendingPlayers, onOurChange, onEnemyChan
   const bansEnemy = draft.bans?.enemy ?? Array(BAN_COUNT).fill("");
 
   return (
-    <div className="space-y-4">
-      {/* ── Ban Hero — horizontal circles ────────────────────────────── */}
-      <div className="space-y-2">
-        <div className="flex items-center gap-1.5">
-          <Ban className="h-3 w-3 text-[#6B6A68]" />
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-[#6B6A68]">Ban Hero</p>
-        </div>
-        <div className="flex items-center gap-2">
+    <div className="space-y-2">
+      {/* ── Section header ───────────────────────────────────────────── */}
+      <div className="flex items-center gap-1.5">
+        <Ban className="h-3 w-3 text-[#6B6A68]" />
+        <p className="text-[10px] font-semibold uppercase tracking-wider text-[#6B6A68]">Ban Hero &amp; Draft</p>
+      </div>
+
+      {/* ── 2-column grid: Our | Enemy ───────────────────────────────── */}
+      <div className="grid grid-cols-2 gap-3">
+
+        {/* ── Our column ── */}
+        <div className="space-y-2">
+          <p className="text-[11px] font-semibold text-emerald-400">Our Draft</p>
+          {/* Ban circles */}
           <div className="flex gap-1.5">
             {bansOur.map((hero, i) => (
               <BanSlotPicker
@@ -311,11 +317,40 @@ export function DraftSection({ draft, attendingPlayers, onOurChange, onEnemyChan
               />
             ))}
           </div>
-          <div className="flex flex-col items-center gap-0.5 px-1">
-            <span className="text-[9px] font-semibold text-emerald-400">Our</span>
-            <div className="h-3 w-px bg-[#3D3D3D]" />
-            <span className="text-[9px] font-semibold text-rose-400">Enemy</span>
-          </div>
+          {/* Pick rows */}
+          {ROLES.map((role) => {
+            const slot = draft.our[role];
+            const assignedPlayer = slot.playerId ? playerById.get(slot.playerId) : null;
+            const slotLabel = assignedPlayer?.displayName
+              ? `${assignedPlayer.displayName} - ${ROLE_LABELS[role]}`
+              : ROLE_LABELS[role];
+            return (
+              <div key={role}>
+                <p className="mb-0.5 truncate text-[10px] text-[#6B6A68]" title={slotLabel}>
+                  {slotLabel}
+                </p>
+                <HeroPicker
+                  value={slot.hero}
+                  onChange={(hero) => handleOurHero(role, hero)}
+                  excludedHeroes={getExcluded(slot.hero)}
+                />
+                {attendingPlayers.length > 0 && (
+                  <PlayerDropdown
+                    playerId={slot.playerId}
+                    players={attendingPlayers}
+                    roleHint={role}
+                    onChange={(id) => onOurChange(role, slot.hero, id)}
+                  />
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* ── Enemy column ── */}
+        <div className="space-y-2">
+          <p className="text-[11px] font-semibold text-rose-400">Enemy Draft</p>
+          {/* Ban circles */}
           <div className="flex gap-1.5">
             {bansEnemy.map((hero, i) => (
               <BanSlotPicker
@@ -326,60 +361,19 @@ export function DraftSection({ draft, attendingPlayers, onOurChange, onEnemyChan
               />
             ))}
           </div>
+          {/* Pick rows */}
+          {ROLES.map((role) => (
+            <div key={role}>
+              <p className="mb-0.5 text-[10px] text-[#6B6A68]">{ROLE_LABELS[role]}</p>
+              <HeroPicker
+                value={draft.enemy[role]}
+                onChange={(hero) => onEnemyChange(role, hero)}
+                excludedHeroes={getExcluded(draft.enemy[role])}
+              />
+            </div>
+          ))}
         </div>
-      </div>
 
-      {/* ── Draft ─────────────────────────────────────────────────────── */}
-      <div className="space-y-2">
-        <p className="text-[10px] font-semibold uppercase tracking-wider text-[#6B6A68]">Draft</p>
-        <div className="grid grid-cols-2 gap-3">
-          {/* Our Draft */}
-          <div className="space-y-2">
-            <p className="text-[11px] font-semibold text-emerald-400">Our Draft</p>
-            {ROLES.map((role) => {
-              const slot = draft.our[role];
-              const assignedPlayer = slot.playerId ? playerById.get(slot.playerId) : null;
-              const slotLabel = assignedPlayer?.displayName
-                ? `${assignedPlayer.displayName} - ${ROLE_LABELS[role]}`
-                : ROLE_LABELS[role];
-              return (
-                <div key={role}>
-                  <p className="mb-0.5 truncate text-[10px] text-[#6B6A68]" title={slotLabel}>
-                    {slotLabel}
-                  </p>
-                  <HeroPicker
-                    value={slot.hero}
-                    onChange={(hero) => handleOurHero(role, hero)}
-                    excludedHeroes={getExcluded(slot.hero)}
-                  />
-                  {attendingPlayers.length > 0 && (
-                    <PlayerDropdown
-                      playerId={slot.playerId}
-                      players={attendingPlayers}
-                      roleHint={role}
-                      onChange={(id) => onOurChange(role, slot.hero, id)}
-                    />
-                  )}
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Enemy Draft */}
-          <div className="space-y-2">
-            <p className="text-[11px] font-semibold text-rose-400">Enemy Draft</p>
-            {ROLES.map((role) => (
-              <div key={role}>
-                <p className="mb-0.5 text-[10px] text-[#6B6A68]">{ROLE_LABELS[role]}</p>
-                <HeroPicker
-                  value={draft.enemy[role]}
-                  onChange={(hero) => onEnemyChange(role, hero)}
-                  excludedHeroes={getExcluded(draft.enemy[role])}
-                />
-              </div>
-            ))}
-          </div>
-        </div>
       </div>
     </div>
   );
