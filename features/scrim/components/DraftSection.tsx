@@ -54,10 +54,12 @@ function BanSlotPicker({
   value,
   onChange,
   excludedHeroes,
+  align = "left",
 }: {
   value: string;
   onChange: (hero: string) => void;
   excludedHeroes: Set<string>;
+  align?: "left" | "right";
 }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -104,7 +106,6 @@ function BanSlotPicker({
           <>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={getHeroImageUrl(value)} alt={value} className="h-full w-full object-cover" />
-            {/* Hover overlay to clear */}
             <div
               className="absolute inset-0 flex items-center justify-center bg-black/70 opacity-0 transition-opacity group-hover:opacity-100"
               onClick={(e) => { e.stopPropagation(); onChange(""); }}
@@ -121,18 +122,24 @@ function BanSlotPicker({
 
       {/* Dropdown */}
       {open && (
-        <div className="absolute left-1/2 top-[calc(100%+6px)] z-50 w-44 -translate-x-1/2 overflow-hidden rounded-xl border border-[#2D2D2D] bg-[#1C1C1C] shadow-2xl shadow-black/60">
+        <div
+          className={cn(
+            "absolute top-[calc(100%+8px)] z-[200] w-52 overflow-hidden rounded-xl border border-[#3A3A3A] bg-[#1C1C1C]",
+            "shadow-[0_8px_32px_rgba(0,0,0,0.85)] ring-1 ring-white/[0.06]",
+            align === "right" ? "right-0" : "left-0",
+          )}
+        >
           {value && (
             <button
               type="button"
               onClick={() => { onChange(""); setOpen(false); }}
-              className="flex w-full items-center gap-2 border-b border-[#2D2D2D] px-3 py-1.5 text-[10px] text-rose-400 transition-colors hover:bg-[#252525]"
+              className="flex w-full items-center gap-2 border-b border-[#2D2D2D] px-3 py-2 text-[10px] text-rose-400 transition-colors hover:bg-[#252525]"
             >
               <X className="h-3 w-3" />
               Hapus ban
             </button>
           )}
-          <div className="flex items-center gap-2 border-b border-[#2D2D2D] px-3 py-2">
+          <div className="flex items-center gap-2 border-b border-[#2D2D2D] px-3 py-2.5">
             <Search className="h-3.5 w-3.5 shrink-0 text-[#6B6A68]" />
             <input
               ref={inputRef}
@@ -143,9 +150,9 @@ function BanSlotPicker({
               className="flex-1 bg-transparent text-xs text-[#E5E2E1] outline-none placeholder:text-[#6B6A68]"
             />
           </div>
-          <ul className="sidebar-scroll max-h-44 overflow-y-auto">
+          <ul className="sidebar-scroll max-h-52 overflow-y-auto py-1">
             {filtered.length === 0 ? (
-              <li className="px-3 py-3 text-center text-xs text-[#6B6A68]">Tidak ditemukan</li>
+              <li className="px-3 py-4 text-center text-xs text-[#6B6A68]">Tidak ditemukan</li>
             ) : (
               filtered.map((hero) => (
                 <li key={hero}>
@@ -153,11 +160,11 @@ function BanSlotPicker({
                     type="button"
                     onClick={() => { onChange(hero); setOpen(false); }}
                     className={cn(
-                      "flex w-full cursor-pointer items-center gap-2.5 px-3 py-1.5 text-xs transition-colors hover:bg-[#252525]",
+                      "flex w-full cursor-pointer items-center gap-2.5 px-3 py-2 text-xs transition-colors hover:bg-[#252525]",
                       hero === value ? "bg-red-500/10 text-red-300" : "text-[#E5E2E1]",
                     )}
                   >
-                    <div className="h-5 w-5 shrink-0 overflow-hidden rounded-full border border-white/10">
+                    <div className="h-6 w-6 shrink-0 overflow-hidden rounded-full border border-white/10">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={getHeroImageUrl(hero)} alt={hero} className="h-full w-full object-cover" />
                     </div>
@@ -314,6 +321,7 @@ export function DraftSection({ draft, attendingPlayers, onOurChange, onEnemyChan
                 value={hero}
                 onChange={(h) => onBanChange("our", i, h)}
                 excludedHeroes={getExcluded(hero)}
+                align={i >= 3 ? "right" : "left"}
               />
             ))}
           </div>
@@ -358,6 +366,7 @@ export function DraftSection({ draft, attendingPlayers, onOurChange, onEnemyChan
                 value={hero}
                 onChange={(h) => onBanChange("enemy", i, h)}
                 excludedHeroes={getExcluded(hero)}
+                align={i >= 3 ? "right" : "left"}
               />
             ))}
           </div>

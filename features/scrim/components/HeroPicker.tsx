@@ -143,9 +143,9 @@ export function HeroPicker({
 
       {/* Dropdown */}
       {open && (
-        <div className="absolute left-0 right-0 top-[calc(100%+4px)] z-50 overflow-hidden rounded-xl border border-[#2D2D2D] bg-[#1C1C1C] shadow-2xl shadow-black/60">
+        <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-[200] overflow-hidden rounded-xl border border-[#3A3A3A] bg-[#1C1C1C] shadow-[0_8px_32px_rgba(0,0,0,0.85)] ring-1 ring-white/[0.06]">
           {/* Search */}
-          <div className="flex items-center gap-2 border-b border-[#2D2D2D] px-3 py-2">
+          <div className="flex items-center gap-2 border-b border-[#2D2D2D] px-3 py-2.5">
             <Search className="h-3.5 w-3.5 shrink-0 text-[#6B6A68]" />
             <input
               ref={inputRef}
@@ -158,7 +158,7 @@ export function HeroPicker({
           </div>
 
           {/* Hero list */}
-          <ul className="max-h-48 overflow-y-auto sidebar-scroll">
+          <ul className="sidebar-scroll max-h-52 overflow-y-auto py-1">
             {filtered.length === 0 ? (
               <li className="px-3 py-4 text-center text-xs text-[#6B6A68]">
                 Hero tidak ditemukan
@@ -170,7 +170,7 @@ export function HeroPicker({
                     type="button"
                     onClick={() => select(hero)}
                     className={cn(
-                      "flex w-full cursor-pointer items-center gap-2.5 px-3 py-1.5 text-xs transition-colors hover:bg-[#252525]",
+                      "flex w-full cursor-pointer items-center gap-2.5 px-3 py-2 text-xs transition-colors hover:bg-[#252525]",
                       hero === value
                         ? "bg-yellow-400/10 text-yellow-300"
                         : "text-[#E5E2E1]",
