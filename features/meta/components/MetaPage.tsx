@@ -19,6 +19,7 @@ import type { MetaHeroRating, MetaPatch, PatchWithHeroes } from "../queries";
 
 type Tier = "SS" | "S" | "A" | "B" | "C" | "D";
 type RoleFilter = "all" | "exp_lane" | "jungler" | "mid_lane" | "gold_lane" | "roamer";
+type ClassFilter = "all" | "Fighter" | "Tank" | "Assassin" | "Mage" | "Marksman" | "Support";
 
 const TIERS: Tier[] = ["SS", "S", "A", "B", "C", "D"];
 
@@ -88,6 +89,16 @@ const ROLE_FILTERS: Array<{ value: RoleFilter; label: string }> = [
   { value: "mid_lane", label: "Mid Lane" },
   { value: "gold_lane", label: "Gold Lane" },
   { value: "roamer", label: "Roamer" },
+];
+
+const CLASS_FILTERS: Array<{ value: ClassFilter; label: string; color: string }> = [
+  { value: "all", label: "Semua", color: "border-[#2D2D2D] text-white/40 hover:border-white/20 hover:text-white/70" },
+  { value: "Fighter", label: "Fighter", color: "border-orange-500/50 bg-orange-500/10 text-orange-400" },
+  { value: "Tank", label: "Tank", color: "border-blue-500/50 bg-blue-500/10 text-blue-400" },
+  { value: "Assassin", label: "Assassin", color: "border-red-500/50 bg-red-500/10 text-red-400" },
+  { value: "Mage", label: "Mage", color: "border-purple-500/50 bg-purple-500/10 text-purple-400" },
+  { value: "Marksman", label: "Marksman", color: "border-green-500/50 bg-green-500/10 text-green-400" },
+  { value: "Support", label: "Support", color: "border-pink-500/50 bg-pink-500/10 text-pink-400" },
 ];
 
 // ─── Hero card (in tier list) ──────────────────────────────────────────────
@@ -438,6 +449,7 @@ export function MetaPage({ orgSlug, orgId, patches, initialPatch, canEdit }: Met
   const [patchList, setPatchList] = useState<MetaPatch[]>(patches);
   const [activeTab, setActiveTab] = useState<"tier" | "ban" | "learn">("tier");
   const [roleFilter, setRoleFilter] = useState<RoleFilter>("all");
+  const [classFilter, setClassFilter] = useState<ClassFilter>("all");
   const [editMode, setEditMode] = useState(false);
   const [expandedTier, setExpandedTier] = useState<Tier | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -458,8 +470,9 @@ export function MetaPage({ orgSlug, orgId, patches, initialPatch, canEdit }: Met
 
   const heroes = activePatch?.heroes ?? [];
   const existingHeroNames = new Set(heroes.map((h) => h.hero_name));
-  const filteredHeroes =
-    roleFilter === "all" ? heroes : heroes.filter((h) => h.role_tag === roleFilter);
+  const filteredHeroes = heroes
+    .filter((h) => roleFilter === "all" || h.role_tag === roleFilter)
+    .filter((h) => classFilter === "all" || h.hero_class === classFilter);
 
   function openEditModal(hero: MetaHeroRating) {
     setEditingHero(hero);
@@ -781,6 +794,7 @@ export function MetaPage({ orgSlug, orgId, patches, initialPatch, canEdit }: Met
                 onClick={() => {
                   setActiveTab(tab);
                   setRoleFilter("all");
+                  setClassFilter("all");
                 }}
                 className={cn(
                   "-mb-px cursor-pointer border-b-2 px-4 py-2 text-sm transition",
@@ -799,24 +813,44 @@ export function MetaPage({ orgSlug, orgId, patches, initialPatch, canEdit }: Met
           {/* ── Tier List tab ─────────────────────────────────────── */}
           {activeTab === "tier" && (
             <div className="space-y-4">
-              {/* Role filter bar */}
-              <div className="flex flex-wrap items-center gap-1.5">
-                <span className="text-xs text-white/40">Filter lane:</span>
-                {ROLE_FILTERS.map((rf) => (
-                  <button
-                    key={rf.value}
-                    type="button"
-                    onClick={() => setRoleFilter(rf.value)}
-                    className={cn(
-                      "cursor-pointer rounded-full border px-3 py-1 text-xs font-medium transition",
-                      roleFilter === rf.value
-                        ? "border-yellow-500/50 bg-yellow-500/10 text-yellow-400"
-                        : "border-[#2D2D2D] text-white/40 hover:border-white/20 hover:text-white/70",
-                    )}
-                  >
-                    {rf.label}
-                  </button>
-                ))}
+              {/* Filter bars */}
+              <div className="space-y-2">
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <span className="text-xs text-white/40">Lane:</span>
+                  {ROLE_FILTERS.map((rf) => (
+                    <button
+                      key={rf.value}
+                      type="button"
+                      onClick={() => setRoleFilter(rf.value)}
+                      className={cn(
+                        "cursor-pointer rounded-full border px-3 py-1 text-xs font-medium transition",
+                        roleFilter === rf.value
+                          ? "border-yellow-500/50 bg-yellow-500/10 text-yellow-400"
+                          : "border-[#2D2D2D] text-white/40 hover:border-white/20 hover:text-white/70",
+                      )}
+                    >
+                      {rf.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <span className="text-xs text-white/40">Role:</span>
+                  {CLASS_FILTERS.map((cf) => (
+                    <button
+                      key={cf.value}
+                      type="button"
+                      onClick={() => setClassFilter(cf.value)}
+                      className={cn(
+                        "cursor-pointer rounded-full border px-3 py-1 text-xs font-medium transition",
+                        classFilter === cf.value
+                          ? cf.color
+                          : "border-[#2D2D2D] text-white/40 hover:border-white/20 hover:text-white/70",
+                      )}
+                    >
+                      {cf.label}
+                    </button>
+                  ))}
+                </div>
               </div>
 
               {/* Tier rows */}
