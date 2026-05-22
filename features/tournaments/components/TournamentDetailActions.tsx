@@ -26,11 +26,16 @@ export function TournamentDetailActions({ tournament, orgSlug }: TournamentDetai
   }, [tournament.start_date]);
 
   const isRegistrationExpired = useMemo(() => {
-    return (
+    if (
       tournament.registration_deadline != null &&
       new Date(tournament.registration_deadline).getTime() < Date.now()
-    );
-  }, [tournament.registration_deadline]);
+    ) {
+      return true;
+    }
+    const timeStr = tournament.start_time || "00:00";
+    const startDateTime = new Date(`${tournament.start_date}T${timeStr}:00+07:00`);
+    return startDateTime.getTime() <= Date.now();
+  }, [tournament.registration_deadline, tournament.start_date, tournament.start_time]);
 
   function handleRegister() {
     startTransition(async () => {

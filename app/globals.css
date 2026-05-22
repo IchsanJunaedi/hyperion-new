@@ -184,7 +184,7 @@
 }
 
 /* ── Calendar icon color ───────────────────────────────────────────────────── */
-input[type="date"]::-webkit-calendar-picker-indicator {
+input::-webkit-calendar-picker-indicator {
   filter: invert(1);
   cursor: pointer;
 }

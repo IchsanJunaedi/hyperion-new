@@ -17,6 +17,7 @@ interface TournamentDetailPageProps {
 
 const STATUS_BADGE: Record<string, { color: string; label: string }> = {
   upcoming: { color: "bg-white/5 text-[#9B9A97] border-white/10", label: "BELUM DAFTAR" },
+  expired: { color: "bg-orange-500/10 text-orange-400 border-orange-500/20", label: "KADALUARSA" },
   ongoing: { color: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20", label: "TERDAFTAR" },
   completed: { color: "bg-green-500/10 text-green-400 border-green-500/20", label: "SELESAI" },
   cancelled: { color: "bg-red-500/10 text-red-400 border-red-500/20", label: "DIBATALKAN" },
@@ -33,7 +34,14 @@ export default async function TournamentDetailPage({ params }: TournamentDetailP
   const currentUserRole = await getCurrentUserRole(organization.id);
   const canManage = ["captain", "manager", "owner"].includes(currentUserRole ?? "");
 
-  const badge = STATUS_BADGE[detail.status] ?? STATUS_BADGE["upcoming"] ?? { color: "bg-white/5 text-[#9B9A97] border-white/10", label: "TIDAK DIKETAHUI" };
+  const isRegistrationExpired =
+    detail.status === "upcoming" &&
+    ((detail.registration_deadline != null &&
+      new Date(detail.registration_deadline).getTime() < Date.now()) ||
+     new Date(`${detail.start_date}T${detail.start_time || "00:00"}:00+07:00`).getTime() <= Date.now());
+
+  const badgeKey = isRegistrationExpired ? "expired" : detail.status;
+  const badge = STATUS_BADGE[badgeKey] ?? STATUS_BADGE["upcoming"] ?? { color: "bg-white/5 text-[#9B9A97] border-white/10", label: "TIDAK DIKETAHUI" };
 
   const scheduled = new Date(detail.start_date).toLocaleString("id-ID", {
     weekday: "long",
@@ -70,16 +78,37 @@ export default async function TournamentDetailPage({ params }: TournamentDetailP
           <p className="text-sm text-white/65">oleh {detail.organizer}</p>
         )}
 
-        {/* Countdown — show when not completed/cancelled */}
-        {(detail.status === "upcoming" || detail.status === "ongoing") && (
-          <div className="mt-3">
-            <TournamentCountdown
-              name={detail.name}
-              startDate={detail.start_date}
-              prizePool={detail.prize_pool}
-              organizer={detail.organizer}
-            />
+        {/* Countdown or Expired Banner */}
+        {isRegistrationExpired ? (
+          <div className="mt-3 rounded-xl border border-red-500/20 bg-red-500/[0.04] p-5">
+            <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-red-400">
+              <Calendar className="h-3.5 w-3.5" />
+              Pendaftaran Ditutup
+            </div>
+            <h3 className="mt-3 text-xl font-bold text-white sm:text-2xl">
+              {detail.name}
+            </h3>
+            {detail.organizer && (
+              <p className="mt-1 text-xs uppercase tracking-wide text-white/55">
+                oleh {detail.organizer}
+              </p>
+            )}
+            <p className="mt-4 text-sm text-white/70">
+              Turnamen ini sudah dimulai atau batas waktu pendaftaran telah lewat, dan tim Anda belum terdaftar.
+            </p>
           </div>
+        ) : (
+          (detail.status === "upcoming" || detail.status === "ongoing") && (
+            <div className="mt-3">
+              <TournamentCountdown
+                name={detail.name}
+                startDate={detail.start_date}
+                startTime={detail.start_time}
+                prizePool={detail.prize_pool}
+                organizer={detail.organizer}
+              />
+            </div>
+          )
         )}
 
         <dl className="grid gap-1 text-sm text-white/70 sm:grid-cols-2">

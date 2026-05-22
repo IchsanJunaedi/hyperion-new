@@ -35,8 +35,9 @@ export function TournamentCard({ tournament, orgSlug }: TournamentCardProps) {
 
   const isRegistrationExpired =
     tournament.status === "upcoming" &&
-    tournament.registration_deadline != null &&
-    new Date(tournament.registration_deadline) < new Date();
+    ((tournament.registration_deadline != null &&
+      new Date(tournament.registration_deadline) < new Date()) ||
+     new Date(`${tournament.start_date}T${tournament.start_time || "00:00"}:00+07:00`) <= new Date());
 
   const displayStatus = isRegistrationExpired ? "expired" : tournament.status;
 

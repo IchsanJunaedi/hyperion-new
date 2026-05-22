@@ -13,6 +13,7 @@ describe("createTournamentSchema", () => {
     division_id: VALID_UUID,
     name: "Tournament Championship",
     start_date: "2026-06-01",
+    registration_deadline: "2026-05-30T23:59:00.000Z",
   };
 
   it("accepts valid minimal input", () => {
@@ -119,6 +120,7 @@ describe("updateTournamentSchema", () => {
     division_id: VALID_UUID,
     name: "Updated Championship",
     start_date: "2026-06-01",
+    registration_deadline: "2026-05-30T23:59:00.000Z",
   };
 
   it("accepts valid update input", () => {
