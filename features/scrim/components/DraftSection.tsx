@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Ban, ChevronDown, User } from "lucide-react";
+import { Ban, ChevronDown, Plus, Search, User, X } from "lucide-react";
 import { HeroPicker } from "./HeroPicker";
-import { ROLES, ROLE_LABELS, type RoleName } from "@/features/scrim/data/mlbb-heroes";
+import { MLBB_HEROES, ROLES, ROLE_LABELS, getHeroImageUrl, type RoleName } from "@/features/scrim/data/mlbb-heroes";
 import { cn } from "@/lib/utils/cn";
 
 const BAN_COUNT = 5;
@@ -46,6 +46,131 @@ export function makeBlankDraft(): DraftPicks {
       enemy: Array(BAN_COUNT).fill(""),
     },
   };
+}
+
+// ─── Ban Slot Picker — circular trigger + dropdown ────────────────────────────
+
+function BanSlotPicker({
+  value,
+  onChange,
+  excludedHeroes,
+}: {
+  value: string;
+  onChange: (hero: string) => void;
+  excludedHeroes: Set<string>;
+}) {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const ref = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    function handle(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    if (open) document.addEventListener("mousedown", handle);
+    return () => document.removeEventListener("mousedown", handle);
+  }, [open]);
+
+  useEffect(() => {
+    if (open) {
+      setQuery("");
+      setTimeout(() => inputRef.current?.focus(), 0);
+    }
+  }, [open]);
+
+  const available = MLBB_HEROES.filter((h) => !excludedHeroes.has(h));
+  const filtered = query.trim()
+    ? available.filter((h) => h.toLowerCase().includes(query.toLowerCase()))
+    : available;
+
+  return (
+    <div ref={ref} className="relative">
+      {/* Circular trigger */}
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        title={value || "Pilih hero ban"}
+        className={cn(
+          "group relative h-9 w-9 overflow-hidden rounded-full border-2 transition-all",
+          value
+            ? "border-red-500/60 hover:border-red-400"
+            : open
+            ? "border-[#5D5D5D] bg-[#1a1a1a]"
+            : "border-dashed border-[#3D3D3D] bg-[#141414] hover:border-[#5D5D5D]",
+        )}
+      >
+        {value ? (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={getHeroImageUrl(value)} alt={value} className="h-full w-full object-cover" />
+            {/* Hover overlay to clear */}
+            <div
+              className="absolute inset-0 flex items-center justify-center bg-black/70 opacity-0 transition-opacity group-hover:opacity-100"
+              onClick={(e) => { e.stopPropagation(); onChange(""); }}
+            >
+              <X className="h-3.5 w-3.5 text-red-400" />
+            </div>
+          </>
+        ) : (
+          <span className="flex h-full w-full items-center justify-center text-[#3D3D3D] group-hover:text-[#5D5D5D]">
+            <Plus className="h-3 w-3" />
+          </span>
+        )}
+      </button>
+
+      {/* Dropdown */}
+      {open && (
+        <div className="absolute left-1/2 top-[calc(100%+6px)] z-50 w-44 -translate-x-1/2 overflow-hidden rounded-xl border border-[#2D2D2D] bg-[#1C1C1C] shadow-2xl shadow-black/60">
+          {value && (
+            <button
+              type="button"
+              onClick={() => { onChange(""); setOpen(false); }}
+              className="flex w-full items-center gap-2 border-b border-[#2D2D2D] px-3 py-1.5 text-[10px] text-rose-400 transition-colors hover:bg-[#252525]"
+            >
+              <X className="h-3 w-3" />
+              Hapus ban
+            </button>
+          )}
+          <div className="flex items-center gap-2 border-b border-[#2D2D2D] px-3 py-2">
+            <Search className="h-3.5 w-3.5 shrink-0 text-[#6B6A68]" />
+            <input
+              ref={inputRef}
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Cari hero…"
+              className="flex-1 bg-transparent text-xs text-[#E5E2E1] outline-none placeholder:text-[#6B6A68]"
+            />
+          </div>
+          <ul className="sidebar-scroll max-h-44 overflow-y-auto">
+            {filtered.length === 0 ? (
+              <li className="px-3 py-3 text-center text-xs text-[#6B6A68]">Tidak ditemukan</li>
+            ) : (
+              filtered.map((hero) => (
+                <li key={hero}>
+                  <button
+                    type="button"
+                    onClick={() => { onChange(hero); setOpen(false); }}
+                    className={cn(
+                      "flex w-full cursor-pointer items-center gap-2.5 px-3 py-1.5 text-xs transition-colors hover:bg-[#252525]",
+                      hero === value ? "bg-red-500/10 text-red-300" : "text-[#E5E2E1]",
+                    )}
+                  >
+                    <div className="h-5 w-5 shrink-0 overflow-hidden rounded-full border border-white/10">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={getHeroImageUrl(hero)} alt={hero} className="h-full w-full object-cover" />
+                    </div>
+                    <span className="truncate">{hero}</span>
+                  </button>
+                </li>
+              ))
+            )}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
 }
 
 // ─── Player Dropdown (custom, no native <select>) ─────────────────────────────
@@ -137,7 +262,6 @@ interface DraftSectionProps {
 }
 
 export function DraftSection({ draft, attendingPlayers, onOurChange, onEnemyChange, onBanChange }: DraftSectionProps) {
-  // All currently selected heroes (picks + bans) for mutual exclusion
   const allPicked = new Set<string>();
   for (const slot of Object.values(draft.our)) if (slot.hero) allPicked.add(slot.hero);
   for (const hero of Object.values(draft.enemy)) if (hero) allPicked.add(hero);
@@ -149,11 +273,8 @@ export function DraftSection({ draft, attendingPlayers, onOurChange, onEnemyChan
     return ex;
   }
 
-  // Role → attending player map (for auto-assign)
   const roleToPlayer = new Map(
-    attendingPlayers
-      .filter((p) => p.mainRole)
-      .map((p) => [p.mainRole!, p]),
+    attendingPlayers.filter((p) => p.mainRole).map((p) => [p.mainRole!, p]),
   );
 
   function handleOurHero(role: RoleName, newHero: string) {
@@ -168,51 +289,48 @@ export function DraftSection({ draft, attendingPlayers, onOurChange, onEnemyChan
   }
 
   const playerById = new Map(attendingPlayers.map((p) => [p.userId, p]));
-
   const bansOur = draft.bans?.our ?? Array(BAN_COUNT).fill("");
   const bansEnemy = draft.bans?.enemy ?? Array(BAN_COUNT).fill("");
 
   return (
     <div className="space-y-4">
-      {/* ── Ban Hero section ──────────────────────────────────────────── */}
+      {/* ── Ban Hero — horizontal circles ────────────────────────────── */}
       <div className="space-y-2">
         <div className="flex items-center gap-1.5">
           <Ban className="h-3 w-3 text-[#6B6A68]" />
           <p className="text-[10px] font-semibold uppercase tracking-wider text-[#6B6A68]">Ban Hero</p>
         </div>
-        <div className="grid grid-cols-2 gap-3">
-          {/* Our Team bans */}
-          <div className="space-y-1.5">
-            <p className="text-[11px] font-semibold text-emerald-400">Our Team</p>
-            {Array.from({ length: BAN_COUNT }, (_, i) => (
-              <div key={i}>
-                <p className="mb-0.5 text-[10px] text-[#6B6A68]">Ban {i + 1}</p>
-                <HeroPicker
-                  value={bansOur[i] ?? ""}
-                  onChange={(hero) => onBanChange("our", i, hero)}
-                  excludedHeroes={getExcluded(bansOur[i] ?? "")}
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <span className="w-10 shrink-0 text-[10px] font-medium text-emerald-400">Our</span>
+            <div className="flex gap-1.5">
+              {bansOur.map((hero, i) => (
+                <BanSlotPicker
+                  key={i}
+                  value={hero}
+                  onChange={(h) => onBanChange("our", i, h)}
+                  excludedHeroes={getExcluded(hero)}
                 />
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-          {/* Enemy Team bans */}
-          <div className="space-y-1.5">
-            <p className="text-[11px] font-semibold text-rose-400">Enemy Team</p>
-            {Array.from({ length: BAN_COUNT }, (_, i) => (
-              <div key={i}>
-                <p className="mb-0.5 text-[10px] text-[#6B6A68]">Ban {i + 1}</p>
-                <HeroPicker
-                  value={bansEnemy[i] ?? ""}
-                  onChange={(hero) => onBanChange("enemy", i, hero)}
-                  excludedHeroes={getExcluded(bansEnemy[i] ?? "")}
+          <div className="flex items-center gap-2">
+            <span className="w-10 shrink-0 text-[10px] font-medium text-rose-400">Enemy</span>
+            <div className="flex gap-1.5">
+              {bansEnemy.map((hero, i) => (
+                <BanSlotPicker
+                  key={i}
+                  value={hero}
+                  onChange={(h) => onBanChange("enemy", i, h)}
+                  excludedHeroes={getExcluded(hero)}
                 />
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* ── Pick / Draft section ──────────────────────────────────────── */}
+      {/* ── Draft ─────────────────────────────────────────────────────── */}
       <div className="space-y-2">
         <p className="text-[10px] font-semibold uppercase tracking-wider text-[#6B6A68]">Draft</p>
         <div className="grid grid-cols-2 gap-3">
