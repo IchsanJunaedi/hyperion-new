@@ -1,8 +1,18 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { getFinanceSummary } from "@/features/finances/queries";
+import { createAdminClient } from "@/lib/supabase/admin";
+
+vi.mock("server-only", () => ({}));
+vi.mock("@/lib/supabase/admin");
 
 // Test the pure finance logic without hitting the database
 describe("getFinanceSummary", () => {
+  beforeEach(() => {
+    vi.mocked(createAdminClient).mockReturnValue({
+      rpc: vi.fn().mockResolvedValue({ data: null, error: null }),
+    } as any);
+  });
   const mockRows = [
     {
       id: "1",
@@ -57,6 +67,12 @@ describe("getFinanceSummary", () => {
 });
 
 describe("getFinanceSummary — edge cases", () => {
+  beforeEach(() => {
+    vi.mocked(createAdminClient).mockReturnValue({
+      rpc: vi.fn().mockResolvedValue({ data: null, error: null }),
+    } as any);
+  });
+
   it("handles all expenses (no income)", async () => {
     const rows = [
       {

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { getFinanceSummary, listFinances } from "../queries";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -20,6 +21,7 @@ describe("Finance Calculations and Queries", () => {
     };
     mockAdmin = {
       from: vi.fn().mockReturnValue(mockFrom),
+      rpc: vi.fn().mockResolvedValue({ data: null, error: null }),
     };
     vi.mocked(createAdminClient).mockReturnValue(mockAdmin as any);
   });
@@ -63,11 +65,7 @@ describe("Finance Calculations and Queries", () => {
     });
 
     it("calculates balance with positive opening balance and empty current rows", async () => {
-      const prevData = [
-        { type: "income", amount: 5000 },
-        { type: "expense", amount: 1500 },
-      ];
-      mockFrom.then = vi.fn((resolve) => resolve({ data: prevData, error: null }));
+      mockAdmin.rpc.mockResolvedValue({ data: 3500, error: null });
 
       const summary = await getFinanceSummary("org-123", 2026, 5, []);
       expect(summary).toEqual({
@@ -79,11 +77,7 @@ describe("Finance Calculations and Queries", () => {
     });
 
     it("calculates balance with negative opening balance and empty current rows", async () => {
-      const prevData = [
-        { type: "income", amount: 1000 },
-        { type: "expense", amount: 2500 },
-      ];
-      mockFrom.then = vi.fn((resolve) => resolve({ data: prevData, error: null }));
+      mockAdmin.rpc.mockResolvedValue({ data: -1500, error: null });
 
       const summary = await getFinanceSummary("org-123", 2026, 5, []);
       expect(summary).toEqual({
@@ -95,8 +89,6 @@ describe("Finance Calculations and Queries", () => {
     });
 
     it("calculates balance with zero opening balance and only income current rows", async () => {
-      mockFrom.then = vi.fn((resolve) => resolve({ data: [], error: null }));
-
       const onlyIncome = [mockCurrentRows[0]!];
       const summary = await getFinanceSummary("org-123", 2026, 5, onlyIncome);
       expect(summary).toEqual({
@@ -108,8 +100,6 @@ describe("Finance Calculations and Queries", () => {
     });
 
     it("calculates balance with zero opening balance and only expense current rows", async () => {
-      mockFrom.then = vi.fn((resolve) => resolve({ data: [], error: null }));
-
       const onlyExpense = [mockCurrentRows[1]!];
       const summary = await getFinanceSummary("org-123", 2026, 5, onlyExpense);
       expect(summary).toEqual({
@@ -121,8 +111,6 @@ describe("Finance Calculations and Queries", () => {
     });
 
     it("calculates balance with zero opening balance and mixed current rows", async () => {
-      mockFrom.then = vi.fn((resolve) => resolve({ data: [], error: null }));
-
       const summary = await getFinanceSummary("org-123", 2026, 5, mockCurrentRows);
       expect(summary).toEqual({
         openingBalance: 0,
@@ -133,8 +121,7 @@ describe("Finance Calculations and Queries", () => {
     });
 
     it("calculates balance with positive opening balance and mixed current rows", async () => {
-      const prevData = [{ type: "income", amount: 2000 }];
-      mockFrom.then = vi.fn((resolve) => resolve({ data: prevData, error: null }));
+      mockAdmin.rpc.mockResolvedValue({ data: 2000, error: null });
 
       const summary = await getFinanceSummary("org-123", 2026, 5, mockCurrentRows);
       expect(summary).toEqual({
@@ -146,8 +133,7 @@ describe("Finance Calculations and Queries", () => {
     });
 
     it("calculates balance with negative opening balance and mixed current rows", async () => {
-      const prevData = [{ type: "expense", amount: 500 }];
-      mockFrom.then = vi.fn((resolve) => resolve({ data: prevData, error: null }));
+      mockAdmin.rpc.mockResolvedValue({ data: -500, error: null });
 
       const summary = await getFinanceSummary("org-123", 2026, 5, mockCurrentRows);
       expect(summary).toEqual({
@@ -159,11 +145,11 @@ describe("Finance Calculations and Queries", () => {
     });
 
     it("handles database error on opening balance gracefully", async () => {
-      mockFrom.then = vi.fn((resolve) => resolve({ data: null, error: { message: "DB Error" } }));
+      mockAdmin.rpc.mockResolvedValue({ data: null, error: { message: "DB Error" } });
 
       const summary = await getFinanceSummary("org-123", 2026, 5, mockCurrentRows);
       expect(summary).toEqual({
-        openingBalance: 0, // defaults to 0 on null/error data
+        openingBalance: 0,
         totalIncome: 1000,
         totalExpense: 300,
         balance: 700,
@@ -171,8 +157,7 @@ describe("Finance Calculations and Queries", () => {
     });
 
     it("handles large amounts and floating points without throwing errors", async () => {
-      const prevData = [{ type: "income", amount: 10000000000.5 }];
-      mockFrom.then = vi.fn((resolve) => resolve({ data: prevData, error: null }));
+      mockAdmin.rpc.mockResolvedValue({ data: 10000000000.5, error: null });
 
       const largeRows = [
         {
@@ -185,14 +170,12 @@ describe("Finance Calculations and Queries", () => {
     });
 
     it("checks opening balance query triggers correct date and org scope", async () => {
-      mockFrom.then = vi.fn((resolve) => resolve({ data: [], error: null }));
-
       await getFinanceSummary("org-123", 2026, 5, []);
 
-      expect(mockAdmin.from).toHaveBeenCalledWith("finances");
-      expect(mockFrom.select).toHaveBeenCalledWith("type, amount");
-      expect(mockFrom.eq).toHaveBeenCalledWith("organization_id", "org-123");
-      expect(mockFrom.lt).toHaveBeenCalledWith("date", "2026-05-01");
+      expect(mockAdmin.rpc).toHaveBeenCalledWith("get_opening_balance", {
+        p_org_id: "org-123",
+        p_before_date: "2026-05-01",
+      });
     });
   });
 

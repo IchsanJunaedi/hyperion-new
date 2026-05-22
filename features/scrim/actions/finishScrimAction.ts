@@ -154,6 +154,7 @@ export async function finishScrimAction(
   });
   if (banRows.length > 0) {
     const { error: banErr } = await admin
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .from("scrim_draft_bans" as any)
       .upsert(banRows, { onConflict: "scrim_id,game_number,side,ban_order" });
     if (banErr) return { ok: false, message: banErr.message };

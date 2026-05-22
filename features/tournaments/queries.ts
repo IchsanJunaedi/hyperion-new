@@ -71,7 +71,7 @@ export async function getTournamentDetail(
   const stages = stagesRes.data ?? [];
 
   // Fetch matches for all stages
-  let matchesByStage = new Map<string, TournamentMatch[]>();
+  const matchesByStage = new Map<string, TournamentMatch[]>();
   if (stages.length > 0) {
     const stageIds = stages.map((s) => s.id);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

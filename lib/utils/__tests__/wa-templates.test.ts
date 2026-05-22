@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   buildScrimWaMessage,
   buildTournamentWaMessage,
+  buildTournamentRegisteredWaMessage,
 } from "@/lib/utils/wa-templates";
 
 describe("buildScrimWaMessage", () => {
@@ -85,6 +86,50 @@ describe("buildTournamentWaMessage", () => {
     expect(msg).toContain("Moonton");
     expect(msg).toContain("Rp 10.000.000");
     expect(msg).toContain("Rp 150.000");
+    expect(msg).toContain("https://moonton.com/register");
+  });
+});
+
+describe("buildTournamentRegisteredWaMessage", () => {
+  const base = {
+    orgName: "Tim Garuda",
+    tournamentName: "MPL Season 15",
+    startDate: "2026-06-01",
+    tournamentUrl: "https://hyperionteam.id/garuda/tournament/456",
+  };
+
+  it("contains confirmed indicator and tournament name", () => {
+    const msg = buildTournamentRegisteredWaMessage(base);
+    expect(msg).toContain("Dikonfirmasi");
+    expect(msg).toContain("MPL Season 15");
+  });
+
+  it("contains tournament URL", () => {
+    const msg = buildTournamentRegisteredWaMessage(base);
+    expect(msg).toContain("https://hyperionteam.id/garuda/tournament/456");
+  });
+
+  it("contains motivational copy", () => {
+    const msg = buildTournamentRegisteredWaMessage(base);
+    expect(msg).toContain("Persiapkan dirimu");
+  });
+
+  it("omits organizer and registration URL when not provided", () => {
+    const msg = buildTournamentRegisteredWaMessage(base);
+    expect(msg).not.toContain("Organizer:");
+    expect(msg).not.toContain("Link registrasi:");
+  });
+
+  it("includes organizer when provided", () => {
+    const msg = buildTournamentRegisteredWaMessage({ ...base, organizer: "Moonton" });
+    expect(msg).toContain("Moonton");
+  });
+
+  it("includes registration URL when provided", () => {
+    const msg = buildTournamentRegisteredWaMessage({
+      ...base,
+      registrationUrl: "https://moonton.com/register",
+    });
     expect(msg).toContain("https://moonton.com/register");
   });
 });
