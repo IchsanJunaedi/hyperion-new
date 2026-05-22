@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Pencil, X, Trash2, Shield, Star, Search, Settings } from "lucide-react";
+import { Plus, Pencil, X, Trash2, Shield, Star, Search, Settings, Download } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils/cn";
 import { getHeroImageUrl, MLBB_HEROES } from "@/features/scrim/data/mlbb-heroes";
@@ -578,25 +578,35 @@ export function MetaPage({ orgSlug, orgId, patches, initialPatch, canEdit }: Met
           <h1 className="text-2xl font-bold text-white sm:text-3xl">Meta MLBB</h1>
           <p className="mt-1 text-sm text-white/50">Tier list hero per patch — dikelola coach</p>
         </div>
-        {canEdit && (
+        <div className="print-hide flex items-center gap-2">
           <button
             type="button"
-            onClick={() => setEditMode((v) => !v)}
-            className={cn(
-              "inline-flex h-9 cursor-pointer items-center gap-2 rounded-md border px-3 text-sm transition",
-              editMode
-                ? "border-yellow-500/50 bg-yellow-500/10 text-yellow-400"
-                : "border-[#2D2D2D] text-white/60 hover:bg-white/5",
-            )}
+            onClick={() => window.print()}
+            className="inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-md border border-white/10 px-3 text-xs text-white/60 transition hover:bg-white/5 hover:text-white"
           >
-            <Pencil className="h-3.5 w-3.5" />
-            {editMode ? "Selesai Edit" : "Edit"}
+            <Download className="h-3.5 w-3.5" />
+            Export PDF
           </button>
-        )}
+          {canEdit && (
+            <button
+              type="button"
+              onClick={() => setEditMode((v) => !v)}
+              className={cn(
+                "inline-flex h-9 cursor-pointer items-center gap-2 rounded-md border px-3 text-sm transition",
+                editMode
+                  ? "border-yellow-500/50 bg-yellow-500/10 text-yellow-400"
+                  : "border-[#2D2D2D] text-white/60 hover:bg-white/5",
+              )}
+            >
+              <Pencil className="h-3.5 w-3.5" />
+              {editMode ? "Selesai Edit" : "Edit"}
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Patch selector */}
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="print-hide flex flex-wrap items-center gap-3">
         <span className="text-xs text-white/50">Patch:</span>
         <div className="flex flex-wrap gap-1.5">
           {patchList.map((p) => (
@@ -654,7 +664,7 @@ export function MetaPage({ orgSlug, orgId, patches, initialPatch, canEdit }: Met
 
       {/* New patch form */}
       {showNewPatchForm && canEdit && (
-        <div className="space-y-3 rounded-xl border border-[#2D2D2D] bg-[#1C1C1C] p-4">
+        <div className="print-hide space-y-3 rounded-xl border border-[#2D2D2D] bg-[#1C1C1C] p-4">
           <p className="text-xs font-medium text-white/70">Tambah Patch Baru</p>
           <div className="flex gap-2">
             <input
@@ -692,7 +702,7 @@ export function MetaPage({ orgSlug, orgId, patches, initialPatch, canEdit }: Met
 
       {/* Patch settings form */}
       {showPatchSettings && activePatch && canEdit && (
-        <div className="space-y-4 rounded-xl border border-[#2D2D2D] bg-[#1C1C1C] p-4">
+        <div className="print-hide space-y-4 rounded-xl border border-[#2D2D2D] bg-[#1C1C1C] p-4">
           <p className="text-xs font-medium text-white/70">Pengaturan Patch {activePatch.patch_version}</p>
 
           <div>
@@ -786,7 +796,7 @@ export function MetaPage({ orgSlug, orgId, patches, initialPatch, canEdit }: Met
           )}
 
           {/* Tab navigation */}
-          <div className="flex gap-1 border-b border-[#2D2D2D]">
+          <div className="print-hide flex gap-1 border-b border-[#2D2D2D]">
             {(["tier", "ban", "learn"] as const).map((tab) => (
               <button
                 key={tab}
@@ -814,7 +824,7 @@ export function MetaPage({ orgSlug, orgId, patches, initialPatch, canEdit }: Met
           {activeTab === "tier" && (
             <div className="space-y-4">
               {/* Filter bars */}
-              <div className="space-y-2">
+              <div className="print-hide space-y-2">
                 <div className="flex flex-wrap items-center gap-1.5">
                   <span className="text-xs text-white/40">Lane:</span>
                   {ROLE_FILTERS.map((rf) => (
@@ -915,7 +925,7 @@ export function MetaPage({ orgSlug, orgId, patches, initialPatch, canEdit }: Met
                               type="button"
                               onClick={() => setExpandedTier(isOpen ? null : tier)}
                               className={cn(
-                                "inline-flex h-[72px] w-[72px] shrink-0 cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border border-dashed transition",
+                                "print-hide inline-flex h-[72px] w-[72px] shrink-0 cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border border-dashed transition",
                                 isOpen
                                   ? `${style.activeBorder} bg-white/5 ${style.label}`
                                   : "border-white/10 text-white/30 hover:border-white/30 hover:text-white/60",
@@ -930,6 +940,7 @@ export function MetaPage({ orgSlug, orgId, patches, initialPatch, canEdit }: Met
 
                       {/* Inline picker */}
                       {isOpen && editMode && activePatch && (
+                        <div className="print-hide">
                         <HeroPickerPanel
                           tier={tier}
                           orgSlug={orgSlug}
@@ -939,6 +950,7 @@ export function MetaPage({ orgSlug, orgId, patches, initialPatch, canEdit }: Met
                           onAdd={handlePickerAdd}
                           style={style}
                         />
+                        </div>
                       )}
                     </div>
                   );
@@ -946,7 +958,7 @@ export function MetaPage({ orgSlug, orgId, patches, initialPatch, canEdit }: Met
               </div>
 
               {editMode && canEdit && (
-                <div className="flex justify-end pt-2">
+                <div className="print-hide flex justify-end pt-2">
                   <button
                     type="button"
                     onClick={handleDeletePatch}
