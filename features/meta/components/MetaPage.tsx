@@ -851,6 +851,22 @@ export function MetaPage({ orgSlug, orgId, patches, initialPatch, canEdit }: Met
                     </button>
                   ))}
                 </div>
+                {/* Active filter indicator */}
+                {(roleFilter !== "all" || classFilter !== "all") && (
+                  <div className="flex items-center gap-2 pt-0.5">
+                    <span className="text-[10px] text-white/30">
+                      {filteredHeroes.length} hero ditampilkan
+                      {roleFilter !== "all" && classFilter !== "all" && " (2 filter aktif)"}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => { setRoleFilter("all"); setClassFilter("all"); }}
+                      className="cursor-pointer text-[10px] text-white/30 underline hover:text-white/60"
+                    >
+                      Reset filter
+                    </button>
+                  </div>
+                )}
               </div>
 
               {/* Tier rows */}
