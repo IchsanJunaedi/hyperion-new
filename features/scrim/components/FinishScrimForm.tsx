@@ -238,6 +238,10 @@ export function FinishScrimForm({
           isWin: g.isWin!,
           notes: g.notes || null,
           imageUrl: g.imageUrl,
+          bans: {
+            our: g.draft.bans?.our ?? [],
+            enemy: g.draft.bans?.enemy ?? [],
+          },
           draftPicks: [
             ...Object.entries(g.draft.our)
               .filter(([, slot]) => slot.hero)
@@ -255,12 +259,6 @@ export function FinishScrimForm({
                 hero_name: hero,
                 player_id: null,
               })),
-            ...(g.draft.bans?.our ?? [])
-              .map((hero, i) => hero ? ({ side: "our" as const, role: `ban_${i + 1}`, hero_name: hero, player_id: null }) : null)
-              .filter((x): x is NonNullable<typeof x> => x !== null),
-            ...(g.draft.bans?.enemy ?? [])
-              .map((hero, i) => hero ? ({ side: "enemy" as const, role: `ban_${i + 1}`, hero_name: hero, player_id: null }) : null)
-              .filter((x): x is NonNullable<typeof x> => x !== null),
           ],
         })),
         coachNotes: coachNotes || null,
