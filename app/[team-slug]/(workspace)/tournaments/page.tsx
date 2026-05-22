@@ -66,7 +66,11 @@ export default async function TournamentsPage({ params, searchParams }: Tourname
       <nav aria-label="Filter turnamen" className="flex flex-wrap gap-2">
         {TABS.map((t) => {
           const active = tab === t.key;
-          const count = t.key === "upcoming" ? upcoming.length : 0;
+          const now = new Date();
+          const activeUpcoming = upcoming.filter(
+            (u) => u.registration_deadline == null || new Date(u.registration_deadline) >= now,
+          );
+          const count = t.key === "upcoming" ? activeUpcoming.length : 0;
           return (
             <Link
               key={t.key}

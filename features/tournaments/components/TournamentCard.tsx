@@ -12,6 +12,7 @@ interface TournamentCardProps {
 
 const STATUS_COLORS: Record<string, string> = {
   upcoming: "bg-white/5 text-[#9B9A97]",
+  expired: "bg-orange-500/10 text-orange-400",
   ongoing: "bg-yellow-500/10 text-yellow-400",
   completed: "bg-green-500/10 text-green-400",
   cancelled: "bg-red-500/10 text-red-400",
@@ -19,6 +20,7 @@ const STATUS_COLORS: Record<string, string> = {
 
 const STATUS_LABELS: Record<string, string> = {
   upcoming: "Belum Daftar",
+  expired: "Kadaluarsa",
   ongoing: "Terdaftar",
   completed: "Selesai",
   cancelled: "Dibatalkan",
@@ -30,6 +32,13 @@ export function TournamentCard({ tournament, orgSlug }: TournamentCardProps) {
     month: "short",
     year: "numeric",
   });
+
+  const isRegistrationExpired =
+    tournament.status === "upcoming" &&
+    tournament.registration_deadline != null &&
+    new Date(tournament.registration_deadline) < new Date();
+
+  const displayStatus = isRegistrationExpired ? "expired" : tournament.status;
 
   return (
     <Link
@@ -43,8 +52,8 @@ export function TournamentCard({ tournament, orgSlug }: TournamentCardProps) {
             <p className="text-xs text-[#6B6A68] mt-0.5 truncate">{tournament.organizer}</p>
           )}
         </div>
-        <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium ${STATUS_COLORS[tournament.status] ?? STATUS_COLORS.scheduled}`}>
-          {STATUS_LABELS[tournament.status] ?? tournament.status}
+        <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium ${STATUS_COLORS[displayStatus] ?? STATUS_COLORS.upcoming}`}>
+          {STATUS_LABELS[displayStatus] ?? tournament.status}
         </span>
       </div>
 
