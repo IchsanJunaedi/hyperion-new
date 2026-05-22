@@ -1256,6 +1256,7 @@ export type Database = {
           created_by: string | null
           created_at: string
           updated_at: string
+          tier_descriptions: Record<string, string> | null
         }
         Insert: {
           id?: string
@@ -1265,6 +1266,7 @@ export type Database = {
           created_by?: string | null
           created_at?: string
           updated_at?: string
+          tier_descriptions?: Record<string, string> | null
         }
         Update: {
           id?: string
@@ -1274,6 +1276,7 @@ export type Database = {
           created_by?: string | null
           created_at?: string
           updated_at?: string
+          tier_descriptions?: Record<string, string> | null
         }
         Relationships: []
       }
@@ -1282,11 +1285,14 @@ export type Database = {
           id: string
           patch_id: string
           hero_name: string
-          tier: "S" | "A" | "B" | "C" | "D"
+          tier: "SS" | "S" | "A" | "B" | "C" | "D"
           role_tag: "exp_lane" | "jungler" | "mid_lane" | "gold_lane" | "roamer" | null
           is_ban_priority: boolean
           priority_to_learn: boolean
           notes: string | null
+          counters: string[] | null
+          synergies: string[] | null
+          draft_notes: string | null
           created_at: string
           updated_at: string
         }
@@ -1294,11 +1300,14 @@ export type Database = {
           id?: string
           patch_id: string
           hero_name: string
-          tier: "S" | "A" | "B" | "C" | "D"
+          tier: "SS" | "S" | "A" | "B" | "C" | "D"
           role_tag?: "exp_lane" | "jungler" | "mid_lane" | "gold_lane" | "roamer" | null
           is_ban_priority?: boolean
           priority_to_learn?: boolean
           notes?: string | null
+          counters?: string[] | null
+          synergies?: string[] | null
+          draft_notes?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -1306,11 +1315,14 @@ export type Database = {
           id?: string
           patch_id?: string
           hero_name?: string
-          tier?: "S" | "A" | "B" | "C" | "D"
+          tier?: "SS" | "S" | "A" | "B" | "C" | "D"
           role_tag?: "exp_lane" | "jungler" | "mid_lane" | "gold_lane" | "roamer" | null
           is_ban_priority?: boolean
           priority_to_learn?: boolean
           notes?: string | null
+          counters?: string[] | null
+          synergies?: string[] | null
+          draft_notes?: string | null
           created_at?: string
           updated_at?: string
         }
