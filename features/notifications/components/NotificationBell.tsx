@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { Bell } from "lucide-react";
 import { usePathname } from "next/navigation";
@@ -93,7 +93,7 @@ export function NotificationBell({ userId, orgSlug }: NotificationBellProps) {
         type="button"
         aria-label={ariaLabel}
         onClick={() => setOpen((v) => !v)}
-        className="relative rounded-full p-2 text-white/70 transition hover:bg-white/10 hover:text-white"
+        className="relative cursor-pointer rounded-full p-2 text-white/70 transition hover:bg-white/10 hover:text-white"
       >
         <Bell className="h-4 w-4" />
         {badgeText && (
@@ -115,7 +115,7 @@ export function NotificationBell({ userId, orgSlug }: NotificationBellProps) {
               type="button"
               disabled={!count}
               onClick={handleMarkAllRead}
-              className="text-xs text-white/60 transition hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+              className="cursor-pointer text-xs text-white/60 transition hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
             >
               Tandai semua dibaca
             </button>

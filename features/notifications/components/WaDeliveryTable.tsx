@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useTransition } from "react";
 import { ChevronLeft, ChevronRight, Loader2, RotateCcw } from "lucide-react";
@@ -58,7 +58,7 @@ export function WaDeliveryTable({ orgId, orgSlug }: WaDeliveryTableProps) {
             key={f.value}
             type="button"
             onClick={() => handleFilterChange(f.value)}
-            className={`rounded-md px-3 py-1.5 text-xs font-medium transition ${
+            className={`cursor-pointer rounded-md px-3 py-1.5 text-xs font-medium transition ${
               filter === f.value
                 ? "bg-white/10 text-white"
                 : "text-white/50 hover:text-white/80"
@@ -128,7 +128,7 @@ export function WaDeliveryTable({ orgId, orgSlug }: WaDeliveryTableProps) {
                   type="button"
                   disabled={page === 0}
                   onClick={() => setPage((p) => p - 1)}
-                  className="rounded-md p-1.5 text-white/50 transition hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
+                  className="cursor-pointer rounded-md p-1.5 text-white/50 transition hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
                   aria-label="Halaman sebelumnya"
                 >
                   <ChevronLeft className="h-4 w-4" />
@@ -137,7 +137,7 @@ export function WaDeliveryTable({ orgId, orgSlug }: WaDeliveryTableProps) {
                   type="button"
                   disabled={page >= totalPages - 1}
                   onClick={() => setPage((p) => p + 1)}
-                  className="rounded-md p-1.5 text-white/50 transition hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
+                  className="cursor-pointer rounded-md p-1.5 text-white/50 transition hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
                   aria-label="Halaman berikutnya"
                 >
                   <ChevronRight className="h-4 w-4" />
@@ -219,7 +219,7 @@ function WaDeliveryRow({ notif, orgId }: WaDeliveryRowProps) {
                 type="button"
                 disabled={isPending}
                 onClick={handleRetry}
-                className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-white/60 transition hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+                className="cursor-pointer inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-white/60 transition hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
                 aria-label="Retry pengiriman"
               >
                 {isPending ? (

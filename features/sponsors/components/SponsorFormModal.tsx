@@ -104,7 +104,7 @@ export function SponsorFormModal({ open, onClose, orgId, editing, onSaved }: Spo
           {/* Name */}
           <div>
             <label className={labelCls}>Nama Sponsor *</label>
-            <input value={form.name} onChange={(e) => set("name", e.target.value)} placeholder="Nama perusahaan / brand" className={inputCls} />
+            <input value={form.name} onChange={(e) => set("name", e.target.value)} className={inputCls} />
           </div>
 
           {/* Status */}
@@ -132,7 +132,7 @@ export function SponsorFormModal({ open, onClose, orgId, editing, onSaved }: Spo
           {/* Logo */}
           <div>
             <label className={labelCls}>Logo URL (opsional)</label>
-            <input value={form.logo_url} onChange={(e) => set("logo_url", e.target.value)} placeholder="https://..." className={inputCls} />
+            <input value={form.logo_url} onChange={(e) => set("logo_url", e.target.value)} className={inputCls} />
           </div>
 
           {/* Contact */}
@@ -141,15 +141,15 @@ export function SponsorFormModal({ open, onClose, orgId, editing, onSaved }: Spo
             <div className="grid grid-cols-2 gap-2">
               <div className="col-span-2">
                 <label className={labelCls}>Nama PIC</label>
-                <input value={form.contact_name} onChange={(e) => set("contact_name", e.target.value)} placeholder="Nama kontak" className={inputCls} />
+                <input value={form.contact_name} onChange={(e) => set("contact_name", e.target.value)} className={inputCls} />
               </div>
               <div>
                 <label className={labelCls}>Email</label>
-                <input type="email" value={form.contact_email} onChange={(e) => set("contact_email", e.target.value)} placeholder="email@domain.com" className={inputCls} />
+                <input type="email" value={form.contact_email} onChange={(e) => set("contact_email", e.target.value)} className={inputCls} />
               </div>
               <div>
                 <label className={labelCls}>No. HP / WA</label>
-                <input value={form.contact_phone} onChange={(e) => set("contact_phone", e.target.value)} placeholder="08xx" className={inputCls} />
+                <input value={form.contact_phone} onChange={(e) => set("contact_phone", e.target.value)} className={inputCls} />
               </div>
             </div>
           </div>
@@ -160,7 +160,7 @@ export function SponsorFormModal({ open, onClose, orgId, editing, onSaved }: Spo
             <div className="grid grid-cols-3 gap-2">
               <div className="col-span-2">
                 <label className={labelCls}>Nilai Deal</label>
-                <input type="number" value={form.deal_value} onChange={(e) => set("deal_value", e.target.value)} placeholder="0" min="0" className={inputCls} />
+                <input type="number" value={form.deal_value} onChange={(e) => set("deal_value", e.target.value)} min="0" className={inputCls} />
               </div>
               <div>
                 <label className={labelCls}>Mata Uang</label>
@@ -190,7 +190,6 @@ export function SponsorFormModal({ open, onClose, orgId, editing, onSaved }: Spo
           <div>
             <label className={labelCls}>Deskripsi / Catatan</label>
             <textarea value={form.notes} onChange={(e) => set("notes", e.target.value)} rows={3}
-              placeholder="Ringkasan deal, lingkup kerja sama..."
               className={cn(inputCls, "resize-none")} />
           </div>
 
