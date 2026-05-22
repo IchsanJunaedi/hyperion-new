@@ -62,11 +62,14 @@ export async function upsertHeroRatingAction(
   patchId: string,
   hero: {
     hero_name: string;
-    tier: "S" | "A" | "B" | "C" | "D";
+    tier: "SS" | "S" | "A" | "B" | "C" | "D";
     role_tag: "exp_lane" | "jungler" | "mid_lane" | "gold_lane" | "roamer" | null;
     is_ban_priority: boolean;
     priority_to_learn: boolean;
     notes: string;
+    draft_notes: string;
+    counters: string[];
+    synergies: string[];
   },
 ): Promise<{ ok: true; hero: MetaHeroRating } | { ok: false; message: string }> {
   const { user, isCoachPlus } = await getCoachRole(orgId);
@@ -85,6 +88,9 @@ export async function upsertHeroRatingAction(
         is_ban_priority: hero.is_ban_priority,
         priority_to_learn: hero.priority_to_learn,
         notes: hero.notes.trim() || null,
+        draft_notes: hero.draft_notes.trim() || null,
+        counters: hero.counters,
+        synergies: hero.synergies,
         updated_at: new Date().toISOString(),
       },
       { onConflict: "patch_id,hero_name" },
@@ -127,6 +133,31 @@ export async function deleteMetaPatchAction(
   const { error } = await admin.from("meta_patches").delete().eq("id", patchId);
   if (error) return { ok: false, message: error.message };
 
+  revalidatePath(`/${orgSlug}/meta`);
+  return { ok: true };
+}
+
+export async function updatePatchSettingsAction(
+  orgSlug: string,
+  orgId: string,
+  patchId: string,
+  notes: string,
+  tierDescriptions: Record<string, string>,
+): Promise<ActionResult> {
+  const { user, isCoachPlus } = await getCoachRole(orgId);
+  if (!user) return { ok: false, message: "Anda harus login" };
+  if (!isCoachPlus) return { ok: false, message: "Hanya coach ke atas yang bisa mengedit meta" };
+
+  const admin = createAdminClient();
+  const { error } = await admin
+    .from("meta_patches")
+    .update({
+      notes: notes.trim() || null,
+      tier_descriptions: Object.keys(tierDescriptions).length > 0 ? tierDescriptions : null,
+    })
+    .eq("id", patchId);
+
+  if (error) return { ok: false, message: error.message };
   revalidatePath(`/${orgSlug}/meta`);
   return { ok: true };
 }
