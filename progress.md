@@ -128,3 +128,45 @@ Matches live in `tournament_matches.stage_id → tournament_stages.id`. `getTour
 - Player dev: coach can only see own targets on `/development` — separate manager view at `/manage/development` for cross-player view
 - Public profile activation
 - Reports page activation
+
+---
+
+## Performance: Batch 2 — Pending Fixes (needs careful audit before implementing)
+
+> Batch 1 (zero-risk) sudah selesai (2026-05-22). Batch 2 membutuhkan review per-komponen sebelum diimplementasi.
+
+### B2-1: Tambah `.limit()` pada query unbounded (butuh cek UI dulu)
+Beberapa query list tidak punya `.limit()` — data bisa grow unboundedly. Perlu audit dulu apakah halaman butuh pagination atau cukup slice.
+- `features/teams/queries.ts` → `getPersonalPlayerStats`: scrims tanpa limit (semua completed scrims)
+- `features/scrim/queries.ts` → `getScrimWinLossRecord`: semua completed scrims untuk hitung W/L → harusnya SQL COUNT/SUM via RPC
+- `features/scrim/queries.ts` → `listScrims` filter `upcoming`/`ongoing`: tidak ada `.limit()`
+- `features/analytics/queries.ts` → `getOverviewStats`, `getEnterprisePlayerStats`: semua completed scrims tanpa limit
+- `features/player-development/queries.ts` → `player_target_history`: semua history tanpa limit (tambah `.limit(30)` per target)
+
+### B2-2: Ganti `select("*")` dengan kolom spesifik (butuh cross-check field yang dipakai UI)
+Perlu baca component yang consume data sebelum narrowing kolom.
+- `features/calendar/unified.ts:44` + `features/calendar/queries.ts:21` → `select("*")` pada `calendar_events`
+- `features/sponsors/queries.ts:27` → `select("*")` pada sponsors list (ada kolom `notes` teks panjang)
+- `features/finances/queries.ts:26` → `select("*")` pada finances rows
+- `features/notifications/queries.ts:47` → `select("*")` pada notifications + `count: "exact"` (mahal)
+
+### B2-3: `WaDeliveryTable` refactor ke CSS Grid (ada perubahan tampilan)
+`features/notifications/components/WaDeliveryTable.tsx` menggunakan `<table>` dengan `overflow-x-auto` — melanggar CLAUDE.md. Perlu rewrite ke CSS Grid. Ada perubahan visual minor.
+
+### B2-4: Waterfall di `getScrimDetail` (5 fase serial)
+`features/scrim/queries.ts:113–245` — scrim detail page punya 5 fase sequential. `auth.getUser()` bisa diparallelkan dengan fetch awal scrim row.
+
+### B2-5: Waterfall di `listUnifiedCalendarEvents` + role fetch duplikat
+`features/calendar/unified.ts` — fetches role lagi padahal calendar page sudah fetch role di atas. Role bisa di-pass sebagai parameter untuk skip query.
+
+### B2-6: Waterfall di `getScrimDetail` — `auth.getUser()` sequential di akhir
+`features/scrim/queries.ts:233` — `auth.getUser()` dipanggil di fase ke-4, padahal bisa diparallelkan di fase 1.
+
+### B2-7: `admin.auth.admin.listUsers` — ganti dengan query dari tabel `profiles`
+`app/dashboard/(panel)/users/page.tsx:50`, `app/dashboard/(panel)/assign/page.tsx:32` — panggilan Auth Admin API yang lambat + tidak di-cache. Simpan `email` di tabel `profiles` dan query dari sana. Butuh migration menambah kolom `email` ke `profiles`.
+
+### B2-8: `fetchDistinctActors` — 1000 row fetch untuk JS dedup
+`features/dashboard/actions/fetchAuditLogs.ts:114–142` — fetch 1000 baris untuk deduplikasi actor. Harusnya `SELECT DISTINCT actor_id` via RPC.
+
+### B2-9: Waterfall di `generateMonthlyReport`
+`features/reports/queries.ts:138–463` — 8+ serial awaits dalam satu fungsi. Bisa diparallelkan sebagian besar setelah scrim IDs diketahui.

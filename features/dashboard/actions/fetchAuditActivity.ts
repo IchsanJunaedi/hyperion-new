@@ -23,20 +23,15 @@ export async function fetchAuditActivity(
   const since = new Date();
   since.setDate(since.getDate() - daysBack);
 
-  const { data } = await admin
-    .from("audit_logs")
-    .select("created_at")
-    .gte("created_at", since.toISOString());
+  // SQL GROUP BY on server — returns one row per active day instead of all log rows
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data } = await (admin as any).rpc("get_audit_activity_by_day", {
+    p_since: since.toISOString(),
+  }) as { data: Array<{ day_label: string; cnt: number }> | null };
 
   const counts = new Map<string, number>();
   for (const row of data ?? []) {
-    const day = new Date(row.created_at).toLocaleDateString("id-ID", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      timeZone: "Asia/Jakarta",
-    });
-    counts.set(day, (counts.get(day) ?? 0) + 1);
+    counts.set(row.day_label, Number(row.cnt));
   }
 
   const result: ActivityPoint[] = [];

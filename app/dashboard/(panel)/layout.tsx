@@ -34,30 +34,30 @@ export default async function DashboardLayout({
   let orgLogoUrl: string | null = null;
   let orgSlug = "";
 
-  if (user) {
-    const { data: profile } = await supabase
+  // Fetch profile + org in parallel (both only need user.id)
+  const [{ data: profile }, { data: org }] = await Promise.all([
+    supabase
       .from("profiles")
       .select("display_name, avatar_url, full_name")
       .eq("id", user.id)
-      .maybeSingle();
-
-    if (profile) {
-      displayName = profile.display_name ?? (user.user_metadata?.["display_name"] as string | undefined) ?? user.email ?? "Owner";
-      avatarUrl = profile.avatar_url ?? null;
-      orgName = profile.full_name ?? "Hyperion Team";
-      orgLogoUrl = profile.avatar_url ?? null;
-    }
-
-    const { data: org } = await supabase
+      .maybeSingle(),
+    supabase
       .from("organizations")
       .select("id, slug")
       .eq("owner_id", user.id)
       .limit(1)
-      .maybeSingle();
-    if (org) {
-      dashboardOrgId = org.id;
-      orgSlug = org.slug ?? "";
-    }
+      .maybeSingle(),
+  ]);
+
+  if (profile) {
+    displayName = profile.display_name ?? (user.user_metadata?.["display_name"] as string | undefined) ?? user.email ?? "Owner";
+    avatarUrl = profile.avatar_url ?? null;
+    orgName = profile.full_name ?? "Hyperion Team";
+    orgLogoUrl = profile.avatar_url ?? null;
+  }
+  if (org) {
+    dashboardOrgId = org.id;
+    orgSlug = org.slug ?? "";
   }
 
   return (

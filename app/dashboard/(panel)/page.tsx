@@ -35,16 +35,26 @@ export default async function DashboardPage() {
 
   const admin = createAdminClient();
 
-  // Queries
-  const { count: totalUsers } = await admin.from("profiles").select("id", { count: "exact", head: true });
-  const { data: orgs } = await admin.from("organizations").select("id, name, slug").order("created_at", { ascending: false });
-  const { data: members } = await admin.from("team_members").select("id, user_id, organization_id, division_id, role, is_active").eq("is_active", true);
-  const { data: allDivisions } = await admin.from("divisions").select("id, name, organization_id");
-  const { data: profiles } = await admin.from("profiles").select("id, full_name, username, display_name, phone_wa, avatar_url, date_of_birth, bio, social_links, game_ids").order("created_at", { ascending: false });
+  // All independent queries in parallel
+  const [
+    { count: totalUsers },
+    { data: orgs },
+    { data: members },
+    { data: allDivisions },
+    { data: profiles },
+    { data: authUsers },
+  ] = await Promise.all([
+    admin.from("profiles").select("id", { count: "exact", head: true }),
+    admin.from("organizations").select("id, name, slug").order("created_at", { ascending: false }),
+    admin.from("team_members").select("id, user_id, organization_id, division_id, role, is_active").eq("is_active", true),
+    admin.from("divisions").select("id, name, organization_id"),
+    admin.from("profiles").select("id, full_name, username, display_name, phone_wa, avatar_url, date_of_birth, bio, social_links, game_ids").order("created_at", { ascending: false }),
+    admin.auth.admin.listUsers({ perPage: 100 }),
+  ]);
+
   const workspaceName = profiles?.find(p => p.id === user.id)?.full_name ?? "Hyperion Team";
 
-  // Emails
-  const { data: authUsers } = await admin.auth.admin.listUsers({ perPage: 100 });
+  // Email map
   const emailMap = new Map<string, string>();
   for (const u of authUsers?.users ?? []) { if (u.email) emailMap.set(u.id, u.email); }
 
@@ -57,7 +67,7 @@ export default async function DashboardPage() {
   }
   for (const [uid, email] of emailMap.entries()) { if (email === ownerEmail) roleMap.set(uid, "owner"); }
 
-  // Team health score for first org
+  // Team health score depends on orgs result — sequential after Promise.all
   const healthOrgId = orgs?.[0]?.id ?? null;
   let healthScore = null;
   if (healthOrgId) {

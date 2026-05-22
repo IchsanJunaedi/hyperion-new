@@ -41,20 +41,15 @@ export async function getFinanceSummary(
   const admin = createAdminClient();
   const startOfCurrentMonth = `${year}-${String(month).padStart(2, "0")}-01`;
 
-  // 1. Calculate opening balance (all transactions before this month)
-  const { data: previousData } = await admin
-    .from("finances")
-    .select("type, amount")
-    .eq("organization_id", orgId)
-    .lt("date", startOfCurrentMonth);
+  // Single SQL SUM instead of fetching all historical rows and summing in JS
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: openingBalanceRaw } = await (admin as any).rpc("get_opening_balance", {
+    p_org_id: orgId,
+    p_before_date: startOfCurrentMonth,
+  }) as { data: number | null };
 
-  let openingBalance = 0;
-  for (const r of previousData ?? []) {
-    if (r.type === "income") openingBalance += r.amount;
-    else openingBalance -= r.amount;
-  }
+  const openingBalance = Number(openingBalanceRaw ?? 0);
 
-  // 2. Calculate current month totals
   let totalIncome = 0;
   let totalExpense = 0;
   for (const r of currentRows) {

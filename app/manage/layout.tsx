@@ -39,75 +39,43 @@ export default async function ManageLayout({
 
   if (!membership) redirect("/");
 
-  // Get org details
-  let orgSlug = "";
-  let orgName = "Tim";
-  let orgLogoUrl: string | null = null;
-  let resolvedOrgId = "";
-  let divisions: Array<{ id: string; name: string }> = [];
+  const orgId = membership.organization_id;
 
-  const orgId = membership?.organization_id;
-
-  if (orgId) {
-    const { data: org } = await admin
+  // Fetch org details, divisions, and profile all in parallel
+  const [orgRes, divsRes, profileRes] = await Promise.all([
+    admin
       .from("organizations")
       .select("id, slug, name, logo_url")
       .eq("id", orgId)
-      .maybeSingle();
+      .maybeSingle(),
+    admin
+      .from("divisions")
+      .select("id, name")
+      .eq("organization_id", orgId)
+      .eq("is_active", true)
+      .order("name"),
+    supabase
+      .from("profiles")
+      .select("display_name, avatar_url")
+      .eq("id", user.id)
+      .maybeSingle(),
+  ]);
 
-    if (org) {
-      resolvedOrgId = org.id;
-      orgSlug = org.slug;
-      orgName = org.name;
-      orgLogoUrl = org.logo_url;
+  const org = orgRes.data;
+  const resolvedOrgId = org?.id ?? "";
+  const orgSlug = org?.slug ?? "";
+  const orgName = org?.name ?? "Tim";
+  const orgLogoUrl = org?.logo_url ?? null;
+  const divisions: Array<{ id: string; name: string }> = divsRes.data ?? [];
 
-      const { data: divs } = await admin
-        .from("divisions")
-        .select("id, name")
-        .eq("organization_id", org.id)
-        .eq("is_active", true)
-        .order("name");
-      divisions = divs ?? [];
-    }
-  } else if (isOwner) {
-    // Owner without team_members row — find their org by owner_id
-    const { data: org } = await admin
-      .from("organizations")
-      .select("id, slug, name, logo_url")
-      .eq("owner_id", user.id)
-      .limit(1)
-      .maybeSingle();
-
-    if (org) {
-      resolvedOrgId = org.id;
-      orgSlug = org.slug;
-      orgName = org.name;
-      orgLogoUrl = org.logo_url;
-
-      const { data: divs } = await admin
-        .from("divisions")
-        .select("id, name")
-        .eq("organization_id", org.id)
-        .eq("is_active", true)
-        .order("name");
-      divisions = divs ?? [];
-    }
-  }
-
-  // Get user display name
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("display_name, avatar_url")
-    .eq("id", user.id)
-    .maybeSingle();
-
+  const profile = profileRes.data;
   const displayName =
     profile?.display_name ??
     (user.user_metadata?.["display_name"] as string | undefined) ??
     user.email ??
     "Akun saya";
 
-  const userRole = isOwner ? "owner" : (membership?.role ?? "manager");
+  const userRole = membership.role;
 
   return (
     <NotifyProvider>
