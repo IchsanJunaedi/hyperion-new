@@ -2,30 +2,42 @@
 
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Pencil, X, Trash2, Shield, Star, Search } from "lucide-react";
+import { Plus, Pencil, X, Trash2, Shield, Star, Search, Settings } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils/cn";
 import { getHeroImageUrl, MLBB_HEROES } from "@/features/scrim/data/mlbb-heroes";
 import { AddHeroModal } from "./AddHeroModal";
+import { HeroDetailPanel } from "./HeroDetailPanel";
 import {
   deleteHeroRatingAction,
   createMetaPatchAction,
   deleteMetaPatchAction,
   upsertHeroRatingAction,
+  updatePatchSettingsAction,
 } from "../actions";
 import type { MetaHeroRating, MetaPatch, PatchWithHeroes } from "../queries";
 
-type Tier = "S" | "A" | "B" | "C" | "D";
+type Tier = "SS" | "S" | "A" | "B" | "C" | "D";
 type RoleFilter = "all" | "exp_lane" | "jungler" | "mid_lane" | "gold_lane" | "roamer";
 
-const TIERS: Tier[] = ["S", "A", "B", "C", "D"];
+const TIERS: Tier[] = ["SS", "S", "A", "B", "C", "D"];
 
 const TIER_STYLES: Record<Tier, { bg: string; border: string; badge: string; label: string; activeBorder: string }> = {
+  SS: { bg: "bg-violet-500/5", border: "border-violet-500/30", badge: "bg-violet-500/20 text-violet-300", label: "text-violet-300", activeBorder: "border-violet-500/50" },
   S: { bg: "bg-red-500/5", border: "border-red-500/30", badge: "bg-red-500/20 text-red-400", label: "text-red-400", activeBorder: "border-red-500/50" },
   A: { bg: "bg-orange-500/5", border: "border-orange-500/30", badge: "bg-orange-500/20 text-orange-400", label: "text-orange-400", activeBorder: "border-orange-500/50" },
   B: { bg: "bg-yellow-500/5", border: "border-yellow-500/30", badge: "bg-yellow-500/20 text-yellow-400", label: "text-yellow-400", activeBorder: "border-yellow-500/50" },
   C: { bg: "bg-green-500/5", border: "border-green-500/30", badge: "bg-green-500/20 text-green-400", label: "text-green-400", activeBorder: "border-green-500/50" },
   D: { bg: "bg-blue-500/5", border: "border-blue-500/30", badge: "bg-blue-500/20 text-blue-400", label: "text-blue-400", activeBorder: "border-blue-500/50" },
+};
+
+const TIER_DESCRIPTIONS_DEFAULT: Record<Tier, string> = {
+  SS: "Meta-defining — always ban or first-pick",
+  S: "Dominant — ban or first-pick when available",
+  A: "Reliable in most compositions",
+  B: "Situationally strong with the right comp",
+  C: "Niche picks — requires specific conditions",
+  D: "Avoid unless heavily mastered",
 };
 
 const ROLE_LABELS: Record<string, string> = {
@@ -76,11 +88,13 @@ function HeroCard({
   editMode,
   onEdit,
   onDelete,
+  onDetail,
 }: {
   hero: MetaHeroRating;
   editMode: boolean;
   onEdit: (h: MetaHeroRating) => void;
   onDelete: (id: string, name: string) => void;
+  onDetail: (h: MetaHeroRating) => void;
 }) {
   const style = TIER_STYLES[hero.tier];
   return (
@@ -89,7 +103,9 @@ function HeroCard({
         className={cn(
           "relative aspect-square w-full overflow-hidden rounded-xl border-2 transition group-hover:scale-105",
           style.border,
+          !editMode && "cursor-pointer",
         )}
+        onClick={() => !editMode && onDetail(hero)}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -153,7 +169,6 @@ function HeroCard({
 type RoleTag = "exp_lane" | "jungler" | "mid_lane" | "gold_lane" | "roamer" | null;
 
 const ROLE_CONFIG: Array<{ value: RoleTag; label: string }> = [
-  { value: null, label: "—" },
   { value: "exp_lane", label: "EXP" },
   { value: "jungler", label: "JGL" },
   { value: "mid_lane", label: "MID" },
@@ -220,6 +235,9 @@ function HeroPickerPanel({
       is_ban_priority: configBan,
       priority_to_learn: configLearn,
       notes: "",
+      draft_notes: "",
+      counters: [],
+      synergies: [],
     });
 
     if (res.ok) {
@@ -279,18 +297,15 @@ function HeroPickerPanel({
 
           {/* Role selector */}
           <div className="flex flex-wrap items-center gap-1.5">
-            <span className="text-[10px] text-white/40 w-8 shrink-0">Lane</span>
             {ROLE_CONFIG.map((r) => (
               <button
                 key={String(r.value)}
                 type="button"
-                onClick={() => setConfigRole(r.value)}
+                onClick={() => setConfigRole(configRole === r.value ? null : r.value)}
                 className={cn(
                   "cursor-pointer rounded-full border px-2.5 py-0.5 text-xs font-medium transition",
                   configRole === r.value
-                    ? r.value
-                      ? cn(ROLE_COLORS[r.value], ROLE_BG[r.value], "border-transparent")
-                      : "border-white/30 bg-white/10 text-white/80"
+                    ? cn(ROLE_COLORS[r.value!], ROLE_BG[r.value!], "border-transparent")
                     : "border-[#2D2D2D] text-white/40 hover:border-white/20 hover:text-white/70",
                 )}
               >
@@ -417,6 +432,10 @@ export function MetaPage({ orgSlug, orgId, patches, initialPatch, canEdit }: Met
   const [newPatchVersion, setNewPatchVersion] = useState("");
   const [newPatchNotes, setNewPatchNotes] = useState("");
   const [pending, startTransition] = useTransition();
+  const [detailHero, setDetailHero] = useState<MetaHeroRating | null>(null);
+  const [showPatchSettings, setShowPatchSettings] = useState(false);
+  const [settingsNotes, setSettingsNotes] = useState("");
+  const [settingsDescriptions, setSettingsDescriptions] = useState<Record<string, string>>({});
 
   // Close picker when edit mode is turned off
   useEffect(() => {
@@ -466,6 +485,7 @@ export function MetaPage({ orgSlug, orgId, patches, initialPatch, canEdit }: Met
           created_by: null,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
+          tier_descriptions: null,
           heroes: [],
         };
         setPatchList((prev) => [newPatch, ...prev]);
@@ -585,6 +605,24 @@ export function MetaPage({ orgSlug, orgId, patches, initialPatch, canEdit }: Met
             Patch Baru
           </button>
         )}
+        {activePatch && canEdit && (
+          <button
+            type="button"
+            onClick={() => {
+              setSettingsNotes(activePatch.notes ?? "");
+              setSettingsDescriptions((activePatch.tier_descriptions as Record<string, string>) ?? {});
+              setShowPatchSettings((v) => !v);
+            }}
+            className={cn(
+              "inline-flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border transition",
+              showPatchSettings
+                ? "border-yellow-500/50 bg-yellow-500/10 text-yellow-400"
+                : "border-[#2D2D2D] text-white/40 hover:border-white/20 hover:text-white/70",
+            )}
+          >
+            <Settings className="h-3.5 w-3.5" />
+          </button>
+        )}
       </div>
 
       {/* New patch form */}
@@ -620,6 +658,88 @@ export function MetaPage({ orgSlug, orgId, patches, initialPatch, canEdit }: Met
               className="cursor-pointer rounded-md bg-yellow-400 px-4 py-1.5 text-sm font-semibold text-black transition hover:bg-yellow-300 disabled:opacity-50"
             >
               Buat Patch
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Patch settings form */}
+      {showPatchSettings && activePatch && canEdit && (
+        <div className="space-y-4 rounded-xl border border-[#2D2D2D] bg-[#1C1C1C] p-4">
+          <p className="text-xs font-medium text-white/70">Pengaturan Patch {activePatch.patch_version}</p>
+
+          <div>
+            <label className="mb-1 block text-xs text-white/50">Catatan patch</label>
+            <input
+              value={settingsNotes}
+              onChange={(e) => setSettingsNotes(e.target.value)}
+              placeholder="Catatan singkat tentang patch ini..."
+              className="w-full rounded-md border border-[#2D2D2D] bg-[#141414] px-3 py-2 text-sm text-white placeholder-white/30 outline-none focus:border-white/30"
+            />
+          </div>
+
+          <div>
+            <label className="mb-2 block text-xs text-white/50">Deskripsi tier</label>
+            <div className="space-y-2">
+              {(["SS", "S", "A", "B", "C", "D"] as Tier[]).map((t) => (
+                <div key={t} className="flex items-center gap-3">
+                  <span className={cn("w-7 shrink-0 text-center text-xs font-bold", TIER_STYLES[t].label)}>{t}</span>
+                  <input
+                    value={settingsDescriptions[t] ?? ""}
+                    onChange={(e) =>
+                      setSettingsDescriptions((prev) => ({ ...prev, [t]: e.target.value }))
+                    }
+                    placeholder={TIER_DESCRIPTIONS_DEFAULT[t]}
+                    className="flex-1 rounded-md border border-[#2D2D2D] bg-[#141414] px-3 py-1.5 text-xs text-white placeholder-white/25 outline-none focus:border-white/30"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => setShowPatchSettings(false)}
+              className="cursor-pointer rounded-md border border-[#2D2D2D] px-4 py-1.5 text-sm text-white/60 transition hover:bg-white/5"
+            >
+              Batal
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                startTransition(async () => {
+                  const res = await updatePatchSettingsAction(
+                    orgSlug,
+                    orgId,
+                    activePatch.id,
+                    settingsNotes,
+                    settingsDescriptions,
+                  );
+                  if (res.ok) {
+                    setActivePatch((prev) =>
+                      prev
+                        ? {
+                            ...prev,
+                            notes: settingsNotes.trim() || null,
+                            tier_descriptions:
+                              Object.keys(settingsDescriptions).length > 0
+                                ? settingsDescriptions
+                                : null,
+                          }
+                        : prev,
+                    );
+                    setShowPatchSettings(false);
+                    toast.success("Pengaturan patch disimpan");
+                  } else {
+                    toast.error(res.message);
+                  }
+                });
+              }}
+              disabled={pending}
+              className="cursor-pointer rounded-md bg-yellow-400 px-4 py-1.5 text-sm font-semibold text-black transition hover:bg-yellow-300 disabled:opacity-50"
+            >
+              {pending ? "Menyimpan..." : "Simpan"}
             </button>
           </div>
         </div>
@@ -698,13 +818,16 @@ export function MetaPage({ orgSlug, orgId, patches, initialPatch, canEdit }: Met
                   return (
                     <div key={tier} className={cn("rounded-xl border p-4", style.bg, style.border)}>
                       <div className="flex items-start gap-4">
-                        {/* Tier badge + count */}
+                        {/* Tier badge + count + description */}
                         <div className="flex shrink-0 flex-col items-center gap-1">
                           <div className={cn("flex h-10 w-10 items-center justify-center rounded-lg text-xl font-black", style.badge)}>
                             {tier}
                           </div>
                           <span className="text-[9px] text-white/30">
                             {roleFilter === "all" ? totalInTier : `${tierHeroes.length}/${totalInTier}`}
+                          </span>
+                          <span className="mt-0.5 hidden max-w-[80px] text-center text-[8px] italic leading-tight text-white/25 sm:block">
+                            {(activePatch?.tier_descriptions as Record<string, string> | null)?.[tier] ?? TIER_DESCRIPTIONS_DEFAULT[tier]}
                           </span>
                         </div>
 
@@ -717,6 +840,7 @@ export function MetaPage({ orgSlug, orgId, patches, initialPatch, canEdit }: Met
                               editMode={editMode}
                               onEdit={openEditModal}
                               onDelete={handleDelete}
+                              onDetail={setDetailHero}
                             />
                           ))}
                           {tierHeroes.length === 0 && !editMode && (
@@ -786,7 +910,7 @@ export function MetaPage({ orgSlug, orgId, patches, initialPatch, canEdit }: Met
                   {banHeroes.map((h) => {
                     const style = TIER_STYLES[h.tier];
                     return (
-                      <div key={h.id} className="group relative w-[72px] shrink-0 select-none">
+                      <div key={h.id} className="group relative w-[72px] shrink-0 cursor-pointer select-none" onClick={() => setDetailHero(h)}>
                         <div className={cn("relative aspect-square w-full overflow-hidden rounded-xl border-2 transition group-hover:scale-105", style.border)}>
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img src={getHeroImageUrl(h.hero_name)} alt={h.hero_name} className="h-full w-full object-cover" />
@@ -838,7 +962,7 @@ export function MetaPage({ orgSlug, orgId, patches, initialPatch, canEdit }: Met
                         {roleHeroes.map((h) => {
                           const style = TIER_STYLES[h.tier];
                           return (
-                            <div key={h.id} className="group relative w-[72px] shrink-0 select-none">
+                            <div key={h.id} className="group relative w-[72px] shrink-0 cursor-pointer select-none" onClick={() => setDetailHero(h)}>
                               <div className={cn("relative aspect-square w-full overflow-hidden rounded-xl border-2 transition group-hover:scale-105", style.border)}>
                                 {/* eslint-disable-next-line @next/next/no-img-element */}
                                 <img src={getHeroImageUrl(h.hero_name)} alt={h.hero_name} className="h-full w-full object-cover" />
@@ -886,6 +1010,14 @@ export function MetaPage({ orgSlug, orgId, patches, initialPatch, canEdit }: Met
         editing={editingHero}
         defaultTier="B"
       />
+
+      {detailHero && (
+        <HeroDetailPanel
+          hero={detailHero}
+          allHeroes={heroes}
+          onClose={() => setDetailHero(null)}
+        />
+      )}
     </div>
   );
 }
