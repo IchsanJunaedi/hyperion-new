@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { HERO_CLASSES } from "@/features/scrim/data/mlbb-heroes";
 import type { MetaHeroRating } from "./queries";
 
 type ActionResult = { ok: true } | { ok: false; message: string };
@@ -85,6 +86,7 @@ export async function upsertHeroRatingAction(
         hero_name: hero.hero_name,
         tier: hero.tier,
         role_tag: hero.role_tag,
+        hero_class: HERO_CLASSES[hero.hero_name] ?? null,
         is_ban_priority: hero.is_ban_priority,
         priority_to_learn: hero.priority_to_learn,
         notes: hero.notes.trim() || null,

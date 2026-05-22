@@ -1287,6 +1287,7 @@ export type Database = {
           hero_name: string
           tier: "SS" | "S" | "A" | "B" | "C" | "D"
           role_tag: "exp_lane" | "jungler" | "mid_lane" | "gold_lane" | "roamer" | null
+          hero_class: string | null
           is_ban_priority: boolean
           priority_to_learn: boolean
           notes: string | null
@@ -1302,6 +1303,7 @@ export type Database = {
           hero_name: string
           tier: "SS" | "S" | "A" | "B" | "C" | "D"
           role_tag?: "exp_lane" | "jungler" | "mid_lane" | "gold_lane" | "roamer" | null
+          hero_class?: string | null
           is_ban_priority?: boolean
           priority_to_learn?: boolean
           notes?: string | null
@@ -1317,6 +1319,7 @@ export type Database = {
           hero_name?: string
           tier?: "SS" | "S" | "A" | "B" | "C" | "D"
           role_tag?: "exp_lane" | "jungler" | "mid_lane" | "gold_lane" | "roamer" | null
+          hero_class?: string | null
           is_ban_priority?: boolean
           priority_to_learn?: boolean
           notes?: string | null

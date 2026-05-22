@@ -56,6 +56,15 @@ const ROLE_COLORS: Record<string, string> = {
   roamer: "text-rose-400",
 };
 
+const CLASS_COLORS: Record<string, string> = {
+  Fighter: "text-orange-400",
+  Tank: "text-blue-400",
+  Assassin: "text-red-400",
+  Mage: "text-purple-400",
+  Marksman: "text-green-400",
+  Support: "text-pink-400",
+};
+
 const ROLE_BG: Record<string, string> = {
   exp_lane: "bg-amber-500/20",
   jungler: "bg-violet-500/20",
@@ -148,13 +157,18 @@ function HeroCard({
       <p className="mt-1.5 truncate px-0.5 text-center text-[10px] font-medium leading-tight text-white/75">
         {hero.hero_name}
       </p>
-      {hero.role_tag && (
-        <div className="mt-0.5 flex justify-center">
+      <div className="mt-0.5 flex justify-center gap-1">
+        {hero.hero_class && (
+          <span className={cn("text-[7px] font-bold leading-none", CLASS_COLORS[hero.hero_class] ?? "text-white/40")}>
+            {hero.hero_class}
+          </span>
+        )}
+        {hero.role_tag && (
           <span className={cn("rounded-sm px-1 py-0.5 text-[7px] font-bold leading-none", ROLE_COLORS[hero.role_tag], ROLE_BG[hero.role_tag])}>
             {ROLE_LABELS[hero.role_tag]}
           </span>
-        </div>
-      )}
+        )}
+      </div>
       {hero.notes && (
         <div className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-2 -translate-x-1/2 whitespace-nowrap rounded border border-white/10 bg-black/95 px-2 py-1.5 text-[9px] italic text-white/50 opacity-0 shadow-lg transition group-hover:opacity-100">
           {hero.notes}
