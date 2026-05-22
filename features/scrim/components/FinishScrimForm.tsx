@@ -182,6 +182,17 @@ export function FinishScrimForm({
     );
   }
 
+  function updateBan(gameIndex: number, side: "our" | "enemy", banIndex: number, hero: string) {
+    setGames((prev) =>
+      prev.map((g, idx) => {
+        if (idx !== gameIndex) return g;
+        const newSideBans = [...g.draft.bans[side]];
+        newSideBans[banIndex] = hero;
+        return { ...g, draft: { ...g.draft, bans: { ...g.draft.bans, [side]: newSideBans } } };
+      }),
+    );
+  }
+
   function addGame() {
     if (!canAddMore) return;
     const next = games.length;
@@ -244,6 +255,12 @@ export function FinishScrimForm({
                 hero_name: hero,
                 player_id: null,
               })),
+            ...(g.draft.bans?.our ?? [])
+              .map((hero, i) => hero ? ({ side: "our" as const, role: `ban_${i + 1}`, hero_name: hero, player_id: null }) : null)
+              .filter((x): x is NonNullable<typeof x> => x !== null),
+            ...(g.draft.bans?.enemy ?? [])
+              .map((hero, i) => hero ? ({ side: "enemy" as const, role: `ban_${i + 1}`, hero_name: hero, player_id: null }) : null)
+              .filter((x): x is NonNullable<typeof x> => x !== null),
           ],
         })),
         coachNotes: coachNotes || null,
@@ -371,6 +388,7 @@ export function FinishScrimForm({
           attendingPlayers={attendingPlayers}
           onOurChange={(role, hero, playerId) => updateOurDraft(activeGame, role, hero, playerId)}
           onEnemyChange={(role, hero) => updateEnemyDraft(activeGame, role, hero)}
+          onBanChange={(side, index, hero) => updateBan(activeGame, side, index, hero)}
         />
 
         {/* Game notes */}
