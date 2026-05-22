@@ -11,10 +11,11 @@ import type { MetaHeroRating } from "../queries";
 // AddHeroModal is now used for EDIT only (role, tier, flags, notes).
 // Adding new heroes uses the inline HeroPickerPanel in MetaPage.
 
-type Tier = "S" | "A" | "B" | "C" | "D";
+type Tier = "SS" | "S" | "A" | "B" | "C" | "D";
 type RoleTag = "exp_lane" | "jungler" | "mid_lane" | "gold_lane" | "roamer" | null;
 
 const TIER_COLORS: Record<Tier, string> = {
+  SS: "bg-violet-500/20 text-violet-300 border-violet-500/40",
   S: "bg-red-500/20 text-red-400 border-red-500/30",
   A: "bg-orange-500/20 text-orange-400 border-orange-500/30",
   B: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
@@ -23,7 +24,6 @@ const TIER_COLORS: Record<Tier, string> = {
 };
 
 const ROLE_OPTIONS: Array<{ value: RoleTag; label: string }> = [
-  { value: null, label: "— Tidak ada —" },
   { value: "exp_lane", label: "EXP Lane" },
   { value: "jungler", label: "Jungler" },
   { value: "mid_lane", label: "Mid Lane" },
@@ -40,6 +40,81 @@ interface AddHeroModalProps {
   existingHeroes: Set<string>;
   editing?: MetaHeroRating | null;
   defaultTier?: Tier;
+}
+
+function MultiHeroPicker({
+  label,
+  selected,
+  onToggle,
+  excludeHero,
+}: {
+  label: string;
+  selected: string[];
+  onToggle: (name: string) => void;
+  excludeHero: string;
+}) {
+  const [search, setSearch] = useState("");
+  const available = MLBB_HEROES.filter((h) => h !== excludeHero);
+  const filtered = search
+    ? available.filter((h) => h.toLowerCase().includes(search.toLowerCase()))
+    : available;
+
+  return (
+    <div>
+      <label className="mb-1.5 block text-xs font-medium text-white/60">{label}</label>
+      {selected.length > 0 && (
+        <div className="mb-2 flex flex-wrap gap-1.5">
+          {selected.map((name) => (
+            <span
+              key={name}
+              className="flex items-center gap-1 rounded-full border border-[#2D2D2D] bg-[#141414] px-2 py-0.5 text-xs text-white/70"
+            >
+              {name}
+              <button
+                type="button"
+                onClick={() => onToggle(name)}
+                className="cursor-pointer text-white/30 hover:text-white"
+              >
+                <X className="h-2.5 w-2.5" />
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
+      <div className="flex items-center gap-2 rounded-md border border-[#2D2D2D] bg-[#141414] px-3 py-1.5">
+        <Search className="h-3 w-3 shrink-0 text-white/30" />
+        <input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Cari hero..."
+          className="flex-1 bg-transparent text-xs text-white placeholder-white/30 outline-none"
+        />
+      </div>
+      {search && (
+        <ul className="sidebar-scroll mt-1 max-h-28 overflow-y-auto rounded-md border border-[#2D2D2D] bg-[#141414]">
+          {filtered.slice(0, 30).map((h) => (
+            <li key={h}>
+              <button
+                type="button"
+                onClick={() => { onToggle(h); setSearch(""); }}
+                className={cn(
+                  "w-full cursor-pointer px-3 py-1 text-left text-xs transition",
+                  selected.includes(h)
+                    ? "text-yellow-400 hover:bg-yellow-500/10"
+                    : "text-white/60 hover:bg-[#2C2C2C] hover:text-white",
+                )}
+              >
+                {selected.includes(h) ? `✓ ${h}` : h}
+              </button>
+            </li>
+          ))}
+          {filtered.length === 0 && (
+            <li className="px-3 py-2 text-center text-xs text-white/30">Tidak ditemukan</li>
+          )}
+        </ul>
+      )}
+    </div>
+  );
 }
 
 export function AddHeroModal({
@@ -60,6 +135,9 @@ export function AddHeroModal({
   const [isBan, setIsBan] = useState(editing?.is_ban_priority ?? false);
   const [isPriority, setIsPriority] = useState(editing?.priority_to_learn ?? false);
   const [notes, setNotes] = useState(editing?.notes ?? "");
+  const [draftNotes, setDraftNotes] = useState(editing?.draft_notes ?? "");
+  const [counters, setCounters] = useState<string[]>(editing?.counters ?? []);
+  const [synergies, setSynergies] = useState<string[]>(editing?.synergies ?? []);
   const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -70,6 +148,9 @@ export function AddHeroModal({
       setIsBan(editing?.is_ban_priority ?? false);
       setIsPriority(editing?.priority_to_learn ?? false);
       setNotes(editing?.notes ?? "");
+      setDraftNotes(editing?.draft_notes ?? "");
+      setCounters(editing?.counters ?? []);
+      setSynergies(editing?.synergies ?? []);
       setSearch("");
       setTimeout(() => searchRef.current?.focus(), 50);
     }
@@ -94,6 +175,9 @@ export function AddHeroModal({
         is_ban_priority: isBan,
         priority_to_learn: isPriority,
         notes,
+        draft_notes: draftNotes,
+        counters,
+        synergies,
       });
       if (res.ok) {
         toast.success(editing ? "Hero diperbarui" : `${selectedHero} ditambahkan ke Tier ${tier}`);
@@ -166,7 +250,7 @@ export function AddHeroModal({
           <div>
             <label className="mb-1.5 block text-xs font-medium text-white/60">Tier</label>
             <div className="flex gap-2">
-              {(["S", "A", "B", "C", "D"] as Tier[]).map((t) => (
+              {(["SS", "S", "A", "B", "C", "D"] as Tier[]).map((t) => (
                 <button
                   key={t}
                   type="button"
@@ -184,13 +268,13 @@ export function AddHeroModal({
 
           {/* Role tag */}
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-white/60">Lane / Role</label>
+            <label className="mb-1.5 block text-xs font-medium text-white/60">Role</label>
             <div className="flex flex-wrap gap-2">
               {ROLE_OPTIONS.map((r) => (
                 <button
                   key={String(r.value)}
                   type="button"
-                  onClick={() => setRoleTag(r.value)}
+                  onClick={() => setRoleTag(roleTag === r.value ? null : r.value)}
                   className={cn(
                     "cursor-pointer rounded-full border px-3 py-1 text-xs transition",
                     roleTag === r.value
@@ -237,6 +321,42 @@ export function AddHeroModal({
               className="w-full resize-none rounded-md border border-[#2D2D2D] bg-[#141414] px-3 py-2 text-sm text-white placeholder-white/30 outline-none focus:border-white/30"
             />
           </div>
+
+          {/* Draft Notes */}
+          <div>
+            <label className="mb-1.5 block text-xs font-medium text-white/60">Draft Notes (opsional)</label>
+            <textarea
+              value={draftNotes}
+              onChange={(e) => setDraftNotes(e.target.value)}
+              rows={2}
+              placeholder="Misal: kuat di turtle fight, pair dengan Atlas..."
+              className="w-full resize-none rounded-md border border-[#2D2D2D] bg-[#141414] px-3 py-2 text-sm text-white placeholder-white/30 outline-none focus:border-white/30"
+            />
+          </div>
+
+          {/* Counters */}
+          <MultiHeroPicker
+            label="Counters"
+            selected={counters}
+            onToggle={(name) =>
+              setCounters((prev) =>
+                prev.includes(name) ? prev.filter((h) => h !== name) : [...prev, name],
+              )
+            }
+            excludeHero={selectedHero || editing?.hero_name || ""}
+          />
+
+          {/* Synergies */}
+          <MultiHeroPicker
+            label="Synergies"
+            selected={synergies}
+            onToggle={(name) =>
+              setSynergies((prev) =>
+                prev.includes(name) ? prev.filter((h) => h !== name) : [...prev, name],
+              )
+            }
+            excludeHero={selectedHero || editing?.hero_name || ""}
+          />
 
           {/* Actions */}
           <div className="flex gap-2 pt-1">
