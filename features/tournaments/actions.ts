@@ -193,6 +193,22 @@ export async function updateTournamentStatusAction(
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, message: "Anda harus login" };
 
+  // Guard: block registration confirmation if deadline has passed
+  if (status === "ongoing") {
+    const { data: existing } = await supabase
+      .from("tournaments")
+      .select("status, registration_deadline")
+      .eq("id", tournamentId)
+      .maybeSingle();
+    if (
+      existing?.status === "upcoming" &&
+      existing.registration_deadline != null &&
+      new Date(existing.registration_deadline).getTime() < Date.now()
+    ) {
+      return { ok: false, message: "Batas pendaftaran sudah lewat, tidak bisa dikonfirmasi." };
+    }
+  }
+
   // DB uses text check: upcoming/ongoing/completed/cancelled
   const { error } = await supabase
     .from("tournaments")

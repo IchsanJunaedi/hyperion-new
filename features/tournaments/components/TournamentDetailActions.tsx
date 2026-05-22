@@ -25,6 +25,13 @@ export function TournamentDetailActions({ tournament, orgSlug }: TournamentDetai
     return new Date(tournament.start_date).getTime() <= Date.now();
   }, [tournament.start_date]);
 
+  const isRegistrationExpired = useMemo(() => {
+    return (
+      tournament.registration_deadline != null &&
+      new Date(tournament.registration_deadline).getTime() < Date.now()
+    );
+  }, [tournament.registration_deadline]);
+
   function handleRegister() {
     startTransition(async () => {
       const res = await updateTournamentStatusAction(orgSlug, tournament.id, "ongoing");
@@ -78,7 +85,7 @@ export function TournamentDetailActions({ tournament, orgSlug }: TournamentDetai
     <>
       <div className="flex flex-wrap items-center gap-3">
         {/* Konfirmasi Pendaftaran — when upcoming (belum daftar) */}
-        {tournament.status === "upcoming" && (
+        {tournament.status === "upcoming" && !isRegistrationExpired && (
           <button
             type="button"
             disabled={pending}
@@ -88,6 +95,11 @@ export function TournamentDetailActions({ tournament, orgSlug }: TournamentDetai
             {pending && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
             Konfirmasi Pendaftaran
           </button>
+        )}
+        {tournament.status === "upcoming" && isRegistrationExpired && (
+          <span className="inline-flex h-10 items-center rounded-md border border-orange-500/20 bg-orange-500/5 px-4 text-sm font-medium text-orange-400/70">
+            Pendaftaran sudah ditutup
+          </span>
         )}
 
         {/* Turnamen Selesai — when ongoing (sudah daftar) */}
