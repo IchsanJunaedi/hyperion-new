@@ -150,6 +150,69 @@ export async function getRecentScrims(orgId: string): Promise<RecentScrim[]> {
   });
 }
 
+// ─── Hero Statistics (RPC-backed) ─────────────────────────────────────────────
+
+export interface HeroStatRow {
+  hero_name: string;
+  pick_total: number;
+  pick_wins: number;
+  pick_losses: number;
+  pick_wr: number;
+  pick_pct: number;
+  team_ban_total: number;
+  team_ban_pct: number;
+  enemy_ban_total: number;
+  enemy_ban_pct: number;
+  pb_total: number;
+  pb_pct: number;
+}
+
+export interface HeroDetailPlayerRow {
+  display_name: string;
+  total: number;
+  wins: number;
+  losses: number;
+  win_rate: number;
+}
+
+export interface HeroDetailHeroRow {
+  hero_name: string;
+  total: number;
+  wins: number;
+  losses: number;
+  win_rate: number;
+}
+
+export interface HeroDetailData {
+  played_by_player: HeroDetailPlayerRow[];
+  played_with: HeroDetailHeroRow[];
+  played_against: HeroDetailHeroRow[];
+}
+
+export async function getHeroStatistics(orgId: string): Promise<HeroStatRow[]> {
+  const supabase = await createClient();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = await (supabase as any).rpc("get_hero_statistics", { p_org_id: orgId });
+  if (error) throw new Error(error.message);
+  return (data ?? []) as HeroStatRow[];
+}
+
+export async function getHeroDetail(orgId: string, heroName: string): Promise<HeroDetailData> {
+  const supabase = await createClient();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = await (supabase as any).rpc("get_hero_detail", {
+    p_org_id: orgId,
+    p_hero_name: heroName,
+  });
+  if (error) throw new Error(error.message);
+  const result = data as HeroDetailData | null;
+  return {
+    played_by_player: result?.played_by_player ?? [],
+    played_with: result?.played_with ?? [],
+    played_against: result?.played_against ?? [],
+  };
+}
+
 // ─── Draft Analytics (per-game win rate — more accurate for BO formats) ───────
 
 export async function getDraftAnalytics(orgId: string): Promise<DraftAnalyticsData> {

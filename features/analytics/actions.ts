@@ -2,6 +2,12 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import {
+  getHeroStatistics,
+  getHeroDetail,
+  type HeroStatRow,
+  type HeroDetailData,
+} from "@/features/analytics/queries";
 
 export interface PlayerHeroStatExtended {
   hero_name: string;
@@ -192,4 +198,29 @@ export async function fetchPlayerHeroHistory(
     .slice(0, 30);
 
   return { heroStats, recentGames, ratingHistory };
+}
+
+// ─── Hero Statistics server actions (lazy-load for StatisticsTab) ─────────────
+
+export async function getHeroStatisticsAction(
+  orgId: string,
+): Promise<{ ok: true; data: HeroStatRow[] } | { ok: false; message: string }> {
+  try {
+    const data = await getHeroStatistics(orgId);
+    return { ok: true, data };
+  } catch (e) {
+    return { ok: false, message: e instanceof Error ? e.message : "Gagal memuat statistik hero" };
+  }
+}
+
+export async function getHeroDetailAction(
+  orgId: string,
+  heroName: string,
+): Promise<{ ok: true; data: HeroDetailData } | { ok: false; message: string }> {
+  try {
+    const data = await getHeroDetail(orgId, heroName);
+    return { ok: true, data };
+  } catch (e) {
+    return { ok: false, message: e instanceof Error ? e.message : "Gagal memuat detail hero" };
+  }
 }
