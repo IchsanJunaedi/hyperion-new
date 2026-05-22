@@ -7,6 +7,7 @@ import { OverviewTab } from "./tabs/OverviewTab";
 import { DraftAnalyticsTab } from "./tabs/DraftAnalyticsTab";
 import { PlayerStatsTab } from "./tabs/PlayerStatsTab";
 import { AIInsightsTab } from "./tabs/AIInsightsTab";
+import { StatisticsTab } from "./tabs/StatisticsTab";
 import type {
   OverviewStats,
   FormatStat,
@@ -15,13 +16,14 @@ import type {
   DraftAnalyticsData,
 } from "@/features/analytics/queries";
 
-type TabKey = "overview" | "draft" | "players" | "ai";
+type TabKey = "overview" | "statistics" | "draft" | "players" | "ai";
 
 const TABS: Array<{ key: TabKey; label: string }> = [
-  { key: "overview", label: "Overview" },
-  { key: "draft", label: "Draft Analytics" },
-  { key: "players", label: "Player Stats" },
-  { key: "ai", label: "AI Insights" },
+  { key: "overview",   label: "Overview" },
+  { key: "statistics", label: "Statistics" },
+  { key: "draft",      label: "Draft Analytics" },
+  { key: "players",    label: "Player Stats" },
+  { key: "ai",         label: "AI Insights" },
 ];
 
 interface AnalyticsDashboardProps {
@@ -82,6 +84,7 @@ export function AnalyticsDashboard({
           recentScrims={recentScrims}
         />
       )}
+      {activeTab === "statistics" && <StatisticsTab orgId={orgId} />}
       {activeTab === "draft" && <DraftAnalyticsTab data={draftData} />}
       {activeTab === "players" && <PlayerStatsTab playerStats={playerStats} orgId={orgId} />}
       {activeTab === "ai" && <AIInsightsTab />}
