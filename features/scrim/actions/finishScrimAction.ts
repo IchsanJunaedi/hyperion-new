@@ -17,6 +17,7 @@ interface GameInput {
   notes: string | null;
   imageUrl: string | null;
   draftPicks?: DraftPickInput[];
+  bans?: { our: string[]; enemy: string[] };
 }
 
 interface PlayerEvalInput {
@@ -132,6 +133,30 @@ export async function finishScrimAction(
         { onConflict: "scrim_id,user_id", ignoreDuplicates: false },
       );
     if (evalErr) return { ok: false, message: evalErr.message };
+  }
+
+  // Ban data → scrim_draft_bans
+  const banRows = input.games.flatMap((g) => {
+    const rows: Array<{
+      scrim_id: string;
+      game_number: number;
+      side: "our" | "enemy";
+      hero_name: string;
+      ban_order: number;
+    }> = [];
+    (g.bans?.our ?? []).forEach((hero, idx) => {
+      if (hero) rows.push({ scrim_id: input.scrimId, game_number: g.gameNumber, side: "our", hero_name: hero, ban_order: idx + 1 });
+    });
+    (g.bans?.enemy ?? []).forEach((hero, idx) => {
+      if (hero) rows.push({ scrim_id: input.scrimId, game_number: g.gameNumber, side: "enemy", hero_name: hero, ban_order: idx + 1 });
+    });
+    return rows;
+  });
+  if (banRows.length > 0) {
+    const { error: banErr } = await admin
+      .from("scrim_draft_bans" as any)
+      .upsert(banRows, { onConflict: "scrim_id,game_number,side,ban_order" });
+    if (banErr) return { ok: false, message: banErr.message };
   }
 
   revalidatePath(`/${input.orgSlug}/scrim/${input.scrimId}`);
