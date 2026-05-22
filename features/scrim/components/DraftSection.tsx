@@ -300,32 +300,31 @@ export function DraftSection({ draft, attendingPlayers, onOurChange, onEnemyChan
           <Ban className="h-3 w-3 text-[#6B6A68]" />
           <p className="text-[10px] font-semibold uppercase tracking-wider text-[#6B6A68]">Ban Hero</p>
         </div>
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <span className="w-10 shrink-0 text-[10px] font-medium text-emerald-400">Our</span>
-            <div className="flex gap-1.5">
-              {bansOur.map((hero, i) => (
-                <BanSlotPicker
-                  key={i}
-                  value={hero}
-                  onChange={(h) => onBanChange("our", i, h)}
-                  excludedHeroes={getExcluded(hero)}
-                />
-              ))}
-            </div>
+        <div className="flex items-center gap-2">
+          <div className="flex gap-1.5">
+            {bansOur.map((hero, i) => (
+              <BanSlotPicker
+                key={i}
+                value={hero}
+                onChange={(h) => onBanChange("our", i, h)}
+                excludedHeroes={getExcluded(hero)}
+              />
+            ))}
           </div>
-          <div className="flex items-center gap-2">
-            <span className="w-10 shrink-0 text-[10px] font-medium text-rose-400">Enemy</span>
-            <div className="flex gap-1.5">
-              {bansEnemy.map((hero, i) => (
-                <BanSlotPicker
-                  key={i}
-                  value={hero}
-                  onChange={(h) => onBanChange("enemy", i, h)}
-                  excludedHeroes={getExcluded(hero)}
-                />
-              ))}
-            </div>
+          <div className="flex flex-col items-center gap-0.5 px-1">
+            <span className="text-[9px] font-semibold text-emerald-400">Our</span>
+            <div className="h-3 w-px bg-[#3D3D3D]" />
+            <span className="text-[9px] font-semibold text-rose-400">Enemy</span>
+          </div>
+          <div className="flex gap-1.5">
+            {bansEnemy.map((hero, i) => (
+              <BanSlotPicker
+                key={i}
+                value={hero}
+                onChange={(h) => onBanChange("enemy", i, h)}
+                excludedHeroes={getExcluded(hero)}
+              />
+            ))}
           </div>
         </div>
       </div>
