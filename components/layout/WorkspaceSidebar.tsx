@@ -14,6 +14,7 @@ import {
   Lightbulb,
   LogOut,
   Megaphone,
+  Radar,
   Settings,
   Shield,
   Swords,
@@ -160,6 +161,12 @@ const WORKSPACE_NAV_GROUPS: NavGroup[] = [
         Icon: Trophy,
       },
       {
+        key: "scouting",
+        href: "/scouting",
+        label: "Scouting",
+        Icon: Radar,
+      },
+      {
         key: "analytics",
         href: "/analytics",
         label: "Analytics",
@@ -252,6 +259,12 @@ export function WorkspaceSidebar({
   const hasFilesAccess =
     user.role === "owner" || user.role === "manager" || user.role === "coach";
 
+  const hasScoutingAccess =
+    user.role === "owner" ||
+    user.role === "manager" ||
+    user.role === "coach" ||
+    user.role === "captain";
+
   const allGroups: NavGroup[] = (isManager
     ? [MANAGER_NAV_GROUP, ...WORKSPACE_NAV_GROUPS]
     : WORKSPACE_NAV_GROUPS)
@@ -259,6 +272,7 @@ export function WorkspaceSidebar({
       ...group,
       items: group.items.filter((item) => {
         if (item.key === "files") return hasFilesAccess;
+        if (item.key === "scouting") return hasScoutingAccess;
         return true;
       }),
     }));
