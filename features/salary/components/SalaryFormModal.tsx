@@ -230,6 +230,7 @@ export function SalaryFormModal({
                   setStartDate(e.target.value);
                   if (endDate && e.target.value > endDate) setEndDate("");
                 }}
+                style={{ colorScheme: "dark" }}
                 className="h-10 w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-sm text-[#E5E2E1] focus:border-[#9B9A97] focus:outline-none"
               />
             </div>
@@ -241,6 +242,7 @@ export function SalaryFormModal({
                 value={endDate}
                 min={startDate}
                 onChange={(e) => setEndDate(e.target.value)}
+                style={{ colorScheme: "dark" }}
                 className="h-10 w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-sm text-[#E5E2E1] focus:border-[#9B9A97] focus:outline-none"
               />
             </div>
