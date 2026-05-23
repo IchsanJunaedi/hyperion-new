@@ -11,6 +11,35 @@ type TrialPublic = NonNullable<Awaited<ReturnType<typeof getTrialByToken>>>;
 
 const inputCls = "h-10 w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-sm text-[#E5E2E1] focus:border-[#9B9A97] focus:outline-none";
 
+function AgeInput() {
+  const [age, setAge] = useState(17);
+  const dec = () => setAge((v) => Math.max(10, v - 1));
+  const inc = () => setAge((v) => Math.min(99, v + 1));
+
+  return (
+    <div className="flex h-10 items-center rounded-md border border-[#2D2D2D] bg-[#191919] overflow-hidden">
+      <button
+        type="button"
+        onClick={dec}
+        className="flex h-full w-10 items-center justify-center text-[#9B9A97] hover:bg-[#2C2C2C] hover:text-[#E5E2E1] transition cursor-pointer text-lg font-light select-none"
+      >
+        −
+      </button>
+      <span className="flex-1 text-center text-sm font-semibold text-[#E5E2E1] select-none">
+        {age}
+      </span>
+      <button
+        type="button"
+        onClick={inc}
+        className="flex h-full w-10 items-center justify-center text-[#9B9A97] hover:bg-[#2C2C2C] hover:text-[#E5E2E1] transition cursor-pointer text-lg font-light select-none"
+      >
+        +
+      </button>
+      <input type="hidden" name="age" value={age} />
+    </div>
+  );
+}
+
 function RoleDropdown({
   positions,
   value,
@@ -152,8 +181,8 @@ export function TrialRegistrationForm({ trial }: { trial: TrialPublic }) {
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label htmlFor="age" className="block text-xs text-[#9B9A97] mb-1">Umur <span className="text-red-400">*</span></label>
-            <input id="age" name="age" type="number" min={10} max={99} required inputMode="numeric" className={inputCls} />
+            <label className="block text-xs text-[#9B9A97] mb-1">Umur <span className="text-red-400">*</span></label>
+            <AgeInput />
           </div>
           <div>
             <label className="block text-xs text-[#9B9A97] mb-1">Role / Posisi Dilamar <span className="text-red-400">*</span></label>
