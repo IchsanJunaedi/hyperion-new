@@ -88,6 +88,18 @@
   }
 }
 
+/* ── Date/time picker icon — force white on dark backgrounds ──────────────── */
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  opacity: 0.6;
+  cursor: pointer;
+}
+input[type="date"]::-webkit-calendar-picker-indicator:hover,
+input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
 /* ── Global premium scrollbar ─────────────────────────────────────────────── */
 /* Applies everywhere — thin, minimal, dark-mode aware.                        */
 
