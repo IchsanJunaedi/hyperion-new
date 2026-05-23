@@ -171,7 +171,7 @@ export async function registerApplicantAction(raw: {
   const email = String(raw.email ?? "").trim();
   const roleApplied = String(raw.role_applied ?? "").trim();
   const rank = String(raw.rank ?? "").trim();
-  const server = String(raw.server ?? "").trim();
+  const server = String(raw.server ?? "").trim() || "ID";
   const mainGame = String(raw.main_game ?? "").trim();
   const secondaryGame = String(raw.secondary_game ?? "").trim() || null;
   const isFreeAgent =
@@ -187,7 +187,6 @@ export async function registerApplicantAction(raw: {
     !email ||
     !roleApplied ||
     !rank ||
-    !server ||
     !mainGame ||
     !socialMedia ||
     isNaN(age) ||

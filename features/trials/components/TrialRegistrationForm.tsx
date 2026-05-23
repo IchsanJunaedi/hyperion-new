@@ -1,7 +1,7 @@
 "use client";
 
-import { CheckCircle2, Loader2 } from "lucide-react";
-import { useState, useTransition } from "react";
+import { CheckCircle2, ChevronDown, Check, Loader2 } from "lucide-react";
+import { useEffect, useRef, useState, useTransition } from "react";
 
 import { registerApplicantAction } from "@/features/trials/actions";
 import type { getTrialByToken } from "@/features/trials/queries";
@@ -11,11 +11,69 @@ type TrialPublic = NonNullable<Awaited<ReturnType<typeof getTrialByToken>>>;
 
 const inputCls = "h-10 w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-sm text-[#E5E2E1] focus:border-[#9B9A97] focus:outline-none";
 
+function RoleDropdown({
+  positions,
+  value,
+  onChange,
+}: {
+  positions: string[];
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    function handle(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener("mousedown", handle);
+    return () => document.removeEventListener("mousedown", handle);
+  }, [open]);
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="h-10 w-full flex items-center justify-between rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-sm text-[#E5E2E1] focus:border-[#9B9A97] focus:outline-none cursor-pointer"
+      >
+        <span className={value ? "text-[#E5E2E1]" : "text-[#6B6A68]"}>
+          {value || "— Pilih posisi —"}
+        </span>
+        <ChevronDown className={cn("h-4 w-4 text-[#6B6A68] transition-transform", open && "rotate-180")} />
+      </button>
+
+      {open && (
+        <div className="absolute left-0 top-full z-50 mt-1 w-full rounded-lg border border-[#2D2D2D] bg-[#202020] py-1 shadow-xl scroll-premium max-h-48 overflow-y-auto">
+          {positions.map((p) => (
+            <button
+              key={p}
+              type="button"
+              onClick={() => { onChange(p); setOpen(false); }}
+              className="flex w-full items-center justify-between px-3 py-2 text-sm text-[#E5E2E1] hover:bg-[#2C2C2C] cursor-pointer"
+            >
+              {p}
+              {value === p && <Check className="h-3.5 w-3.5 text-[#9B9A97]" />}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Hidden input for form submission */}
+      <input type="hidden" name="role_applied" value={value} />
+      {!value && <input type="text" required className="sr-only" tabIndex={-1} readOnly value="" />}
+    </div>
+  );
+}
+
 export function TrialRegistrationForm({ trial }: { trial: TrialPublic }) {
   const [pending, startTransition] = useTransition();
   const [done, setDone] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [isFreeAgent, setIsFreeAgent] = useState(true);
+  const [roleApplied, setRoleApplied] = useState("");
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -28,11 +86,11 @@ export function TrialRegistrationForm({ trial }: { trial: TrialPublic }) {
         ign: fd.get("ign"),
         phone: fd.get("phone"),
         email: fd.get("email"),
-        role_applied: fd.get("role_applied"),
+        role_applied: roleApplied,
         rank: fd.get("rank"),
-        server: fd.get("server"),
+        server: null,
         main_game: trial.game,
-        secondary_game: fd.get("secondary_game"),
+        secondary_game: null,
         is_free_agent: isFreeAgent,
         age: fd.get("age"),
         social_media: fd.get("social_media"),
@@ -76,7 +134,7 @@ export function TrialRegistrationForm({ trial }: { trial: TrialPublic }) {
             <input id="name" name="name" type="text" required className={inputCls} />
           </div>
           <div>
-            <label htmlFor="ign" className="block text-xs text-[#9B9A97] mb-1">IGN (In-Game Name) <span className="text-red-400">*</span></label>
+            <label htmlFor="ign" className="block text-xs text-[#9B9A97] mb-1">Username <span className="text-red-400">*</span></label>
             <input id="ign" name="ign" type="text" required className={inputCls} />
           </div>
         </div>
@@ -98,32 +156,18 @@ export function TrialRegistrationForm({ trial }: { trial: TrialPublic }) {
             <input id="age" name="age" type="number" min={10} max={99} required inputMode="numeric" className={inputCls} />
           </div>
           <div>
-            <label htmlFor="role_applied" className="block text-xs text-[#9B9A97] mb-1">Role / Posisi Dilamar <span className="text-red-400">*</span></label>
+            <label className="block text-xs text-[#9B9A97] mb-1">Role / Posisi Dilamar <span className="text-red-400">*</span></label>
             {trial.positions.length > 0 ? (
-              <select id="role_applied" name="role_applied" required className={inputCls}>
-                <option value="">— Pilih posisi —</option>
-                {trial.positions.map((p) => <option key={p} value={p}>{p}</option>)}
-              </select>
+              <RoleDropdown positions={trial.positions} value={roleApplied} onChange={setRoleApplied} />
             ) : (
               <input id="role_applied" name="role_applied" type="text" required className={inputCls} />
             )}
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label htmlFor="rank" className="block text-xs text-[#9B9A97] mb-1">Rank Saat Ini <span className="text-red-400">*</span></label>
-            <input id="rank" name="rank" type="text" required className={inputCls} />
-          </div>
-          <div>
-            <label htmlFor="server" className="block text-xs text-[#9B9A97] mb-1">Server <span className="text-red-400">*</span></label>
-            <input id="server" name="server" type="text" required className={inputCls} />
-          </div>
-        </div>
-
         <div>
-          <label htmlFor="secondary_game" className="block text-xs text-[#9B9A97] mb-1">Game Sampingan</label>
-          <input id="secondary_game" name="secondary_game" type="text" className={inputCls} />
+          <label htmlFor="rank" className="block text-xs text-[#9B9A97] mb-1">Rank Saat Ini <span className="text-red-400">*</span></label>
+          <input id="rank" name="rank" type="text" required className={inputCls} />
         </div>
 
         <div>
