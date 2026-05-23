@@ -22,6 +22,12 @@ interface SalaryFormModalProps {
   onClose: () => void;
 }
 
+function formatSalaryDisplay(raw: string): string {
+  const digits = raw.replace(/\D/g, "");
+  if (!digits) return "";
+  return Number(digits).toLocaleString("id-ID");
+}
+
 export function SalaryFormModal({
   orgId,
   members,
@@ -33,6 +39,12 @@ export function SalaryFormModal({
   const { success, error: notifyError } = useNotify();
   const [pending, startTransition] = useTransition();
   const [err, setErr] = useState<string | null>(null);
+  const [salaryDisplay, setSalaryDisplay] = useState(
+    contract?.monthly_salary ? Number(contract.monthly_salary).toLocaleString("id-ID") : ""
+  );
+  const [salaryRaw, setSalaryRaw] = useState(
+    contract?.monthly_salary ? String(contract.monthly_salary) : ""
+  );
 
   const isEdit = !!contract;
 
@@ -42,7 +54,7 @@ export function SalaryFormModal({
 
     const raw = {
       user_id: fd.get("user_id"),
-      monthly_salary: fd.get("monthly_salary"),
+      monthly_salary: salaryRaw,
       start_date: fd.get("start_date"),
       end_date: fd.get("end_date") || undefined,
       notes: fd.get("notes") || undefined,
@@ -110,17 +122,21 @@ export function SalaryFormModal({
               Gaji per Bulan (Rp) <span className="text-red-400">*</span>
             </label>
             <input
-              name="monthly_salary"
-              type="number"
-              min={0}
+              name="monthly_salary_display"
+              type="text"
+              inputMode="numeric"
               required
-              defaultValue={contract?.monthly_salary ?? ""}
-              placeholder="500000"
+              value={salaryDisplay}
+              onChange={(e) => {
+                const digits = e.target.value.replace(/\D/g, "");
+                setSalaryRaw(digits);
+                setSalaryDisplay(formatSalaryDisplay(e.target.value));
+              }}
               className="h-10 w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-sm text-[#E5E2E1] focus:border-[#9B9A97] focus:outline-none"
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-3">
             <div>
               <label className="block text-xs text-[#9B9A97] mb-1">
                 Tanggal Mulai <span className="text-red-400">*</span>
@@ -135,8 +151,7 @@ export function SalaryFormModal({
             </div>
             <div>
               <label className="block text-xs text-[#9B9A97] mb-1">
-                Tanggal Berakhir{" "}
-                <span className="text-[#6B6A68]">(kosong = indefinite)</span>
+                Tanggal Berakhir
               </label>
               <input
                 name="end_date"
@@ -153,7 +168,6 @@ export function SalaryFormModal({
               name="notes"
               rows={2}
               defaultValue={contract?.notes ?? ""}
-              placeholder="Detail kontrak, bonus, dll..."
               className="w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 py-2 text-sm text-[#E5E2E1] focus:border-[#9B9A97] focus:outline-none resize-none"
             />
           </div>

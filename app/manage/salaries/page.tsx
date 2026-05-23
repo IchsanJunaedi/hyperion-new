@@ -45,11 +45,13 @@ export default async function ManageSalariesPage() {
     : { data: [] };
 
   const profileMap = new Map((profileRows ?? []).map((p) => [p.id, p.display_name]));
-  const members = memberRows.map((m) => ({
-    user_id: m.user_id,
-    display_name: profileMap.get(m.user_id) ?? null,
-    role: m.role,
-  }));
+  const members = memberRows
+    .filter((m) => m.role !== "owner")
+    .map((m) => ({
+      user_id: m.user_id,
+      display_name: profileMap.get(m.user_id) ?? null,
+      role: m.role,
+    }));
 
   return (
     <div className="space-y-6">
