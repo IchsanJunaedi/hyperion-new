@@ -128,7 +128,8 @@ export async function deleteApplicantAction(
   const { error } = await admin
     .from("trial_applicants")
     .delete()
-    .eq("id", applicantId);
+    .eq("id", applicantId)
+    .eq("trial_id", trialId);
 
   if (error) return { ok: false, message: error.message };
   revalidatePaths.forEach((p) => revalidatePath(p));
