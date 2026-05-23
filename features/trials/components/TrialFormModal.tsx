@@ -13,7 +13,7 @@ interface TrialFormModalProps {
 }
 
 const POSITION_SUGGESTIONS = [
-  "Jungler", "Mid Lane", "Exp Lane", "Roamer", "Gold Lane", "IGL", "Carry",
+  "Jungler", "Mid Lane", "Exp Lane", "Roamer", "Gold Lane",
 ];
 
 export function TrialFormModal({ revalidatePaths, onClose }: TrialFormModalProps) {
