@@ -96,7 +96,8 @@ export async function getOverviewStats(orgId: string): Promise<{
     .from("scrims")
     .select("id, format, scrim_results(is_win)")
     .eq("organization_id", orgId)
-    .eq("status", "completed");
+    .eq("status", "completed")
+    .limit(100);
 
   const results: RawScrimResult[] = (data ?? []).map((s) => ({
     scrim_id: s.id,
@@ -287,7 +288,8 @@ export async function getEnterprisePlayerStats(orgId: string): Promise<Enterpris
     .select("id, format, scrim_results(is_win)")
     .eq("organization_id", orgId)
     .eq("status", "completed")
-    .order("scheduled_at", { ascending: false });
+    .order("scheduled_at", { ascending: false })
+    .limit(100);
 
   const results: RawScrimResult[] = (scrims ?? []).map((s) => ({
     scrim_id: s.id,

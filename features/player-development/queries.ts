@@ -31,7 +31,8 @@ export async function listPlayerTargets(orgId: string): Promise<PlayerTargetWith
     .from("player_target_history")
     .select("*")
     .in("target_id", targetIds)
-    .order("recorded_at", { ascending: true });
+    .order("recorded_at", { ascending: true })
+    .limit(30);
 
   // Get player names
   const userIds = [...new Set(targets.map((t) => t.user_id))];
@@ -77,7 +78,8 @@ export async function getPlayerTargets(
     .from("player_target_history")
     .select("*")
     .in("target_id", targetIds)
-    .order("recorded_at", { ascending: true });
+    .order("recorded_at", { ascending: true })
+    .limit(30);
 
   const { data: profile } = await supabase
     .from("profiles")

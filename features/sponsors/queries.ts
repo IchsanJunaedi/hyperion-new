@@ -25,7 +25,7 @@ export async function getSponsors(orgIds: string[]): Promise<SponsorWithStats[]>
 
   const { data: sponsors } = await admin
     .from("sponsors")
-    .select("*")
+    .select("id, name, status, logo_url, deal_value, currency, start_date, end_date, contact_name, organization_id")
     .in("organization_id", orgIds)
     .order("status")
     .order("name");
@@ -51,7 +51,7 @@ export async function getSponsors(orgIds: string[]): Promise<SponsorWithStats[]>
     ...s,
     deliverableTotal: dlMap.get(s.id)?.total ?? 0,
     deliverableDone: dlMap.get(s.id)?.done ?? 0,
-  }));
+  })) as unknown as SponsorWithStats[];
 }
 
 export async function getSponsorDetail(id: string): Promise<SponsorDetail | null> {

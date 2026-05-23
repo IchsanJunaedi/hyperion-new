@@ -3,14 +3,22 @@ import "server-only";
 import { createClient } from "@/lib/supabase/server";
 import type { CalendarEvent } from "./queries";
 
+type UserRole = "owner" | "manager" | "coach" | "captain" | "member";
+
 /**
  * Unified calendar: merges manual calendar_events with auto-generated
  * entries from scrims and tournaments for the given month range.
+ *
+ * @param role - Optional pre-fetched role for the current user in this org.
+ *   When provided, skips the internal team_members query (eliminates duplicate
+ *   DB round-trip for callers that already resolved the role, e.g. the
+ *   workspace calendar page).
  */
 export async function listUnifiedCalendarEvents(
   orgId: string,
   from: string,
   to: string,
+  role?: UserRole | null,
 ): Promise<CalendarEvent[]> {
   const supabase = await createClient();
 
@@ -18,9 +26,13 @@ export async function listUnifiedCalendarEvents(
     data: { user },
   } = await supabase.auth.getUser();
 
-  let userRole: "owner" | "manager" | "coach" | "captain" | "member" | null = null;
+  let userRole: UserRole | null = null;
 
-  if (user) {
+  if (role !== undefined) {
+    // Caller supplied the role — use it directly, skip DB round-trip
+    userRole = role;
+  } else if (user) {
+    // No role supplied — resolve it ourselves
     const ownerEmail = process.env.OWNER_EMAIL;
     if (ownerEmail && user.email === ownerEmail) {
       userRole = "owner";
@@ -40,10 +52,16 @@ export async function listUnifiedCalendarEvents(
     }
   }
 
-  // 1. Manual calendar events with visibility filter
+  // 1. Manual calendar events — only fetch columns needed by the calendar UI
+  // (id, title, event_type, starts_at for display/routing; visibility,
+  //  created_by for server-side filtering; ref_id, ref_type for deduplication
+  //  and deep-link routing; organization_id, division_id, ends_at, is_all_day,
+  //  location, description, created_at for synthetic event construction)
   let query = supabase
     .from("calendar_events")
-    .select("*")
+    .select(
+      "id, title, event_type, starts_at, ends_at, is_all_day, visibility, created_by, organization_id, division_id, location, description, ref_id, ref_type, created_at",
+    )
     .eq("organization_id", orgId)
     .gte("starts_at", from)
     .lte("starts_at", to);
@@ -75,7 +93,11 @@ export async function listUnifiedCalendarEvents(
 
   const { data: manualEvents } = await query.order("starts_at", { ascending: true });
 
-  const events: CalendarEvent[] = manualEvents ?? [];
+  // Cast is safe: we select all fields used by the calendar UI and synthetic
+  // event construction; unused v2 fields (tags, color, etc.) are not accessed
+  // by CalendarGrid or any other consumer of this function's return value.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const events: CalendarEvent[] = (manualEvents ?? []) as any[];
 
   // 2. Tournaments not already linked
   const linkedTournamentIds = new Set(

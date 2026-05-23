@@ -55,7 +55,7 @@ export default async function CalendarPage({
   const from = new Date(startUtcMs).toISOString();
   const to = new Date(endUtcMs).toISOString();
 
-  const events = await listUnifiedCalendarEvents(organization.id, from, to);
+  const events = await listUnifiedCalendarEvents(organization.id, from, to, isOwner ? "owner" : role);
 
   // Get divisions for the quick-add modal dropdown
   const { data: divisions } = await supabase

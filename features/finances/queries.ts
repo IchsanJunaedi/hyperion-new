@@ -23,13 +23,13 @@ export async function listFinances(
 
   const { data } = await admin
     .from("finances")
-    .select("*")
+    .select("id, type, amount, description, date, category, created_at")
     .eq("organization_id", orgId)
     .gte("date", start)
     .lte("date", end)
     .order("date", { ascending: false });
 
-  return data ?? [];
+  return (data ?? []) as unknown as FinanceRow[];
 }
 
 export async function getFinanceSummary(

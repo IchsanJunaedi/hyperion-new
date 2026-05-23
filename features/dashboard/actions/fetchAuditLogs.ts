@@ -121,13 +121,22 @@ export async function fetchDistinctActors(): Promise<
   if (!user) return [];
 
   const admin = createAdminClient();
+
+  // Fetch only actor_id (single narrow column), ordered so duplicates are
+  // adjacent. A limit of 200 is enough to cover all realistic distinct actors
+  // in a team org — audit_logs can have thousands of rows but the number of
+  // unique actors is always small. JS Set dedup then resolves any duplicates
+  // within the 200-row window before the profiles lookup.
   const { data: logs } = await admin
     .from("audit_logs")
     .select("actor_id")
     .not("actor_id", "is", null)
-    .limit(1000);
+    .order("actor_id", { ascending: true })
+    .limit(200);
 
-  const actorIds = [...new Set((logs ?? []).map((l) => l.actor_id).filter(Boolean))] as string[];
+  const actorIds = [
+    ...new Set((logs ?? []).map((l) => l.actor_id).filter(Boolean)),
+  ] as string[];
   if (actorIds.length === 0) return [];
 
   const { data: profiles } = await admin

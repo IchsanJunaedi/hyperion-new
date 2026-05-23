@@ -233,7 +233,8 @@ export async function getPersonalPlayerStats(
       .select("id, scrim_results(is_win)")
       .eq("organization_id", orgId)
       .eq("status", "completed")
-      .order("scheduled_at", { ascending: false }),
+      .order("scheduled_at", { ascending: false })
+      .limit(50),
     admin
       .from("player_targets")
       .select("id, skill_name, current_level, target_level, notes")

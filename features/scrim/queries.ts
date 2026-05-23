@@ -54,13 +54,15 @@ export async function listScrims(
     q = q
       .eq("status", "scheduled")
       .gte("scheduled_at", new Date().toISOString())
-      .order("scheduled_at", { ascending: true });
+      .order("scheduled_at", { ascending: true })
+      .limit(20);
   } else if (filter === "ongoing") {
     // Show explicitly-ongoing scrims + scheduled scrims whose time has passed
     // (result not yet submitted — they "fell through" from upcoming).
     q = q
       .or(`status.eq.ongoing,and(status.eq.scheduled,scheduled_at.lt.${new Date().toISOString()})`)
-      .order("scheduled_at", { ascending: false });
+      .order("scheduled_at", { ascending: false })
+      .limit(20);
   } else if (filter === "completed") {
     q = q
       .in("status", ["completed", "cancelled"])
@@ -115,11 +117,13 @@ export async function getScrimDetail(
   scrimId: string,
 ): Promise<ScrimDetail | null> {
   const supabase = await createClient();
-  const { data: scrim, error } = await supabase
-    .from("scrims")
-    .select("*")
-    .eq("id", scrimId)
-    .maybeSingle();
+
+  // Fetch the scrim row and the caller's identity concurrently — auth.getUser()
+  // has no dependency on scrim data, so there's no reason to waterfall it.
+  const [{ data: scrim, error }, { data: { user } }] = await Promise.all([
+    supabase.from("scrims").select("*").eq("id", scrimId).maybeSingle(),
+    supabase.auth.getUser(),
+  ]);
   if (error || !scrim) return null;
 
   const [attendancesRes, resultRes, divisionRes, membersRes] =
@@ -231,9 +235,7 @@ export async function getScrimDetail(
   }
 
   // Resolve the caller's own attendance row (if any).
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // `user` was resolved concurrently with the initial scrim fetch above.
   const myAttendance =
     user && attendanceMap.has(user.id)
       ? (attendanceMap.get(user.id) ?? null)

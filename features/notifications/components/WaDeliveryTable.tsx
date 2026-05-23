@@ -69,7 +69,7 @@ export function WaDeliveryTable({ orgId, orgSlug }: WaDeliveryTableProps) {
         ))}
       </div>
 
-      {/* Table */}
+      {/* Grid table */}
       {isLoading ? (
         <div className="flex items-center justify-center py-12">
           <Loader2 className="h-5 w-5 animate-spin text-white/40" />
@@ -79,48 +79,35 @@ export function WaDeliveryTable({ orgId, orgSlug }: WaDeliveryTableProps) {
           Gagal memuat data pengiriman. Coba refresh halaman.
         </div>
       ) : !data || data.data.length === 0 ? (
-        <div className="rounded-lg border border-white/5 bg-white/[0.02] px-4 py-8 text-center text-sm text-white/40">
+        <div className="rounded-lg border border-[#2D2D2D] bg-[#191919] px-4 py-8 text-center text-sm text-[#6B6A68]">
           {EMPTY_MESSAGES[filter]}
         </div>
       ) : (
         <>
-          <div className="overflow-x-auto rounded-lg border border-white/5">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-white/5 bg-white/[0.02]">
-                  <th className="px-4 py-3 text-left text-xs font-medium text-white/50">
-                    Member
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-white/50">
-                    Notifikasi
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-white/50">
-                    Status
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-white/50">
-                    Waktu
-                  </th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-white/50">
-                    Aksi
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/5">
-                {data.data.map((notif) => (
-                  <WaDeliveryRow
-                    key={notif.id}
-                    notif={notif as unknown as Parameters<typeof WaDeliveryRow>[0]["notif"]}
-                    orgId={orgId}
-                  />
-                ))}
-              </tbody>
-            </table>
+          <div className="rounded-lg border border-[#2D2D2D] overflow-hidden">
+            {/* Header row */}
+            <div className="grid grid-cols-[160px_1fr_100px_140px_80px] gap-4 px-4 py-2 border-b border-[#2D2D2D] bg-[#202020] text-xs font-medium text-[#9B9A97]">
+              <span>Member</span>
+              <span>Notifikasi</span>
+              <span>Status</span>
+              <span>Waktu</span>
+              <span className="text-right">Aksi</span>
+            </div>
+
+            {/* Data rows */}
+            {data.data.map((notif) => (
+              <WaDeliveryRow
+                key={notif.id}
+                notif={notif as unknown as Parameters<typeof WaDeliveryRow>[0]["notif"]}
+                orgId={orgId}
+              />
+            ))}
           </div>
 
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex items-center justify-between">
-              <p className="text-xs text-white/40">
+              <p className="text-xs text-[#6B6A68]">
                 Halaman {page + 1} dari {totalPages} ({data.total} total)
               </p>
               <div className="flex gap-1">
@@ -128,7 +115,7 @@ export function WaDeliveryTable({ orgId, orgSlug }: WaDeliveryTableProps) {
                   type="button"
                   disabled={page === 0}
                   onClick={() => setPage((p) => p - 1)}
-                  className="cursor-pointer rounded-md p-1.5 text-white/50 transition hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
+                  className="cursor-pointer rounded-md p-1.5 text-[#9B9A97] transition hover:bg-[#2C2C2C] hover:text-[#E5E2E1] disabled:cursor-not-allowed disabled:opacity-30"
                   aria-label="Halaman sebelumnya"
                 >
                   <ChevronLeft className="h-4 w-4" />
@@ -137,7 +124,7 @@ export function WaDeliveryTable({ orgId, orgSlug }: WaDeliveryTableProps) {
                   type="button"
                   disabled={page >= totalPages - 1}
                   onClick={() => setPage((p) => p + 1)}
-                  className="cursor-pointer rounded-md p-1.5 text-white/50 transition hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
+                  className="cursor-pointer rounded-md p-1.5 text-[#9B9A97] transition hover:bg-[#2C2C2C] hover:text-[#E5E2E1] disabled:cursor-not-allowed disabled:opacity-30"
                   aria-label="Halaman berikutnya"
                 >
                   <ChevronRight className="h-4 w-4" />
@@ -200,26 +187,24 @@ function WaDeliveryRow({ notif, orgId }: WaDeliveryRowProps) {
   });
 
   return (
-    <tr className="transition hover:bg-white/[0.02]">
-      <td className="px-4 py-3 text-white/80">{displayName}</td>
-      <td className="max-w-[200px] truncate px-4 py-3 text-white/60">
-        {notif.title}
-      </td>
-      <td className="px-4 py-3">
+    <div className="grid grid-cols-[160px_1fr_100px_140px_80px] gap-4 px-4 py-3 border-b border-[#2D2D2D] last:border-b-0 hover:bg-[#2C2C2C] transition text-sm text-[#E5E2E1]">
+      <span className="truncate text-[#E5E2E1]">{displayName}</span>
+      <span className="truncate text-[#9B9A97]">{notif.title}</span>
+      <span>
         <WaStatusBadge status={status} />
-      </td>
-      <td className="px-4 py-3 text-xs text-white/40">{timestamp}</td>
-      <td className="px-4 py-3 text-right">
+      </span>
+      <span className="truncate text-xs text-[#6B6A68]">{timestamp}</span>
+      <span className="flex items-center justify-end">
         {status === "failed" && (
           <>
             {maxRetriesReached ? (
-              <span className="text-xs text-white/30">Maks retry</span>
+              <span className="text-xs text-[#6B6A68]">Maks retry</span>
             ) : (
               <button
                 type="button"
                 disabled={isPending}
                 onClick={handleRetry}
-                className="cursor-pointer inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-white/60 transition hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+                className="cursor-pointer inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-[#9B9A97] transition hover:bg-[#2C2C2C] hover:text-[#E5E2E1] disabled:cursor-not-allowed disabled:opacity-40"
                 aria-label="Retry pengiriman"
               >
                 {isPending ? (
@@ -232,7 +217,7 @@ function WaDeliveryRow({ notif, orgId }: WaDeliveryRowProps) {
             )}
           </>
         )}
-      </td>
-    </tr>
+      </span>
+    </div>
   );
 }

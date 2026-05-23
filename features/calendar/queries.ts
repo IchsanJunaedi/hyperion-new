@@ -7,6 +7,14 @@ import type { EventDetailWithRelations, CalendarEventComment } from "./types";
 export type CalendarEvent =
   Database["public"]["Tables"]["calendar_events"]["Row"];
 
+// Columns used by the calendar grid UI (CalendarGrid + CalendarWithQuickAdd).
+const CALENDAR_GRID_COLS =
+  "id, title, event_type, starts_at, ends_at, is_all_day, visibility, created_by, organization_id, division_id, location, description, ref_id, ref_type, created_at" as const;
+
+// Columns used by the event detail page.
+const CALENDAR_DETAIL_COLS =
+  "id, title, event_type, starts_at, ends_at, visibility, location, description, created_by, organization_id" as const;
+
 /**
  * Fetch calendar events for an org within a date range.
  * Used for the monthly calendar view.
@@ -19,14 +27,15 @@ export async function listCalendarEvents(
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("calendar_events")
-    .select("*")
+    .select(CALENDAR_GRID_COLS)
     .eq("organization_id", orgId)
     .gte("starts_at", from)
     .lte("starts_at", to)
     .order("starts_at", { ascending: true });
 
   if (error) return [];
-  return data ?? [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (data ?? []) as any[];
 }
 
 /**
@@ -38,11 +47,12 @@ export async function getCalendarEvent(
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("calendar_events")
-    .select("*")
+    .select(CALENDAR_DETAIL_COLS)
     .eq("id", eventId)
     .maybeSingle();
   if (error || !data) return null;
-  return data;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return data as any;
 }
 
 /**
@@ -60,7 +70,7 @@ export async function listUpcomingEvents(
 
   const { data, error } = await supabase
     .from("calendar_events")
-    .select("*")
+    .select(CALENDAR_GRID_COLS)
     .eq("organization_id", orgId)
     .gte("starts_at", now)
     .lte("starts_at", weekLater)
@@ -68,7 +78,8 @@ export async function listUpcomingEvents(
     .limit(limit);
 
   if (error) return [];
-  return data ?? [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (data ?? []) as any[];
 }
 
 /**

@@ -235,8 +235,11 @@ See **`progress.md`** in the project root for the full, up-to-date feature inven
 
 **Always read `progress.md` at the start of a new session before making any changes.**
 
-Quick summary (as of 2026-05-21):
+Quick summary (as of 2026-05-23):
 - All workspace routes functional: scrim, calendar (RSVP), tournaments (match tracking), announcements (read receipts), strategy (comments), polls, analytics (PDF export), roster, files, development (member self-view)
 - 5 new tables applied: calendar_event_rsvps, strategy_comments, announcement_reads, tournament_matches, scrim_review_requests
-- `npx supabase gen types` is broken — edit `types/database.ts` manually for new tables
+- `npx supabase gen types` is now fixed — project ID was wrong (old: `tbuxtlbtjpoholcflmoy`, correct: `pqzdukrlmbwjjgjyoqva`). Edit `types/database.ts` manually only as fallback.
 - Dead features (do not revive): scouting, AI insights, matchmaking, reports (not public)
+- Sponsor media kit PDF export: `/dashboard/sponsors` + `/manage/sponsors` — Owner/Manager only, Captain/Coach/Member tidak bisa akses sponsor
+- 642 unit tests, coverage: Stmts 90.4% / Branches 77.9% / Funcs 97.3% / Lines 90.6% — CI enforces thresholds (80%/75%/80%/80%)
+- Batch 2 performance optimizations pending audit — see `progress.md` B2-1 through B2-9 for unbounded queries, waterfall fetches, and `select("*")` cleanup
