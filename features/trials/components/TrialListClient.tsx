@@ -19,21 +19,15 @@ const STATUS_LABEL: Record<string, string> = {
   closed: "Ditutup",
 };
 
-interface Division {
-  id: string;
-  name: string;
-  game: string;
-}
-
 interface TrialListClientProps {
   orgSlug: string;
   trials: TrialWithCount[];
-  divisions: Division[];
+  divisionId: string;
   canManage: boolean;
   revalidatePaths: string[];
 }
 
-export function TrialListClient({ orgSlug, trials, divisions, canManage, revalidatePaths }: TrialListClientProps) {
+export function TrialListClient({ orgSlug, trials, divisionId, canManage, revalidatePaths }: TrialListClientProps) {
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
@@ -96,7 +90,7 @@ export function TrialListClient({ orgSlug, trials, divisions, canManage, revalid
 
       {modalOpen && (
         <TrialFormModal
-          divisions={divisions}
+          divisionId={divisionId}
           revalidatePaths={revalidatePaths}
           onClose={() => setModalOpen(false)}
         />

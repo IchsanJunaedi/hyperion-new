@@ -37,11 +37,11 @@ export default async function TrialsPage({ params }: Props) {
 
   const canManage = ["manager", "coach", "owner"].includes(membership.role ?? "");
 
-  const [trials, divisionsRes] = await Promise.all([
+  const [trials, divisionRes] = await Promise.all([
     listTrials(org.id),
-    admin.from("divisions").select("id, name, game").eq("organization_id", org.id).eq("is_active", true).order("name"),
+    admin.from("divisions").select("id").eq("organization_id", org.id).eq("is_active", true).limit(1).maybeSingle(),
   ]);
-  const divisions = divisionsRes.data ?? [];
+  const divisionId = divisionRes.data?.id ?? "";
 
   return (
     <div className="space-y-6">
@@ -52,7 +52,7 @@ export default async function TrialsPage({ params }: Props) {
       <TrialListClient
         orgSlug={slug}
         trials={trials}
-        divisions={divisions}
+        divisionId={divisionId}
         canManage={canManage}
         revalidatePaths={[`/${slug}/trials`]}
       />
