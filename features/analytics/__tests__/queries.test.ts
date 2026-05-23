@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { getHeroStatistics, getHeroDetail, getOverviewStats, getRecentScrims, getDraftAnalytics } from "../queries";
+import { getHeroStatistics, getHeroDetail, getOverviewStats, getRecentScrims, getDraftAnalytics, getEnterprisePlayerStats } from "../queries";
 import { createClient } from "@/lib/supabase/server";
 
 vi.mock("server-only", () => ({}));
@@ -418,5 +418,236 @@ describe("getOverviewStats", () => {
     const result = await getOverviewStats("org-1");
     expect(result.stats.total).toBe(1);
     expect(result.stats.wins).toBe(0);
+  });
+});
+
+describe("getDraftAnalytics — with picks data", () => {
+  let mockSupabase: any;
+
+  const makeThenable = (data: any) => {
+    const q: any = {};
+    for (const m of ["select", "eq", "in", "not"]) {
+      q[m] = vi.fn().mockReturnValue(q);
+    }
+    q.then = (resolve: any) => resolve({ data, error: null });
+    return q;
+  };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("builds byRole and topOverall from picks and game results", async () => {
+    const scrims = [{ id: "s1" }];
+    const picks = [
+      { scrim_id: "s1", game_number: 1, role: "Gold", hero_name: "Layla" },
+      { scrim_id: "s1", game_number: 1, role: "Gold", hero_name: "Layla" },
+      { scrim_id: "s1", game_number: 2, role: "Exp", hero_name: "Chou" },
+    ];
+    const gameResults = [
+      { scrim_id: "s1", game_number: 1, is_win: true },
+      { scrim_id: "s1", game_number: 2, is_win: false },
+    ];
+
+    mockSupabase = {
+      from: vi.fn().mockImplementation((table: string) => {
+        if (table === "scrims") return makeThenable(scrims);
+        if (table === "scrim_draft_picks") return makeThenable(picks);
+        if (table === "scrim_game_results") return makeThenable(gameResults);
+        return makeThenable([]);
+      }),
+    };
+    vi.mocked(createClient).mockResolvedValue(mockSupabase as any);
+
+    const result = await getDraftAnalytics("org-1");
+
+    expect(result.byRole["Gold"]).toBeDefined();
+    expect(result.byRole["Gold"]![0]!.hero_name).toBe("Layla");
+    expect(result.byRole["Gold"]![0]!.picks).toBe(2);
+    expect(result.byRole["Gold"]![0]!.winRate).toBe(100);
+
+    expect(result.byRole["Exp"]).toBeDefined();
+    expect(result.byRole["Exp"]![0]!.hero_name).toBe("Chou");
+
+    expect(result.topOverall.length).toBeGreaterThan(0);
+    expect(result.topOverall[0]!.hero_name).toBe("Layla");
+  });
+
+  it("counts wins only when game_number and scrim_id match in gameWinMap", async () => {
+    const scrims = [{ id: "s1" }];
+    const picks = [
+      { scrim_id: "s1", game_number: 1, role: "Roam", hero_name: "Tigreal" },
+    ];
+    const gameResults = [
+      { scrim_id: "s1", game_number: 99, is_win: true },
+    ];
+
+    mockSupabase = {
+      from: vi.fn().mockImplementation((table: string) => {
+        if (table === "scrims") return makeThenable(scrims);
+        if (table === "scrim_draft_picks") return makeThenable(picks);
+        if (table === "scrim_game_results") return makeThenable(gameResults);
+        return makeThenable([]);
+      }),
+    };
+    vi.mocked(createClient).mockResolvedValue(mockSupabase as any);
+
+    const result = await getDraftAnalytics("org-1");
+    expect(result.topOverall[0]!.wins).toBe(0);
+    expect(result.topOverall[0]!.winRate).toBe(0);
+  });
+
+  it("returns empty when picks are empty array after scrim query", async () => {
+    const scrims = [{ id: "s1" }];
+
+    mockSupabase = {
+      from: vi.fn().mockImplementation((table: string) => {
+        if (table === "scrims") return makeThenable(scrims);
+        return makeThenable([]);
+      }),
+    };
+    vi.mocked(createClient).mockResolvedValue(mockSupabase as any);
+
+    const result = await getDraftAnalytics("org-1");
+    expect(result).toEqual({ byRole: {}, topOverall: [] });
+  });
+});
+
+describe("getEnterprisePlayerStats", () => {
+  let mockSupabase: any;
+
+  const makeThenable = (data: any) => {
+    const q: any = {};
+    for (const m of ["select", "eq", "in", "order", "not"]) {
+      q[m] = vi.fn().mockReturnValue(q);
+    }
+    q.then = (resolve: any) => resolve({ data, error: null });
+    return q;
+  };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("returns empty array when no completed scrims", async () => {
+    mockSupabase = {
+      from: vi.fn().mockImplementation((table: string) => {
+        if (table === "scrims") return makeThenable([]);
+        return makeThenable([]);
+      }),
+    };
+    vi.mocked(createClient).mockResolvedValue(mockSupabase as any);
+
+    const result = await getEnterprisePlayerStats("org-1");
+    expect(result).toEqual([]);
+  });
+
+  it("returns empty array when scrims data is null", async () => {
+    mockSupabase = {
+      from: vi.fn().mockImplementation(() => makeThenable(null)),
+    };
+    vi.mocked(createClient).mockResolvedValue(mockSupabase as any);
+
+    const result = await getEnterprisePlayerStats("org-1");
+    expect(result).toEqual([]);
+  });
+
+  it("returns empty array when no active members", async () => {
+    const scrims = [{ id: "s1", format: "bo3", scrim_results: [{ is_win: true }] }];
+
+    mockSupabase = {
+      from: vi.fn().mockImplementation((table: string) => {
+        if (table === "scrims") return makeThenable(scrims);
+        if (table === "team_members") return makeThenable([]);
+        return makeThenable([]);
+      }),
+    };
+    vi.mocked(createClient).mockResolvedValue(mockSupabase as any);
+
+    const result = await getEnterprisePlayerStats("org-1");
+    expect(result).toEqual([]);
+  });
+
+  it("returns player stats array when members and scrims exist", async () => {
+    const scrims = [{ id: "s1", format: "bo3", scrim_results: [{ is_win: true }] }];
+    const members = [
+      { user_id: "u1", jersey_number: 7, position: "Gold", main_role: "Gold" },
+    ];
+    const profiles = [{ id: "u1", display_name: "Player One", avatar_url: null }];
+
+    mockSupabase = {
+      from: vi.fn().mockImplementation((table: string) => {
+        if (table === "scrims") return makeThenable(scrims);
+        if (table === "team_members") return makeThenable(members);
+        if (table === "profiles") return makeThenable(profiles);
+        return makeThenable([]);
+      }),
+    };
+    vi.mocked(createClient).mockResolvedValue(mockSupabase as any);
+
+    const result = await getEnterprisePlayerStats("org-1");
+    expect(result).toHaveLength(1);
+    expect(result[0]!.user_id).toBe("u1");
+    expect(result[0]!.display_name).toBe("Player One");
+    expect(result[0]!.heroPool).toEqual([]);
+  });
+
+  it("computes avgRating from attendance ratings", async () => {
+    const scrims = [
+      { id: "s1", format: "bo3", scrim_results: [{ is_win: true }] },
+      { id: "s2", format: "bo3", scrim_results: [{ is_win: false }] },
+    ];
+    const members = [{ user_id: "u1", jersey_number: 1, position: "Mid", main_role: "Mid" }];
+    const profiles = [{ id: "u1", display_name: "Player A", avatar_url: null }];
+    const attendances = [
+      { user_id: "u1", scrim_id: "s1", status: "confirmed", rating: 8 },
+      { user_id: "u1", scrim_id: "s2", status: "confirmed", rating: 6 },
+    ];
+
+    mockSupabase = {
+      from: vi.fn().mockImplementation((table: string) => {
+        if (table === "scrims") return makeThenable(scrims);
+        if (table === "team_members") return makeThenable(members);
+        if (table === "profiles") return makeThenable(profiles);
+        if (table === "scrim_attendances") return makeThenable(attendances);
+        return makeThenable([]);
+      }),
+    };
+    vi.mocked(createClient).mockResolvedValue(mockSupabase as any);
+
+    const result = await getEnterprisePlayerStats("org-1");
+    expect(result[0]!.avgRating).toBe(7);
+  });
+
+  it("builds hero pool from draft picks with win rates", async () => {
+    const scrims = [{ id: "s1", format: "bo3", scrim_results: [{ is_win: true }] }];
+    const members = [{ user_id: "u1", jersey_number: 1, position: "Gold", main_role: "Gold" }];
+    const profiles = [{ id: "u1", display_name: "Player A", avatar_url: null }];
+    const picks = [
+      { player_id: "u1", hero_name: "Layla", role: "Gold", scrim_id: "s1", game_number: 1 },
+      { player_id: "u1", hero_name: "Layla", role: "Gold", scrim_id: "s1", game_number: 2 },
+    ];
+    const gameResults = [
+      { scrim_id: "s1", game_number: 1, is_win: true },
+      { scrim_id: "s1", game_number: 2, is_win: false },
+    ];
+
+    mockSupabase = {
+      from: vi.fn().mockImplementation((table: string) => {
+        if (table === "scrims") return makeThenable(scrims);
+        if (table === "team_members") return makeThenable(members);
+        if (table === "profiles") return makeThenable(profiles);
+        if (table === "scrim_draft_picks") return makeThenable(picks);
+        if (table === "scrim_game_results") return makeThenable(gameResults);
+        return makeThenable([]);
+      }),
+    };
+    vi.mocked(createClient).mockResolvedValue(mockSupabase as any);
+
+    const result = await getEnterprisePlayerStats("org-1");
+    expect(result[0]!.heroPool).toHaveLength(1);
+    expect(result[0]!.heroPool[0]!.hero_name).toBe("Layla");
+    expect(result[0]!.heroPool[0]!.picks).toBe(2);
+    expect(result[0]!.heroPool[0]!.winRate).toBe(50);
   });
 });

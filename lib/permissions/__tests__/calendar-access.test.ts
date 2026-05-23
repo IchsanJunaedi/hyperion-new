@@ -297,6 +297,154 @@ describe("Calendar Access Permissions", () => {
       expect(managerResult.allowed).toBe(false);
       expect(managerResult.reason).toBe("manage-calendar - requires owner or creator status");
     });
+
+    it("allows owner to create-event on any calendar", async () => {
+      process.env.OWNER_EMAIL = "user@test.com";
+      mockQuery.single.mockImplementation(() => {
+        if (currentTable === "calendar_configs") {
+          return Promise.resolve({
+            data: { id: "cal-1", visibility: "team-only", created_by: "other-id" },
+            error: null,
+          });
+        }
+        return Promise.resolve({ data: null, error: null });
+      });
+
+      const result = await checkCalendarPermission("user-123", "cal-1", "create-event", "org-1");
+      expect(result.allowed).toBe(true);
+    });
+
+    it("allows manager to create-event on non-private calendar", async () => {
+      mockQuery.single.mockImplementation(() => {
+        if (currentTable === "team_members") return Promise.resolve({ data: { role: "manager" }, error: null });
+        if (currentTable === "calendar_configs") {
+          return Promise.resolve({
+            data: { id: "cal-1", visibility: "team-only", created_by: "other-id" },
+            error: null,
+          });
+        }
+        return Promise.resolve({ data: null, error: null });
+      });
+
+      const result = await checkCalendarPermission("manager-id", "cal-1", "create-event", "org-1");
+      expect(result.allowed).toBe(true);
+    });
+
+    it("denies member from create-event", async () => {
+      mockQuery.single.mockImplementation(() => {
+        if (currentTable === "team_members") return Promise.resolve({ data: { role: "member" }, error: null });
+        if (currentTable === "calendar_configs") {
+          return Promise.resolve({
+            data: { id: "cal-1", visibility: "team-only", created_by: "other-id" },
+            error: null,
+          });
+        }
+        return Promise.resolve({ data: null, error: null });
+      });
+
+      const result = await checkCalendarPermission("member-id", "cal-1", "create-event", "org-1");
+      expect(result.allowed).toBe(false);
+    });
+
+    it("allows owner to manage-permissions", async () => {
+      process.env.OWNER_EMAIL = "user@test.com";
+      mockQuery.single.mockImplementation(() => {
+        if (currentTable === "calendar_configs") {
+          return Promise.resolve({
+            data: { id: "cal-1", visibility: "team-only", created_by: "other-id" },
+            error: null,
+          });
+        }
+        return Promise.resolve({ data: null, error: null });
+      });
+
+      const result = await checkCalendarPermission("user-123", "cal-1", "manage-permissions", "org-1");
+      expect(result.allowed).toBe(true);
+    });
+
+    it("denies non-owner non-creator from manage-permissions", async () => {
+      mockQuery.single.mockImplementation(() => {
+        if (currentTable === "team_members") return Promise.resolve({ data: { role: "manager" }, error: null });
+        if (currentTable === "calendar_configs") {
+          return Promise.resolve({
+            data: { id: "cal-1", visibility: "team-only", created_by: "other-id" },
+            error: null,
+          });
+        }
+        return Promise.resolve({ data: null, error: null });
+      });
+
+      const result = await checkCalendarPermission("manager-id", "cal-1", "manage-permissions", "org-1");
+      expect(result.allowed).toBe(false);
+      expect(result.reason).toBe("manage-permissions - requires owner or creator status");
+    });
+
+    it("returns not-allowed when calendar not found during permission check", async () => {
+      mockQuery.single.mockImplementation(() => {
+        if (currentTable === "team_members") return Promise.resolve({ data: { role: "manager" }, error: null });
+        if (currentTable === "calendar_configs") {
+          return Promise.resolve({ data: null, error: null });
+        }
+        return Promise.resolve({ data: null, error: null });
+      });
+
+      const result = await checkCalendarPermission("manager-id", "missing-cal", "edit-event", "org-1");
+      expect(result.allowed).toBe(false);
+    });
+
+    it("handles unknown permission type via default case", async () => {
+      mockQuery.single.mockImplementation(() => {
+        if (currentTable === "team_members") return Promise.resolve({ data: { role: "manager" }, error: null });
+        if (currentTable === "calendar_configs") {
+          return Promise.resolve({
+            data: { id: "cal-1", visibility: "team-only", created_by: "other-id" },
+            error: null,
+          });
+        }
+        return Promise.resolve({ data: null, error: null });
+      });
+
+      const result = await checkCalendarPermission(
+        "manager-id",
+        "cal-1",
+        "unknown-permission" as any,
+        "org-1",
+      );
+      expect(result.allowed).toBe(false);
+      expect(result.reason).toBe("Unknown permission");
+    });
+
+    it("allows owner to edit-event", async () => {
+      process.env.OWNER_EMAIL = "user@test.com";
+      mockQuery.single.mockImplementation(() => {
+        if (currentTable === "calendar_configs") {
+          return Promise.resolve({
+            data: { id: "cal-1", visibility: "team-only", created_by: "other-id" },
+            error: null,
+          });
+        }
+        return Promise.resolve({ data: null, error: null });
+      });
+
+      const result = await checkCalendarPermission("user-123", "cal-1", "edit-event", "org-1");
+      expect(result.allowed).toBe(true);
+    });
+
+    it("allows owner to delete-event", async () => {
+      process.env.OWNER_EMAIL = "user@test.com";
+      mockQuery.single.mockImplementation(() => {
+        if (currentTable === "calendar_configs") {
+          return Promise.resolve({
+            data: { id: "cal-1", visibility: "team-only", created_by: "other-id" },
+            error: null,
+          });
+        }
+        return Promise.resolve({ data: null, error: null });
+      });
+
+      const result = await checkCalendarPermission("user-123", "cal-1", "delete-event", "org-1");
+      expect(result.allowed).toBe(true);
+    });
   });
 
   describe("getAccessibleCalendars", () => {

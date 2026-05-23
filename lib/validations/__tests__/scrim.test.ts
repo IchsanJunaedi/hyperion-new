@@ -110,6 +110,30 @@ describe("submitResultSchema", () => {
   it("accepts performance_rating of 1", () => {
     expect(submitResultSchema.safeParse({ ...valid, performance_rating: 1 }).success).toBe(true);
   });
+
+  it("transforms empty notes to null", () => {
+    const r = submitResultSchema.safeParse({ ...valid, notes: "" });
+    expect(r.success).toBe(true);
+    if (r.success) expect(r.data.notes).toBeNull();
+  });
+
+  it("keeps non-empty notes", () => {
+    const r = submitResultSchema.safeParse({ ...valid, notes: "Great game" });
+    expect(r.success).toBe(true);
+    if (r.success) expect(r.data.notes).toBe("Great game");
+  });
+
+  it("transforms empty result_image_path to null", () => {
+    const r = submitResultSchema.safeParse({ ...valid, result_image_path: "" });
+    expect(r.success).toBe(true);
+    if (r.success) expect(r.data.result_image_path).toBeNull();
+  });
+
+  it("keeps non-empty result_image_path", () => {
+    const r = submitResultSchema.safeParse({ ...valid, result_image_path: "org-private/results/img.png" });
+    expect(r.success).toBe(true);
+    if (r.success) expect(r.data.result_image_path).toBe("org-private/results/img.png");
+  });
 });
 
 describe("cancelScrimSchema", () => {
@@ -205,6 +229,24 @@ describe("updateScrimSchema", () => {
     expect(result.success).toBe(true);
     if (result.success) expect(result.data.notes).toBe("Watch the tower control");
   });
+
+  it("keeps non-empty server_region", () => {
+    const result = updateScrimSchema.safeParse({ ...valid, server_region: "MY" });
+    expect(result.success).toBe(true);
+    if (result.success) expect(result.data.server_region).toBe("MY");
+  });
+
+  it("keeps non-empty room_info", () => {
+    const result = updateScrimSchema.safeParse({ ...valid, room_info: "Room 1234 / Pass: 5678" });
+    expect(result.success).toBe(true);
+    if (result.success) expect(result.data.room_info).toBe("Room 1234 / Pass: 5678");
+  });
+
+  it("keeps non-empty opponent_contact", () => {
+    const result = updateScrimSchema.safeParse({ ...valid, opponent_contact: "+62812345678" });
+    expect(result.success).toBe(true);
+    if (result.success) expect(result.data.opponent_contact).toBe("+62812345678");
+  });
 });
 
 describe("updateAttendanceSchema", () => {
@@ -230,5 +272,15 @@ describe("updateAttendanceSchema", () => {
     });
     expect(r.success).toBe(true);
     if (r.success) expect(r.data.note).toBeNull();
+  });
+
+  it("keeps non-empty note", () => {
+    const r = updateAttendanceSchema.safeParse({
+      scrim_id: VALID_UUID,
+      status: "confirmed",
+      note: "Will be late",
+    });
+    expect(r.success).toBe(true);
+    if (r.success) expect(r.data.note).toBe("Will be late");
   });
 });
