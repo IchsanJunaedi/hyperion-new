@@ -16,6 +16,7 @@ import {
   Users,
   Shield,
   FolderOpen,
+  Banknote,
 } from "lucide-react";
 
 const NAV_GROUPS = [
@@ -35,6 +36,7 @@ const NAV_GROUPS = [
       { href: "/dashboard/teams", Icon: Building2, label: "Tim" },
       { href: "/dashboard/files", Icon: FolderOpen, label: "File Tim" },
       { href: "/dashboard/finances", Icon: DollarSign, label: "Kas Tim" },
+      { href: "/dashboard/salaries", Icon: Banknote, label: "Salary Player" },
       { href: "/dashboard/sponsors", Icon: Handshake, label: "Sponsor" },
     ],
   },

@@ -887,6 +887,103 @@ export type Database = {
           },
         ]
       }
+      player_contracts: {
+        Row: {
+          id: string
+          organization_id: string
+          user_id: string
+          monthly_salary: number
+          start_date: string
+          end_date: string | null
+          status: "active" | "expired" | "terminated"
+          notes: string | null
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          organization_id: string
+          user_id: string
+          monthly_salary: number
+          start_date: string
+          end_date?: string | null
+          status?: "active" | "expired" | "terminated"
+          notes?: string | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          organization_id?: string
+          user_id?: string
+          monthly_salary?: number
+          start_date?: string
+          end_date?: string | null
+          status?: "active" | "expired" | "terminated"
+          notes?: string | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "player_contracts_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      salary_payments: {
+        Row: {
+          id: string
+          contract_id: string
+          organization_id: string
+          pay_period: string
+          amount: number
+          status: "pending" | "paid"
+          paid_at: string | null
+          paid_by: string | null
+          notes: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          contract_id: string
+          organization_id: string
+          pay_period: string
+          amount: number
+          status?: "pending" | "paid"
+          paid_at?: string | null
+          paid_by?: string | null
+          notes?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          contract_id?: string
+          organization_id?: string
+          pay_period?: string
+          amount?: number
+          status?: "pending" | "paid"
+          paid_at?: string | null
+          paid_by?: string | null
+          notes?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "salary_payments_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "player_contracts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null

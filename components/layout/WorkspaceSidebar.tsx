@@ -2,6 +2,7 @@
 
 import {
   Activity,
+  Banknote,
   BarChart3,
   Calendar,
   CalendarClock,
@@ -130,6 +131,13 @@ const MANAGER_NAV_GROUP: NavGroup = {
       absoluteHref: "/manage/development",
       label: "Player Dev",
       Icon: TrendingUp,
+    },
+    {
+      key: "manage-salaries",
+      href: "",
+      absoluteHref: "/manage/salaries",
+      label: "Salary Player",
+      Icon: Banknote,
     },
     {
       key: "manage-reports",
