@@ -75,6 +75,32 @@ export type Database = {
           },
         ]
       }
+      announcement_reads: {
+        Row: {
+          announcement_id: string
+          read_at: string
+          user_id: string
+        }
+        Insert: {
+          announcement_id: string
+          read_at?: string
+          user_id: string
+        }
+        Update: {
+          announcement_id?: string
+          read_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "announcement_reads_announcement_id_fkey"
+            columns: ["announcement_id"]
+            isOneToOne: false
+            referencedRelation: "announcements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       announcements: {
         Row: {
           body: string
@@ -162,6 +188,35 @@ export type Database = {
         }
         Relationships: []
       }
+      calendar_event_rsvps: {
+        Row: {
+          event_id: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          event_id: string
+          status: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          event_id?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "calendar_event_rsvps_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "calendar_events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       calendar_events: {
         Row: {
           created_at: string
@@ -179,20 +234,6 @@ export type Database = {
           starts_at: string
           title: string
           visibility: string
-          calendar_id: string | null
-          area: string | null
-          platform: string | null
-          status: string
-          priority: string
-          pic_user_id: string | null
-          tags: string[]
-          visual_needed: boolean
-          content: Json | null
-          color: string | null
-          recurring_rule: Json | null
-          recurring_parent_id: string | null
-          is_recurring: boolean
-          updated_at: string
         }
         Insert: {
           created_at?: string
@@ -210,20 +251,6 @@ export type Database = {
           starts_at: string
           title: string
           visibility?: string
-          calendar_id?: string | null
-          area?: string | null
-          platform?: string | null
-          status?: string
-          priority?: string
-          pic_user_id?: string | null
-          tags?: string[]
-          visual_needed?: boolean
-          content?: Json | null
-          color?: string | null
-          recurring_rule?: Json | null
-          recurring_parent_id?: string | null
-          is_recurring?: boolean
-          updated_at?: string
         }
         Update: {
           created_at?: string
@@ -241,20 +268,6 @@ export type Database = {
           starts_at?: string
           title?: string
           visibility?: string
-          calendar_id?: string | null
-          area?: string | null
-          platform?: string | null
-          status?: string
-          priority?: string
-          pic_user_id?: string | null
-          tags?: string[]
-          visual_needed?: boolean
-          content?: Json | null
-          color?: string | null
-          recurring_rule?: Json | null
-          recurring_parent_id?: string | null
-          is_recurring?: boolean
-          updated_at?: string
         }
         Relationships: [
           {
@@ -492,6 +505,106 @@ export type Database = {
         }
         Relationships: []
       }
+      meta_hero_ratings: {
+        Row: {
+          counters: string[] | null
+          created_at: string
+          draft_notes: string | null
+          hero_class: string | null
+          hero_name: string
+          id: string
+          is_ban_priority: boolean
+          notes: string | null
+          patch_id: string
+          priority_to_learn: boolean
+          role_tag: string | null
+          synergies: string[] | null
+          tier: string
+          updated_at: string
+        }
+        Insert: {
+          counters?: string[] | null
+          created_at?: string
+          draft_notes?: string | null
+          hero_class?: string | null
+          hero_name: string
+          id?: string
+          is_ban_priority?: boolean
+          notes?: string | null
+          patch_id: string
+          priority_to_learn?: boolean
+          role_tag?: string | null
+          synergies?: string[] | null
+          tier: string
+          updated_at?: string
+        }
+        Update: {
+          counters?: string[] | null
+          created_at?: string
+          draft_notes?: string | null
+          hero_class?: string | null
+          hero_name?: string
+          id?: string
+          is_ban_priority?: boolean
+          notes?: string | null
+          patch_id?: string
+          priority_to_learn?: boolean
+          role_tag?: string | null
+          synergies?: string[] | null
+          tier?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meta_hero_ratings_patch_id_fkey"
+            columns: ["patch_id"]
+            isOneToOne: false
+            referencedRelation: "meta_patches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      meta_patches: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          notes: string | null
+          organization_id: string
+          patch_version: string
+          tier_descriptions: Json | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          notes?: string | null
+          organization_id: string
+          patch_version: string
+          tier_descriptions?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          notes?: string | null
+          organization_id?: string
+          patch_version?: string
+          tier_descriptions?: Json | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meta_patches_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notification_preferences: {
         Row: {
           event_type: string
@@ -539,8 +652,6 @@ export type Database = {
           user_id: string
           wa_message: string | null
           wa_number: string | null
-          retry_count: number | null
-          claimed_at: string | null
         }
         Insert: {
           attempts?: number
@@ -559,8 +670,6 @@ export type Database = {
           user_id: string
           wa_message?: string | null
           wa_number?: string | null
-          retry_count?: number | null
-          claimed_at?: string | null
         }
         Update: {
           attempts?: number
@@ -579,13 +688,58 @@ export type Database = {
           user_id?: string
           wa_message?: string | null
           wa_number?: string | null
-          retry_count?: number | null
-          claimed_at?: string | null
         }
         Relationships: [
           {
             foreignKeyName: "notifications_organization_id_fkey"
             columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      open_trials: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          game: string
+          id: string
+          org_id: string
+          positions: string[]
+          public_token: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          game: string
+          id?: string
+          org_id: string
+          positions?: string[]
+          public_token?: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          game?: string
+          id?: string
+          org_id?: string
+          positions?: string[]
+          public_token?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "open_trials_org_id_fkey"
+            columns: ["org_id"]
             isOneToOne: false
             referencedRelation: "organizations"
             referencedColumns: ["id"]
@@ -738,6 +892,56 @@ export type Database = {
         }
         Relationships: []
       }
+      player_contracts: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          end_date: string | null
+          id: string
+          monthly_salary: number
+          notes: string | null
+          organization_id: string
+          start_date: string
+          status: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          end_date?: string | null
+          id?: string
+          monthly_salary?: number
+          notes?: string | null
+          organization_id: string
+          start_date: string
+          status?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          end_date?: string | null
+          id?: string
+          monthly_salary?: number
+          notes?: string | null
+          organization_id?: string
+          start_date?: string
+          status?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "player_contracts_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       player_target_history: {
         Row: {
           id: string
@@ -887,103 +1091,6 @@ export type Database = {
           },
         ]
       }
-      player_contracts: {
-        Row: {
-          id: string
-          organization_id: string
-          user_id: string
-          monthly_salary: number
-          start_date: string
-          end_date: string | null
-          status: "active" | "expired" | "terminated"
-          notes: string | null
-          created_by: string | null
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          organization_id: string
-          user_id: string
-          monthly_salary: number
-          start_date: string
-          end_date?: string | null
-          status?: "active" | "expired" | "terminated"
-          notes?: string | null
-          created_by?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          organization_id?: string
-          user_id?: string
-          monthly_salary?: number
-          start_date?: string
-          end_date?: string | null
-          status?: "active" | "expired" | "terminated"
-          notes?: string | null
-          created_by?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "player_contracts_organization_id_fkey"
-            columns: ["organization_id"]
-            isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      salary_payments: {
-        Row: {
-          id: string
-          contract_id: string
-          organization_id: string
-          pay_period: string
-          amount: number
-          status: "pending" | "paid"
-          paid_at: string | null
-          paid_by: string | null
-          notes: string | null
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          contract_id: string
-          organization_id: string
-          pay_period: string
-          amount: number
-          status?: "pending" | "paid"
-          paid_at?: string | null
-          paid_by?: string | null
-          notes?: string | null
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          contract_id?: string
-          organization_id?: string
-          pay_period?: string
-          amount?: number
-          status?: "pending" | "paid"
-          paid_at?: string | null
-          paid_by?: string | null
-          notes?: string | null
-          created_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "salary_payments_contract_id_fkey"
-            columns: ["contract_id"]
-            isOneToOne: false
-            referencedRelation: "player_contracts"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -1032,6 +1139,60 @@ export type Database = {
         }
         Relationships: []
       }
+      salary_payments: {
+        Row: {
+          amount: number
+          contract_id: string
+          created_at: string | null
+          id: string
+          notes: string | null
+          organization_id: string
+          paid_at: string | null
+          paid_by: string | null
+          pay_period: string
+          status: string
+        }
+        Insert: {
+          amount: number
+          contract_id: string
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          organization_id: string
+          paid_at?: string | null
+          paid_by?: string | null
+          pay_period: string
+          status?: string
+        }
+        Update: {
+          amount?: number
+          contract_id?: string
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          organization_id?: string
+          paid_at?: string | null
+          paid_by?: string | null
+          pay_period?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "salary_payments_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "player_contracts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "salary_payments_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       scrim_attendances: {
         Row: {
           coach_notes: string | null
@@ -1066,6 +1227,85 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "scrim_attendances_scrim_id_fkey"
+            columns: ["scrim_id"]
+            isOneToOne: false
+            referencedRelation: "scrims"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      scrim_draft_bans: {
+        Row: {
+          ban_order: number
+          created_at: string
+          game_number: number
+          hero_name: string
+          id: string
+          scrim_id: string
+          side: string
+        }
+        Insert: {
+          ban_order: number
+          created_at?: string
+          game_number: number
+          hero_name: string
+          id?: string
+          scrim_id: string
+          side: string
+        }
+        Update: {
+          ban_order?: number
+          created_at?: string
+          game_number?: number
+          hero_name?: string
+          id?: string
+          scrim_id?: string
+          side?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scrim_draft_bans_scrim_id_fkey"
+            columns: ["scrim_id"]
+            isOneToOne: false
+            referencedRelation: "scrims"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      scrim_draft_picks: {
+        Row: {
+          created_at: string
+          game_number: number
+          hero_name: string
+          id: string
+          player_id: string | null
+          role: string
+          scrim_id: string
+          side: string
+        }
+        Insert: {
+          created_at?: string
+          game_number: number
+          hero_name: string
+          id?: string
+          player_id?: string | null
+          role: string
+          scrim_id: string
+          side: string
+        }
+        Update: {
+          created_at?: string
+          game_number?: number
+          hero_name?: string
+          id?: string
+          player_id?: string | null
+          role?: string
+          scrim_id?: string
+          side?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scrim_draft_picks_scrim_id_fkey"
             columns: ["scrim_id"]
             isOneToOne: false
             referencedRelation: "scrims"
@@ -1178,47 +1418,6 @@ export type Database = {
           },
         ]
       }
-      scrim_draft_picks: {
-        Row: {
-          created_at: string
-          game_number: number
-          hero_name: string
-          id: string
-          player_id: string | null
-          role: string
-          scrim_id: string
-          side: string
-        }
-        Insert: {
-          created_at?: string
-          game_number: number
-          hero_name: string
-          id?: string
-          player_id?: string | null
-          role: string
-          scrim_id: string
-          side: string
-        }
-        Update: {
-          created_at?: string
-          game_number?: number
-          hero_name?: string
-          id?: string
-          player_id?: string | null
-          role?: string
-          scrim_id?: string
-          side?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "scrim_draft_picks_scrim_id_fkey"
-            columns: ["scrim_id"]
-            isOneToOne: false
-            referencedRelation: "scrims"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       scrim_results: {
         Row: {
           coach_notes: string | null
@@ -1262,6 +1461,50 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "scrim_results_scrim_id_fkey"
+            columns: ["scrim_id"]
+            isOneToOne: true
+            referencedRelation: "scrims"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      scrim_review_requests: {
+        Row: {
+          created_at: string
+          id: string
+          notes: string | null
+          requested_by: string
+          review_notes: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          scrim_id: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          requested_by: string
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          scrim_id: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          requested_by?: string
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          scrim_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scrim_review_requests_scrim_id_fkey"
             columns: ["scrim_id"]
             isOneToOne: true
             referencedRelation: "scrims"
@@ -1347,210 +1590,182 @@ export type Database = {
           },
         ]
       }
-      meta_patches: {
+      sponsor_deliverables: {
         Row: {
-          id: string
-          organization_id: string
-          patch_version: string
-          notes: string | null
-          created_by: string | null
+          category: string
+          completed_at: string | null
           created_at: string
+          description: string | null
+          due_date: string | null
+          id: string
+          sponsor_id: string
+          status: string
+          title: string
           updated_at: string
-          tier_descriptions: Record<string, string> | null
         }
         Insert: {
-          id?: string
-          organization_id: string
-          patch_version: string
-          notes?: string | null
-          created_by?: string | null
+          category?: string
+          completed_at?: string | null
           created_at?: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          sponsor_id: string
+          status?: string
+          title: string
           updated_at?: string
-          tier_descriptions?: Record<string, string> | null
         }
         Update: {
-          id?: string
-          organization_id?: string
-          patch_version?: string
-          notes?: string | null
-          created_by?: string | null
+          category?: string
+          completed_at?: string | null
           created_at?: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          sponsor_id?: string
+          status?: string
+          title?: string
           updated_at?: string
-          tier_descriptions?: Record<string, string> | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "sponsor_deliverables_sponsor_id_fkey"
+            columns: ["sponsor_id"]
+            isOneToOne: false
+            referencedRelation: "sponsors"
+            referencedColumns: ["id"]
+          },
+        ]
       }
-      meta_hero_ratings: {
+      sponsor_notes: {
         Row: {
-          id: string
-          patch_id: string
-          hero_name: string
-          tier: "SS" | "S" | "A" | "B" | "C" | "D"
-          role_tag: "exp_lane" | "jungler" | "mid_lane" | "gold_lane" | "roamer" | null
-          hero_class: string | null
-          is_ban_priority: boolean
-          priority_to_learn: boolean
-          notes: string | null
-          counters: string[] | null
-          synergies: string[] | null
-          draft_notes: string | null
+          content: string
           created_at: string
-          updated_at: string
+          created_by: string | null
+          id: string
+          sponsor_id: string
         }
         Insert: {
-          id?: string
-          patch_id: string
-          hero_name: string
-          tier: "SS" | "S" | "A" | "B" | "C" | "D"
-          role_tag?: "exp_lane" | "jungler" | "mid_lane" | "gold_lane" | "roamer" | null
-          hero_class?: string | null
-          is_ban_priority?: boolean
-          priority_to_learn?: boolean
-          notes?: string | null
-          counters?: string[] | null
-          synergies?: string[] | null
-          draft_notes?: string | null
+          content: string
           created_at?: string
-          updated_at?: string
+          created_by?: string | null
+          id?: string
+          sponsor_id: string
         }
         Update: {
-          id?: string
-          patch_id?: string
-          hero_name?: string
-          tier?: "SS" | "S" | "A" | "B" | "C" | "D"
-          role_tag?: "exp_lane" | "jungler" | "mid_lane" | "gold_lane" | "roamer" | null
-          hero_class?: string | null
-          is_ban_priority?: boolean
-          priority_to_learn?: boolean
-          notes?: string | null
-          counters?: string[] | null
-          synergies?: string[] | null
-          draft_notes?: string | null
+          content?: string
           created_at?: string
-          updated_at?: string
+          created_by?: string | null
+          id?: string
+          sponsor_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "sponsor_notes_sponsor_id_fkey"
+            columns: ["sponsor_id"]
+            isOneToOne: false
+            referencedRelation: "sponsors"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       sponsors: {
         Row: {
-          id: string;
-          organization_id: string;
-          name: string;
-          logo_url: string | null;
-          status: "prospect" | "active" | "inactive" | "ended";
-          contact_name: string | null;
-          contact_email: string | null;
-          contact_phone: string | null;
-          deal_value: number | null;
-          currency: string;
-          start_date: string | null;
-          end_date: string | null;
-          notes: string | null;
-          created_by: string | null;
-          created_at: string;
-          updated_at: string;
-        };
+          contact_email: string | null
+          contact_name: string | null
+          contact_phone: string | null
+          created_at: string
+          created_by: string | null
+          currency: string
+          deal_value: number | null
+          end_date: string | null
+          id: string
+          logo_url: string | null
+          name: string
+          notes: string | null
+          organization_id: string
+          start_date: string | null
+          status: string
+          updated_at: string
+        }
         Insert: {
-          id?: string;
-          organization_id: string;
-          name: string;
-          logo_url?: string | null;
-          status?: "prospect" | "active" | "inactive" | "ended";
-          contact_name?: string | null;
-          contact_email?: string | null;
-          contact_phone?: string | null;
-          deal_value?: number | null;
-          currency?: string;
-          start_date?: string | null;
-          end_date?: string | null;
-          notes?: string | null;
-          created_by?: string | null;
-          created_at?: string;
-          updated_at?: string;
-        };
+          contact_email?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          deal_value?: number | null
+          end_date?: string | null
+          id?: string
+          logo_url?: string | null
+          name: string
+          notes?: string | null
+          organization_id: string
+          start_date?: string | null
+          status?: string
+          updated_at?: string
+        }
         Update: {
-          id?: string;
-          organization_id?: string;
-          name?: string;
-          logo_url?: string | null;
-          status?: "prospect" | "active" | "inactive" | "ended";
-          contact_name?: string | null;
-          contact_email?: string | null;
-          contact_phone?: string | null;
-          deal_value?: number | null;
-          currency?: string;
-          start_date?: string | null;
-          end_date?: string | null;
-          notes?: string | null;
-          created_by?: string | null;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Relationships: [];
-      };
-      sponsor_deliverables: {
+          contact_email?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          deal_value?: number | null
+          end_date?: string | null
+          id?: string
+          logo_url?: string | null
+          name?: string
+          notes?: string | null
+          organization_id?: string
+          start_date?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sponsors_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      strategy_comments: {
         Row: {
-          id: string;
-          sponsor_id: string;
-          title: string;
-          description: string | null;
-          category: "content" | "post" | "branding" | "event" | "other";
-          status: "pending" | "in_progress" | "done" | "cancelled";
-          due_date: string | null;
-          completed_at: string | null;
-          created_at: string;
-          updated_at: string;
-        };
+          content: string
+          created_at: string
+          id: string
+          note_id: string
+          user_id: string
+        }
         Insert: {
-          id?: string;
-          sponsor_id: string;
-          title: string;
-          description?: string | null;
-          category?: "content" | "post" | "branding" | "event" | "other";
-          status?: "pending" | "in_progress" | "done" | "cancelled";
-          due_date?: string | null;
-          completed_at?: string | null;
-          created_at?: string;
-          updated_at?: string;
-        };
+          content: string
+          created_at?: string
+          id?: string
+          note_id: string
+          user_id: string
+        }
         Update: {
-          id?: string;
-          sponsor_id?: string;
-          title?: string;
-          description?: string | null;
-          category?: "content" | "post" | "branding" | "event" | "other";
-          status?: "pending" | "in_progress" | "done" | "cancelled";
-          due_date?: string | null;
-          completed_at?: string | null;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Relationships: [];
-      };
-      sponsor_notes: {
-        Row: {
-          id: string;
-          sponsor_id: string;
-          content: string;
-          created_by: string | null;
-          created_at: string;
-        };
-        Insert: {
-          id?: string;
-          sponsor_id: string;
-          content: string;
-          created_by?: string | null;
-          created_at?: string;
-        };
-        Update: {
-          id?: string;
-          sponsor_id?: string;
-          content?: string;
-          created_by?: string | null;
-          created_at?: string;
-        };
-        Relationships: [];
-      };
+          content?: string
+          created_at?: string
+          id?: string
+          note_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "strategy_comments_note_id_fkey"
+            columns: ["note_id"]
+            isOneToOne: false
+            referencedRelation: "strategy_notes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       strategy_notes: {
         Row: {
           content: string
@@ -1661,6 +1876,50 @@ export type Database = {
             columns: ["organization_id"]
             isOneToOne: false
             referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tournament_matches: {
+        Row: {
+          created_at: string
+          id: string
+          is_win: boolean | null
+          notes: string | null
+          opponent_score: number | null
+          our_score: number | null
+          played_at: string | null
+          round_label: string
+          stage_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_win?: boolean | null
+          notes?: string | null
+          opponent_score?: number | null
+          our_score?: number | null
+          played_at?: string | null
+          round_label: string
+          stage_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_win?: boolean | null
+          notes?: string | null
+          opponent_score?: number | null
+          our_score?: number | null
+          played_at?: string | null
+          round_label?: string
+          stage_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tournament_matches_stage_id_fkey"
+            columns: ["stage_id"]
+            isOneToOne: false
+            referencedRelation: "tournament_stages"
             referencedColumns: ["id"]
           },
         ]
@@ -1828,361 +2087,70 @@ export type Database = {
           },
         ]
       }
-      calendar_event_comments: {
+      trial_applicants: {
         Row: {
-          id: string
-          event_id: string
-          user_id: string
-          body: string
+          age: number
           created_at: string
-          updated_at: string
+          email: string
+          id: string
+          ign: string
+          is_free_agent: boolean
+          main_game: string
+          name: string
+          notes: string | null
+          phone: string
+          rank: string
+          role_applied: string
+          secondary_game: string | null
+          server: string
+          social_media: string | null
+          status: string
+          trial_id: string
         }
         Insert: {
-          id?: string
-          event_id: string
-          user_id: string
-          body: string
+          age: number
           created_at?: string
-          updated_at?: string
+          email: string
+          id?: string
+          ign: string
+          is_free_agent?: boolean
+          main_game: string
+          name: string
+          notes?: string | null
+          phone: string
+          rank: string
+          role_applied: string
+          secondary_game?: string | null
+          server: string
+          social_media?: string | null
+          status?: string
+          trial_id: string
         }
         Update: {
-          id?: string
-          event_id?: string
-          user_id?: string
-          body?: string
+          age?: number
           created_at?: string
-          updated_at?: string
+          email?: string
+          id?: string
+          ign?: string
+          is_free_agent?: boolean
+          main_game?: string
+          name?: string
+          notes?: string | null
+          phone?: string
+          rank?: string
+          role_applied?: string
+          secondary_game?: string | null
+          server?: string
+          social_media?: string | null
+          status?: string
+          trial_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "calendar_event_comments_event_id_fkey"
-            columns: ["event_id"]
+            foreignKeyName: "trial_applicants_trial_id_fkey"
+            columns: ["trial_id"]
             isOneToOne: false
-            referencedRelation: "calendar_events"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      calendar_event_relations: {
-        Row: {
-          id: string
-          event_id: string
-          rel_type: string
-          rel_id: string
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          event_id: string
-          rel_type: string
-          rel_id: string
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          event_id?: string
-          rel_type?: string
-          rel_id?: string
-          created_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "calendar_event_relations_event_id_fkey"
-            columns: ["event_id"]
-            isOneToOne: false
-            referencedRelation: "calendar_events"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      calendar_audit_logs: {
-        Row: {
-          id: string
-          organization_id: string
-          calendar_id: string | null
-          event_id: string | null
-          actor_id: string | null
-          action: string
-          entity_type: string
-          changes: Json
-          metadata: Json
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          organization_id: string
-          calendar_id?: string | null
-          event_id?: string | null
-          actor_id?: string | null
-          action: string
-          entity_type: string
-          changes?: Json
-          metadata?: Json
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          organization_id?: string
-          calendar_id?: string | null
-          event_id?: string | null
-          actor_id?: string | null
-          action?: string
-          entity_type?: string
-          changes?: Json
-          metadata?: Json
-          created_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "calendar_audit_logs_organization_id_fkey"
-            columns: ["organization_id"]
-            isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "calendar_audit_logs_calendar_id_fkey"
-            columns: ["calendar_id"]
-            isOneToOne: false
-            referencedRelation: "calendar_configs"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "calendar_audit_logs_event_id_fkey"
-            columns: ["event_id"]
-            isOneToOne: false
-            referencedRelation: "calendar_events"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      calendar_configs: {
-        Row: {
-          id: string
-          organization_id: string
-          division_id: string | null
-          created_by: string
-          title: string
-          description: string | null
-          visibility: string
-          is_active: boolean
-          created_at: string
-          updated_at: string
-          deleted_at: string | null
-          updated_by: string | null
-        }
-        Insert: {
-          id?: string
-          organization_id: string
-          division_id?: string | null
-          created_by: string
-          title: string
-          description?: string | null
-          visibility?: string
-          is_active?: boolean
-          created_at?: string
-          updated_at?: string
-          deleted_at?: string | null
-          updated_by?: string | null
-        }
-        Update: {
-          id?: string
-          organization_id?: string
-          division_id?: string | null
-          created_by?: string
-          title?: string
-          description?: string | null
-          visibility?: string
-          is_active?: boolean
-          created_at?: string
-          updated_at?: string
-          deleted_at?: string | null
-          updated_by?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "calendar_configs_organization_id_fkey"
-            columns: ["organization_id"]
-            isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "calendar_configs_division_id_fkey"
-            columns: ["division_id"]
-            isOneToOne: false
-            referencedRelation: "divisions"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      calendar_member_permissions: {
-        Row: {
-          id: string
-          organization_id: string
-          calendar_id: string
-          member_user_id: string
-          can_view: boolean
-          can_create_event: boolean
-          can_edit_event: boolean
-          can_delete_event: boolean
-          can_manage_permissions: boolean
-          created_at: string
-          updated_at: string
-          created_by: string
-          updated_by: string | null
-          deleted_at: string | null
-        }
-        Insert: {
-          id?: string
-          organization_id: string
-          calendar_id: string
-          member_user_id: string
-          can_view?: boolean
-          can_create_event?: boolean
-          can_edit_event?: boolean
-          can_delete_event?: boolean
-          can_manage_permissions?: boolean
-          created_at?: string
-          updated_at?: string
-          created_by: string
-          updated_by?: string | null
-          deleted_at?: string | null
-        }
-        Update: {
-          id?: string
-          organization_id?: string
-          calendar_id?: string
-          member_user_id?: string
-          can_view?: boolean
-          can_create_event?: boolean
-          can_edit_event?: boolean
-          can_delete_event?: boolean
-          can_manage_permissions?: boolean
-          created_at?: string
-          updated_at?: string
-          created_by?: string
-          updated_by?: string | null
-          deleted_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "calendar_member_permissions_organization_id_fkey"
-            columns: ["organization_id"]
-            isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "calendar_member_permissions_calendar_id_fkey"
-            columns: ["calendar_id"]
-            isOneToOne: false
-            referencedRelation: "calendar_configs"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      calendar_visibility_rules: {
-        Row: {
-          id: string
-          organization_id: string
-          visibility: string
-          permissions: Json
-          is_active: boolean
-          created_at: string
-          updated_at: string
-          updated_by: string | null
-        }
-        Insert: {
-          id?: string
-          organization_id: string
-          visibility: string
-          permissions?: Json
-          is_active?: boolean
-          created_at?: string
-          updated_at?: string
-          updated_by?: string | null
-        }
-        Update: {
-          id?: string
-          organization_id?: string
-          visibility?: string
-          permissions?: Json
-          is_active?: boolean
-          created_at?: string
-          updated_at?: string
-          updated_by?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "calendar_visibility_rules_organization_id_fkey"
-            columns: ["organization_id"]
-            isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      event_visibility: {
-        Row: {
-          id: string
-          organization_id: string
-          event_id: string
-          calendar_id: string | null
-          visibility: string
-          allowed_member_ids: string[]
-          created_at: string
-          updated_at: string
-          created_by: string
-          updated_by: string | null
-          deleted_at: string | null
-        }
-        Insert: {
-          id?: string
-          organization_id: string
-          event_id: string
-          calendar_id?: string | null
-          visibility: string
-          allowed_member_ids?: string[]
-          created_at?: string
-          updated_at?: string
-          created_by: string
-          updated_by?: string | null
-          deleted_at?: string | null
-        }
-        Update: {
-          id?: string
-          organization_id?: string
-          event_id?: string
-          calendar_id?: string | null
-          visibility?: string
-          allowed_member_ids?: string[]
-          created_at?: string
-          updated_at?: string
-          created_by?: string
-          updated_by?: string | null
-          deleted_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "event_visibility_organization_id_fkey"
-            columns: ["organization_id"]
-            isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "event_visibility_event_id_fkey"
-            columns: ["event_id"]
-            isOneToOne: false
-            referencedRelation: "calendar_events"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "event_visibility_calendar_id_fkey"
-            columns: ["calendar_id"]
-            isOneToOne: false
-            referencedRelation: "calendar_configs"
+            referencedRelation: "open_trials"
             referencedColumns: ["id"]
           },
         ]
@@ -2199,13 +2167,50 @@ export type Database = {
       enqueue_h30_tournament_reminders: { Args: never; Returns: number }
       enqueue_scrim_h24_reminders: { Args: never; Returns: number }
       enqueue_scrim_reminders: { Args: never; Returns: number }
+      get_audit_activity_by_day: {
+        Args: { p_since: string }
+        Returns: {
+          cnt: number
+          day_label: string
+        }[]
+      }
+      get_hero_detail: {
+        Args: { p_hero_name: string; p_org_id: string }
+        Returns: Json
+      }
+      get_hero_statistics: {
+        Args: { p_org_id: string }
+        Returns: {
+          enemy_ban_pct: number
+          enemy_ban_total: number
+          hero_name: string
+          pb_pct: number
+          pb_total: number
+          pick_losses: number
+          pick_pct: number
+          pick_total: number
+          pick_wins: number
+          pick_wr: number
+          team_ban_pct: number
+          team_ban_total: number
+        }[]
+      }
       get_member_role: {
         Args: { org_id: string }
         Returns: Database["public"]["Enums"]["member_role"]
       }
+      get_opening_balance: {
+        Args: { p_before_date: string; p_org_id: string }
+        Returns: number
+      }
       get_scrim_win_loss: {
         Args: { p_org_id: string }
-        Returns: { wins: number; losses: number; draws: number; total: number }[]
+        Returns: {
+          draws: number
+          losses: number
+          total: number
+          wins: number
+        }[]
       }
       is_captain_or_above: { Args: { org_id: string }; Returns: boolean }
       is_member_of: { Args: { org_id: string }; Returns: boolean }
@@ -2418,20 +2423,3 @@ export const Constants = {
     },
   },
 } as const
-
-export type MemberAvailability = Database["public"]["Enums"]["member_availability"];
-export type MemberRole = Database["public"]["Enums"]["member_role"];
-
-// Convenience row types
-export type AttendanceStatus = Database["public"]["Enums"]["attendance_status"];
-export type ScrimStatus = Database["public"]["Enums"]["scrim_status"];
-export type MatchFormat = Database["public"]["Enums"]["match_format"];
-export type ContentStatus = Database["public"]["Enums"]["content_status"];
-
-export type ContentCalendarRow = Database["public"]["Tables"]["content_calendar"]["Row"];
-export type FinanceRow = Database["public"]["Tables"]["finances"]["Row"];
-export type CalendarConfigRow = Database["public"]["Tables"]["calendar_configs"]["Row"];
-export type CalendarMemberPermissionRow = Database["public"]["Tables"]["calendar_member_permissions"]["Row"];
-export type CalendarAuditLogRow = Database["public"]["Tables"]["calendar_audit_logs"]["Row"];
-export type EventVisibilityRow = Database["public"]["Tables"]["event_visibility"]["Row"];
-
