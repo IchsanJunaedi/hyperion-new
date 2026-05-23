@@ -19,14 +19,21 @@ const STATUS_LABEL: Record<string, string> = {
   closed: "Ditutup",
 };
 
+interface Division {
+  id: string;
+  name: string;
+  game: string;
+}
+
 interface TrialListClientProps {
   orgSlug: string;
   trials: TrialWithCount[];
+  divisions: Division[];
   canManage: boolean;
   revalidatePaths: string[];
 }
 
-export function TrialListClient({ orgSlug, trials, canManage, revalidatePaths }: TrialListClientProps) {
+export function TrialListClient({ orgSlug, trials, divisions, canManage, revalidatePaths }: TrialListClientProps) {
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
@@ -72,7 +79,7 @@ export function TrialListClient({ orgSlug, trials, canManage, revalidatePaths }:
               <div className="space-y-1">
                 <p className="text-sm font-medium text-[#E5E2E1]">{t.title}</p>
                 <p className="text-xs text-[#6B6A68]">
-                  {t.game}
+                  {t.division_name ?? t.game}
                   {t.positions.length > 0 && ` · ${t.positions.join(", ")}`}
                 </p>
               </div>
@@ -89,6 +96,7 @@ export function TrialListClient({ orgSlug, trials, canManage, revalidatePaths }:
 
       {modalOpen && (
         <TrialFormModal
+          divisions={divisions}
           revalidatePaths={revalidatePaths}
           onClose={() => setModalOpen(false)}
         />

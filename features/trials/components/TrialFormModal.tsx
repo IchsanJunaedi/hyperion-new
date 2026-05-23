@@ -7,7 +7,14 @@ import { useState, useTransition } from "react";
 import { useNotify } from "@/features/dashboard/components/NotifyModal";
 import { createTrialAction } from "@/features/trials/actions";
 
+interface Division {
+  id: string;
+  name: string;
+  game: string;
+}
+
 interface TrialFormModalProps {
+  divisions: Division[];
   revalidatePaths: string[];
   onClose: () => void;
 }
@@ -16,13 +23,16 @@ const POSITION_SUGGESTIONS = [
   "Jungler", "Mid Lane", "Exp Lane", "Roamer", "Gold Lane",
 ];
 
-export function TrialFormModal({ revalidatePaths, onClose }: TrialFormModalProps) {
+export function TrialFormModal({ divisions, revalidatePaths, onClose }: TrialFormModalProps) {
   const router = useRouter();
   const { success, error: notifyError } = useNotify();
   const [pending, startTransition] = useTransition();
+  const [selectedDivisionId, setSelectedDivisionId] = useState(divisions[0]?.id ?? "");
   const [positions, setPositions] = useState<string[]>([]);
   const [posInput, setPosInput] = useState("");
   const [err, setErr] = useState<string | null>(null);
+
+  const selectedDivision = divisions.find((d) => d.id === selectedDivisionId);
 
   function addPosition(pos: string) {
     const trimmed = pos.trim();
@@ -41,11 +51,7 @@ export function TrialFormModal({ revalidatePaths, onClose }: TrialFormModalProps
     startTransition(async () => {
       setErr(null);
       const res = await createTrialAction(
-        {
-          title: fd.get("title"),
-          game: fd.get("game"),
-          positions,
-        },
+        { title: fd.get("title"), division_id: selectedDivisionId, positions },
         revalidatePaths
       );
       if (res.ok) {
@@ -76,6 +82,7 @@ export function TrialFormModal({ revalidatePaths, onClose }: TrialFormModalProps
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Judul */}
           <div>
             <label className="block text-xs text-[#9B9A97] mb-1">
               Judul Trial <span className="text-red-400">*</span>
@@ -88,18 +95,37 @@ export function TrialFormModal({ revalidatePaths, onClose }: TrialFormModalProps
             />
           </div>
 
+          {/* Divisi + game (read-only) */}
           <div>
             <label className="block text-xs text-[#9B9A97] mb-1">
-              Game <span className="text-red-400">*</span>
+              Divisi <span className="text-red-400">*</span>
             </label>
-            <input
-              name="game"
-              type="text"
-              required
-              className="h-10 w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-sm text-[#E5E2E1] focus:border-[#9B9A97] focus:outline-none"
-            />
+            {divisions.length === 0 ? (
+              <p className="text-xs text-[#6B6A68]">Belum ada divisi. Buat divisi terlebih dahulu.</p>
+            ) : (
+              <>
+                <select
+                  value={selectedDivisionId}
+                  onChange={(e) => setSelectedDivisionId(e.target.value)}
+                  className="h-10 w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-sm text-[#E5E2E1] focus:border-[#9B9A97] focus:outline-none cursor-pointer"
+                >
+                  {divisions.map((d) => (
+                    <option key={d.id} value={d.id}>{d.name}</option>
+                  ))}
+                </select>
+                {selectedDivision && (
+                  <div className="mt-1.5 flex items-center gap-1.5">
+                    <span className="text-[10px] text-[#6B6A68]">Game:</span>
+                    <span className="rounded-full bg-[#2C2C2C] px-2 py-0.5 text-[10px] font-medium text-[#9B9A97]">
+                      {selectedDivision.game}
+                    </span>
+                  </div>
+                )}
+              </>
+            )}
           </div>
 
+          {/* Posisi */}
           <div>
             <label className="block text-xs text-[#9B9A97] mb-1">Posisi yang Dibutuhkan</label>
             <div className="flex gap-2">
@@ -121,7 +147,7 @@ export function TrialFormModal({ revalidatePaths, onClose }: TrialFormModalProps
               </button>
             </div>
             <div className="mt-2 flex flex-wrap gap-1">
-              {POSITION_SUGGESTIONS.filter((s) => !positions.includes(s)).slice(0, 8).map((s) => (
+              {POSITION_SUGGESTIONS.filter((s) => !positions.includes(s)).map((s) => (
                 <button
                   key={s}
                   type="button"
@@ -165,7 +191,7 @@ export function TrialFormModal({ revalidatePaths, onClose }: TrialFormModalProps
             </button>
             <button
               type="submit"
-              disabled={pending}
+              disabled={pending || !selectedDivisionId}
               className="inline-flex h-9 items-center gap-2 rounded-md bg-[#E5E2E1] px-4 text-sm font-semibold text-[#191919] hover:bg-white disabled:opacity-50 cursor-pointer"
             >
               {pending && <Loader2 className="h-3.5 w-3.5 animate-spin" />}

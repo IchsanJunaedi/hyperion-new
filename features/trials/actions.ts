@@ -29,25 +29,36 @@ async function getManagerOrCoach() {
 }
 
 export async function createTrialAction(
-  raw: { title: unknown; game: unknown; positions: unknown },
+  raw: { title: unknown; division_id: unknown; positions: unknown },
   revalidatePaths: string[]
 ): Promise<ActionResult> {
   const session = await getManagerOrCoach();
   if (!session) return { ok: false, message: "Akses ditolak" };
 
   const title = String(raw.title ?? "").trim();
-  const game = String(raw.game ?? "").trim();
+  const divisionId = String(raw.division_id ?? "").trim();
   const positions = Array.isArray(raw.positions)
     ? (raw.positions as string[]).filter(Boolean)
     : [];
 
-  if (!title || !game) return { ok: false, message: "Judul dan game wajib diisi" };
+  if (!title || !divisionId) return { ok: false, message: "Judul dan divisi wajib diisi" };
 
   const admin = createAdminClient();
+
+  // Verify division belongs to this org and get game
+  const { data: division } = await admin
+    .from("divisions")
+    .select("id, game")
+    .eq("id", divisionId)
+    .eq("organization_id", session.orgId)
+    .maybeSingle();
+  if (!division) return { ok: false, message: "Divisi tidak ditemukan" };
+
   const { error } = await admin.from("open_trials").insert({
     org_id: session.orgId,
+    division_id: divisionId,
     title,
-    game,
+    game: division.game,
     positions,
     created_by: session.user.id,
   });

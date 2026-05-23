@@ -36,7 +36,12 @@ export default async function TrialsPage({ params }: Props) {
   if (!membership) redirect("/");
 
   const canManage = ["manager", "coach", "owner"].includes(membership.role ?? "");
-  const trials = await listTrials(org.id);
+
+  const [trials, divisionsRes] = await Promise.all([
+    listTrials(org.id),
+    admin.from("divisions").select("id, name, game").eq("organization_id", org.id).eq("is_active", true).order("name"),
+  ]);
+  const divisions = divisionsRes.data ?? [];
 
   return (
     <div className="space-y-6">
@@ -47,6 +52,7 @@ export default async function TrialsPage({ params }: Props) {
       <TrialListClient
         orgSlug={slug}
         trials={trials}
+        divisions={divisions}
         canManage={canManage}
         revalidatePaths={[`/${slug}/trials`]}
       />

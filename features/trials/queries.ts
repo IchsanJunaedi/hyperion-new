@@ -5,6 +5,8 @@ export interface TrialRow {
   org_id: string;
   title: string;
   game: string;
+  division_id: string | null;
+  division_name: string | null;
   positions: string[];
   status: "draft" | "active" | "closed";
   public_token: string;
@@ -41,27 +43,33 @@ export async function listTrials(orgId: string): Promise<TrialWithCount[]> {
   const admin = createAdminClient();
   const { data, error } = await admin
     .from("open_trials")
-    .select("*, trial_applicants(count)")
+    .select("*, divisions(name), trial_applicants(count)")
     .eq("org_id", orgId)
     .order("created_at", { ascending: false });
 
   if (error || !data) return [];
 
-  return data.map((t) => ({
-    ...t,
-    positions: t.positions ?? [],
-    applicant_count: (t.trial_applicants as unknown as [{ count: number }])[0]?.count ?? 0,
-  })) as TrialWithCount[];
+  return data.map((t) => {
+    const div = t.divisions as unknown as { name: string } | null;
+    return {
+      ...t,
+      positions: t.positions ?? [],
+      division_name: div?.name ?? null,
+      applicant_count: (t.trial_applicants as unknown as [{ count: number }])[0]?.count ?? 0,
+    };
+  }) as TrialWithCount[];
 }
 
 export async function getTrialById(id: string): Promise<TrialRow | null> {
   const admin = createAdminClient();
   const { data } = await admin
     .from("open_trials")
-    .select("*")
+    .select("*, divisions(name)")
     .eq("id", id)
     .maybeSingle();
-  return (data as TrialRow | null) ?? null;
+  if (!data) return null;
+  const div = (data as unknown as { divisions: { name: string } | null }).divisions;
+  return { ...(data as unknown as TrialRow), division_name: div?.name ?? null };
 }
 
 export async function getTrialByToken(token: string): Promise<(TrialRow & { org_name: string }) | null> {
