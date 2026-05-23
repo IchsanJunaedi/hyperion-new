@@ -2,7 +2,7 @@
 
 import { Check, Copy, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 
 import { useNotify } from "@/features/dashboard/components/NotifyModal";
 import { updateTrialStatusAction } from "@/features/trials/actions";
@@ -28,13 +28,18 @@ export function TrialDetailClient({ trial, applicants, canManage, appUrl, revali
   const { success, error: notifyError } = useNotify();
   const [updating, startUpdate] = useTransition();
   const [copied, setCopied] = useState(false);
+  const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const registrationUrl = `${appUrl}/trial/${trial.public_token}`;
 
+  useEffect(() => () => { if (copyTimerRef.current) clearTimeout(copyTimerRef.current); }, []);
+
   function copyLink() {
-    navigator.clipboard.writeText(registrationUrl);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    navigator.clipboard.writeText(registrationUrl).then(() => {
+      setCopied(true);
+      if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+      copyTimerRef.current = setTimeout(() => setCopied(false), 2000);
+    }).catch(() => notifyError("Gagal menyalin link"));
   }
 
   function handleStatus(val: "draft" | "active" | "closed") {

@@ -126,6 +126,7 @@ export function ApplicantRow({ applicant, trialId, canManage, revalidatePaths }:
             type="button"
             onClick={handleDelete}
             disabled={deleting}
+            aria-label={`Hapus pendaftar ${applicant.name}`}
             className="text-[#6B6A68] hover:text-red-400 cursor-pointer disabled:opacity-50"
           >
             <Trash2 className="h-3.5 w-3.5" />
