@@ -39,11 +39,11 @@ export function SalaryFormModal({
   const { success, error: notifyError } = useNotify();
   const [pending, startTransition] = useTransition();
   const [err, setErr] = useState<string | null>(null);
-  const [salaryDisplay, setSalaryDisplay] = useState(
-    contract?.monthly_salary ? Number(contract.monthly_salary).toLocaleString("id-ID") : ""
+  const [salaryDisplay, setSalaryDisplay] = useState<string>(
+    contract?.monthly_salary != null ? Number(contract.monthly_salary).toLocaleString("id-ID") : ""
   );
-  const [salaryRaw, setSalaryRaw] = useState(
-    contract?.monthly_salary ? String(contract.monthly_salary) : ""
+  const [salaryRaw, setSalaryRaw] = useState<string>(
+    contract?.monthly_salary != null ? String(contract.monthly_salary) : ""
   );
 
   const isEdit = !!contract;
@@ -126,7 +126,7 @@ export function SalaryFormModal({
               type="text"
               inputMode="numeric"
               required
-              value={salaryDisplay}
+              value={salaryDisplay ?? ""}
               onChange={(e) => {
                 const digits = e.target.value.replace(/\D/g, "");
                 setSalaryRaw(digits);
