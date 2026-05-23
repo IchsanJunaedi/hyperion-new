@@ -269,23 +269,15 @@ export interface WinLossRecord {
 export async function getScrimWinLossRecord(orgId: string): Promise<WinLossRecord> {
   const supabase = await createClient();
   const { data } = await supabase
-    .from("scrims")
-    .select("id, scrim_results(is_win)")
-    .eq("organization_id", orgId)
-    .eq("status", "completed");
+    .rpc("get_scrim_win_loss", { p_org_id: orgId })
+    .single();
 
-  const rows = data ?? [];
-  let wins = 0, losses = 0, draws = 0;
-  for (const s of rows) {
-    const result = Array.isArray(s.scrim_results)
-      ? s.scrim_results[0]
-      : s.scrim_results;
-    if (!result) continue;
-    if (result.is_win === true) wins++;
-    else if (result.is_win === false) losses++;
-    else draws++;
-  }
-  return { wins, losses, draws, total: wins + losses + draws };
+  return {
+    wins: Number(data?.wins ?? 0),
+    losses: Number(data?.losses ?? 0),
+    draws: Number(data?.draws ?? 0),
+    total: Number(data?.total ?? 0),
+  };
 }
 
 export interface ScrimReviewRequest {

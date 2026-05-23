@@ -894,6 +894,7 @@ export type Database = {
           created_at: string
           date_of_birth: string | null
           display_name: string | null
+          email: string | null
           full_name: string | null
           game_ids: Json
           id: string
@@ -908,6 +909,7 @@ export type Database = {
           created_at?: string
           date_of_birth?: string | null
           display_name?: string | null
+          email?: string | null
           full_name?: string | null
           game_ids?: Json
           id: string
@@ -922,6 +924,7 @@ export type Database = {
           created_at?: string
           date_of_birth?: string | null
           display_name?: string | null
+          email?: string | null
           full_name?: string | null
           game_ids?: Json
           id?: string
@@ -2102,6 +2105,10 @@ export type Database = {
       get_member_role: {
         Args: { org_id: string }
         Returns: Database["public"]["Enums"]["member_role"]
+      }
+      get_scrim_win_loss: {
+        Args: { p_org_id: string }
+        Returns: { wins: number; losses: number; draws: number; total: number }[]
       }
       is_captain_or_above: { Args: { org_id: string }; Returns: boolean }
       is_member_of: { Args: { org_id: string }; Returns: boolean }

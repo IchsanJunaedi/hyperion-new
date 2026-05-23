@@ -29,7 +29,7 @@ export default async function DashboardUsersPage({ searchParams }: UsersPageProp
   const admin = createAdminClient();
   const { data: allProfiles } = await admin
     .from("profiles")
-    .select("id, full_name, username, display_name, phone_wa")
+    .select("id, full_name, username, display_name, phone_wa, email")
     .order("full_name", { ascending: true });
   
   const workspaceName = allProfiles?.find(p => p.id === user.id)?.full_name ?? "Hyperion Team";
@@ -46,10 +46,9 @@ export default async function DashboardUsersPage({ searchParams }: UsersPageProp
   const orgMap = new Map((orgs ?? []).map((o) => [o.id, o]));
   const divMap = new Map((divisions ?? []).map((d) => [d.id, d]));
 
-  // Get emails
-  const { data: authUsers } = await admin.auth.admin.listUsers({ perPage: 500 });
+  // Build email map from profiles (email column synced from auth.users)
   const emailMap = new Map<string, string>();
-  for (const u of authUsers?.users ?? []) { if (u.email) emailMap.set(u.id, u.email); }
+  for (const p of allProfiles ?? []) { if (p.email) emailMap.set(p.id, p.email); }
 
   const rolePriority: Record<string, number> = { owner: 0, manager: 1, coach: 2, captain: 3, member: 4 };
 
