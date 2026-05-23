@@ -1,4 +1,4 @@
-# Hyperion Progress — Status as of 2026-05-21
+# Hyperion Progress — Status as of 2026-05-23
 
 > Read this file first at the start of every session. It replaces the "Current State" section in CLAUDE.md and is the single source of truth for what's built, what's broken, and what's next.
 
@@ -51,6 +51,24 @@
 - Audit logging (`lib/audit.ts`) — all create/update/delete actions logged
 - Calendar permission system (`lib/permissions/`) — visibility levels: all/management/coach_up/private
 - RLS on all tables — `createAdminClient()` bypasses, `createClient()` respects
+
+### Automated Testing (2026-05-23)
+- **642 unit tests** across 30 test files — all passing
+- Coverage thresholds met: Statements 90.4% / Branches 77.9% / Functions 97.3% / Lines 90.6% (thresholds: 80%/75%/80%/80%)
+- CI enforces coverage on every push via `test:unit:coverage` script
+
+---
+
+## P3 Features Completed (2026-05-23)
+
+### Media Kit PDF Export
+- Tombol "Media Kit" di `/dashboard/sponsors` (Owner) dan `/manage/sponsors` (Manager)
+- Hanya muncul jika ada data sponsor
+- Klik → render print-friendly layout → browser print dialog otomatis terbuka
+- Layout: header nama tim, summary stats (total/aktif/total deal), daftar sponsor dikelompokkan (Aktif vs Lainnya) dengan logo, deal value, periode, PIC
+- Captain/Coach/Member tidak bisa akses halaman sponsor — by design (data bisnis)
+- Implementasi: state-based (`printMode`), `useEffect` + `window.print()` + `window.onafterprint` cleanup
+- Files: `features/sponsors/components/SponsorListClient.tsx`, `app/dashboard/(panel)/sponsors/page.tsx`, `app/manage/sponsors/page.tsx`
 
 ---
 
@@ -128,6 +146,10 @@ Matches live in `tournament_matches.stage_id → tournament_stages.id`. `getTour
 - Player dev: coach can only see own targets on `/development` — separate manager view at `/manage/development` for cross-player view
 - Public profile activation
 - Reports page activation
+
+### P3 Remaining
+- `/[slug]/sponsors` workspace page → **tidak dibuat** (data bisnis, captain/coach/member tidak boleh lihat)
+- PDF media kit → **selesai** (lihat section P3 di atas)
 
 ---
 
