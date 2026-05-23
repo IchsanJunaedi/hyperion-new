@@ -1,4 +1,8 @@
+"use client";
+
 import Link from "next/link";
+import { useRef, useEffect, useState } from "react";
+import { motion, useScroll, useTransform } from "motion/react";
 
 interface Achievement {
   year: string;
@@ -38,10 +42,29 @@ const ACHIEVEMENTS: Achievement[] = [
 ];
 
 export function AchievementsSection() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const lineRef = useRef<HTMLDivElement>(null);
+  const [lineHeight, setLineHeight] = useState(0);
+
+  useEffect(() => {
+    if (lineRef.current) {
+      setLineHeight(lineRef.current.getBoundingClientRect().height);
+    }
+  }, []);
+
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start 10%", "end 50%"],
+  });
+
+  const heightTransform = useTransform(scrollYProgress, [0, 1], [0, lineHeight]);
+  const opacityTransform = useTransform(scrollYProgress, [0, 0.1], [0, 1]);
+
   return (
     <section
       id="achievements"
       className="bg-[#070707] px-6 py-24 sm:px-10 lg:px-16"
+      ref={containerRef}
     >
       <div className="mx-auto max-w-7xl">
         {/* Section header */}
@@ -61,35 +84,38 @@ export function AchievementsSection() {
         </div>
 
         {/* Timeline */}
-        <div className="relative mt-16">
-          {/* Vertical track line */}
+        <div className="relative mt-16" ref={lineRef}>
+          {/* Static track line */}
           <div
-            className="absolute bottom-0 left-4 top-0 w-px md:left-8"
+            className="absolute bottom-0 left-4 top-0 w-[2px] overflow-hidden md:left-8"
             style={{
               background:
-                "linear-gradient(to bottom, transparent 0%, rgba(245,196,0,0.25) 10%, rgba(245,196,0,0.25) 90%, transparent 100%)",
+                "linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.06) 10%, rgba(255,255,255,0.06) 90%, transparent 100%)",
             }}
-          />
+          >
+            {/* Growing yellow line */}
+            <motion.div
+              style={{ height: heightTransform, opacity: opacityTransform }}
+              className="absolute inset-x-0 top-0 w-[2px] rounded-full bg-gradient-to-t from-[#F5C400] via-[#F5C400] to-transparent"
+            />
+          </div>
 
           {ACHIEVEMENTS.map((item, index) => (
             <div key={item.title} className="flex gap-6 py-14 md:gap-12">
               {/* Left: dot + year */}
-              <div className="relative flex shrink-0 flex-col items-center" style={{ width: "2rem" }}>
-                {/* Dot on the line */}
-                <div className="relative z-10 flex h-8 w-8 -translate-x-1/2 items-center justify-center rounded-full bg-[#070707] md:translate-x-0">
-                  <div className="h-4 w-4 rounded-full border border-[#F5C400]/40 bg-[#070707] p-1">
+              <div className="relative z-10 flex shrink-0 flex-col items-center" style={{ width: "2rem" }}>
+                <div className="flex h-10 w-10 -translate-x-[calc(50%-1px)] items-center justify-center rounded-full bg-[#070707]">
+                  <div className="h-4 w-4 rounded-full border border-[#F5C400]/50 bg-[#070707] p-1">
                     <div className="h-full w-full rounded-full bg-[#F5C400]" />
                   </div>
                 </div>
-                {/* Year badge (hidden on mobile, shown on md+) */}
-                <span className="mt-3 hidden rotate-0 text-4xl font-black leading-none text-white/[0.06] md:block lg:text-5xl">
+                <span className="mt-3 hidden text-5xl font-black leading-none text-white/[0.05] md:block">
                   {item.year}
                 </span>
               </div>
 
               {/* Right: content */}
-              <div className="flex-1 min-w-0">
-                {/* Mobile year */}
+              <div className="flex-1 min-w-0 pb-4">
                 <p className="mb-2 text-xs font-bold uppercase tracking-widest text-[#F5C400]/50 md:hidden">
                   {item.year}
                 </p>
@@ -98,18 +124,14 @@ export function AchievementsSection() {
                   {item.title}
                 </h3>
 
-                <p
-                  className="mt-3 text-sm leading-relaxed text-white/50"
-                  dangerouslySetInnerHTML={{ __html: item.description }}
-                />
+                <p className="mt-3 text-sm leading-relaxed text-white/50">
+                  {item.description}
+                </p>
 
-                {/* Images */}
                 {item.images.length > 0 && (
                   <div
                     className={`mt-6 gap-4 ${
-                      item.images.length > 1
-                        ? "grid grid-cols-2"
-                        : "block"
+                      item.images.length > 1 ? "grid grid-cols-2" : "block"
                     }`}
                   >
                     {item.images.map((src, i) => (
@@ -119,7 +141,7 @@ export function AchievementsSection() {
                         src={src}
                         alt={item.title}
                         loading={index === 0 ? "eager" : "lazy"}
-                        className="h-44 w-full rounded-sm object-cover shadow-[0_0_24px_rgba(34,42,53,0.06)] sm:h-52 lg:h-64"
+                        className="h-44 w-full rounded-sm object-cover shadow-lg sm:h-52 lg:h-64"
                       />
                     ))}
                   </div>

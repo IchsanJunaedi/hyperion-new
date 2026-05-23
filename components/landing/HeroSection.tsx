@@ -1,6 +1,12 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronDown } from "lucide-react";
+import { motion } from "motion/react";
+
+const WORDS_LINE1 = "WE ARE".split(" ");
+const WORDS_TITLE = "HYPERION TEAM".split(" ");
 
 export function HeroSection() {
   return (
@@ -32,9 +38,11 @@ export function HeroSection() {
       {/* Main content — centered */}
       <div className="relative z-10 flex flex-col items-center px-6 py-28 text-center sm:px-10">
         {/* Logo */}
-        <div
-          className="mb-8 animate-fadeinup overflow-hidden rounded-2xl border border-[#F5C400]/15"
-          style={{ animationDelay: "0s" }}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
+          className="mb-8 overflow-hidden rounded-2xl border border-[#F5C400]/15"
         >
           <Image
             src="/brand/logo.jpg"
@@ -44,42 +52,66 @@ export function HeroSection() {
             className="h-20 w-20 object-cover sm:h-24 sm:w-24"
             priority
           />
-        </div>
+        </motion.div>
 
-        {/* WE ARE */}
-        <p
-          className="mb-3 animate-fadeinup text-xs font-bold uppercase tracking-[0.55em] text-white/30 sm:text-sm"
-          style={{ animationDelay: "0.12s" }}
-        >
-          WE ARE
-        </p>
+        {/* WE ARE — word by word blur-in */}
+        <h2 className="mb-3 text-xs font-bold uppercase tracking-[0.55em] text-white/30 sm:text-sm">
+          {WORDS_LINE1.map((word, i) => (
+            <motion.span
+              key={i}
+              initial={{ opacity: 0, filter: "blur(4px)", y: 8 }}
+              animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
+              transition={{ duration: 0.3, delay: i * 0.1, ease: "easeOut" }}
+              className="mr-2 inline-block"
+            >
+              {word}
+            </motion.span>
+          ))}
+        </h2>
 
-        {/* Title */}
+        {/* HYPERION TEAM — word by word blur-in */}
         <h1
-          className="animate-fadeinup text-[clamp(2.8rem,10vw,7rem)] font-black uppercase leading-[0.9] tracking-tight text-[#F5C400]"
+          className="text-[clamp(2.8rem,10vw,7rem)] font-black uppercase leading-[0.9] tracking-tight text-[#F5C400]"
           style={{
             textShadow:
               "0 0 60px rgba(245,196,0,0.22), 0 0 120px rgba(245,196,0,0.08)",
-            animationDelay: "0.22s",
           }}
         >
-          HYPERION<br />TEAM
+          {WORDS_TITLE.map((word, i) => (
+            <motion.span
+              key={i}
+              initial={{ opacity: 0, filter: "blur(4px)", y: 10 }}
+              animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
+              transition={{
+                duration: 0.3,
+                delay: 0.2 + i * 0.12,
+                ease: "easeOut",
+              }}
+              className="mr-3 inline-block last:mr-0"
+            >
+              {word}
+            </motion.span>
+          ))}
         </h1>
 
         {/* Description */}
-        <p
-          className="mt-7 max-w-md animate-fadeinup text-sm leading-relaxed text-white/45 sm:text-base"
-          style={{ animationDelay: "0.38s" }}
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.4, delay: 0.7 }}
+          className="mt-7 max-w-md text-sm leading-relaxed text-white/45 sm:text-base"
         >
           Empowering Young Talents to Rise and Rule.
           <br className="hidden sm:block" />
           Focused on Growth. Driven to Win.
-        </p>
+        </motion.p>
 
         {/* CTA */}
-        <div
-          className="mt-10 animate-fadeinup"
-          style={{ animationDelay: "0.5s" }}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.4, delay: 0.95 }}
+          className="mt-10"
         >
           <Link
             href="#achievements"
@@ -87,7 +119,7 @@ export function HeroSection() {
           >
             Explore Now
           </Link>
-        </div>
+        </motion.div>
       </div>
 
       {/* Scroll indicator */}

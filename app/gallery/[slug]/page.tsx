@@ -4,7 +4,7 @@ import { ArrowLeft } from "lucide-react";
 
 import { Footer } from "@/components/landing/Footer";
 import { Header } from "@/components/landing/Header";
-import { GALLERIES } from "@/app/gallery/page";
+import { GALLERIES } from "@/lib/data/gallery";
 
 interface Props {
   params: Promise<{ slug: string }>;

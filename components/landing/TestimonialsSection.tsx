@@ -1,46 +1,60 @@
 "use client";
 
-import { useState } from "react";
-import { ChevronLeft, ChevronRight, Quote } from "lucide-react";
+import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 interface Testimonial {
   name: string;
-  team: string;
-  quote: string;
-  imageUrl: string;
+  position: string;
+  description: string;
+  image: string;
 }
 
 const TESTIMONIALS: Testimonial[] = [
   {
     name: "RRQ Kaeya",
-    team: "Player of Team RRQ",
-    quote:
+    position: "Player of Team RRQ",
+    description:
       "Awalnya gue kira bakal biasa aja kayak komunitas lain, tapi ternyata banyak ilmu yang gue dapet dari awal trial sampai akhir. Di Hyperion, gue ketemu banyak orang yang semangat kompetisinya sama, jadi lebih enak buat berkembang. Sering scrim dan ada evaluasi via Discord yang bikin gameplay makin bagus.",
-    imageUrl:
+    image:
       "https://hyperionteam.id/storage/testimonials/01K2SMTH386QV9Q3R8PTF7913YR.png",
   },
   {
     name: "Evos Rendyy",
-    team: "Team of Evos Esports",
-    quote:
+    position: "Team of Evos Esports",
+    description:
       "Gue mulai bareng Hyperion BLCK di awal 2023 dan berhasil juara di banyak turnamen nasional pelajar. Setelah itu gue lanjut bareng Hyperion Palembang di DGWIB 2024 bersama Fenzu. Buat gue, Hyperion adalah titik awal perjalanan gue di scene profesional.",
-    imageUrl:
+    image:
       "https://hyperionteam.id/storage/testimonials/01K2RYQS6A36J458VGK7DE8AS9.png",
   },
   {
     name: "Pajajaran Firlyboy",
-    team: "Player of Team Pajajaran",
-    quote:
+    position: "Player of Team Pajajaran",
+    description:
       "Hyperion jadi titik awal penting buat perjalanan gue di esports. Di sini gue nggak cuma belajar mekanik, tapi juga disiplin, mindset, dan cara bersaing sehat. Semua itu ngebantu banget waktu gue masuk ke Seleknas Pajajaran 2024.",
-    imageUrl:
+    image:
       "https://hyperionteam.id/storage/testimonials/01K2RYVPWSFF8GGREVCD4VKRRH.png",
   },
 ];
 
+function randomRotate() {
+  return Math.floor(Math.random() * 21) - 10;
+}
+
 export function TestimonialsSection() {
-  const [index, setIndex] = useState(0);
+  const [active, setActive] = useState(0);
   const total = TESTIMONIALS.length;
-  const t = TESTIMONIALS[index]!;
+
+  const handleNext = () => setActive((p) => (p + 1) % total);
+  const handlePrev = () => setActive((p) => (p - 1 + total) % total);
+
+  // Autoplay every 5s
+  useEffect(() => {
+    const id = setInterval(handleNext, 5000);
+    return () => clearInterval(id);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <section className="bg-[#070707] px-6 py-24 sm:px-10 lg:px-16">
@@ -58,65 +72,113 @@ export function TestimonialsSection() {
           </h2>
         </div>
 
-        {/* Card */}
-        <div className="grid border border-white/5 bg-[#0D0D0D] lg:grid-cols-[1fr_340px]">
-          {/* Left: quote */}
-          <div className="relative p-8 sm:p-10 lg:p-14">
-            {/* Big quote icon */}
-            <Quote
-              className="mb-6 h-10 w-10 text-[#F5C400]/25"
-              fill="currentColor"
-            />
-
-            <p className="text-base leading-relaxed text-white/75 sm:text-lg sm:leading-relaxed">
-              &ldquo;{t.quote}&rdquo;
-            </p>
-
-            <div className="mt-8 border-t border-white/5 pt-6">
-              <p className="text-base font-black uppercase tracking-wide text-white">
-                {t.name}
-              </p>
-              <p className="mt-1 text-xs font-semibold uppercase tracking-wider text-[#F5C400]/60">
-                {t.team}
-              </p>
+        <div className="relative grid grid-cols-1 gap-16 md:grid-cols-2 md:gap-20">
+          {/* Left: stacked image cards */}
+          <div>
+            <div className="relative h-72 w-full sm:h-80 md:h-96">
+              <AnimatePresence>
+                {TESTIMONIALS.map((t, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{
+                      opacity: 0,
+                      scale: 0.9,
+                      z: -100,
+                      rotate: randomRotate(),
+                    }}
+                    animate={{
+                      opacity: index === active ? 1 : 0.7,
+                      scale: index === active ? 1 : 0.95,
+                      z: index === active ? 0 : -100,
+                      rotate: index === active ? 0 : randomRotate(),
+                      zIndex:
+                        index === active
+                          ? 40
+                          : TESTIMONIALS.length + 2 - index,
+                      y: index === active ? [0, -60, 0] : 0,
+                    }}
+                    exit={{
+                      opacity: 0,
+                      scale: 0.9,
+                      z: 100,
+                      rotate: randomRotate(),
+                    }}
+                    transition={{ duration: 0.4, ease: "easeInOut" }}
+                    className="absolute inset-0 origin-bottom"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={t.image}
+                      alt={t.name}
+                      draggable={false}
+                      loading="lazy"
+                      className="h-full w-full rounded-2xl object-cover object-top"
+                      style={{ filter: "saturate(0.9)" }}
+                    />
+                  </motion.div>
+                ))}
+              </AnimatePresence>
             </div>
-
-            {/* Navigation */}
-            <div className="mt-8 flex items-center gap-3">
-              <button
-                type="button"
-                aria-label="Previous"
-                onClick={() => setIndex((i) => (i - 1 + total) % total)}
-                className="flex h-9 w-9 items-center justify-center border border-white/10 text-white/50 transition hover:border-[#F5C400]/40 hover:text-[#F5C400]"
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </button>
-              <button
-                type="button"
-                aria-label="Next"
-                onClick={() => setIndex((i) => (i + 1) % total)}
-                className="flex h-9 w-9 items-center justify-center border border-white/10 text-white/50 transition hover:border-[#F5C400]/40 hover:text-[#F5C400]"
-              >
-                <ChevronRight className="h-4 w-4" />
-              </button>
-              <span className="ml-2 text-xs text-white/25 tabular-nums">
-                {String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
-              </span>
-            </div>
-
-            {/* Top-right corner accent */}
-            <div className="absolute right-0 top-0 h-8 w-8 border-r-2 border-t-2 border-[#F5C400]/20" />
           </div>
 
-          {/* Right: player photo */}
-          <div className="hidden overflow-hidden lg:block">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={t.imageUrl}
-              alt={t.name}
-              className="h-full w-full object-cover object-top transition duration-500"
-              style={{ filter: "saturate(0.85)" }}
-            />
+          {/* Right: name + word-by-word quote */}
+          <div className="flex flex-col justify-between py-4">
+            <motion.div
+              key={active}
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: -20, opacity: 0 }}
+              transition={{ duration: 0.2, ease: "easeInOut" }}
+            >
+              <h3 className="text-2xl font-black uppercase tracking-tight text-white">
+                {TESTIMONIALS[active]!.name}
+              </h3>
+              <p className="mt-1 text-sm font-semibold uppercase tracking-wider text-[#F5C400]/60">
+                {TESTIMONIALS[active]!.position}
+              </p>
+
+              <motion.p className="mt-6 text-sm leading-relaxed text-white/60 sm:text-base">
+                {TESTIMONIALS[active]!.description.split(" ").map((word, i) => (
+                  <motion.span
+                    key={i}
+                    initial={{ filter: "blur(8px)", opacity: 0, y: 5 }}
+                    animate={{ filter: "blur(0px)", opacity: 1, y: 0 }}
+                    transition={{
+                      duration: 0.2,
+                      ease: "easeInOut",
+                      delay: 0.02 * i,
+                    }}
+                    className="inline-block"
+                  >
+                    {word}&nbsp;
+                  </motion.span>
+                ))}
+              </motion.p>
+            </motion.div>
+
+            {/* Prev / Next */}
+            <div className="mt-10 flex items-center gap-3 md:mt-0">
+              <button
+                type="button"
+                onClick={handlePrev}
+                aria-label="Previous"
+                className="group flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-white/10 text-white/40 transition hover:border-[#F5C400]/50 hover:text-[#F5C400]"
+              >
+                <ArrowLeft className="h-4 w-4 transition-transform duration-300 group-hover:rotate-12" />
+              </button>
+              <button
+                type="button"
+                onClick={handleNext}
+                aria-label="Next"
+                className="group flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-white/10 text-white/40 transition hover:border-[#F5C400]/50 hover:text-[#F5C400]"
+              >
+                <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:-rotate-12" />
+              </button>
+              <span className="ml-2 text-xs tabular-nums text-white/25">
+                {String(active + 1).padStart(2, "0")} /{" "}
+                {String(total).padStart(2, "0")}
+              </span>
+            </div>
           </div>
         </div>
       </div>
