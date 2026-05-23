@@ -36,9 +36,8 @@ create table public.trial_applicants (
 );
 
 create index on public.open_trials (org_id);
-create index on public.open_trials (public_token);
-create index on public.trial_applicants (trial_id);
-create index on public.trial_applicants (status);
+-- note: public_token index removed — covered by UNIQUE constraint
+create index on public.trial_applicants (trial_id, status); -- composite replaces separate indexes
 
 alter table public.open_trials enable row level security;
 alter table public.trial_applicants enable row level security;
@@ -49,4 +48,10 @@ create policy "public can read active trials by token"
 
 create policy "public can register as applicant"
   on public.trial_applicants for insert
-  with check (true);
+  with check (
+    exists (
+      select 1 from public.open_trials
+      where id = trial_id
+        and status = 'active'
+    )
+  );
