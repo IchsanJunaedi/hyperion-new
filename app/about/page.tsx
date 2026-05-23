@@ -4,6 +4,8 @@ import Link from "next/link";
 import { Footer } from "@/components/landing/Footer";
 import { Header } from "@/components/landing/Header";
 
+export const dynamic = "force-dynamic";
+
 const CARDS = [
   {
     title: "Our Vision",

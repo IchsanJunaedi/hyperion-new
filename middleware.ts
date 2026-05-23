@@ -11,6 +11,7 @@ const MAIN_DOMAIN = process.env.NEXT_PUBLIC_MAIN_DOMAIN ?? "hyperionteam.id";
  * Anything matching one of these segments is treated as a global app route.
  */
 const RESERVED_ROOT_SEGMENTS = new Set([
+  // Auth & platform routes
   "login",
   "register",
   "forgot-password",
@@ -21,12 +22,20 @@ const RESERVED_ROOT_SEGMENTS = new Set([
   "onboarding",
   "dashboard",
   "manage",
+  // Static / infrastructure
   "_next",
   "api",
   "favicon.ico",
   "robots.txt",
   "sitemap.xml",
   "manifest.json",
+  // Public landing pages
+  "about",
+  "gallery",
+  "divisions",
+  "privacy",
+  "terms",
+  "contact",
 ]);
 
 /** Reserved segments that require an authenticated session. */

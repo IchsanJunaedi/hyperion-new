@@ -4,6 +4,8 @@ import { Footer } from "@/components/landing/Footer";
 import { Header } from "@/components/landing/Header";
 import { GALLERIES } from "@/lib/data/gallery";
 
+export const dynamic = "force-dynamic";
+
 export default function GalleryPage() {
   return (
     <>

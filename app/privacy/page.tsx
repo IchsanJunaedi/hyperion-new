@@ -1,6 +1,8 @@
 import { Footer } from "@/components/landing/Footer";
 import { Header } from "@/components/landing/Header";
 
+export const dynamic = "force-dynamic";
+
 const SECTIONS = [
   {
     title: "Informasi yang Kami Kumpulkan",
