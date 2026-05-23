@@ -1,22 +1,35 @@
 "use client";
 
-import { Eye, Shield, Swords, Target } from "lucide-react";
+import { Eye, Pencil, Shield, Swords, Target } from "lucide-react";
 
 import type { OpponentProfile } from "@/features/scouting/queries";
 
 interface ScoutingCardProps {
   profile: OpponentProfile;
+  onEdit?: () => void;
 }
 
-export function ScoutingCard({ profile }: ScoutingCardProps) {
+export function ScoutingCard({ profile, onEdit }: ScoutingCardProps) {
   const data = (profile.data ?? {}) as Record<string, unknown>;
   const heroPool = (data.hero_pool as string[]) ?? [];
 
   return (
     <div className="rounded-xl border border-[#2D2D2D] bg-[#202020] p-4 space-y-3">
-      <div className="flex items-center gap-2">
-        <Eye className="h-4 w-4 text-orange-400" />
-        <h3 className="text-sm font-medium text-[#E5E2E1]">{profile.opponent_name}</h3>
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <Eye className="h-4 w-4 text-orange-400" />
+          <h3 className="text-sm font-medium text-[#E5E2E1]">{profile.opponent_name}</h3>
+        </div>
+        {onEdit && (
+          <button
+            type="button"
+            onClick={onEdit}
+            className="text-[#6B6A68] hover:text-[#9B9A97] transition cursor-pointer"
+            title="Edit profil"
+          >
+            <Pencil className="h-3.5 w-3.5" />
+          </button>
+        )}
       </div>
 
       <div className="grid gap-2 text-xs sm:grid-cols-2">
