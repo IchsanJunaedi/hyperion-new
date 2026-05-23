@@ -1,5 +1,4 @@
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { JoinModal } from "./JoinModal";
 
 export function JoinUsSection() {
   return (
@@ -18,7 +17,8 @@ export function JoinUsSection() {
       <div
         className="pointer-events-none absolute left-1/2 top-1/2 h-[400px] w-[400px] -translate-x-1/2 -translate-y-1/2 rounded-full"
         style={{
-          background: "radial-gradient(circle, rgba(245,196,0,0.06) 0%, transparent 70%)",
+          background:
+            "radial-gradient(circle, rgba(245,196,0,0.06) 0%, transparent 70%)",
         }}
       />
 
@@ -46,15 +46,9 @@ export function JoinUsSection() {
             </p>
           </div>
 
-          {/* Right: CTA */}
+          {/* Right: CTA modal */}
           <div className="flex flex-col items-start gap-3 lg:items-end">
-            <Link
-              href="/register"
-              className="group inline-flex h-14 items-center gap-3 bg-[#F5C400] px-8 text-sm font-black uppercase tracking-wide text-black transition hover:bg-yellow-300"
-            >
-              Join Now
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </Link>
+            <JoinModal />
             <p className="text-xs text-white/25">
               Gratis · Tanpa syarat umur minimum
             </p>

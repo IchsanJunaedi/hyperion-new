@@ -9,45 +9,32 @@ const PARTNERS = [
   { name: "Partner 8", imageUrl: "https://hyperionteam.id/storage/partners/01JZPD8PBS7TAJ9AWVKCHQKT75.png" },
 ];
 
-// Duplicate for seamless infinite loop
-const MARQUEE_ITEMS = [...PARTNERS, ...PARTNERS];
-
 export function PartnersSection() {
   return (
-    <section className="bg-[#080808] py-20">
-      {/* Section header */}
-      <div className="mb-10 px-6 sm:px-10 lg:px-16">
-        <div className="mx-auto max-w-7xl">
-          <div className="flex items-center gap-3">
-            <div className="h-px w-8 bg-[#F5C400]" />
-            <span className="text-[11px] font-bold uppercase tracking-[0.3em] text-[#F5C400]">
-              Partners &amp; Sponsors
-            </span>
-            <div className="h-px flex-1 bg-white/5" />
-          </div>
+    <section className="bg-[#080808] px-6 py-20 sm:px-10 lg:px-16">
+      <div className="mx-auto max-w-7xl">
+        {/* Header */}
+        <div className="mb-10 flex items-center gap-3">
+          <div className="h-px w-8 bg-[#F5C400]" />
+          <span className="text-[11px] font-bold uppercase tracking-[0.3em] text-[#F5C400]">
+            Partners &amp; Sponsors
+          </span>
+          <div className="h-px flex-1 bg-white/5" />
         </div>
-      </div>
 
-      {/* Marquee track */}
-      <div className="relative overflow-hidden border-y border-white/5 py-6">
-        {/* Left fade */}
-        <div className="pointer-events-none absolute left-0 top-0 z-10 h-full w-24 bg-gradient-to-r from-[#080808] to-transparent" />
-        {/* Right fade */}
-        <div className="pointer-events-none absolute right-0 top-0 z-10 h-full w-24 bg-gradient-to-l from-[#080808] to-transparent" />
-
-        <div className="flex animate-marquee items-center gap-0">
-          {MARQUEE_ITEMS.map((p, i) => (
+        {/* Grid */}
+        <div className="grid grid-cols-2 gap-px border border-white/5 bg-white/5 sm:grid-cols-3 lg:grid-cols-4">
+          {PARTNERS.map((p) => (
             <div
-              key={`${p.imageUrl}-${i}`}
-              className="flex shrink-0 items-center justify-center px-10"
-              style={{ minWidth: "160px" }}
+              key={p.name}
+              className="flex items-center justify-center bg-[#080808] p-8 transition hover:bg-[#0D0D0D]"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={p.imageUrl}
                 alt={p.name}
                 loading="lazy"
-                className="max-h-12 w-auto object-contain opacity-50 grayscale transition hover:opacity-90 hover:grayscale-0"
+                className="max-h-10 w-auto object-contain opacity-40 grayscale transition duration-300 hover:opacity-85 hover:grayscale-0"
               />
             </div>
           ))}
