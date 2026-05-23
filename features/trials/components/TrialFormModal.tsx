@@ -105,18 +105,32 @@ export function TrialFormModal({ divisionId, revalidatePaths, onClose }: TrialFo
                 <Plus className="h-4 w-4" />
               </button>
             </div>
-            <div className="mt-2 flex flex-wrap gap-1">
-              {POSITION_SUGGESTIONS.filter((s) => !positions.includes(s)).map((s) => (
-                <button
-                  key={s}
-                  type="button"
-                  onClick={() => addPosition(s)}
-                  className="rounded-full border border-[#2D2D2D] px-2 py-0.5 text-[10px] text-[#6B6A68] hover:border-[#9B9A97] hover:text-[#9B9A97] cursor-pointer"
-                >
-                  + {s}
-                </button>
-              ))}
-            </div>
+            {(() => {
+              const remaining = POSITION_SUGGESTIONS.filter((s) => !positions.includes(s));
+              return remaining.length > 0 ? (
+                <div className="mt-2 flex flex-wrap gap-1">
+                  {remaining.map((s) => (
+                    <button
+                      key={s}
+                      type="button"
+                      onClick={() => addPosition(s)}
+                      className="rounded-full border border-[#2D2D2D] px-2 py-0.5 text-[10px] text-[#6B6A68] hover:border-[#9B9A97] hover:text-[#9B9A97] cursor-pointer"
+                    >
+                      + {s}
+                    </button>
+                  ))}
+                  {remaining.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => setPositions((prev) => [...prev, ...remaining])}
+                      className="rounded-full border border-[#2D2D2D] bg-[#2C2C2C] px-2 py-0.5 text-[10px] text-[#9B9A97] hover:border-[#9B9A97] hover:text-[#E5E2E1] cursor-pointer"
+                    >
+                      + Semua
+                    </button>
+                  )}
+                </div>
+              ) : null;
+            })()}
             {positions.length > 0 && (
               <div className="mt-2 flex flex-wrap gap-1">
                 {positions.map((p) => (
