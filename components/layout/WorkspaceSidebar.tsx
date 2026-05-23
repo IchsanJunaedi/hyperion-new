@@ -7,6 +7,7 @@ import {
   Calendar,
   CalendarClock,
   ChevronDown,
+  ClipboardList,
   DollarSign,
   FolderOpen,
   Handshake,
@@ -181,6 +182,12 @@ const WORKSPACE_NAV_GROUPS: NavGroup[] = [
         Icon: Activity,
       },
       { key: "meta", href: "/meta", label: "Meta", Icon: Zap },
+      {
+        key: "trials",
+        href: "/trials",
+        label: "Open Trial",
+        Icon: ClipboardList,
+      },
     ],
   },
   {
