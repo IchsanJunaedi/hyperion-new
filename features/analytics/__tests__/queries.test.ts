@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { getHeroStatistics, getHeroDetail, getOverviewStats } from "../queries";
+import { getHeroStatistics, getHeroDetail, getOverviewStats, getRecentScrims, getDraftAnalytics } from "../queries";
 import { createClient } from "@/lib/supabase/server";
 
 vi.mock("server-only", () => ({}));
@@ -164,6 +165,200 @@ describe("getHeroDetail", () => {
       p_org_id: "org-5",
       p_hero_name: "Karina",
     });
+  });
+});
+
+describe("getRecentScrims", () => {
+  let mockQuery: any;
+  let mockSupabase: any;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockQuery = {
+      select: vi.fn().mockReturnThis(),
+      eq: vi.fn().mockReturnThis(),
+      order: vi.fn().mockReturnThis(),
+      limit: vi.fn().mockReturnThis(),
+      in: vi.fn().mockReturnThis(),
+    };
+    mockSupabase = {
+      from: vi.fn().mockReturnValue(mockQuery),
+    };
+    vi.mocked(createClient).mockResolvedValue(mockSupabase as any);
+  });
+
+  it("returns empty array when no scrims found", async () => {
+    mockQuery.limit = vi.fn().mockImplementation(() => ({
+      ...mockQuery,
+      then: (resolve: any) => resolve({ data: [], error: null }),
+    }));
+
+    const result = await getRecentScrims("org-1");
+    expect(result).toEqual([]);
+  });
+
+  it("returns empty array when data is null", async () => {
+    mockQuery.limit = vi.fn().mockImplementation(() => ({
+      ...mockQuery,
+      then: (resolve: any) => resolve({ data: null, error: null }),
+    }));
+
+    const result = await getRecentScrims("org-1");
+    expect(result).toEqual([]);
+  });
+
+  it("maps scrim data with array scrim_results", async () => {
+    const scrims = [
+      {
+        id: "s1",
+        opponent_name: "Team B",
+        scheduled_at: "2026-05-01T10:00:00Z",
+        format: "bo3",
+        division_id: null,
+        scrim_results: [{ is_win: true, our_score: 2, opponent_score: 0 }],
+      },
+    ];
+    mockQuery.limit = vi.fn().mockImplementation(() => ({
+      ...mockQuery,
+      then: (resolve: any) => resolve({ data: scrims, error: null }),
+    }));
+
+    const result = await getRecentScrims("org-1");
+    expect(result).toHaveLength(1);
+    expect(result[0]!.is_win).toBe(true);
+    expect(result[0]!.our_score).toBe(2);
+    expect(result[0]!.division_name).toBeNull();
+  });
+
+  it("maps non-array scrim_results correctly", async () => {
+    const scrims = [
+      {
+        id: "s1",
+        opponent_name: "Team B",
+        scheduled_at: "2026-05-01T10:00:00Z",
+        format: "bo1",
+        division_id: null,
+        scrim_results: { is_win: false, our_score: 0, opponent_score: 1 },
+      },
+    ];
+    mockQuery.limit = vi.fn().mockImplementation(() => ({
+      ...mockQuery,
+      then: (resolve: any) => resolve({ data: scrims, error: null }),
+    }));
+
+    const result = await getRecentScrims("org-1");
+    expect(result[0]!.is_win).toBe(false);
+  });
+
+  it("fetches divisions and maps division_name", async () => {
+    const scrims = [
+      {
+        id: "s1",
+        opponent_name: "Team B",
+        scheduled_at: "2026-05-01T10:00:00Z",
+        format: "bo3",
+        division_id: "div-1",
+        scrim_results: [],
+      },
+    ];
+
+    let callCount = 0;
+    mockSupabase.from = vi.fn().mockImplementation((table: string) => {
+      if (table === "scrims") {
+        return {
+          ...mockQuery,
+          limit: vi.fn().mockReturnValue({
+            then: (resolve: any) => resolve({ data: scrims, error: null }),
+          }),
+        };
+      }
+      if (table === "divisions") {
+        callCount++;
+        return {
+          select: vi.fn().mockReturnThis(),
+          in: vi.fn().mockReturnValue({
+            then: (resolve: any) =>
+              resolve({ data: [{ id: "div-1", name: "Main" }], error: null }),
+          }),
+        };
+      }
+      return mockQuery;
+    });
+
+    const result = await getRecentScrims("org-1");
+    expect(result[0]!.division_name).toBe("Main");
+    expect(callCount).toBe(1);
+  });
+});
+
+describe("getDraftAnalytics", () => {
+  let mockQuery: any;
+  let mockSupabase: any;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockQuery = {
+      select: vi.fn().mockReturnThis(),
+      eq: vi.fn().mockReturnThis(),
+      in: vi.fn().mockReturnThis(),
+    };
+    mockSupabase = {
+      from: vi.fn().mockReturnValue(mockQuery),
+    };
+    vi.mocked(createClient).mockResolvedValue(mockSupabase as any);
+  });
+
+  it("returns empty draft analytics when no completed scrims", async () => {
+    mockQuery.eq = vi.fn().mockImplementation(() => ({
+      ...mockQuery,
+      then: (resolve: any) => resolve({ data: [], error: null }),
+    }));
+
+    const result = await getDraftAnalytics("org-1");
+    expect(result).toEqual({ byRole: {}, topOverall: [] });
+  });
+
+  it("returns empty draft analytics when scrim data is null", async () => {
+    mockQuery.eq = vi.fn().mockImplementation(() => ({
+      ...mockQuery,
+      then: (resolve: any) => resolve({ data: null, error: null }),
+    }));
+
+    const result = await getDraftAnalytics("org-1");
+    expect(result).toEqual({ byRole: {}, topOverall: [] });
+  });
+
+  it("returns empty when no picks exist for scrims", async () => {
+    const scrims = [{ id: "s1" }];
+
+    mockSupabase.from = vi.fn().mockImplementation((table: string) => {
+      if (table === "scrims") {
+        const q: any = {
+          select: vi.fn().mockReturnThis(),
+          eq: vi.fn().mockReturnThis(),
+        };
+        q.eq = vi.fn().mockImplementation(() => {
+          // return a thenable that resolves to data after second .eq()
+          const inner: any = {
+            eq: vi.fn().mockReturnValue({
+              then: (resolve: any) => resolve({ data: scrims, error: null }),
+            }),
+            then: (resolve: any) => resolve({ data: scrims, error: null }),
+          };
+          return inner;
+        });
+        return q;
+      }
+      return {
+        select: vi.fn().mockReturnThis(),
+        in: vi.fn().mockReturnThis(),
+        eq: vi.fn().mockReturnThis(),
+        then: (resolve: any) => resolve({ data: [], error: null }),
+      };
+    });
+
+    const result = await getDraftAnalytics("org-1");
+    expect(result).toEqual({ byRole: {}, topOverall: [] });
   });
 });
 

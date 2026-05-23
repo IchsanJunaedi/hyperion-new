@@ -3,6 +3,7 @@ import {
   normalizeWaNumber,
   formatDateTime,
   formatScrimSchedule,
+  formatRelative,
 } from "@/lib/utils/format";
 
 describe("normalizeWaNumber", () => {
@@ -61,5 +62,21 @@ describe("formatScrimSchedule", () => {
     const futureIso = new Date(Date.now() + 14 * 86400000).toISOString();
     const result = formatScrimSchedule(futureIso);
     expect(result).toContain("·");
+  });
+});
+
+describe("formatRelative", () => {
+  it("returns a relative time string for a past Date", () => {
+    const past = new Date(Date.now() - 60000); // 1 minute ago
+    const result = formatRelative(past);
+    expect(typeof result).toBe("string");
+    expect(result.length).toBeGreaterThan(0);
+  });
+
+  it("accepts ISO string input", () => {
+    const pastIso = new Date(Date.now() - 3600000).toISOString(); // 1 hour ago
+    const result = formatRelative(pastIso);
+    expect(typeof result).toBe("string");
+    expect(result.length).toBeGreaterThan(0);
   });
 });

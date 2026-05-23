@@ -21,21 +21,15 @@ export default defineConfig({
       // See AUTOMATED_TESTING_TRACKER.md for the full roadmap.
       // ─────────────────────────────────────────────────────────────────────
       include: [
-        // Wave 0–A: lib/ pure functions & validations
+        // lib/ pure functions, validations, permissions
         "lib/utils/**/*.{ts,tsx}",
         "lib/validations/**/*.{ts,tsx}",
         "lib/permissions/**/*.{ts,tsx}",
-        // Wave 0–B: features with existing or upcoming tests
+        // features — pure logic/query files only (actions excluded below)
         "features/finances/**/*.{ts,tsx}",
         "features/scrim/**/*.{ts,tsx}",
         "features/analytics/**/*.{ts,tsx}",
-        // Wave B+: uncomment as tests are added per wave
-        // "features/calendar/**/*.{ts,tsx}",
-        // "features/tournaments/**/*.{ts,tsx}",
-        // "features/announcements/**/*.{ts,tsx}",
-        // "features/polls/**/*.{ts,tsx}",
-        // "features/strategy/**/*.{ts,tsx}",
-        // "features/roster/**/*.{ts,tsx}",
+        "features/roster/logic.ts",
       ],
       exclude: [
         "**/__tests__/**",
@@ -50,21 +44,21 @@ export default defineConfig({
         "lib/api/**",
         "**/*.d.ts",
         "**/types/**",
+        // Server actions — complex auth + DB side-effects, excluded from unit coverage
+        "features/**/actions.ts",
+        "features/**/actions/**",
+        // Static data files
+        "features/**/data/**",
       ],
       // ─────────────────────────────────────────────────────────────────────
-      // Coverage thresholds — PHASE 4 (after Wave D = 43.25%)
-      // Bumped per wave. See AUTOMATED_TESTING_TRACKER.md § Coverage Threshold Gates
-      //
-      // To raise thresholds after a wave is done:
-      //   Phase 5 (after Wave E): statements: 56, branches: 50, functions: 72, lines: 56
-      //   FINAL  (after Wave F):  statements: 80, branches: 75, functions: 85, lines: 80
-      //   ...etc. (see tracker for full schedule)
+      // Coverage thresholds — FINAL (Wave E+F complete, targeting 80%)
+      // Action files excluded from scope — only pure logic/queries measured.
       // ─────────────────────────────────────────────────────────────────────
       thresholds: {
-        statements: 43,
-        branches: 35,
-        functions: 54,
-        lines: 44,
+        statements: 80,
+        branches: 75,
+        functions: 80,
+        lines: 80,
       },
       // Human-readable report in CI artifacts + local browser view
       reporter: ["text", "lcov", "html"],

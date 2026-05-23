@@ -4,6 +4,8 @@ import {
   createScrimSchema,
   submitResultSchema,
   updateAttendanceSchema,
+  cancelScrimSchema,
+  updateScrimSchema,
 } from "@/lib/validations/scrim";
 
 const VALID_UUID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890";
@@ -107,6 +109,101 @@ describe("submitResultSchema", () => {
 
   it("accepts performance_rating of 1", () => {
     expect(submitResultSchema.safeParse({ ...valid, performance_rating: 1 }).success).toBe(true);
+  });
+});
+
+describe("cancelScrimSchema", () => {
+  it("accepts valid scrim_id with no reason", () => {
+    const result = cancelScrimSchema.safeParse({ scrim_id: VALID_UUID });
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts valid reason", () => {
+    const result = cancelScrimSchema.safeParse({ scrim_id: VALID_UUID, reason: "Opponent unavailable" });
+    expect(result.success).toBe(true);
+    if (result.success) expect(result.data.reason).toBe("Opponent unavailable");
+  });
+
+  it("transforms empty reason to null", () => {
+    const result = cancelScrimSchema.safeParse({ scrim_id: VALID_UUID, reason: "" });
+    expect(result.success).toBe(true);
+    if (result.success) expect(result.data.reason).toBeNull();
+  });
+
+  it("rejects reason longer than 500 chars", () => {
+    const result = cancelScrimSchema.safeParse({ scrim_id: VALID_UUID, reason: "x".repeat(501) });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects invalid scrim_id", () => {
+    const result = cancelScrimSchema.safeParse({ scrim_id: "not-uuid" });
+    expect(result.success).toBe(false);
+  });
+});
+
+describe("updateScrimSchema", () => {
+  const FUTURE_ISO = new Date(Date.now() + 86400000).toISOString();
+  const valid = {
+    scrim_id: VALID_UUID,
+    division_id: VALID_UUID,
+    opponent_name: "Tim Elang",
+    scheduled_at: FUTURE_ISO,
+    format: "bo3",
+  };
+
+  it("accepts valid full update input", () => {
+    const result = updateScrimSchema.safeParse(valid);
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects empty opponent_name", () => {
+    const result = updateScrimSchema.safeParse({ ...valid, opponent_name: "" });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects opponent_name longer than 120 chars", () => {
+    const result = updateScrimSchema.safeParse({ ...valid, opponent_name: "a".repeat(121) });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects invalid division_id", () => {
+    const result = updateScrimSchema.safeParse({ ...valid, division_id: "not-uuid" });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects invalid scheduled_at", () => {
+    const result = updateScrimSchema.safeParse({ ...valid, scheduled_at: "invalid-date" });
+    expect(result.success).toBe(false);
+  });
+
+  it("transforms empty opponent_contact to null", () => {
+    const result = updateScrimSchema.safeParse({ ...valid, opponent_contact: "" });
+    expect(result.success).toBe(true);
+    if (result.success) expect(result.data.opponent_contact).toBeNull();
+  });
+
+  it("transforms empty server_region to null", () => {
+    const result = updateScrimSchema.safeParse({ ...valid, server_region: "" });
+    expect(result.success).toBe(true);
+    if (result.success) expect(result.data.server_region).toBeNull();
+  });
+
+  it("transforms empty room_info to null", () => {
+    const result = updateScrimSchema.safeParse({ ...valid, room_info: "" });
+    expect(result.success).toBe(true);
+    if (result.success) expect(result.data.room_info).toBeNull();
+  });
+
+  it("transforms empty notes to null", () => {
+    const result = updateScrimSchema.safeParse({ ...valid, notes: "" });
+    expect(result.success).toBe(true);
+    if (result.success) expect(result.data.notes).toBeNull();
+  });
+
+  it("keeps non-empty notes", () => {
+    const result = updateScrimSchema.safeParse({ ...valid, notes: "Watch the tower control" });
+    expect(result.success).toBe(true);
+    if (result.success) expect(result.data.notes).toBe("Watch the tower control");
   });
 });
 

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { summarizeAttendance, getScrimWinLossRecord } from "../queries";
+import { summarizeAttendance, getScrimWinLossRecord, listScrims } from "../queries";
 import { createClient } from "@/lib/supabase/server";
 import type { ScrimDetail } from "../queries";
 
@@ -177,5 +177,155 @@ describe("getScrimWinLossRecord", () => {
     expect(mockFrom.select).toHaveBeenCalledWith("id, scrim_results(is_win)");
     expect(mockFrom.eq).toHaveBeenNthCalledWith(1, "organization_id", "org-xyz");
     expect(mockFrom.eq).toHaveBeenNthCalledWith(2, "status", "completed");
+  });
+});
+
+describe("listScrims", () => {
+  let mockQuery: any;
+  let mockSupabase: any;
+
+  const makeScrimRow = (id: string, status: string) => ({
+    id,
+    status,
+    opponent_name: `Opponent ${id}`,
+    scheduled_at: "2026-05-15T10:00:00Z",
+    format: "bo3",
+    organization_id: "org-1",
+  });
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockQuery = {
+      select: vi.fn().mockReturnThis(),
+      eq: vi.fn().mockReturnThis(),
+      gte: vi.fn().mockReturnThis(),
+      order: vi.fn().mockReturnThis(),
+      or: vi.fn().mockReturnThis(),
+      in: vi.fn().mockReturnThis(),
+      limit: vi.fn().mockReturnThis(),
+    };
+    mockSupabase = {
+      from: vi.fn().mockReturnValue(mockQuery),
+    };
+    vi.mocked(createClient).mockResolvedValue(mockSupabase as any);
+  });
+
+  it("returns empty array on database error", async () => {
+    mockQuery.order = vi.fn().mockImplementation(() => ({
+      ...mockQuery,
+      then: (resolve: any) => resolve({ data: null, error: { message: "DB error" } }),
+    }));
+
+    const result = await listScrims("org-1", "upcoming");
+    expect(result).toEqual([]);
+  });
+
+  it("returns empty array when no scrims found", async () => {
+    mockQuery.order = vi.fn().mockImplementation(() => ({
+      ...mockQuery,
+      then: (resolve: any) => resolve({ data: [], error: null }),
+    }));
+
+    const result = await listScrims("org-1", "upcoming");
+    expect(result).toEqual([]);
+  });
+
+  it("filters upcoming scrims with gte and ascending order", async () => {
+    const scrims = [makeScrimRow("s1", "scheduled")];
+    mockQuery.order = vi.fn().mockImplementation(() => ({
+      ...mockQuery,
+      then: (resolve: any) => resolve({ data: scrims, error: null }),
+    }));
+
+    const result = await listScrims("org-1", "upcoming");
+    expect(result).toHaveLength(1);
+    expect(result[0]!.result).toBeNull();
+    expect(mockQuery.gte).toHaveBeenCalledWith("scheduled_at", expect.any(String));
+  });
+
+  it("filters ongoing scrims using or clause", async () => {
+    const scrims = [makeScrimRow("s1", "ongoing")];
+    mockQuery.order = vi.fn().mockImplementation(() => ({
+      ...mockQuery,
+      then: (resolve: any) => resolve({ data: scrims, error: null }),
+    }));
+
+    const result = await listScrims("org-1", "ongoing");
+    expect(result).toHaveLength(1);
+    expect(mockQuery.or).toHaveBeenCalled();
+  });
+
+  it("filters all scrims with limit", async () => {
+    const scrims = [makeScrimRow("s1", "completed"), makeScrimRow("s2", "scheduled")];
+    mockQuery.limit = vi.fn().mockImplementation(() => ({
+      ...mockQuery,
+      then: (resolve: any) => resolve({ data: scrims, error: null }),
+    }));
+
+    const result = await listScrims("org-1", "all");
+    expect(result).toHaveLength(2);
+  });
+
+  it("maps completed scrims with results from scrim_results table", async () => {
+    const scrims = [makeScrimRow("s1", "completed")];
+    const scrimResults = [
+      { scrim_id: "s1", our_score: 2, opponent_score: 1, is_win: true },
+    ];
+
+    let fromCallIndex = 0;
+    mockSupabase.from = vi.fn().mockImplementation((table: string) => {
+      fromCallIndex++;
+      if (table === "scrims") {
+        return {
+          select: vi.fn().mockReturnThis(),
+          eq: vi.fn().mockReturnThis(),
+          in: vi.fn().mockReturnThis(),
+          order: vi.fn().mockReturnThis(),
+          limit: vi.fn().mockReturnValue({
+            then: (resolve: any) => resolve({ data: scrims, error: null }),
+          }),
+        };
+      }
+      if (table === "scrim_results") {
+        return {
+          select: vi.fn().mockReturnThis(),
+          in: vi.fn().mockReturnValue({
+            then: (resolve: any) => resolve({ data: scrimResults, error: null }),
+          }),
+        };
+      }
+      return mockQuery;
+    });
+
+    const result = await listScrims("org-1", "completed");
+    expect(result[0]!.result?.is_win).toBe(true);
+    expect(result[0]!.result?.our_score).toBe(2);
+  });
+
+  it("handles completed scrims with no results (null result)", async () => {
+    const scrims = [makeScrimRow("s1", "completed")];
+
+    mockSupabase.from = vi.fn().mockImplementation((table: string) => {
+      if (table === "scrims") {
+        return {
+          select: vi.fn().mockReturnThis(),
+          eq: vi.fn().mockReturnThis(),
+          in: vi.fn().mockReturnThis(),
+          order: vi.fn().mockReturnThis(),
+          limit: vi.fn().mockReturnValue({
+            then: (resolve: any) => resolve({ data: scrims, error: null }),
+          }),
+        };
+      }
+      return {
+        select: vi.fn().mockReturnThis(),
+        in: vi.fn().mockReturnValue({
+          then: (resolve: any) => resolve({ data: [], error: null }),
+        }),
+      };
+    });
+
+    const result = await listScrims("org-1", "completed");
+    expect(result[0]!.result).toBeNull();
   });
 });
