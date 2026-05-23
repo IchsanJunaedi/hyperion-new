@@ -130,7 +130,7 @@ export function TrialDetailClient({ trial, applicants, canManage, appUrl, revali
       </div>
 
       {/* Applicant table */}
-      <div className="rounded-xl border border-[#2D2D2D] bg-[#202020] overflow-hidden">
+      <div className="rounded-xl border border-[#2D2D2D] bg-[#202020]">
         <div className="grid grid-cols-[1fr_1fr_1fr_auto] gap-4 border-b border-[#2D2D2D] px-4 py-2">
           {["Identitas", "Kontak", "Game Info", "Status"].map((h) => (
             <p key={h} className="text-[10px] font-semibold uppercase tracking-wide text-[#6B6A68]">{h}</p>

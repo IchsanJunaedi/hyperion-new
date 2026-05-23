@@ -46,7 +46,7 @@ export default async function TrialDetailPage({ params }: Props) {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 px-4 py-6 sm:px-8">
       <div>
         <h1 className="text-2xl font-bold text-white">Detail Trial</h1>
       </div>

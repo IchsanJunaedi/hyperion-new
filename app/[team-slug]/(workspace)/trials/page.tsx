@@ -44,7 +44,7 @@ export default async function TrialsPage({ params }: Props) {
   const divisionId = divisionRes.data?.id ?? "";
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 px-4 py-6 sm:px-8">
       <div>
         <h1 className="text-2xl font-bold text-white">Open Trial</h1>
         <p className="mt-1 text-sm text-[#9B9A97]">Kelola seleksi pemain baru untuk tim.</p>
