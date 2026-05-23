@@ -24,12 +24,16 @@ export default async function ManageSponsorsPage() {
   if (!membership) redirect("/manage");
 
   const orgId = membership.organization_id;
-  const sponsors = await getSponsors([orgId]);
+  const [sponsors, orgRes] = await Promise.all([
+    getSponsors([orgId]),
+    admin.from("organizations").select("name").eq("id", orgId).maybeSingle(),
+  ]);
 
   return (
     <SponsorListClient
       sponsors={sponsors}
       orgId={orgId}
+      orgName={orgRes.data?.name ?? undefined}
       detailBasePath="/manage/sponsors"
     />
   );
