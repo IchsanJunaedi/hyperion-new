@@ -178,7 +178,10 @@ export async function registerApplicantAction(raw: {
     !rank ||
     !server ||
     !mainGame ||
-    !age
+    !socialMedia ||
+    isNaN(age) ||
+    age < 10 ||
+    age > 99
   ) {
     return { ok: false, message: "Semua field wajib diisi" };
   }

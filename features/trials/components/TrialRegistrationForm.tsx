@@ -72,63 +72,63 @@ export function TrialRegistrationForm({ trial }: { trial: TrialPublic }) {
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs text-[#9B9A97] mb-1">Nama Lengkap <span className="text-red-400">*</span></label>
-            <input name="name" type="text" required className={inputCls} />
+            <label htmlFor="name" className="block text-xs text-[#9B9A97] mb-1">Nama Lengkap <span className="text-red-400">*</span></label>
+            <input id="name" name="name" type="text" required className={inputCls} />
           </div>
           <div>
-            <label className="block text-xs text-[#9B9A97] mb-1">IGN (In-Game Name) <span className="text-red-400">*</span></label>
-            <input name="ign" type="text" required className={inputCls} />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="block text-xs text-[#9B9A97] mb-1">No. WhatsApp <span className="text-red-400">*</span></label>
-            <input name="phone" type="tel" required inputMode="numeric" className={inputCls} />
-          </div>
-          <div>
-            <label className="block text-xs text-[#9B9A97] mb-1">Email <span className="text-red-400">*</span></label>
-            <input name="email" type="email" required className={inputCls} />
+            <label htmlFor="ign" className="block text-xs text-[#9B9A97] mb-1">IGN (In-Game Name) <span className="text-red-400">*</span></label>
+            <input id="ign" name="ign" type="text" required className={inputCls} />
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs text-[#9B9A97] mb-1">Umur <span className="text-red-400">*</span></label>
-            <input name="age" type="number" min={10} max={99} required inputMode="numeric" className={inputCls} />
+            <label htmlFor="phone" className="block text-xs text-[#9B9A97] mb-1">No. WhatsApp <span className="text-red-400">*</span></label>
+            <input id="phone" name="phone" type="tel" required className={inputCls} />
           </div>
           <div>
-            <label className="block text-xs text-[#9B9A97] mb-1">Role / Posisi Dilamar <span className="text-red-400">*</span></label>
+            <label htmlFor="email" className="block text-xs text-[#9B9A97] mb-1">Email <span className="text-red-400">*</span></label>
+            <input id="email" name="email" type="email" required className={inputCls} />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label htmlFor="age" className="block text-xs text-[#9B9A97] mb-1">Umur <span className="text-red-400">*</span></label>
+            <input id="age" name="age" type="number" min={10} max={99} required inputMode="numeric" className={inputCls} />
+          </div>
+          <div>
+            <label htmlFor="role_applied" className="block text-xs text-[#9B9A97] mb-1">Role / Posisi Dilamar <span className="text-red-400">*</span></label>
             {trial.positions.length > 0 ? (
-              <select name="role_applied" required className={inputCls}>
+              <select id="role_applied" name="role_applied" required className={inputCls}>
                 <option value="">— Pilih posisi —</option>
                 {trial.positions.map((p) => <option key={p} value={p}>{p}</option>)}
               </select>
             ) : (
-              <input name="role_applied" type="text" required className={inputCls} />
+              <input id="role_applied" name="role_applied" type="text" required className={inputCls} />
             )}
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs text-[#9B9A97] mb-1">Rank Saat Ini <span className="text-red-400">*</span></label>
-            <input name="rank" type="text" required className={inputCls} />
+            <label htmlFor="rank" className="block text-xs text-[#9B9A97] mb-1">Rank Saat Ini <span className="text-red-400">*</span></label>
+            <input id="rank" name="rank" type="text" required className={inputCls} />
           </div>
           <div>
-            <label className="block text-xs text-[#9B9A97] mb-1">Server <span className="text-red-400">*</span></label>
-            <input name="server" type="text" required className={inputCls} />
+            <label htmlFor="server" className="block text-xs text-[#9B9A97] mb-1">Server <span className="text-red-400">*</span></label>
+            <input id="server" name="server" type="text" required className={inputCls} />
           </div>
         </div>
 
         <div>
-          <label className="block text-xs text-[#9B9A97] mb-1">Game Sampingan</label>
-          <input name="secondary_game" type="text" className={inputCls} />
+          <label htmlFor="secondary_game" className="block text-xs text-[#9B9A97] mb-1">Game Sampingan</label>
+          <input id="secondary_game" name="secondary_game" type="text" className={inputCls} />
         </div>
 
         <div>
-          <label className="block text-xs text-[#9B9A97] mb-1">Sosial Media <span className="text-red-400">*</span></label>
-          <input name="social_media" type="text" required className={inputCls} />
+          <label htmlFor="social_media" className="block text-xs text-[#9B9A97] mb-1">Sosial Media <span className="text-red-400">*</span></label>
+          <input id="social_media" name="social_media" type="text" required className={inputCls} />
         </div>
 
         {/* Free agent toggle */}
