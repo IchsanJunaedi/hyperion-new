@@ -1,41 +1,35 @@
-import { ArrowRight, Clock } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
-const DIVISIONS = [
-  {
-    game: "Mobile Legends: Bang Bang",
-    abbr: "MLBB",
-    description:
-      "Tim utama kami aktif berlaga di turnamen nasional & regional. Juara Liga Esport Nasional Pelajar 2024 dan berbagai turnamen bergengsi.",
-    color: "#F5C400",
-    gradient: "from-yellow-900/60 via-black/80 to-black",
-    active: true,
-    badge: "ACTIVE",
-    href: "/divisions",
-  },
-  {
-    game: "PUBG Mobile",
-    abbr: "PUBGM",
-    description: "Divisi battle royale sedang dalam tahap pembentukan. Siap menghadirkan roster terbaik.",
-    color: "#F97316",
-    gradient: "from-orange-900/60 via-black/80 to-black",
-    active: false,
-    badge: "COMING SOON",
-    href: null,
-  },
-  {
-    game: "Free Fire",
-    abbr: "FF",
-    description: "Tim kompetitif Free Fire akan segera hadir dan siap bersaing di kancah nasional.",
-    color: "#22C55E",
-    gradient: "from-green-900/60 via-black/80 to-black",
-    active: false,
-    badge: "COMING SOON",
-    href: null,
-  },
-] as const;
+import { createClient } from "@/lib/supabase/server";
 
-export function DivisionsSection() {
+const GAME_META: Record<string, { color: string; abbr: string }> = {
+  "mobile legends": { color: "#F5C400", abbr: "MLBB" },
+  "mobile_legends": { color: "#F5C400", abbr: "MLBB" },
+  "pubg":           { color: "#F97316", abbr: "PUBG" },
+  "pubg mobile":    { color: "#F97316", abbr: "PUBGM" },
+  "free fire":      { color: "#22C55E", abbr: "FF" },
+};
+
+function getMeta(game: string) {
+  const key = game.toLowerCase();
+  return GAME_META[key] ?? { color: "#9B9A97", abbr: game.slice(0, 4).toUpperCase() };
+}
+
+export async function DivisionsSection() {
+  const supabase = await createClient();
+
+  // Standalone divisions (organization_id IS NULL) = game divisions for landing page
+  const { data: divisions } = await supabase
+    .from("divisions")
+    .select("id, name, slug, game, description, logo_url, is_active")
+    .is("organization_id", null)
+    .eq("is_active", true)
+    .order("name");
+
+  const items = divisions ?? [];
+  if (items.length === 0) return null;
+
   return (
     <section className="bg-[#070707] px-6 py-24 sm:px-10 lg:px-16">
       <div className="mx-auto max-w-7xl">
@@ -60,88 +54,86 @@ export function DivisionsSection() {
           </Link>
         </div>
 
-        {/* Cards grid */}
+        {/* Cards */}
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {DIVISIONS.map((div) => (
-            <div
-              key={div.abbr}
-              className="group relative overflow-hidden border border-white/5 bg-[#0D0D0D] transition-all duration-300 hover:border-white/10"
-              style={div.active ? { borderColor: "rgba(245,196,0,0.2)" } : {}}
-            >
-              {/* Top gradient bar */}
+          {items.map((div) => {
+            const meta = getMeta(div.game ?? "");
+            const isFirst = items.indexOf(div) === 0;
+            return (
               <div
-                className="h-1 w-full"
-                style={{ background: div.active ? div.color : "rgba(255,255,255,0.06)" }}
-              />
+                key={div.id}
+                className="group relative overflow-hidden border border-white/5 bg-[#0D0D0D] transition-all duration-300 hover:border-white/10"
+                style={isFirst ? { borderColor: `${meta.color}33` } : {}}
+              >
+                {/* Top accent bar */}
+                <div
+                  className="h-1 w-full"
+                  style={{ background: isFirst ? meta.color : "rgba(255,255,255,0.06)" }}
+                />
 
-              <div className="p-6">
-                {/* Badge */}
-                <div className="mb-4 flex items-center gap-2">
-                  <span
-                    className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest"
+                <div className="p-6">
+                  {/* Active badge */}
+                  <div className="mb-4">
+                    <span
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest"
+                      style={{
+                        background: isFirst ? `${meta.color}18` : "rgba(255,255,255,0.05)",
+                        color: isFirst ? meta.color : "rgba(255,255,255,0.3)",
+                        border: `1px solid ${isFirst ? `${meta.color}30` : "rgba(255,255,255,0.08)"}`,
+                      }}
+                    >
+                      <span
+                        className="inline-block h-1.5 w-1.5 rounded-full"
+                        style={{ background: isFirst ? meta.color : "rgba(255,255,255,0.2)" }}
+                      />
+                      ACTIVE
+                    </span>
+                  </div>
+
+                  {/* Abbr */}
+                  <p
+                    className="text-5xl font-black uppercase leading-none tracking-tighter"
                     style={{
-                      background: div.active
-                        ? "rgba(245,196,0,0.12)"
-                        : "rgba(255,255,255,0.05)",
-                      color: div.active ? "#F5C400" : "rgba(255,255,255,0.3)",
-                      border: `1px solid ${div.active ? "rgba(245,196,0,0.25)" : "rgba(255,255,255,0.08)"}`,
+                      color: isFirst ? meta.color : "rgba(255,255,255,0.1)",
+                      textShadow: isFirst ? `0 0 40px ${meta.color}44` : "none",
                     }}
                   >
-                    {div.active ? (
-                      <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#F5C400]" />
-                    ) : (
-                      <Clock className="h-2.5 w-2.5" />
-                    )}
-                    {div.badge}
-                  </span>
-                </div>
+                    {meta.abbr}
+                  </p>
 
-                {/* Abbr */}
-                <p
-                  className="text-5xl font-black uppercase leading-none tracking-tighter"
-                  style={{
-                    color: div.active ? div.color : "rgba(255,255,255,0.1)",
-                    textShadow: div.active
-                      ? `0 0 40px ${div.color}33`
-                      : "none",
-                  }}
-                >
-                  {div.abbr}
-                </p>
+                  {/* Full game name */}
+                  <p className="mt-2 text-xs font-semibold uppercase tracking-wider text-white/30">
+                    {div.name}
+                  </p>
 
-                {/* Full name */}
-                <p className="mt-2 text-xs font-semibold uppercase tracking-wider text-white/30">
-                  {div.game}
-                </p>
+                  {/* Description */}
+                  <p className="mt-4 text-sm leading-relaxed text-white/50">
+                    {div.description ??
+                      "Divisi kompetitif aktif berlaga di berbagai turnamen nasional dan regional."}
+                  </p>
 
-                {/* Description */}
-                <p className="mt-4 text-sm leading-relaxed text-white/50">
-                  {div.description}
-                </p>
-
-                {/* CTA */}
-                <div className="mt-6">
-                  {div.active && div.href ? (
+                  {/* CTA */}
+                  <div className="mt-6">
                     <Link
-                      href={div.href}
-                      className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#F5C400] transition hover:gap-3"
+                      href={`/divisions/${div.slug}`}
+                      className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider transition hover:gap-3"
+                      style={{ color: isFirst ? meta.color : "rgba(255,255,255,0.2)" }}
                     >
-                      Lihat Divisi <ArrowRight className="h-3 w-3" />
+                      Lihat Tim <ArrowRight className="h-3 w-3" />
                     </Link>
-                  ) : (
-                    <span className="text-xs font-bold uppercase tracking-wider text-white/20">
-                      Segera Hadir
-                    </span>
-                  )}
+                  </div>
                 </div>
-              </div>
 
-              {/* Bottom corner accent on active */}
-              {div.active && (
-                <div className="absolute bottom-0 right-0 h-8 w-8 border-b-2 border-r-2 border-[#F5C400]/30" />
-              )}
-            </div>
-          ))}
+                {/* Corner bracket on first/primary */}
+                {isFirst && (
+                  <div
+                    className="absolute bottom-0 right-0 h-8 w-8 border-b-2 border-r-2"
+                    style={{ borderColor: `${meta.color}30` }}
+                  />
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>
