@@ -46,7 +46,7 @@ export default async function ManageSalariesPage() {
 
   const profileMap = new Map((profileRows ?? []).map((p) => [p.id, p.display_name]));
   const members = memberRows
-    .filter((m) => m.role !== "owner")
+    .filter((m) => m.role !== "owner" && m.user_id !== user.id)
     .map((m) => ({
       user_id: m.user_id,
       display_name: profileMap.get(m.user_id) ?? null,
