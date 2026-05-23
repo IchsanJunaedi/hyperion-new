@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { AchievementsSection } from "@/components/landing/AchievementsSection";
+import { DivisionsSection } from "@/components/landing/DivisionsSection";
 import { Footer } from "@/components/landing/Footer";
 import { Header } from "@/components/landing/Header";
 import { HeroSection } from "@/components/landing/HeroSection";
@@ -70,6 +71,7 @@ export default async function HomePage() {
       <Header />
       <main className="flex-1">
         <HeroSection />
+        <DivisionsSection />
         <AchievementsSection />
         <TestimonialsSection />
         <PartnersSection />

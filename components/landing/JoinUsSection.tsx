@@ -1,31 +1,65 @@
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 
 export function JoinUsSection() {
   return (
-    <section className="relative overflow-hidden px-6 py-24 sm:py-32">
-      {/* Subtle yellow accent lines (decorative) — mirrors the live page. */}
+    <section className="relative overflow-hidden bg-[#070707] px-6 py-28 sm:px-10 lg:px-16">
+      {/* Background dot grid */}
       <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-25"
+        className="pointer-events-none absolute inset-0 opacity-15"
         style={{
           backgroundImage:
-            "linear-gradient(120deg, transparent 35%, rgba(222,179,4,0.45) 36%, rgba(222,179,4,0.45) 36.4%, transparent 36.5%), linear-gradient(120deg, transparent 60%, rgba(222,179,4,0.45) 61%, rgba(222,179,4,0.45) 61.3%, transparent 61.5%)",
+            "radial-gradient(circle, rgba(245,196,0,0.25) 1px, transparent 1px)",
+          backgroundSize: "28px 28px",
         }}
       />
-      <div className="relative mx-auto flex max-w-3xl flex-col items-center text-center">
-        <h2 className="text-4xl font-bold text-white/55 sm:text-5xl">
-          Join Us
-        </h2>
-        <p className="mt-6 max-w-xl text-base text-white/70 sm:text-lg">
-          Unleash Young Potential Power. Focus of Develop Young Player
-        </p>
-        <p className="mt-2 text-sm text-white/60">#HypeWin</p>
-        <Link
-          href="/register"
-          className="mt-8 inline-flex h-11 items-center justify-center rounded-[10px] bg-white px-6 text-sm font-medium text-black shadow-md transition hover:bg-white/90"
-        >
-          Join Now
-        </Link>
+
+      {/* Yellow glow center */}
+      <div
+        className="pointer-events-none absolute left-1/2 top-1/2 h-[400px] w-[400px] -translate-x-1/2 -translate-y-1/2 rounded-full"
+        style={{
+          background: "radial-gradient(circle, rgba(245,196,0,0.06) 0%, transparent 70%)",
+        }}
+      />
+
+      {/* Corner brackets */}
+      <div className="absolute left-6 top-8 h-10 w-10 border-l-2 border-t-2 border-[#F5C400]/25 sm:left-10" />
+      <div className="absolute bottom-8 right-6 h-10 w-10 border-b-2 border-r-2 border-[#F5C400]/25 sm:right-10" />
+
+      <div className="relative z-10 mx-auto max-w-7xl">
+        <div className="grid items-center gap-10 lg:grid-cols-[1fr_auto]">
+          {/* Left: text */}
+          <div>
+            <div className="mb-4 flex items-center gap-3">
+              <div className="h-px w-8 bg-[#F5C400]" />
+              <span className="text-[11px] font-bold uppercase tracking-[0.3em] text-[#F5C400]">
+                #HypeWin
+              </span>
+            </div>
+            <h2 className="text-4xl font-black uppercase leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl">
+              READY TO
+              <br />
+              <span className="text-[#F5C400]">JOIN THE TEAM?</span>
+            </h2>
+            <p className="mt-5 max-w-lg text-sm leading-relaxed text-white/45 sm:text-base">
+              Unleash your potential. Kembangkan skill, bangun karir esports, dan jadilah bagian dari keluarga Hyperion Team.
+            </p>
+          </div>
+
+          {/* Right: CTA */}
+          <div className="flex flex-col items-start gap-3 lg:items-end">
+            <Link
+              href="/register"
+              className="group inline-flex h-14 items-center gap-3 bg-[#F5C400] px-8 text-sm font-black uppercase tracking-wide text-black transition hover:bg-yellow-300"
+            >
+              Join Now
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </Link>
+            <p className="text-xs text-white/25">
+              Gratis · Tanpa syarat umur minimum
+            </p>
+          </div>
+        </div>
       </div>
     </section>
   );
