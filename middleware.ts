@@ -18,6 +18,7 @@ const RESERVED_ROOT_SEGMENTS = new Set([
   "reset-password",
   "callback",
   "invite",
+  "trial",
   "auth",
   "onboarding",
   "dashboard",
