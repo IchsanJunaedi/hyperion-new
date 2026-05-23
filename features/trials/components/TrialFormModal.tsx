@@ -13,9 +13,8 @@ interface TrialFormModalProps {
 }
 
 const POSITION_SUGGESTIONS = [
-  "Duelist", "Controller", "Initiator", "Sentinel",
-  "IGL", "Support", "Jungler", "Mid Laner", "Top Laner", "Bot Laner",
-  "Carry", "Offlaner", "Hard Support", "Pos 1", "Pos 2", "Pos 3", "Pos 4", "Pos 5",
+  "Jungler", "Mid Lane", "Exp Lane", "Roamer", "Gold Lane",
+  "Hyper", "Support", "Tank", "IGL", "Carry",
 ];
 
 export function TrialFormModal({ revalidatePaths, onClose }: TrialFormModalProps) {

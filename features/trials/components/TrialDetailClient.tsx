@@ -91,18 +91,25 @@ export function TrialDetailClient({ trial, applicants, canManage, appUrl, revali
           )}
         </div>
 
-        {/* Registration link — only when active */}
-        {trial.status === "active" && (
-          <div className="flex items-center gap-2 rounded-lg border border-[#2D2D2D] bg-[#191919] px-3 py-2">
-            <p className="flex-1 truncate text-xs text-[#9B9A97] font-mono">{registrationUrl}</p>
-            <button
-              type="button"
-              onClick={copyLink}
-              className="inline-flex items-center gap-1.5 rounded-md border border-[#2D2D2D] px-2.5 py-1 text-xs text-[#9B9A97] hover:bg-[#2C2C2C] cursor-pointer"
-            >
-              {copied ? <Check className="h-3 w-3 text-green-400" /> : <Copy className="h-3 w-3" />}
-              {copied ? "Tersalin" : "Salin"}
-            </button>
+        {/* Registration link — shown for draft (preview) and active (shareable) */}
+        {trial.status !== "closed" && (
+          <div className={`rounded-lg border px-3 py-2 ${trial.status === "active" ? "border-[#2D2D2D] bg-[#191919]" : "border-dashed border-[#2D2D2D] bg-[#191919]/50"}`}>
+            {trial.status === "draft" && (
+              <p className="text-[10px] text-[#6B6A68] mb-1.5">Aktifkan trial agar link ini bisa diakses pendaftar.</p>
+            )}
+            <div className="flex items-center gap-2">
+              <p className={`flex-1 truncate text-xs font-mono ${trial.status === "active" ? "text-[#9B9A97]" : "text-[#6B6A68]"}`}>{registrationUrl}</p>
+              {trial.status === "active" && (
+                <button
+                  type="button"
+                  onClick={copyLink}
+                  className="inline-flex items-center gap-1.5 rounded-md border border-[#2D2D2D] px-2.5 py-1 text-xs text-[#9B9A97] hover:bg-[#2C2C2C] cursor-pointer"
+                >
+                  {copied ? <Check className="h-3 w-3 text-green-400" /> : <Copy className="h-3 w-3" />}
+                  {copied ? "Tersalin" : "Salin"}
+                </button>
+              )}
+            </div>
           </div>
         )}
 
