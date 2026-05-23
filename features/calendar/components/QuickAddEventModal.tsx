@@ -237,7 +237,6 @@ export function QuickAddEventModal({
                 name="starts_at"
                 defaultValue={defaultStartsAt}
                 required
-                style={{ colorScheme: "dark" }}
                 onChange={(e) => setStartsAt(e.target.value)}
                 className="w-full rounded-lg border border-white/10 bg-zinc-900/60 px-3 py-2 text-xs text-white transition-all duration-300 focus:border-yellow-400/50 focus:outline-none"
               />
@@ -251,7 +250,6 @@ export function QuickAddEventModal({
                 name="ends_at"
                 defaultValue={defaultEndsAt}
                 min={startsAt || undefined}
-                style={{ colorScheme: "dark" }}
                 className="w-full rounded-lg border border-white/10 bg-zinc-900/60 px-3 py-2 text-xs text-white transition-all duration-300 focus:border-yellow-400/50 focus:outline-none"
               />
             </div>

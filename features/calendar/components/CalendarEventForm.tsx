@@ -170,7 +170,6 @@ export function CalendarEventForm({ orgSlug, divisions }: CalendarEventFormProps
           type="datetime-local"
           name="starts_at"
           required
-          style={{ colorScheme: "dark" }}
           className={inputCls}
         />
       </Field>
@@ -180,7 +179,6 @@ export function CalendarEventForm({ orgSlug, divisions }: CalendarEventFormProps
           id="ends_at"
           type="datetime-local"
           name="ends_at"
-          style={{ colorScheme: "dark" }}
           className={inputCls}
         />
       </Field>
