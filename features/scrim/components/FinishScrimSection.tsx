@@ -49,7 +49,21 @@ export function FinishScrimSection({
 
   if (scrim.status === "cancelled") return null;
 
-  if (!canManage || (!pastDue && scrim.status !== "ongoing")) return null;
+  if (!canManage) return null;
+
+  if (!pastDue && scrim.status !== "ongoing") {
+    const scheduledTime = new Date(scrim.scheduled_at).toLocaleString("id-ID", {
+      weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "Asia/Jakarta",
+    });
+    return (
+      <article className="rounded-2xl border border-white/5 bg-zinc-900/30 p-5">
+        <div className="flex items-center gap-2 text-sm text-white/50">
+          <Trophy className="h-4 w-4 text-white/30" />
+          <span>Tombol hasil akan muncul setelah scrim dimulai ({scheduledTime})</span>
+        </div>
+      </article>
+    );
+  }
 
   if (!showForm) {
     return (

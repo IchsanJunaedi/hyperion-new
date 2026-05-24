@@ -40,8 +40,12 @@ export default async function TournamentDetailPage({ params }: TournamentDetailP
       new Date(detail.registration_deadline).getTime() < Date.now()) ||
      new Date(`${detail.start_date}T${detail.start_time || "00:00"}:00+07:00`).getTime() <= Date.now());
 
+  const tournamentStarted = new Date(`${detail.start_date}T${detail.start_time || "00:00"}:00+07:00`).getTime() <= Date.now();
   const badgeKey = isRegistrationExpired ? "expired" : detail.status;
-  const badge = STATUS_BADGE[badgeKey] ?? STATUS_BADGE["upcoming"] ?? { color: "bg-white/5 text-[#9B9A97] border-white/10", label: "TIDAK DIKETAHUI" };
+  let badge = STATUS_BADGE[badgeKey] ?? STATUS_BADGE["upcoming"] ?? { color: "bg-white/5 text-[#9B9A97] border-white/10", label: "TIDAK DIKETAHUI" };
+  if (detail.status === "ongoing" && tournamentStarted) {
+    badge = { color: "bg-blue-500/10 text-blue-400 border-blue-500/20", label: "BERLANGSUNG" };
+  }
 
   const scheduled = new Date(detail.start_date).toLocaleString("id-ID", {
     weekday: "long",
