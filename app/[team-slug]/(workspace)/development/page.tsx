@@ -23,21 +23,6 @@ export default async function WorkspaceDevelopmentPage({ params }: Props) {
   } = await supabase.auth.getUser();
   if (!user) redirect(`/login?next=/${slug}/development`);
 
-  const { data: membership } = await supabase
-    .from("team_members")
-    .select("role")
-    .eq("user_id", user.id)
-    .eq("organization_id", organization.id)
-    .eq("is_active", true)
-    .maybeSingle();
-
-  const role = membership?.role ?? "member";
-  const canManage =
-    role === "coach" ||
-    role === "captain" ||
-    role === "manager" ||
-    role === "owner";
-
   const targets = await getPlayerTargets(organization.id, user.id);
 
   return (
@@ -71,7 +56,7 @@ export default async function WorkspaceDevelopmentPage({ params }: Props) {
               key={target.id}
               target={target}
               orgSlug={slug}
-              canManage={canManage}
+              canManage={false}
             />
           ))}
         </div>

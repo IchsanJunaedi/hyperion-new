@@ -43,7 +43,7 @@ export default async function DashboardLayout({
       .maybeSingle(),
     supabase
       .from("organizations")
-      .select("id, slug")
+      .select("id, slug, name")
       .eq("owner_id", user.id)
       .limit(1)
       .maybeSingle(),
@@ -52,12 +52,12 @@ export default async function DashboardLayout({
   if (profile) {
     displayName = profile.display_name ?? (user.user_metadata?.["display_name"] as string | undefined) ?? user.email ?? "Owner";
     avatarUrl = profile.avatar_url ?? null;
-    orgName = profile.full_name ?? "Hyperion Team";
     orgLogoUrl = profile.avatar_url ?? null;
   }
   if (org) {
     dashboardOrgId = org.id;
     orgSlug = org.slug ?? "";
+    orgName = (org as unknown as { name?: string }).name ?? "Hyperion Team";
   }
 
   return (

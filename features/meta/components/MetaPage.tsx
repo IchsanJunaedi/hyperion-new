@@ -109,12 +109,14 @@ function HeroCard({
   onEdit,
   onDelete,
   onDetail,
+  pendingDeleteId,
 }: {
   hero: MetaHeroRating;
   editMode: boolean;
   onEdit: (h: MetaHeroRating) => void;
   onDelete: (id: string, name: string) => void;
   onDetail: (h: MetaHeroRating) => void;
+  pendingDeleteId: string | null;
 }) {
   const style = TIER_STYLES[hero.tier];
   return (
@@ -158,7 +160,12 @@ function HeroCard({
             <button
               type="button"
               onClick={() => onDelete(hero.id, hero.hero_name)}
-              className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-full bg-red-500/30 text-red-400 hover:bg-red-500/50"
+              className={`flex h-6 w-6 cursor-pointer items-center justify-center rounded-full transition ${
+                pendingDeleteId === hero.id
+                  ? "bg-red-500/80 text-white"
+                  : "bg-red-500/30 text-red-400 hover:bg-red-500/50"
+              }`}
+              title={pendingDeleteId === hero.id ? "Klik lagi untuk konfirmasi" : "Hapus"}
             >
               <X className="h-3 w-3" />
             </button>
@@ -462,6 +469,8 @@ export function MetaPage({ orgSlug, orgId, patches, initialPatch, canEdit }: Met
   const [showPatchSettings, setShowPatchSettings] = useState(false);
   const [settingsNotes, setSettingsNotes] = useState("");
   const [settingsDescriptions, setSettingsDescriptions] = useState<Record<string, string>>({});
+  const [confirmDeleteHeroId, setConfirmDeleteHeroId] = useState<string | null>(null);
+  const [confirmDeletePatch, setConfirmDeletePatch] = useState(false);
 
   // Close picker when edit mode is turned off
   useEffect(() => {
@@ -485,15 +494,20 @@ export function MetaPage({ orgSlug, orgId, patches, initialPatch, canEdit }: Met
     );
   }
 
-  function handleDelete(ratingId: string, heroName: string) {
-    if (!confirm(`Hapus ${heroName} dari tier list?`)) return;
+  function handleDelete(ratingId: string, _heroName: string) {
+    if (confirmDeleteHeroId !== ratingId) {
+      setConfirmDeleteHeroId(ratingId);
+      return;
+    }
+    setConfirmDeleteHeroId(null);
     startTransition(async () => {
+      const hero = activePatch?.heroes.find((h) => h.id === ratingId);
       const res = await deleteHeroRatingAction(orgSlug, orgId, ratingId);
       if (res.ok) {
         setActivePatch((prev) =>
           prev ? { ...prev, heroes: prev.heroes.filter((h) => h.id !== ratingId) } : prev,
         );
-        toast.success(`${heroName} dihapus dari tier list`);
+        toast.success(`${hero?.hero_name ?? "Hero"} dihapus dari tier list`);
       } else {
         toast.error(res.message);
       }
@@ -529,7 +543,11 @@ export function MetaPage({ orgSlug, orgId, patches, initialPatch, canEdit }: Met
 
   function handleDeletePatch() {
     if (!activePatch) return;
-    if (!confirm(`Hapus patch ${activePatch.patch_version}? Semua hero di patch ini akan ikut terhapus.`)) return;
+    if (!confirmDeletePatch) {
+      setConfirmDeletePatch(true);
+      return;
+    }
+    setConfirmDeletePatch(false);
     startTransition(async () => {
       const res = await deleteMetaPatchAction(orgSlug, orgId, activePatch.id);
       if (res.ok) {
@@ -616,7 +634,7 @@ export function MetaPage({ orgSlug, orgId, patches, initialPatch, canEdit }: Met
               onClick={() => {
                 const params = new URLSearchParams(window.location.search);
                 params.set("patch", p.id);
-                window.location.search = params.toString();
+                router.push(`?${params.toString()}`);
               }}
               className={cn(
                 "cursor-pointer rounded-full border px-3 py-1 text-xs transition",
@@ -915,6 +933,7 @@ export function MetaPage({ orgSlug, orgId, patches, initialPatch, canEdit }: Met
                               onEdit={openEditModal}
                               onDelete={handleDelete}
                               onDetail={setDetailHero}
+                              pendingDeleteId={confirmDeleteHeroId}
                             />
                           ))}
                           {tierHeroes.length === 0 && !editMode && (
@@ -963,10 +982,15 @@ export function MetaPage({ orgSlug, orgId, patches, initialPatch, canEdit }: Met
                     type="button"
                     onClick={handleDeletePatch}
                     disabled={pending}
-                    className="inline-flex cursor-pointer items-center gap-2 rounded-md border border-red-500/20 px-3 py-1.5 text-xs text-red-400 transition hover:bg-red-500/10 disabled:opacity-50"
+                    onBlur={() => setConfirmDeletePatch(false)}
+                    className={`inline-flex cursor-pointer items-center gap-2 rounded-md border px-3 py-1.5 text-xs transition disabled:opacity-50 ${
+                      confirmDeletePatch
+                        ? "border-red-500/50 bg-red-500/10 text-red-400 hover:bg-red-500/20"
+                        : "border-red-500/20 text-red-400 hover:bg-red-500/10"
+                    }`}
                   >
                     <Trash2 className="h-3.5 w-3.5" />
-                    Hapus Patch {activePatch.patch_version}
+                    {confirmDeletePatch ? "Yakin hapus?" : `Hapus Patch ${activePatch.patch_version}`}
                   </button>
                 </div>
               )}

@@ -46,6 +46,11 @@ export default async function AnnouncementDetailPage({
     membership?.role === "owner" ||
     user?.email === process.env.OWNER_EMAIL;
 
+  const canManageAnnouncement =
+    isManager ||
+    membership?.role === "coach" ||
+    membership?.role === "captain";
+
   const readCount = isManager ? await getAnnouncementReadCount(id) : null;
 
   const date = new Date(announcement.created_at).toLocaleString("id-ID", {
@@ -96,11 +101,13 @@ export default async function AnnouncementDetailPage({
         </div>
       </article>
 
-      <AnnouncementActions
-        orgSlug={slug}
-        announcementId={announcement.id}
-        isPinned={announcement.is_pinned}
-      />
+      {canManageAnnouncement && (
+        <AnnouncementActions
+          orgSlug={slug}
+          announcementId={announcement.id}
+          isPinned={announcement.is_pinned}
+        />
+      )}
     </div>
   );
 }
