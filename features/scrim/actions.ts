@@ -407,7 +407,7 @@ export async function updateScrimAction(
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, message: "Anda harus login" };
 
-  const { error } = await supabase
+  const { data: updatedScrim, error } = await supabase
     .from("scrims")
     .update({
       division_id: parsed.data.division_id,
@@ -419,7 +419,9 @@ export async function updateScrimAction(
       room_info: parsed.data.room_info,
       notes: parsed.data.notes,
     })
-    .eq("id", parsed.data.scrim_id);
+    .eq("id", parsed.data.scrim_id)
+    .select("*")
+    .single();
 
   if (error) {
     return {
@@ -438,10 +440,59 @@ export async function updateScrimAction(
     entityId: parsed.data.scrim_id,
   });
 
+  // Fan-out update notification to members (best-effort, fire-and-forget)
+  if (updatedScrim) {
+    const { data: org } = await supabase
+      .from("organizations")
+      .select("name")
+      .eq("slug", orgSlug)
+      .maybeSingle();
+    if (org) {
+      fanOutScrimUpdateNotification(updatedScrim, org.name).catch((err) =>
+        console.error("[Scrim Update Notification]", err),
+      );
+    }
+  }
+
   revalidatePath(`/${orgSlug}/scrim/${parsed.data.scrim_id}`);
   revalidatePath(`/${orgSlug}/scrim`);
   revalidatePath(`/${orgSlug}`);
   return { ok: true };
+}
+
+async function fanOutScrimUpdateNotification(scrim: Scrim, orgName: string) {
+  const admin = createAdminClient();
+  const { data: members } = await admin
+    .from("team_members")
+    .select("user_id")
+    .eq("organization_id", scrim.organization_id)
+    .eq("is_active", true);
+  if (!members || members.length === 0) return;
+
+  const scheduled = new Date(scrim.scheduled_at).toLocaleString("id-ID", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "Asia/Jakarta",
+  });
+  const title = `Scrim diperbarui: vs ${scrim.opponent_name}`;
+  const body = `Jadwal scrim ${scrim.format.toUpperCase()} diperbarui menjadi ${scheduled}.`;
+
+  const rows = members.map((m) => ({
+    organization_id: scrim.organization_id,
+    user_id: m.user_id,
+    type: "scrim_invite" as const,
+    title,
+    body,
+    ref_id: scrim.id,
+    ref_type: "scrim",
+    wa_number: null,
+    wa_message: null,
+  }));
+
+  await admin.from("notifications").insert(rows);
 }
 
 /**

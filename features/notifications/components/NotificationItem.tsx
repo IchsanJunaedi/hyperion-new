@@ -38,6 +38,16 @@ function resolveRoute(
       return `/${orgSlug}/announcements/${refId}`;
     case "tournament":
       return `/${orgSlug}/tournaments/${refId}`;
+    case "calendar":
+      return `/${orgSlug}/calendar`;
+    case "poll":
+      return `/${orgSlug}/polls`;
+    case "strategy":
+      return `/${orgSlug}/strategy/${refId}`;
+    case "finance":
+      return `/${orgSlug}/finances`;
+    case "development":
+      return `/${orgSlug}/development`;
     default:
       return null;
   }

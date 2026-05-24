@@ -21,11 +21,6 @@ const FORMATS: Array<{ value: MatchFormat; label: string }> = [
   { value: "4match", label: "4 Match" },
 ];
 
-const ROOM_TYPES = [
-  { value: "custom_room", label: "Custom Room" },
-  { value: "tournament", label: "Tournament" },
-] as const;
-
 export function ScrimForm({ orgSlug, divisions }: ScrimFormProps) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -40,6 +35,14 @@ export function ScrimForm({ orgSlug, divisions }: ScrimFormProps) {
         e.preventDefault();
         if (pending) return;
         const fd = new FormData(e.currentTarget);
+        const roomId = (fd.get("room_id") as string) || "";
+        const roomPass = (fd.get("room_password") as string) || "";
+        const roomInfo = [
+          roomId && `ID: ${roomId}`,
+          roomPass && `Pass: ${roomPass}`,
+        ]
+          .filter(Boolean)
+          .join(" | ");
         startTransition(async () => {
           setGlobalError(null);
           setFieldErrors({});
@@ -50,7 +53,7 @@ export function ScrimForm({ orgSlug, divisions }: ScrimFormProps) {
             scheduled_at: fd.get("scheduled_at"),
             format: fd.get("format"),
             server_region: fd.get("server_region"),
-            room_info: fd.get("room_info"),
+            room_info: roomInfo || null,
             notes: fd.get("notes"),
           });
           if (!res.ok) {
@@ -155,43 +158,38 @@ export function ScrimForm({ orgSlug, divisions }: ScrimFormProps) {
         </div>
       </Field>
 
-      {/* Server Region & Room Info - Side by Side Grid */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <Field
-          label="Server / region"
+      {/* Server Region - Full Width */}
+      <Field
+        label="Server / region"
+        name="server_region"
+        errors={fieldErrors["server_region"]}
+      >
+        <input
           name="server_region"
-          errors={fieldErrors["server_region"]}
-        >
+          required
+          maxLength={60}
+          className="h-10 w-full rounded-lg border border-white/10 bg-zinc-950/40 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
+        />
+      </Field>
+
+      {/* Room ID & Room Password - Side by Side */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <Field label="Room ID (opsional)" name="room_id" errors={fieldErrors["room_info"]}>
           <input
-            name="server_region"
-            required
-            maxLength={60}
+            name="room_id"
+            maxLength={100}
+            placeholder="mis. 123456"
             className="h-10 w-full rounded-lg border border-white/10 bg-zinc-950/40 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
           />
         </Field>
 
-        <Field
-          label="Room info"
-          name="room_info"
-          errors={fieldErrors["room_info"]}
-        >
-          <div className="flex gap-2 h-10">
-            {ROOM_TYPES.map((r, i) => (
-              <label
-                key={r.value}
-                className="flex-1 h-full flex items-center justify-center cursor-pointer rounded-lg border border-white/10 bg-zinc-800/40 text-xs font-semibold text-white/85 transition-all duration-300 hover:bg-zinc-700/40 has-[input:checked]:bg-yellow-400 has-[input:checked]:text-black has-[input:checked]:border-yellow-400"
-              >
-                <input
-                  type="radio"
-                  name="room_info"
-                  value={r.value}
-                  defaultChecked={i === 0}
-                  className="sr-only"
-                />
-                {r.label}
-              </label>
-            ))}
-          </div>
+        <Field label="Room Password (opsional)" name="room_password" errors={undefined}>
+          <input
+            name="room_password"
+            maxLength={100}
+            placeholder="mis. hyperion"
+            className="h-10 w-full rounded-lg border border-white/10 bg-zinc-950/40 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
+          />
         </Field>
       </div>
 

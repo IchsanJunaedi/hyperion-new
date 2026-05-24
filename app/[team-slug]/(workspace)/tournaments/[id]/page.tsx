@@ -169,8 +169,8 @@ export default async function TournamentDetailPage({ params }: TournamentDetailP
         </section>
 
         <aside className="space-y-6">
-          {/* Timeline — show when ongoing or completed */}
-          {(detail.status === "ongoing" || detail.status === "completed") && (
+          {/* Timeline — show for all active statuses */}
+          {(detail.status === "upcoming" || detail.status === "ongoing" || detail.status === "completed") && (
             <article className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
               <TournamentTimeline
                 stages={detail.stages}

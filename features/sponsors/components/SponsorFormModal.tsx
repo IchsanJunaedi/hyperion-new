@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
-import { X } from "lucide-react";
+import { useEffect, useRef, useState, useTransition } from "react";
+import { ImagePlus, Loader2, X } from "lucide-react";
 import { notify } from "@/features/dashboard/components/NotifyModal";
 import { cn } from "@/lib/utils/cn";
+import { createClient } from "@/lib/supabase/client";
 import { createSponsorAction, updateSponsorAction } from "../actions";
 import type { Sponsor, SponsorStatus } from "../queries";
 
@@ -31,6 +32,32 @@ interface SponsorFormModalProps {
 export function SponsorFormModal({ open, onClose, orgId, editing, onSaved }: SponsorFormModalProps) {
   const [pending, startTransition] = useTransition();
   const [form, setForm] = useState(EMPTY);
+  const [logoUploading, setLogoUploading] = useState(false);
+  const logoInputRef = useRef<HTMLInputElement>(null);
+
+  async function handleLogoUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      notify.error("Logo maksimal 5MB");
+      return;
+    }
+    setLogoUploading(true);
+    try {
+      const supabase = createClient();
+      const ext = file.name.split(".").pop() ?? "png";
+      const path = `${orgId}/sponsors/${Date.now()}.${ext}`;
+      const { error } = await supabase.storage.from("org-logos").upload(path, file, { upsert: true });
+      if (error) throw new Error(error.message);
+      const { data } = supabase.storage.from("org-logos").getPublicUrl(path);
+      set("logo_url", data.publicUrl);
+      notify.success("Logo diupload");
+    } catch (err) {
+      notify.error(err instanceof Error ? err.message : "Gagal upload logo");
+    } finally {
+      setLogoUploading(false);
+    }
+  }
 
   useEffect(() => {
     if (open) {
@@ -131,8 +158,33 @@ export function SponsorFormModal({ open, onClose, orgId, editing, onSaved }: Spo
 
           {/* Logo */}
           <div>
-            <label className={labelCls}>Logo URL (opsional)</label>
-            <input value={form.logo_url} onChange={(e) => set("logo_url", e.target.value)} className={inputCls} />
+            <label className={labelCls}>Logo (opsional)</label>
+            <div className="flex items-center gap-3">
+              {form.logo_url ? (
+                <img src={form.logo_url} alt="Logo" className="h-12 w-12 rounded-md object-contain bg-[#141414] border border-[#2D2D2D]" />
+              ) : (
+                <div className="flex h-12 w-12 items-center justify-center rounded-md border border-dashed border-[#2D2D2D] bg-[#141414] text-white/30">
+                  <ImagePlus className="h-5 w-5" />
+                </div>
+              )}
+              <div className="flex-1 space-y-1.5">
+                <button
+                  type="button"
+                  disabled={logoUploading}
+                  onClick={() => logoInputRef.current?.click()}
+                  className="inline-flex h-8 items-center gap-1.5 rounded-md border border-[#2D2D2D] px-3 text-xs text-white/60 transition hover:bg-white/5 hover:text-white disabled:opacity-50 cursor-pointer"
+                >
+                  {logoUploading ? <Loader2 className="h-3 w-3 animate-spin" /> : <ImagePlus className="h-3 w-3" />}
+                  {logoUploading ? "Mengupload..." : "Upload logo"}
+                </button>
+                <input ref={logoInputRef} type="file" accept="image/png,image/jpeg,image/webp" className="hidden" onChange={handleLogoUpload} />
+                {form.logo_url && (
+                  <button type="button" onClick={() => set("logo_url", "")} className="block text-[10px] text-white/30 hover:text-red-400 cursor-pointer">
+                    Hapus logo
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
 
           {/* Contact */}

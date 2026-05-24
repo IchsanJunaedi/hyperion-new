@@ -87,17 +87,23 @@ function toHeroStats(
 
 // ─── Overview ─────────────────────────────────────────────────────────────────
 
-export async function getOverviewStats(orgId: string): Promise<{
+export async function getOverviewStats(orgId: string, startDate?: string | null): Promise<{
   stats: ReturnType<typeof computeOverviewStats>;
   formatBreakdown: ReturnType<typeof computeFormatBreakdown>;
 }> {
   const supabase = await createClient();
-  const { data } = await supabase
+  let q = supabase
     .from("scrims")
     .select("id, format, scrim_results(is_win)")
     .eq("organization_id", orgId)
     .eq("status", "completed")
-    .limit(100);
+    .limit(200);
+
+  if (startDate) {
+    q = q.gte("scheduled_at", startDate);
+  }
+
+  const { data } = await q;
 
   const results: RawScrimResult[] = (data ?? []).map((s) => ({
     scrim_id: s.id,
@@ -113,15 +119,21 @@ export async function getOverviewStats(orgId: string): Promise<{
 
 // ─── Recent scrims ────────────────────────────────────────────────────────────
 
-export async function getRecentScrims(orgId: string): Promise<RecentScrim[]> {
+export async function getRecentScrims(orgId: string, startDate?: string | null): Promise<RecentScrim[]> {
   const supabase = await createClient();
-  const { data: scrims } = await supabase
+  let q = supabase
     .from("scrims")
     .select("id, opponent_name, scheduled_at, format, division_id, scrim_results(is_win, our_score, opponent_score)")
     .eq("organization_id", orgId)
     .eq("status", "completed")
     .order("scheduled_at", { ascending: false })
-    .limit(10);
+    .limit(20);
+
+  if (startDate) {
+    q = q.gte("scheduled_at", startDate);
+  }
+
+  const { data: scrims } = await q;
 
   if (!scrims?.length) return [];
 

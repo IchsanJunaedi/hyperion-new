@@ -2,7 +2,7 @@ import { Lightbulb, Plus } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { StrategyNoteCard } from "@/features/strategy/components/StrategyNoteCard";
+import { StrategyNoteListWithFilter } from "@/features/strategy/components/StrategyNoteListWithFilter";
 import { listStrategyNotes } from "@/features/strategy/queries";
 import { getOrgBySlug } from "@/features/teams/queries";
 
@@ -50,11 +50,7 @@ export default async function StrategyPage({ params }: StrategyPageProps) {
           </Link>
         </div>
       ) : (
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-          {notes.map((n) => (
-            <StrategyNoteCard key={n.id} note={n} orgSlug={slug} />
-          ))}
-        </div>
+        <StrategyNoteListWithFilter notes={notes} orgSlug={slug} />
       )}
     </div>
   );

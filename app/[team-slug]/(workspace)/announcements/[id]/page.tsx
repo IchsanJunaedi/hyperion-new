@@ -51,7 +51,17 @@ export default async function AnnouncementDetailPage({
     membership?.role === "coach" ||
     membership?.role === "captain";
 
-  const readCount = isManager ? await getAnnouncementReadCount(id) : null;
+  const [readCount, totalMembers] = isManager
+    ? await Promise.all([
+        getAnnouncementReadCount(id),
+        supabase
+          .from("team_members")
+          .select("*", { count: "exact", head: true })
+          .eq("organization_id", announcement.organization_id)
+          .eq("is_active", true)
+          .then(({ count }) => count ?? 0),
+      ])
+    : [null, null];
 
   const date = new Date(announcement.created_at).toLocaleString("id-ID", {
     weekday: "long",
@@ -89,7 +99,10 @@ export default async function AnnouncementDetailPage({
           {readCount !== null && (
             <div className="inline-flex items-center gap-1.5">
               <Eye className="h-3.5 w-3.5" />
-              <span>{readCount} dibaca</span>
+              <span>
+                {readCount}
+                {totalMembers !== null ? `/${totalMembers}` : ""} dibaca
+              </span>
             </div>
           )}
         </div>

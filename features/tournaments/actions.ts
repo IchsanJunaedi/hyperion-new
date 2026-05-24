@@ -361,6 +361,44 @@ export async function addTournamentMatchAction(
   return { ok: true };
 }
 
+export async function updateTournamentMatchAction(
+  orgSlug: string,
+  tournamentId: string,
+  matchId: string,
+  raw: {
+    round_label: string;
+    our_score?: number | null;
+    opponent_score?: number | null;
+    is_win?: boolean | null;
+  },
+): Promise<ActionError | { ok: true }> {
+  if (!raw.round_label?.trim()) {
+    return { ok: false, message: "Label ronde wajib diisi" };
+  }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, message: "Anda harus login" };
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase as any)
+    .from("tournament_matches")
+    .update({
+      round_label: raw.round_label.trim(),
+      our_score: raw.our_score ?? null,
+      opponent_score: raw.opponent_score ?? null,
+      is_win: raw.is_win ?? null,
+    })
+    .eq("id", matchId);
+
+  if (error) return { ok: false, message: error.message };
+
+  revalidatePath(`/${orgSlug}/tournaments/${tournamentId}`);
+  return { ok: true };
+}
+
 export async function deleteTournamentMatchAction(
   orgSlug: string,
   tournamentId: string,

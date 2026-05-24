@@ -108,13 +108,34 @@ export async function updateApplicantStatusAction(
     .maybeSingle();
   if (!trial) return { ok: false, message: "Trial tidak ditemukan" };
 
-  const { error } = await admin
+  const { data: applicant, error } = await admin
     .from("trial_applicants")
     .update({ status, notes: notes ?? null })
     .eq("id", applicantId)
-    .eq("trial_id", trialId);
+    .eq("trial_id", trialId)
+    .select("name, phone")
+    .single();
 
   if (error) return { ok: false, message: error.message };
+
+  // WA notification when accepted or rejected
+  if ((status === "accepted" || status === "rejected") && applicant?.phone) {
+    const { data: trialInfo } = await admin
+      .from("open_trials")
+      .select("title, game")
+      .eq("id", trialId)
+      .maybeSingle();
+    if (trialInfo) {
+      const waMsg =
+        status === "accepted"
+          ? `Halo ${applicant.name}!\n\nSelamat, kamu *DITERIMA* dalam open trial untuk posisi ${trialInfo.title} (${trialInfo.game}).\n\nKami akan segera menghubungi kamu lebih lanjut. Terima kasih sudah mendaftar!`
+          : `Halo ${applicant.name},\n\nTerima kasih sudah mendaftar open trial ${trialInfo.title} (${trialInfo.game}).\n\nSayang sekali, kamu belum bisa bergabung kali ini. Tetap semangat dan pantau open trial berikutnya!`;
+      sendWaMessage(applicant.phone, waMsg).catch((err) =>
+        console.error("[WA Trial Status]", err),
+      );
+    }
+  }
+
   revalidatePaths.forEach((p) => revalidatePath(p));
   return { ok: true };
 }

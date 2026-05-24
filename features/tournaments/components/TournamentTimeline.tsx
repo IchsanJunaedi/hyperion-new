@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle2, Circle, Loader2, Plus, Swords, Trash2 } from "lucide-react";
+import { CheckCircle2, Circle, Loader2, Pencil, Plus, Swords, Trash2, X } from "lucide-react";
 import { useState, useTransition } from "react";
 
 import { useNotify } from "@/features/dashboard/components/NotifyModal";
@@ -8,6 +8,7 @@ import {
   createTournamentStageAction,
   toggleStageCompleteAction,
   addTournamentMatchAction,
+  updateTournamentMatchAction,
   deleteTournamentMatchAction,
 } from "@/features/tournaments/actions";
 import type { TournamentStageWithMatches, TournamentMatch } from "@/features/tournaments/queries";
@@ -184,14 +185,96 @@ function MatchRow({
   tournamentId: string;
   canManage: boolean;
 }) {
+  const [editing, setEditing] = useState(false);
+  const [roundLabel, setRoundLabel] = useState(match.round_label);
+  const [ourScore, setOurScore] = useState(match.our_score?.toString() ?? "");
+  const [oppScore, setOppScore] = useState(match.opponent_score?.toString() ?? "");
+  const [isWin, setIsWin] = useState<string>(
+    match.is_win === true ? "win" : match.is_win === false ? "lose" : "",
+  );
   const [pending, startTransition] = useTransition();
-  const { error } = useNotify();
+  const { success, error } = useNotify();
 
   function handleDelete() {
     startTransition(async () => {
       const res = await deleteTournamentMatchAction(orgSlug, tournamentId, match.id);
       if (!res.ok) error(res.message);
     });
+  }
+
+  function handleSave() {
+    startTransition(async () => {
+      const res = await updateTournamentMatchAction(orgSlug, tournamentId, match.id, {
+        round_label: roundLabel,
+        our_score: ourScore !== "" ? Number(ourScore) : null,
+        opponent_score: oppScore !== "" ? Number(oppScore) : null,
+        is_win: isWin === "win" ? true : isWin === "lose" ? false : null,
+      });
+      if (res.ok) {
+        success("Match diperbarui!");
+        setEditing(false);
+      } else {
+        error(res.message);
+      }
+    });
+  }
+
+  if (editing) {
+    return (
+      <div className="rounded-md border border-yellow-400/30 bg-[#202020] p-2 space-y-1.5">
+        <input
+          value={roundLabel}
+          onChange={(e) => setRoundLabel(e.target.value)}
+          className="h-7 w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-2 text-xs text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none"
+        />
+        <div className="grid grid-cols-3 gap-1.5">
+          <input
+            type="number"
+            min={0}
+            value={ourScore}
+            onChange={(e) => setOurScore(e.target.value)}
+            placeholder="Skor kita"
+            className="h-7 rounded-md border border-[#2D2D2D] bg-[#191919] px-2 text-xs text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none"
+          />
+          <input
+            type="number"
+            min={0}
+            value={oppScore}
+            onChange={(e) => setOppScore(e.target.value)}
+            placeholder="Skor lawan"
+            className="h-7 rounded-md border border-[#2D2D2D] bg-[#191919] px-2 text-xs text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none"
+          />
+          <select
+            value={isWin}
+            onChange={(e) => setIsWin(e.target.value)}
+            className="h-7 rounded-md border border-[#2D2D2D] bg-[#191919] px-2 text-xs text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none"
+          >
+            <option value="">Hasil</option>
+            <option value="win">Menang</option>
+            <option value="lose">Kalah</option>
+          </select>
+        </div>
+        <div className="flex gap-1.5">
+          <button
+            type="button"
+            disabled={pending || !roundLabel.trim()}
+            onClick={handleSave}
+            className="inline-flex h-6 items-center gap-1 rounded bg-yellow-400 px-2.5 text-[10px] font-semibold text-black hover:bg-yellow-300 disabled:opacity-50 cursor-pointer"
+          >
+            {pending && <Loader2 className="h-2.5 w-2.5 animate-spin" />}
+            Simpan
+          </button>
+          <button
+            type="button"
+            onClick={() => setEditing(false)}
+            className="inline-flex h-6 items-center gap-1 rounded border border-[#2D2D2D] px-2.5 text-[10px] text-[#9B9A97] hover:bg-[#2C2C2C] cursor-pointer"
+          >
+            <X className="h-2.5 w-2.5" />
+            Batal
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -208,14 +291,25 @@ function MatchRow({
         )}
       </span>
       {canManage && (
-        <button
-          type="button"
-          disabled={pending}
-          onClick={handleDelete}
-          className="opacity-0 group-hover:opacity-100 shrink-0 text-[#6B6A68] hover:text-red-400 transition cursor-pointer"
-        >
-          {pending ? <Loader2 className="h-3 w-3 animate-spin" /> : <Trash2 className="h-3 w-3" />}
-        </button>
+        <div className="opacity-0 group-hover:opacity-100 flex items-center gap-1 shrink-0 transition">
+          <button
+            type="button"
+            onClick={() => setEditing(true)}
+            className="text-[#6B6A68] hover:text-yellow-400 cursor-pointer"
+            title="Edit match"
+          >
+            <Pencil className="h-3 w-3" />
+          </button>
+          <button
+            type="button"
+            disabled={pending}
+            onClick={handleDelete}
+            className="text-[#6B6A68] hover:text-red-400 cursor-pointer"
+            title="Hapus match"
+          >
+            {pending ? <Loader2 className="h-3 w-3 animate-spin" /> : <Trash2 className="h-3 w-3" />}
+          </button>
+        </div>
       )}
     </div>
   );
