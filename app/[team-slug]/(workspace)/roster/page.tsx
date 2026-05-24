@@ -1,7 +1,10 @@
 import { Users } from "lucide-react";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
 import { RosterTable } from "@/features/roster/components/RosterTable";
+import { RosterCardView } from "@/features/roster/components/RosterCardView";
+import { RosterViewToggle } from "@/features/roster/components/RosterViewToggle";
 import {
   getCurrentUserRole,
   getRosterMembers,
@@ -13,10 +16,12 @@ export const dynamic = "force-dynamic";
 
 interface RosterPageProps {
   params: Promise<{ "team-slug": string }>;
+  searchParams: Promise<{ view?: string }>;
 }
 
-export default async function RosterPage({ params }: RosterPageProps) {
-  const { "team-slug": slug } = await params;
+export default async function RosterPage({ params, searchParams }: RosterPageProps) {
+  const [{ "team-slug": slug }, sp] = await Promise.all([params, searchParams]);
+  const viewMode = sp.view === "cards" ? "cards" : "table";
   const organization = await getOrgBySlug(slug);
   if (!organization) notFound();
 
@@ -57,22 +62,31 @@ export default async function RosterPage({ params }: RosterPageProps) {
             {members.length} anggota aktif
           </p>
         </div>
-        <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-zinc-900/40 px-4 py-3">
-          <Users className="h-5 w-5 text-white/40" />
-          <span className="text-2xl font-bold text-white">
-            {members.length}
-          </span>
+        <div className="flex items-center gap-3">
+          <Suspense>
+            <RosterViewToggle activeView={viewMode} />
+          </Suspense>
+          <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-zinc-900/40 px-4 py-3">
+            <Users className="h-5 w-5 text-white/40" />
+            <span className="text-2xl font-bold text-white">
+              {members.length}
+            </span>
+          </div>
         </div>
       </header>
 
-      <RosterTable
-        members={members}
-        currentUserId={user.id}
-        currentUserRole={currentUserRole}
-        orgSlug={slug}
-        orgId={organization.id}
-        divisions={divisions.map((d: { id: string; name: string }) => ({ id: d.id, name: d.name }))}
-      />
+      {viewMode === "cards" ? (
+        <RosterCardView members={members} />
+      ) : (
+        <RosterTable
+          members={members}
+          currentUserId={user.id}
+          currentUserRole={currentUserRole}
+          orgSlug={slug}
+          orgId={organization.id}
+          divisions={divisions.map((d: { id: string; name: string }) => ({ id: d.id, name: d.name }))}
+        />
+      )}
     </div>
   );
 }
