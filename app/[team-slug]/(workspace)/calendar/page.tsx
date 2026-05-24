@@ -1,8 +1,11 @@
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { Suspense } from "react";
 
 import { CalendarWithQuickAdd } from "@/features/calendar/components/CalendarWithQuickAdd";
+import { CalendarAgendaView } from "@/features/calendar/components/CalendarAgendaView";
+import { CalendarViewToggle } from "@/features/calendar/components/CalendarViewToggle";
 import { listUnifiedCalendarEvents } from "@/features/calendar/unified";
 import { getOrgBySlug } from "@/features/teams/queries";
 import { createClient } from "@/lib/supabase/server";
@@ -11,7 +14,7 @@ export const dynamic = "force-dynamic";
 
 interface CalendarPageProps {
   params: Promise<{ "team-slug": string }>;
-  searchParams: Promise<{ y?: string; m?: string }>;
+  searchParams: Promise<{ y?: string; m?: string; view?: string }>;
 }
 
 export default async function CalendarPage({
@@ -19,6 +22,7 @@ export default async function CalendarPage({
   searchParams,
 }: CalendarPageProps) {
   const [{ "team-slug": slug }, sp] = await Promise.all([params, searchParams]);
+  const viewMode = sp.view === "list" ? "list" : "grid";
   const organization = await getOrgBySlug(slug);
   if (!organization) notFound();
 
@@ -73,27 +77,36 @@ export default async function CalendarPage({
             Kalender Tim
           </h1>
         </div>
-        {canCreate && (
-          <Link
-            href={`/${slug}/calendar/new`}
-            className="inline-flex h-10 items-center gap-2 rounded-md bg-yellow-400 px-4 text-sm font-semibold text-black transition hover:bg-yellow-300"
-          >
-            <Plus className="h-4 w-4" />
-            Tambah event
-          </Link>
-        )}
+        <div className="flex items-center gap-2">
+          <Suspense>
+            <CalendarViewToggle activeView={viewMode} />
+          </Suspense>
+          {canCreate && (
+            <Link
+              href={`/${slug}/calendar/new`}
+              className="inline-flex h-10 items-center gap-2 rounded-md bg-yellow-400 px-4 text-sm font-semibold text-black transition hover:bg-yellow-300"
+            >
+              <Plus className="h-4 w-4" />
+              Tambah event
+            </Link>
+          )}
+        </div>
       </header>
 
       <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-4 sm:p-6">
-        <CalendarWithQuickAdd
-          orgSlug={slug}
-          events={events}
-          year={year}
-          month={month}
-          divisions={divisions ?? []}
-          canCreate={canCreate}
-          userRole={isOwner ? "owner" : (role ?? "member")}
-        />
+        {viewMode === "list" ? (
+          <CalendarAgendaView orgSlug={slug} events={events} />
+        ) : (
+          <CalendarWithQuickAdd
+            orgSlug={slug}
+            events={events}
+            year={year}
+            month={month}
+            divisions={divisions ?? []}
+            canCreate={canCreate}
+            userRole={isOwner ? "owner" : (role ?? "member")}
+          />
+        )}
       </div>
 
       {!canCreate && (
