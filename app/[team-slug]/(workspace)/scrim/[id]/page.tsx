@@ -13,6 +13,7 @@ import { getCurrentUserRole } from "@/features/roster/queries";
 import {
   getScrimDetail,
   getScrimReviewRequest,
+  getOpponentHistory,
   summarizeAttendance,
 } from "@/features/scrim/queries";
 import { findOpponentByName } from "@/features/scouting/queries";
@@ -38,9 +39,10 @@ export default async function ScrimDetailPage({
   const canManageScrims = ["captain", "manager", "owner"].includes(currentUserRole ?? "");
   const isCoach = currentUserRole === "coach";
 
-  const [opponentProfile, reviewRequest] = await Promise.all([
+  const [opponentProfile, reviewRequest, opponentHistory] = await Promise.all([
     findOpponentByName(scrim.organization_id, scrim.opponent_name),
     getScrimReviewRequest(id),
+    getOpponentHistory(scrim.organization_id, scrim.opponent_name, id),
   ]);
 
   const scheduled = new Date(scrim.scheduled_at).toLocaleString("id-ID", {
@@ -195,6 +197,49 @@ export default async function ScrimDetailPage({
             <article className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
               <h2 className="text-sm font-semibold text-white mb-3">Intel Lawan</h2>
               <ScoutingCard profile={opponentProfile} />
+            </article>
+          )}
+
+          {/* Opponent history */}
+          {opponentHistory.length > 0 && (
+            <article className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
+              <div className="mb-3 flex items-center justify-between">
+                <h2 className="text-sm font-semibold text-white">Riwayat vs {scrim.opponent_name}</h2>
+                <span className="text-xs text-white/40">{opponentHistory.length} pertandingan</span>
+              </div>
+              <div className="space-y-2">
+                {opponentHistory.map((h) => {
+                  const date = new Date(h.scheduled_at).toLocaleDateString("id-ID", {
+                    day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Jakarta",
+                  });
+                  const scoreText = h.our_score != null && h.opponent_score != null
+                    ? `${h.our_score}–${h.opponent_score}`
+                    : "–";
+                  return (
+                    <div key={h.scrim_id} className="flex items-center justify-between text-xs">
+                      <span className="text-white/50">{date} · {h.format.toUpperCase()}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-white/70">{scoreText}</span>
+                        {h.is_win !== null && (
+                          <span className={h.is_win ? "font-semibold text-green-400" : "font-semibold text-red-400"}>
+                            {h.is_win ? "W" : "L"}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              {(() => {
+                const wins = opponentHistory.filter(h => h.is_win === true).length;
+                const total = opponentHistory.filter(h => h.is_win !== null).length;
+                if (total === 0) return null;
+                return (
+                  <div className="mt-3 border-t border-white/5 pt-3 text-xs text-white/40">
+                    W/L: <span className="font-semibold text-white/70">{wins}/{total - wins}</span>
+                  </div>
+                );
+              })()}
             </article>
           )}
         </aside>

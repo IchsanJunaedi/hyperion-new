@@ -308,6 +308,47 @@ export async function getScrimReviewRequest(
   return data ?? null;
 }
 
+export interface OpponentHistoryEntry {
+  scrim_id: string;
+  scheduled_at: string;
+  format: string;
+  our_score: number | null;
+  opponent_score: number | null;
+  is_win: boolean | null;
+}
+
+/**
+ * Get past completed scrims vs the same opponent (case-insensitive).
+ */
+export async function getOpponentHistory(
+  orgId: string,
+  opponentName: string,
+  excludeScrimId: string,
+): Promise<OpponentHistoryEntry[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("scrims")
+    .select("id, scheduled_at, format, scrim_results(our_score, opponent_score, is_win)")
+    .eq("organization_id", orgId)
+    .eq("status", "completed")
+    .ilike("opponent_name", opponentName)
+    .neq("id", excludeScrimId)
+    .order("scheduled_at", { ascending: false })
+    .limit(10);
+
+  return (data ?? []).map((s) => {
+    const r = Array.isArray(s.scrim_results) ? s.scrim_results[0] : s.scrim_results;
+    return {
+      scrim_id: s.id,
+      scheduled_at: s.scheduled_at,
+      format: s.format,
+      our_score: r?.our_score ?? null,
+      opponent_score: r?.opponent_score ?? null,
+      is_win: r?.is_win ?? null,
+    };
+  });
+}
+
 export function summarizeAttendance(
   rows: ScrimDetail["attendances"],
 ): Record<AttendanceStatus, number> {
