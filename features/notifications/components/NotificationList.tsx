@@ -6,11 +6,12 @@ import { NotificationItem } from "./NotificationItem";
 interface NotificationListProps {
   userId: string;
   orgSlug: string;
+  limit?: number;
   onClose: () => void;
 }
 
-export function NotificationList({ userId, orgSlug, onClose }: NotificationListProps) {
-  const { data, isLoading, isError } = useNotifications(userId, 10);
+export function NotificationList({ userId, orgSlug, limit = 10, onClose }: NotificationListProps) {
+  const { data, isLoading, isError } = useNotifications(userId, limit);
 
   if (isLoading) {
     return (

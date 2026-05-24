@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Plus, Pencil, X, Trash2, Shield, Star, Search, Settings, Download } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils/cn";
@@ -452,6 +452,7 @@ interface MetaPageProps {
 
 export function MetaPage({ orgSlug, orgId, patches, initialPatch, canEdit }: MetaPageProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [activePatch, setActivePatch] = useState<PatchWithHeroes | null>(initialPatch);
   const [patchList, setPatchList] = useState<MetaPatch[]>(patches);
   const [activeTab, setActiveTab] = useState<"tier" | "ban" | "learn">("tier");
@@ -632,7 +633,7 @@ export function MetaPage({ orgSlug, orgId, patches, initialPatch, canEdit }: Met
               key={p.id}
               type="button"
               onClick={() => {
-                const params = new URLSearchParams(window.location.search);
+                const params = new URLSearchParams(searchParams.toString());
                 params.set("patch", p.id);
                 router.push(`?${params.toString()}`);
               }}

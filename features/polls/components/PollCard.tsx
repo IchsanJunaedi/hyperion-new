@@ -1,7 +1,7 @@
 "use client";
 
 import { BarChart3, Clock, Lock } from "lucide-react";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 
 import { useNotify } from "@/features/dashboard/components/NotifyModal";
 import { votePollAction, closePollAction } from "@/features/polls/actions";
@@ -18,36 +18,62 @@ export function PollCard({ poll, orgSlug, canManage, userId }: PollCardProps) {
   const [pending, startTransition] = useTransition();
   const { success, error } = useNotify();
 
+  // Optimistic state: track local vote + vote counts
+  const [optimisticVote, setOptimisticVote] = useState<number | null>(poll.my_vote);
+  const [optimisticClosed, setOptimisticClosed] = useState(poll.is_closed);
+  const [optimisticVoteDelta, setOptimisticVoteDelta] = useState<{ from: number | null; to: number } | null>(null);
+
   const options = (poll.options as string[]) ?? [];
   const isExpired = poll.expires_at && new Date(poll.expires_at) < new Date();
-  const isClosed = poll.is_closed || isExpired;
-  const hasVoted = poll.my_vote !== null;
+  const isClosed = optimisticClosed || isExpired;
+  const hasVoted = optimisticVote !== null;
   const showResults = hasVoted || isClosed;
   const isCreator = poll.created_by === userId;
 
   function handleVote(optionIndex: number) {
+    const prevVote = optimisticVote;
+    setOptimisticVote(optionIndex);
+    setOptimisticVoteDelta({ from: prevVote, to: optionIndex });
     startTransition(async () => {
       const res = await votePollAction(orgSlug, {
         poll_id: poll.id,
         option_index: optionIndex,
       });
-      if (res.ok) success("Vote berhasil!");
-      else error(res.message);
+      if (res.ok) {
+        success("Vote berhasil!");
+      } else {
+        // Revert on error
+        setOptimisticVote(prevVote);
+        setOptimisticVoteDelta(null);
+        error(res.message);
+      }
     });
   }
 
   function handleClose() {
+    setOptimisticClosed(true);
     startTransition(async () => {
       const res = await closePollAction(orgSlug, poll.id);
       if (res.ok) success("Poll ditutup!");
-      else error(res.message);
+      else {
+        setOptimisticClosed(false);
+        error(res.message);
+      }
     });
   }
 
-  // Count votes per option
-  const voteCounts = options.map((_, i) =>
-    poll.votes.filter((v) => v.option_index === i).length,
-  );
+  // Count votes per option (with optimistic delta applied)
+  const voteCounts = options.map((_, i) => {
+    let base = poll.votes.filter((v) => v.option_index === i).length;
+    if (optimisticVoteDelta) {
+      if (optimisticVoteDelta.from === i) base -= 1;
+      if (optimisticVoteDelta.to === i) base += 1;
+    }
+    return Math.max(0, base);
+  });
+  const totalVotes = optimisticVoteDelta
+    ? poll.total_votes + (optimisticVoteDelta.from === null ? 1 : 0)
+    : poll.total_votes;
 
   return (
     <div className="rounded-xl border border-[#2D2D2D] bg-[#202020] p-4">
@@ -62,8 +88,8 @@ export function PollCard({ poll, orgSlug, canManage, userId }: PollCardProps) {
       <div className="mt-3 space-y-2">
         {options.map((option, i) => {
           const count = voteCounts[i] ?? 0;
-          const pct = poll.total_votes > 0 ? Math.round((count / poll.total_votes) * 100) : 0;
-          const isMyVote = poll.my_vote === i;
+          const pct = totalVotes > 0 ? Math.round((count / totalVotes) * 100) : 0;
+          const isMyVote = optimisticVote === i;
 
           if (showResults) {
             return (
@@ -95,7 +121,7 @@ export function PollCard({ poll, orgSlug, canManage, userId }: PollCardProps) {
       </div>
 
       <div className="mt-3 flex items-center justify-between text-[10px] text-[#6B6A68]">
-        <span>{poll.total_votes} vote{poll.total_votes !== 1 ? "s" : ""}</span>
+        <span>{totalVotes} vote{totalVotes !== 1 ? "s" : ""}</span>
         <div className="flex items-center gap-2">
           {poll.expires_at && !isClosed && (
             <span className="inline-flex items-center gap-1">

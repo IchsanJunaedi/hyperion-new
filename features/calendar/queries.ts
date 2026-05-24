@@ -178,6 +178,30 @@ export async function getRsvpCounts(
   return counts;
 }
 
+export interface RsvpAttendee {
+  user_id: string;
+  status: string;
+  name: string;
+}
+
+/**
+ * Fetch RSVP attendee names for a calendar event.
+ */
+export async function getRsvpAttendees(eventId: string): Promise<RsvpAttendee[]> {
+  const supabase = await createClient();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data } = await (supabase as any)
+    .from("calendar_event_rsvps")
+    .select("user_id, status, profiles(full_name, display_name)")
+    .eq("event_id", eventId);
+
+  return ((data ?? []) as Array<{ user_id: string; status: string; profiles: { full_name: string | null; display_name: string | null } | null }>).map((r) => ({
+    user_id: r.user_id,
+    status: r.status,
+    name: r.profiles?.display_name ?? r.profiles?.full_name ?? "Anggota",
+  }));
+}
+
 /**
  * Fetch comments for an event (for realtime updates)
  */

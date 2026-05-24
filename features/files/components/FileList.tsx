@@ -116,7 +116,7 @@ export function FileList({ orgId, folder = "files" }: FileListProps) {
     <>
       {preview && (
         <FilePreviewModal
-          fileName={preview.file.name}
+          fileName={stripTimestampPrefix(preview.file.name)}
           fileSize={
             preview.file.metadata?.size
               ? formatFileSize(preview.file.metadata.size)
@@ -165,7 +165,7 @@ export function FileList({ orgId, folder = "files" }: FileListProps) {
                 onClick={() => handleOpenPreview(file)}
                 className="min-w-0 flex-1 cursor-pointer truncate text-left text-sm text-white/80 underline-offset-2 transition hover:text-white hover:underline disabled:opacity-60"
               >
-                {file.name}
+                {stripTimestampPrefix(file.name)}
               </button>
               <span className="shrink-0 text-xs text-white/40">{size}</span>
               <span className="shrink-0 text-xs text-white/40">{date}</span>
@@ -194,4 +194,8 @@ function formatFileSize(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function stripTimestampPrefix(name: string): string {
+  return name.replace(/^\d{10,}-/, "");
 }

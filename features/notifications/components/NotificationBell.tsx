@@ -19,6 +19,7 @@ export function NotificationBell({ userId, orgSlug }: NotificationBellProps) {
   const { data: unreadCount } = useUnreadCount(userId);
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
+  const [limit, setLimit] = useState(10);
   const popoverRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const pathname = usePathname();
@@ -26,6 +27,7 @@ export function NotificationBell({ userId, orgSlug }: NotificationBellProps) {
   // Close popover on route change
   useEffect(() => {
     setOpen(false);
+    setLimit(10);
   }, [pathname]);
 
   // Close popover on outside click
@@ -125,8 +127,22 @@ export function NotificationBell({ userId, orgSlug }: NotificationBellProps) {
           <NotificationList
             userId={userId}
             orgSlug={orgSlug}
+            limit={limit}
             onClose={() => setOpen(false)}
           />
+
+          {/* Footer */}
+          {limit <= 10 && (
+            <div className="border-t border-white/5 px-4 py-2.5">
+              <button
+                type="button"
+                onClick={() => setLimit(50)}
+                className="w-full cursor-pointer text-center text-xs text-white/40 transition hover:text-white/70"
+              >
+                Lihat semua notifikasi
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>

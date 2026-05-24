@@ -18,6 +18,13 @@ const EVENT_TYPES = [
   { value: "other", label: "Lainnya" },
 ] as const;
 
+const VISIBILITY_OPTIONS = [
+  { value: "all", label: "Semua Tim" },
+  { value: "management", label: "Manajemen saja" },
+  { value: "coach_up", label: "Coach & Manajemen" },
+  { value: "private", label: "Hanya Saya (Private)" },
+];
+
 const inputCls =
   "h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none [color-scheme:dark]";
 
@@ -128,6 +135,7 @@ export function CalendarEventForm({ orgSlug, divisions }: CalendarEventFormProps
             ends_at: fd.get("ends_at") || null,
             is_all_day: fd.get("is_all_day") === "on",
             location: fd.get("location"),
+            visibility: fd.get("visibility"),
           });
           if (!res.ok) {
             setGlobalError(res.message);
@@ -161,6 +169,16 @@ export function CalendarEventForm({ orgSlug, divisions }: CalendarEventFormProps
           name="event_type"
           options={EVENT_TYPES.map((t) => ({ value: t.value, label: t.label }))}
           defaultValue="practice"
+        />
+      </Field>
+
+      {/* Visibilitas */}
+      <Field label="Visibilitas" name="visibility" errors={fieldErrors["visibility"]}>
+        <PremiumSelect
+          id="visibility"
+          name="visibility"
+          options={VISIBILITY_OPTIONS}
+          defaultValue="all"
         />
       </Field>
 

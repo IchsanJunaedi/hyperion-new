@@ -142,11 +142,21 @@ export function RosterTable({
                       </span>
                     )}
                   </p>
-                  {m.division_name && (
-                    <p className="truncate text-xs text-white/50">
-                      {m.division_name}
-                    </p>
-                  )}
+                  <p className="flex flex-wrap items-center gap-x-1.5 text-xs text-white/50">
+                    {m.division_name && <span>{m.division_name}</span>}
+                    {m.position && (
+                      <>
+                        {m.division_name && <span className="text-white/20">·</span>}
+                        <span>{m.position}</span>
+                      </>
+                    )}
+                    {m.jersey_number != null && (
+                      <>
+                        {(m.division_name || m.position) && <span className="text-white/20">·</span>}
+                        <span className="font-mono">#{m.jersey_number}</span>
+                      </>
+                    )}
+                  </p>
                 </div>
               </div>
 

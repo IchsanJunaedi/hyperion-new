@@ -2,7 +2,7 @@ import { ArrowLeft, Clock, MapPin } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { getCalendarEvent, getMyRsvp, getRsvpCounts } from "@/features/calendar/queries";
+import { getCalendarEvent, getMyRsvp, getRsvpCounts, getRsvpAttendees } from "@/features/calendar/queries";
 import { CalendarEventActions } from "@/features/calendar/components/CalendarEventActions";
 import { CalendarRsvpButtons } from "@/features/calendar/components/CalendarRsvpButtons";
 
@@ -31,10 +31,11 @@ export default async function CalendarEventDetailPage({
   params,
 }: CalendarEventDetailPageProps) {
   const { "team-slug": slug, id } = await params;
-  const [event, myRsvp, rsvpCounts] = await Promise.all([
+  const [event, myRsvp, rsvpCounts, rsvpAttendees] = await Promise.all([
     getCalendarEvent(id),
     getMyRsvp(id),
     getRsvpCounts(id),
+    getRsvpAttendees(id),
   ]);
   if (!event) notFound();
 
@@ -116,6 +117,36 @@ export default async function CalendarEventDetailPage({
           currentStatus={myRsvp}
           rsvpCounts={rsvpCounts}
         />
+
+        {/* RSVP attendee list */}
+        {rsvpAttendees.length > 0 && (
+          <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-4 space-y-3">
+            <p className="text-xs font-semibold uppercase tracking-wider text-white/40">Respons anggota</p>
+            {(["hadir", "tentative", "tidak_hadir"] as const).map((status) => {
+              const group = rsvpAttendees.filter((a) => a.status === status);
+              if (!group.length) return null;
+              const config = {
+                hadir: { label: "Hadir", cls: "bg-green-500/10 text-green-400 border-green-500/20" },
+                tentative: { label: "Mungkin", cls: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20" },
+                tidak_hadir: { label: "Tidak Hadir", cls: "bg-red-500/10 text-red-400 border-red-500/20" },
+              }[status];
+              return (
+                <div key={status}>
+                  <span className={`mb-1.5 inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold ${config.cls}`}>
+                    {config.label} · {group.length}
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {group.map((a) => (
+                      <span key={a.user_id} className="rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-xs text-white/70">
+                        {a.name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
 
         {/* Actions */}
         <CalendarEventActions orgSlug={slug} eventId={event.id} />
