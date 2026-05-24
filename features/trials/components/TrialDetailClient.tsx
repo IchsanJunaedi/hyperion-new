@@ -53,6 +53,7 @@ export function TrialDetailClient({ trial, applicants, canManage, appUrl, revali
   const pending    = applicants.filter((a) => a.status === "pending").length;
   const accepted   = applicants.filter((a) => a.status === "accepted").length;
   const waitlisted = applicants.filter((a) => a.status === "waitlisted").length;
+  const rejected   = applicants.filter((a) => a.status === "rejected").length;
 
   return (
     <div className="space-y-6">
@@ -120,6 +121,7 @@ export function TrialDetailClient({ trial, applicants, canManage, appUrl, revali
             { label: "Pending",  value: pending,           color: "text-[#9B9A97]" },
             { label: "Diterima", value: accepted,          color: "text-green-400" },
             { label: "Waitlist", value: waitlisted,        color: "text-yellow-400" },
+            { label: "Ditolak",  value: rejected,          color: "text-red-400" },
           ].map((s) => (
             <div key={s.label} className="rounded-lg border border-[#2D2D2D] py-2">
               <p className={`text-xl font-bold ${s.color}`}>{s.value}</p>

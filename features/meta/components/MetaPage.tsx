@@ -595,7 +595,14 @@ export function MetaPage({ orgSlug, orgId, patches, initialPatch, canEdit }: Met
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-white sm:text-3xl">Meta MLBB</h1>
-          <p className="mt-1 text-sm text-white/50">Tier list hero per patch — dikelola coach</p>
+          <p className="mt-1 text-sm text-white/50">
+            Tier list hero per patch — dikelola coach
+            {activePatch?.updated_at && (
+              <span className="ml-2 text-white/30">
+                · Diperbarui {new Date(activePatch.updated_at).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
+              </span>
+            )}
+          </p>
         </div>
         <div className="print-hide flex items-center gap-2">
           <button
