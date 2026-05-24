@@ -92,7 +92,6 @@ function RoleDropdown({
 
       {/* Hidden input for form submission */}
       <input type="hidden" name="role_applied" value={value} />
-      {!value && <input type="text" required className="sr-only" tabIndex={-1} readOnly value="" />}
     </div>
   );
 }
@@ -106,6 +105,10 @@ export function TrialRegistrationForm({ trial }: { trial: TrialPublic }) {
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (trial.positions.length > 0 && !roleApplied) {
+      setErr("Pilih posisi yang dilamar terlebih dahulu.");
+      return;
+    }
     const fd = new FormData(e.currentTarget);
     startTransition(async () => {
       setErr(null);
@@ -189,7 +192,14 @@ export function TrialRegistrationForm({ trial }: { trial: TrialPublic }) {
             {trial.positions.length > 0 ? (
               <RoleDropdown positions={trial.positions} value={roleApplied} onChange={setRoleApplied} />
             ) : (
-              <input id="role_applied" name="role_applied" type="text" required className={inputCls} />
+              <input
+                id="role_applied"
+                type="text"
+                required
+                value={roleApplied}
+                onChange={(e) => setRoleApplied(e.target.value)}
+                className={inputCls}
+              />
             )}
           </div>
         </div>

@@ -22,7 +22,7 @@ const STATUS_LABEL: Record<string, string> = {
 interface TrialListClientProps {
   orgSlug: string;
   trials: TrialWithCount[];
-  divisionId: string;
+  divisionId: string | null;
   canManage: boolean;
   revalidatePaths: string[];
 }
@@ -40,13 +40,21 @@ export function TrialListClient({ orgSlug, trials, divisionId, canManage, revali
           <button
             type="button"
             onClick={() => setModalOpen(true)}
-            className="inline-flex h-9 items-center gap-2 rounded-md bg-[#E5E2E1] px-4 text-sm font-semibold text-[#191919] hover:bg-white cursor-pointer"
+            disabled={!divisionId}
+            title={!divisionId ? "Belum ada divisi aktif di organisasi ini" : undefined}
+            className="inline-flex h-9 items-center gap-2 rounded-md bg-[#E5E2E1] px-4 text-sm font-semibold text-[#191919] hover:bg-white disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
           >
             <Plus className="h-4 w-4" />
             Buat Trial
           </button>
         )}
       </div>
+
+      {canManage && !divisionId && (
+        <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 px-4 py-3 text-sm text-amber-400">
+          Belum ada divisi aktif. Buat atau aktifkan divisi terlebih dahulu sebelum membuat trial.
+        </div>
+      )}
 
       {trials.length === 0 ? (
         <div className="rounded-xl border border-dashed border-[#2D2D2D] bg-[#202020]/40 p-10 text-center">
@@ -56,7 +64,8 @@ export function TrialListClient({ orgSlug, trials, divisionId, canManage, revali
             <button
               type="button"
               onClick={() => setModalOpen(true)}
-              className="mt-4 inline-flex h-9 items-center rounded-md border border-white/15 px-4 text-sm font-medium text-white transition hover:bg-white/5 cursor-pointer"
+              disabled={!divisionId}
+              className="mt-4 inline-flex h-9 items-center rounded-md border border-white/15 px-4 text-sm font-medium text-white transition hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
             >
               Buat trial pertama
             </button>

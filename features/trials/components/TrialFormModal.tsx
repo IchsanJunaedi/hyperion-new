@@ -8,7 +8,7 @@ import { useNotify } from "@/features/dashboard/components/NotifyModal";
 import { createTrialAction } from "@/features/trials/actions";
 
 interface TrialFormModalProps {
-  divisionId: string;
+  divisionId: string | null;
   revalidatePaths: string[];
   onClose: () => void;
 }

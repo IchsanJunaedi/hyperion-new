@@ -55,7 +55,7 @@ export async function listTrials(orgId: string): Promise<TrialWithCount[]> {
       ...t,
       positions: t.positions ?? [],
       division_name: div?.name ?? null,
-      applicant_count: (t.trial_applicants as unknown as [{ count: number }])[0]?.count ?? 0,
+      applicant_count: Number((t.trial_applicants as unknown as [{ count: string | number }])[0]?.count ?? 0),
     };
   }) as TrialWithCount[];
 }

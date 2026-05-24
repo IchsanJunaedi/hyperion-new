@@ -39,9 +39,9 @@ export default async function TrialsPage({ params }: Props) {
 
   const [trials, divisionRes] = await Promise.all([
     listTrials(org.id),
-    admin.from("divisions").select("id").eq("organization_id", org.id).eq("is_active", true).limit(1).maybeSingle(),
+    admin.from("divisions").select("id").eq("organization_id", org.id).eq("is_active", true).order("created_at", { ascending: true }).limit(1).maybeSingle(),
   ]);
-  const divisionId = divisionRes.data?.id ?? "";
+  const divisionId = divisionRes.data?.id ?? null;
 
   return (
     <div className="space-y-6 px-4 py-6 sm:px-8">
