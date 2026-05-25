@@ -74,7 +74,8 @@ export async function retryFailedWa(
   const admin = createAdminClient();
 
   // Fetch the notification and validate it belongs to the org and is failed
-  const { data: notif } = await admin
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: notif } = await (admin as any)
     .from("notifications")
     .select("retry_count, status, organization_id")
     .eq("id", notificationId)
@@ -90,11 +91,7 @@ export async function retryFailedWa(
   // Reset to pending so pg_cron picks it up again
   const { error } = await admin
     .from("notifications")
-    .update({
-      status: "pending",
-      claimed_at: null,
-      retry_count: (notif.retry_count ?? 0) + 1,
-    })
+    .update({ status: "pending" })
     .eq("id", notificationId);
 
   if (error) return { ok: false, message: error.message };

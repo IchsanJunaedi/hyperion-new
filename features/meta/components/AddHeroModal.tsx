@@ -130,8 +130,8 @@ export function AddHeroModal({
   const [pending, startTransition] = useTransition();
   const [search, setSearch] = useState("");
   const [selectedHero, setSelectedHero] = useState<string>(editing?.hero_name ?? "");
-  const [tier, setTier] = useState<Tier>(editing?.tier ?? defaultTier);
-  const [roleTag, setRoleTag] = useState<RoleTag>(editing?.role_tag ?? null);
+  const [tier, setTier] = useState<Tier>((editing?.tier as Tier) ?? defaultTier);
+  const [roleTag, setRoleTag] = useState<RoleTag>((editing?.role_tag as RoleTag) ?? null);
   const [isBan, setIsBan] = useState(editing?.is_ban_priority ?? false);
   const [isPriority, setIsPriority] = useState(editing?.priority_to_learn ?? false);
   const [notes, setNotes] = useState(editing?.notes ?? "");
@@ -143,8 +143,8 @@ export function AddHeroModal({
   useEffect(() => {
     if (open) {
       setSelectedHero(editing?.hero_name ?? "");
-      setTier(editing?.tier ?? defaultTier);
-      setRoleTag(editing?.role_tag ?? null);
+      setTier((editing?.tier as Tier) ?? defaultTier);
+      setRoleTag((editing?.role_tag as RoleTag) ?? null);
       setIsBan(editing?.is_ban_priority ?? false);
       setIsPriority(editing?.priority_to_learn ?? false);
       setNotes(editing?.notes ?? "");

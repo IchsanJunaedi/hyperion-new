@@ -4,9 +4,11 @@ import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { createContentSchema } from "@/lib/validations/content";
-import type { ContentCalendarRow, ContentStatus } from "@/types/database";
+import type { Database } from "@/types/database";
 import { logAudit } from "@/lib/audit";
 
+type ContentCalendarRow = Database["public"]["Tables"]["content_calendar"]["Row"];
+type ContentStatus = Database["public"]["Enums"]["content_status"];
 type ContentUpdate = Partial<Omit<ContentCalendarRow, "id" | "created_at">>;
 
 export interface ContentActionError {

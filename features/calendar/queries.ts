@@ -2,7 +2,7 @@ import "server-only";
 
 import { createClient } from "@/lib/supabase/server";
 import type { Database } from "@/types/database";
-import type { EventDetailWithRelations, CalendarEventComment } from "./types";
+import type { EventDetailWithRelations } from "./types";
 
 export type CalendarEvent =
   Database["public"]["Tables"]["calendar_events"]["Row"];
@@ -99,27 +99,31 @@ export async function getEventDetailWithRelations(
 
   if (!event) return null;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const eventAny = event as any;
+
   // Get PIC profile
   let pic = null;
-  if (event.pic_user_id) {
+  if (eventAny.pic_user_id) {
     const { data: picData } = await supabase
       .from("profiles")
       .select("id, display_name, avatar_url")
-      .eq("id", event.pic_user_id)
+      .eq("id", eventAny.pic_user_id)
       .maybeSingle();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    pic = picData as any;
+    pic = picData as any; // eslint-disable-line @typescript-eslint/no-explicit-any
   }
 
-  // Get comments
-  const { data: comments } = await supabase
+  // Get comments (table may not exist yet — returns empty on error)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: comments } = await (supabase as any)
     .from("calendar_event_comments")
     .select("*")
     .eq("event_id", eventId)
     .order("created_at", { ascending: true });
 
-  // Get relations
-  const { data: relations } = await supabase
+  // Get relations (table may not exist yet — returns empty on error)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: relations } = await (supabase as any)
     .from("calendar_event_relations")
     .select("*")
     .eq("event_id", eventId);
@@ -207,9 +211,11 @@ export async function getRsvpAttendees(eventId: string): Promise<RsvpAttendee[]>
  */
 export async function getEventComments(
   eventId: string,
-): Promise<CalendarEventComment[]> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+): Promise<any[]> {
   const supabase = await createClient();
-  const { data } = await supabase
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data } = await (supabase as any)
     .from("calendar_event_comments")
     .select("*")
     .eq("event_id", eventId)

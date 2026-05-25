@@ -118,7 +118,7 @@ function HeroCard({
   onDetail: (h: MetaHeroRating) => void;
   pendingDeleteId: string | null;
 }) {
-  const style = TIER_STYLES[hero.tier];
+  const style = TIER_STYLES[hero.tier as Tier] ?? TIER_STYLES.D;
   return (
     <div className="group relative w-[72px] shrink-0 select-none">
       <div
@@ -1021,7 +1021,7 @@ export function MetaPage({ orgSlug, orgId, patches, initialPatch, previousPatchH
               ) : (
                 <div className="flex flex-wrap gap-3">
                   {banHeroes.map((h) => {
-                    const style = TIER_STYLES[h.tier];
+                    const style = TIER_STYLES[h.tier as Tier] ?? TIER_STYLES.D;
                     return (
                       <div key={h.id} className="group relative w-[72px] shrink-0 cursor-pointer select-none" onClick={() => setDetailHero(h)}>
                         <div className={cn("relative aspect-square w-full overflow-hidden rounded-xl border-2 transition group-hover:scale-105", style.border)}>
@@ -1073,7 +1073,7 @@ export function MetaPage({ orgSlug, orgId, patches, initialPatch, previousPatchH
                       <p className={cn("text-xs font-semibold uppercase tracking-wide", color)}>{label}</p>
                       <div className="flex flex-wrap gap-3">
                         {roleHeroes.map((h) => {
-                          const style = TIER_STYLES[h.tier];
+                          const style = TIER_STYLES[h.tier as Tier] ?? TIER_STYLES.D;
                           return (
                             <div key={h.id} className="group relative w-[72px] shrink-0 cursor-pointer select-none" onClick={() => setDetailHero(h)}>
                               <div className={cn("relative aspect-square w-full overflow-hidden rounded-xl border-2 transition group-hover:scale-105", style.border)}>

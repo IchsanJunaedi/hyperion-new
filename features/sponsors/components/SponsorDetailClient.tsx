@@ -103,7 +103,7 @@ export function SponsorDetailClient({ sponsor: initial, orgId, backHref, listHre
   }
 
   function handleStatusCycle(dl: SponsorDeliverable) {
-    const next = STATUS_CYCLE[dl.status];
+    const next = STATUS_CYCLE[dl.status as DeliverableStatus] ?? "pending";
     startTransition(async () => {
       const res = await updateDeliverableStatusAction(orgId, dl.id, next);
       if (res.ok) {

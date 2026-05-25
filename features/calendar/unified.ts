@@ -113,6 +113,7 @@ export async function listUnifiedCalendarEvents(
 
   for (const t of tournaments ?? []) {
     if (linkedTournamentIds.has(t.id)) continue;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     events.push({
       id: `tournament-${t.id}`,
       organization_id: orgId,
@@ -125,15 +126,12 @@ export async function listUnifiedCalendarEvents(
       ends_at: null,
       is_all_day: true,
       location: null,
-      // v2 fields with defaults
-      calendar_id: null, area: null, platform: null, status: "confirmed", priority: "medium",
-      pic_user_id: null, tags: [], visual_needed: false, content: null, color: null,
-      recurring_rule: null, recurring_parent_id: null, is_recurring: false, updated_at: new Date(t.start_date).toISOString(),
+      calendar_id: null,
       ref_id: t.id,
       ref_type: "tournament",
       created_at: new Date(t.start_date).toISOString(),
       visibility: "all",
-    });
+    } as CalendarEvent);
   }
 
   // 3. Scrims not already linked
@@ -163,15 +161,12 @@ export async function listUnifiedCalendarEvents(
       ends_at: null,
       is_all_day: false,
       location: null,
+      calendar_id: null,
       ref_id: s.id,
       ref_type: "scrim",
       created_at: s.scheduled_at,
       visibility: "all",
-      // v2 fields with defaults
-      calendar_id: null, area: null, platform: null, status: "confirmed", priority: "medium",
-      pic_user_id: null, tags: [], visual_needed: false, content: null, color: null,
-      recurring_rule: null, recurring_parent_id: null, is_recurring: false, updated_at: s.scheduled_at,
-    });
+    } as CalendarEvent);
   }
 
   // Sort by starts_at
