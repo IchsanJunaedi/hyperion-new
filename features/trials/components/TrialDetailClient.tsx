@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Copy, LayoutGrid, List, Loader2, Users } from "lucide-react";
+import { Check, Copy, LayoutGrid, List, Loader2, MessageSquare, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
 
@@ -39,13 +39,24 @@ function PipelineCard({
   const router = useRouter();
   const { success, error: notifyError } = useNotify();
   const [pending, start] = useTransition();
+  const [notesSaving, startNotesSave] = useTransition();
+  const [showNotes, setShowNotes] = useState(!!applicant.notes);
+  const [notesValue, setNotesValue] = useState(applicant.notes ?? "");
 
   function moveTo(status: string) {
     start(async () => {
       const res = await updateApplicantStatusAction(
-        applicant.id, applicant.trial_id, status as ApplicantRowType["status"], applicant.notes ?? undefined, revalidatePaths,
+        applicant.id, applicant.trial_id, status as ApplicantRowType["status"], notesValue || undefined, revalidatePaths,
       );
       if (res.ok) { success("Status diperbarui"); router.refresh(); }
+      else notifyError(res.message);
+    });
+  }
+
+  function handleSaveNotes() {
+    startNotesSave(async () => {
+      const res = await updateApplicantStatusAction(applicant.id, applicant.trial_id, applicant.status, notesValue || undefined, revalidatePaths);
+      if (res.ok) success("Catatan disimpan");
       else notifyError(res.message);
     });
   }
@@ -60,22 +71,51 @@ function PipelineCard({
         <span className="inline-block rounded-full bg-[#2C2C2C] px-2 py-0.5 text-[10px] text-[#9B9A97]">{applicant.role_applied}</span>
       )}
       {canManage && (
-        <div className="flex flex-wrap gap-1 pt-1">
-          {PIPELINE_COLS.filter((c) => c.status !== applicant.status).map((col) => (
+        <>
+          <div className="flex flex-wrap gap-1 pt-1">
+            {PIPELINE_COLS.filter((c) => c.status !== applicant.status).map((col) => (
+              <button
+                key={col.status}
+                type="button"
+                disabled={pending}
+                onClick={() => moveTo(col.status)}
+                className={cn(
+                  "inline-flex h-5 items-center gap-1 rounded px-1.5 text-[9px] font-semibold border transition cursor-pointer disabled:opacity-40",
+                  col.color,
+                )}
+              >
+                {pending ? <Loader2 className="h-2.5 w-2.5 animate-spin" /> : `→ ${col.label}`}
+              </button>
+            ))}
             <button
-              key={col.status}
               type="button"
-              disabled={pending}
-              onClick={() => moveTo(col.status)}
-              className={cn(
-                "inline-flex h-5 items-center gap-1 rounded px-1.5 text-[9px] font-semibold border transition cursor-pointer disabled:opacity-40",
-                col.color,
-              )}
+              onClick={() => setShowNotes((v) => !v)}
+              className={cn("inline-flex h-5 items-center rounded px-1.5 transition cursor-pointer", showNotes ? "text-yellow-400" : "text-[#6B6A68] hover:text-[#9B9A97]")}
+              title="Catatan"
             >
-              {pending ? <Loader2 className="h-2.5 w-2.5 animate-spin" /> : `→ ${col.label}`}
+              <MessageSquare className="h-3 w-3" />
             </button>
-          ))}
-        </div>
+          </div>
+          {showNotes && (
+            <div className="flex items-start gap-1.5 pt-0.5">
+              <textarea
+                value={notesValue}
+                onChange={(e) => setNotesValue(e.target.value)}
+                placeholder="Catatan…"
+                rows={2}
+                className="flex-1 resize-none rounded border border-[#2D2D2D] bg-[#141414] px-2 py-1 text-[10px] text-[#E5E2E1] placeholder-[#6B6A68] focus:border-white/20 focus:outline-none"
+              />
+              <button
+                type="button"
+                disabled={notesSaving}
+                onClick={handleSaveNotes}
+                className="shrink-0 rounded bg-[#2C2C2C] px-1.5 py-1 text-[9px] font-medium text-[#9B9A97] transition hover:bg-[#353434] hover:text-[#E5E2E1] disabled:opacity-50 cursor-pointer"
+              >
+                {notesSaving ? "..." : "OK"}
+              </button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
@@ -174,7 +214,7 @@ export function TrialDetailClient({ trial, applicants, canManage, appUrl, revali
         )}
 
         {/* Stats */}
-        <div className="grid grid-cols-4 gap-3 text-center">
+        <div className="grid grid-cols-5 gap-3 text-center">
           {[
             { label: "Total",    value: applicants.length, color: "text-[#E5E2E1]" },
             { label: "Pending",  value: pending,           color: "text-[#9B9A97]" },

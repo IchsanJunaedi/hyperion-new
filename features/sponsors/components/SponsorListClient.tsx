@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils/cn";
 import { SponsorCard } from "./SponsorCard";
 import { SponsorFormModal } from "./SponsorFormModal";
 import { SponsorStatusBadge } from "./SponsorStatusBadge";
+import { SponsorROIDashboard } from "./SponsorROIDashboard";
 import type { SponsorWithStats } from "../queries";
 
 function formatCurrency(value: number | null, currency: string) {
@@ -253,6 +254,8 @@ export function SponsorListClient({ sponsors, orgId, orgName, detailBasePath }: 
       </div>
 
       <StatsRow sponsors={sponsors} />
+
+      <SponsorROIDashboard sponsors={sponsors} />
 
       {sponsors.length === 0 ? (
         <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-[#2D2D2D] py-16">
