@@ -41,6 +41,7 @@ export default async function AnnouncementsPage({
 
   // Fetch read counts for captain+ roles only
   let readCounts: Map<string, number> = new Map();
+  let totalMembers: number | undefined;
   if (user && announcements.length > 0) {
     const { data: membership } = await supabase
       .from("team_members")
@@ -52,7 +53,16 @@ export default async function AnnouncementsPage({
     const role = membership?.role ?? "";
     const canSeeReadCounts = ["captain", "coach", "manager", "owner"].includes(role);
     if (canSeeReadCounts) {
-      readCounts = await getAnnouncementReadCountsBatch(announcements.map((a) => a.id));
+      const [counts, { count }] = await Promise.all([
+        getAnnouncementReadCountsBatch(announcements.map((a) => a.id)),
+        supabase
+          .from("team_members")
+          .select("*", { count: "exact", head: true })
+          .eq("organization_id", organization.id)
+          .eq("is_active", true),
+      ]);
+      readCounts = counts;
+      totalMembers = count ?? undefined;
     }
   }
 
@@ -116,6 +126,7 @@ export default async function AnnouncementsPage({
               announcement={a}
               orgSlug={slug}
               readCount={readCounts.size > 0 ? (readCounts.get(a.id) ?? 0) : undefined}
+              totalMembers={totalMembers}
             />
           ))}
         </div>

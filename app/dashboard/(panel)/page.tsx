@@ -9,6 +9,8 @@ import { HomeOrgSection } from "@/features/dashboard/components/HomeOrgSection";
 import { ManagerTimDivisiTable } from "@/features/dashboard/components/ManagerTimDivisiTable";
 import { TeamHealthScore } from "@/features/dashboard/components/TeamHealthScore";
 import { getTeamHealthScore } from "@/features/dashboard/queries/healthScore";
+import { ExecutiveSummary } from "@/features/dashboard/components/ExecutiveSummary";
+import { getExecutiveSummary } from "@/features/dashboard/queries/executiveSummary";
 import type { UserDetail } from "@/features/dashboard/components/UserDetailModal";
 
 export const dynamic = "force-dynamic";
@@ -67,14 +69,19 @@ export default async function DashboardPage() {
   }
   for (const [uid, email] of emailMap.entries()) { if (email === ownerEmail) roleMap.set(uid, "owner"); }
 
-  // Team health score depends on orgs result — sequential after Promise.all
+  // Team health score + executive summary — sequential after Promise.all
   const healthOrgId = orgs?.[0]?.id ?? null;
+  const healthOrgName = orgs?.[0]?.name ?? "";
   let healthScore = null;
+  let executiveSummary = null;
   if (healthOrgId) {
     try {
-      healthScore = await getTeamHealthScore(healthOrgId);
+      [healthScore, executiveSummary] = await Promise.all([
+        getTeamHealthScore(healthOrgId),
+        getExecutiveSummary(healthOrgId),
+      ]);
     } catch (e) {
-      console.error("Failed to fetch health score:", e);
+      console.error("Failed to fetch dashboard stats:", e);
     }
   }
 
@@ -104,6 +111,11 @@ export default async function DashboardPage() {
             <Stat label="Divisi" value={allDivisions?.length ?? 0} />
           </div>
         </div>
+
+        {/* Executive Summary */}
+        {executiveSummary && (
+          <ExecutiveSummary summary={executiveSummary} orgName={healthOrgName} />
+        )}
 
         {/* Action buttons */}
         <div className="flex flex-wrap gap-2">

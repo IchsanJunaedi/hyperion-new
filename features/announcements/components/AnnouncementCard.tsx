@@ -9,12 +9,14 @@ interface AnnouncementCardProps {
   announcement: Announcement;
   orgSlug: string;
   readCount?: number;
+  totalMembers?: number;
 }
 
 export function AnnouncementCard({
   announcement,
   orgSlug,
   readCount,
+  totalMembers,
 }: AnnouncementCardProps) {
   const date = new Date(announcement.created_at).toLocaleDateString("id-ID", {
     day: "numeric",
@@ -50,7 +52,7 @@ export function AnnouncementCard({
         {readCount !== undefined && (
           <span className="inline-flex items-center gap-1 text-[10px] text-white/35">
             <Eye className="h-3 w-3" />
-            {readCount}
+            {readCount}{totalMembers !== undefined ? `/${totalMembers}` : ""} dibaca
           </span>
         )}
       </div>
