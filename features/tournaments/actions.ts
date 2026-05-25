@@ -208,7 +208,7 @@ export async function updateTournamentStatusAction(
   if (status === "ongoing") {
     const { data: tournament } = await supabase
       .from("tournaments")
-      .select("organization_id, name, organizer, start_date, registration_fee, registration_url")
+      .select("organization_id, name, organizer, start_date, registration_fee, prize_pool")
       .eq("id", tournamentId)
       .maybeSingle();
 
@@ -237,7 +237,7 @@ export async function updateTournamentStatusAction(
         name: tournament.name,
         organizer: tournament.organizer ?? null,
         startDate: tournament.start_date,
-        registrationUrl: tournament.registration_url ?? null,
+        prizePool: tournament.prize_pool ?? null,
       }).catch((err) => console.error("[WA] Registration notification error:", err));
     }
   }
@@ -419,7 +419,7 @@ interface RegistrationNotifData {
   name: string;
   organizer: string | null;
   startDate: string;
-  registrationUrl: string | null;
+  prizePool: string | null;
 }
 
 async function fanOutRegistrationNotification(
@@ -455,7 +455,7 @@ async function fanOutRegistrationNotification(
     tournamentName: data.name,
     organizer: data.organizer,
     startDate: data.startDate,
-    registrationUrl: data.registrationUrl,
+    prizePool: data.prizePool,
     tournamentUrl,
   });
 

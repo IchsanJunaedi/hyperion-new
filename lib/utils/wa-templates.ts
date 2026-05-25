@@ -84,7 +84,7 @@ interface TournamentRegisteredWaData {
   tournamentName: string;
   organizer?: string | null;
   startDate: string;
-  registrationUrl?: string | null;
+  prizePool?: string | null;
   tournamentUrl: string;
 }
 
@@ -103,14 +103,14 @@ export function buildTournamentRegisteredWaMessage(data: TournamentRegisteredWaD
   }
 
   lines.push(`*Mulai:* ${formatDateOnly(data.startDate)}`);
+
+  if (data.prizePool) {
+    lines.push(`*Prize Pool:* ${data.prizePool}`);
+  }
+
   lines.push("");
   lines.push("Tim kita sudah resmi terdaftar. Persiapkan dirimu!");
   lines.push("");
-
-  if (data.registrationUrl) {
-    lines.push(`Link registrasi: ${data.registrationUrl}`);
-  }
-
   lines.push(`Info turnamen: ${data.tournamentUrl}`);
 
   return lines.join("\n");
