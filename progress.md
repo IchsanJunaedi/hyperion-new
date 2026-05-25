@@ -59,6 +59,30 @@
 
 ---
 
+## Features Completed (2026-05-25 session — part 2)
+
+### Polls Availability Grid (WOW factor complete)
+- New poll type `availability` (alongside `regular`) — toggle in CreatePollForm
+- `poll_availability_votes` table: multi-slot per user (UNIQUE poll_id + user_id + slot_index)
+- `voteAvailabilityAction` — atomically replaces all slot selections per user
+- `AvailabilityPollCard` — heatmap grid: each slot shows count + green fill intensity
+- Users select multiple slots, save with "Perbarui Jadwalku" button
+- Migration: `20260525000002_polls_availability.sql`
+
+### Files linked to context (WOW factor complete)
+- No new migration needed — `files` table already had `ref_type`/`ref_id` columns
+- New `features/files/queries.ts` — `getLinkedFiles(orgId, refType, refId)`
+- `recordFileUploadAction` now accepts optional `ref_type`/`ref_id`
+- New `ContextFiles` client component — shows linked files + upload (coach+)
+- Integrated into scrim detail page and strategy note detail page
+
+### Notifications Weekly Digest (WOW factor complete)
+- `supabase/functions/weekly-digest/index.ts` — sends WA to each org owner
+- Content: scrims last 7 days (count + W/L), finance balance, sponsor renewals < 30 days, member count
+- Scheduled via `pg_cron` every Monday 02:00 UTC = 09:00 WIB
+- Migration: `20260525000003_weekly_digest_cron.sql`
+- Requires `FONNTE_API_TOKEN` edge function env var (already set from existing WA system)
+
 ## Features Completed (2026-05-25 session)
 
 ### Executive Summary Dashboard
@@ -174,9 +198,6 @@ Matches live in `tournament_matches.stage_id → tournament_stages.id`. `getTour
 - Player dev: coach can only see own targets on `/development` — separate manager view at `/manage/development` for cross-player view
 - Public profile activation
 - Reports page activation
-- **Polls Availability Grid** — WOW factor, needs new `poll_availability_slots` table + multi-vote support
-- **Files linked to context** — WOW factor, needs DB migration for file-context junction tables
-- **Notifications Weekly Digest** — WOW factor, needs Edge Function + Supabase cron
 
 ### P3 Remaining
 - `/[slug]/sponsors` workspace page → **tidak dibuat** (data bisnis, captain/coach/member tidak boleh lihat)
