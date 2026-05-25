@@ -447,15 +447,16 @@ interface MetaPageProps {
   orgId: string;
   patches: MetaPatch[];
   initialPatch: PatchWithHeroes | null;
+  previousPatchHeroes?: MetaHeroRating[];
   canEdit: boolean;
 }
 
-export function MetaPage({ orgSlug, orgId, patches, initialPatch, canEdit }: MetaPageProps) {
+export function MetaPage({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes = [], canEdit }: MetaPageProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [activePatch, setActivePatch] = useState<PatchWithHeroes | null>(initialPatch);
   const [patchList, setPatchList] = useState<MetaPatch[]>(patches);
-  const [activeTab, setActiveTab] = useState<"tier" | "ban" | "learn">("tier");
+  const [activeTab, setActiveTab] = useState<"tier" | "ban" | "learn" | "changelog">("tier");
   const [roleFilter, setRoleFilter] = useState<RoleFilter>("all");
   const [classFilter, setClassFilter] = useState<ClassFilter>("all");
   const [editMode, setEditMode] = useState(false);
@@ -823,27 +824,31 @@ export function MetaPage({ orgSlug, orgId, patches, initialPatch, canEdit }: Met
 
           {/* Tab navigation */}
           <div className="print-hide flex gap-1 border-b border-[#2D2D2D]">
-            {(["tier", "ban", "learn"] as const).map((tab) => (
-              <button
-                key={tab}
-                type="button"
-                onClick={() => {
-                  setActiveTab(tab);
-                  setRoleFilter("all");
-                  setClassFilter("all");
-                }}
-                className={cn(
-                  "-mb-px cursor-pointer border-b-2 px-4 py-2 text-sm transition",
-                  activeTab === tab
-                    ? "border-yellow-400 text-yellow-400"
-                    : "border-transparent text-white/50 hover:text-white/80",
-                )}
-              >
-                {tab === "tier" && "Tier List"}
-                {tab === "ban" && `Ban Priority${banHeroes.length > 0 ? ` (${banHeroes.length})` : ""}`}
-                {tab === "learn" && `Priority to Learn${learnHeroes.length > 0 ? ` (${learnHeroes.length})` : ""}`}
-              </button>
-            ))}
+            {(["tier", "ban", "learn", "changelog"] as const).map((tab) => {
+              if (tab === "changelog" && previousPatchHeroes.length === 0) return null;
+              return (
+                <button
+                  key={tab}
+                  type="button"
+                  onClick={() => {
+                    setActiveTab(tab);
+                    setRoleFilter("all");
+                    setClassFilter("all");
+                  }}
+                  className={cn(
+                    "-mb-px cursor-pointer border-b-2 px-4 py-2 text-sm transition",
+                    activeTab === tab
+                      ? "border-yellow-400 text-yellow-400"
+                      : "border-transparent text-white/50 hover:text-white/80",
+                  )}
+                >
+                  {tab === "tier" && "Tier List"}
+                  {tab === "ban" && `Ban Priority${banHeroes.length > 0 ? ` (${banHeroes.length})` : ""}`}
+                  {tab === "learn" && `Priority to Learn${learnHeroes.length > 0 ? ` (${learnHeroes.length})` : ""}`}
+                  {tab === "changelog" && "Changelog"}
+                </button>
+              );
+            })}
           </div>
 
           {/* ── Tier List tab ─────────────────────────────────────── */}
@@ -1104,6 +1109,151 @@ export function MetaPage({ orgSlug, orgId, patches, initialPatch, canEdit }: Met
               )}
             </div>
           )}
+
+          {/* ── Changelog tab ─────────────────────────────────────────── */}
+          {activeTab === "changelog" && (() => {
+            const TIER_ORDER: Record<string, number> = { SS: 0, S: 1, A: 2, B: 3, C: 4, D: 5 };
+
+            const prevMap = new Map<string, MetaHeroRating>();
+            for (const h of previousPatchHeroes) prevMap.set(h.hero_name, h);
+
+            const currMap = new Map<string, MetaHeroRating>();
+            for (const h of heroes) currMap.set(h.hero_name, h);
+
+            const buffed: Array<{ hero: MetaHeroRating; oldTier: string }> = [];
+            const nerfed: Array<{ hero: MetaHeroRating; oldTier: string }> = [];
+            const added: MetaHeroRating[] = [];
+            const removed: MetaHeroRating[] = [];
+            const newBan: MetaHeroRating[] = [];
+            const newLearn: MetaHeroRating[] = [];
+
+            for (const [name, curr] of currMap) {
+              const prev = prevMap.get(name);
+              if (!prev) {
+                added.push(curr);
+              } else {
+                const prevOrd = TIER_ORDER[prev.tier] ?? 99;
+                const currOrd = TIER_ORDER[curr.tier] ?? 99;
+                if (currOrd < prevOrd) buffed.push({ hero: curr, oldTier: prev.tier });
+                else if (currOrd > prevOrd) nerfed.push({ hero: curr, oldTier: prev.tier });
+                if (curr.is_ban_priority && !prev.is_ban_priority) newBan.push(curr);
+                if (curr.priority_to_learn && !prev.priority_to_learn) newLearn.push(curr);
+              }
+            }
+            for (const [name, prev] of prevMap) {
+              if (!currMap.has(name)) removed.push(prev);
+            }
+
+            const noChanges = buffed.length === 0 && nerfed.length === 0 && added.length === 0 && removed.length === 0 && newBan.length === 0 && newLearn.length === 0;
+
+            if (noChanges) {
+              return (
+                <p className="py-8 text-center text-sm text-white/40">
+                  Tidak ada perubahan dibanding patch sebelumnya.
+                </p>
+              );
+            }
+
+            function ChangeRow({ hero, oldTier, type }: { hero: MetaHeroRating; oldTier?: string; type: "buff" | "nerf" | "new" | "removed" | "ban" | "learn" }) {
+              const style = TIER_STYLES[hero.tier as Tier] ?? TIER_STYLES.D;
+              return (
+                <div className="flex items-center gap-3 rounded-xl bg-white/[0.03] px-3 py-2.5">
+                  <div className="h-8 w-8 shrink-0 overflow-hidden rounded-lg border border-white/10">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={getHeroImageUrl(hero.hero_name)} alt={hero.hero_name} className="h-full w-full object-cover" />
+                  </div>
+                  <span className="flex-1 text-xs font-medium text-white/80">{hero.hero_name}</span>
+                  {type === "buff" && oldTier && (
+                    <div className="flex items-center gap-1.5">
+                      <span className={cn("rounded px-1.5 py-0.5 text-[10px] font-black", TIER_STYLES[oldTier as Tier]?.badge ?? "bg-white/10 text-white/40")}>{oldTier}</span>
+                      <span className="text-[10px] text-white/30">→</span>
+                      <span className={cn("rounded px-1.5 py-0.5 text-[10px] font-black", style.badge)}>{hero.tier}</span>
+                      <span className="ml-1 rounded bg-emerald-500/15 px-1.5 py-0.5 text-[9px] font-semibold text-emerald-400">BUFF</span>
+                    </div>
+                  )}
+                  {type === "nerf" && oldTier && (
+                    <div className="flex items-center gap-1.5">
+                      <span className={cn("rounded px-1.5 py-0.5 text-[10px] font-black", TIER_STYLES[oldTier as Tier]?.badge ?? "bg-white/10 text-white/40")}>{oldTier}</span>
+                      <span className="text-[10px] text-white/30">→</span>
+                      <span className={cn("rounded px-1.5 py-0.5 text-[10px] font-black", style.badge)}>{hero.tier}</span>
+                      <span className="ml-1 rounded bg-rose-500/15 px-1.5 py-0.5 text-[9px] font-semibold text-rose-400">NERF</span>
+                    </div>
+                  )}
+                  {type === "new" && (
+                    <div className="flex items-center gap-1.5">
+                      <span className={cn("rounded px-1.5 py-0.5 text-[10px] font-black", style.badge)}>{hero.tier}</span>
+                      <span className="rounded bg-sky-500/15 px-1.5 py-0.5 text-[9px] font-semibold text-sky-400">NEW</span>
+                    </div>
+                  )}
+                  {type === "removed" && (
+                    <span className="rounded bg-white/10 px-1.5 py-0.5 text-[9px] font-semibold text-white/40">REMOVED</span>
+                  )}
+                  {type === "ban" && (
+                    <span className="rounded bg-red-500/15 px-1.5 py-0.5 text-[9px] font-semibold text-red-400">BAN PRIORITY</span>
+                  )}
+                  {type === "learn" && (
+                    <div className="flex items-center gap-1.5">
+                      <span className={cn("rounded px-1.5 py-0.5 text-[10px] font-black", style.badge)}>{hero.tier}</span>
+                      <span className="rounded bg-yellow-500/15 px-1.5 py-0.5 text-[9px] font-semibold text-yellow-400">LEARN</span>
+                    </div>
+                  )}
+                </div>
+              );
+            }
+
+            return (
+              <div className="space-y-5">
+                {buffed.length > 0 && (
+                  <div className="space-y-2">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-emerald-400">Naik Tier ({buffed.length})</p>
+                    <div className="space-y-1.5">
+                      {buffed.map(({ hero, oldTier }) => <ChangeRow key={hero.id} hero={hero} oldTier={oldTier} type="buff" />)}
+                    </div>
+                  </div>
+                )}
+                {nerfed.length > 0 && (
+                  <div className="space-y-2">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-rose-400">Turun Tier ({nerfed.length})</p>
+                    <div className="space-y-1.5">
+                      {nerfed.map(({ hero, oldTier }) => <ChangeRow key={hero.id} hero={hero} oldTier={oldTier} type="nerf" />)}
+                    </div>
+                  </div>
+                )}
+                {newBan.length > 0 && (
+                  <div className="space-y-2">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-red-400">Ban Priority Baru ({newBan.length})</p>
+                    <div className="space-y-1.5">
+                      {newBan.map((hero) => <ChangeRow key={hero.id} hero={hero} type="ban" />)}
+                    </div>
+                  </div>
+                )}
+                {newLearn.length > 0 && (
+                  <div className="space-y-2">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-yellow-400">Priority to Learn Baru ({newLearn.length})</p>
+                    <div className="space-y-1.5">
+                      {newLearn.map((hero) => <ChangeRow key={hero.id} hero={hero} type="learn" />)}
+                    </div>
+                  </div>
+                )}
+                {added.length > 0 && (
+                  <div className="space-y-2">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-sky-400">Ditambahkan ({added.length})</p>
+                    <div className="space-y-1.5">
+                      {added.map((hero) => <ChangeRow key={hero.id} hero={hero} type="new" />)}
+                    </div>
+                  </div>
+                )}
+                {removed.length > 0 && (
+                  <div className="space-y-2">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-white/40">Dihapus ({removed.length})</p>
+                    <div className="space-y-1.5">
+                      {removed.map((hero) => <ChangeRow key={hero.id} hero={hero} type="removed" />)}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
         </>
       )}
 

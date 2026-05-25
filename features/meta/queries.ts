@@ -37,6 +37,27 @@ export async function getPatchWithHeroes(patchId: string): Promise<PatchWithHero
   return { ...patch, heroes: heroes ?? [] };
 }
 
+export async function getPreviousPatchHeroes(
+  orgId: string,
+  currentPatchId: string,
+): Promise<MetaHeroRating[]> {
+  const supabase = await createClient();
+  const { data: patch } = await supabase
+    .from("meta_patches")
+    .select("id")
+    .eq("organization_id", orgId)
+    .neq("id", currentPatchId)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (!patch) return [];
+  const { data: heroes } = await supabase
+    .from("meta_hero_ratings")
+    .select("*")
+    .eq("patch_id", patch.id);
+  return heroes ?? [];
+}
+
 export async function getLatestPatchWithHeroes(orgId: string): Promise<PatchWithHeroes | null> {
   const supabase = await createClient();
   const { data: patch } = await supabase

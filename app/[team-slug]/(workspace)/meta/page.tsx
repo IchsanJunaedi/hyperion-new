@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getOrgBySlug } from "@/features/teams/queries";
-import { getMetaPatches, getLatestPatchWithHeroes, getPatchWithHeroes } from "@/features/meta/queries";
+import { getMetaPatches, getLatestPatchWithHeroes, getPatchWithHeroes, getPreviousPatchHeroes } from "@/features/meta/queries";
 import { MetaPage } from "@/features/meta/components/MetaPage";
 
 export const dynamic = "force-dynamic";
@@ -46,12 +46,17 @@ export default async function MetaPageRoute({ params, searchParams }: MetaPageRo
     patchId ? getPatchWithHeroes(patchId) : getLatestPatchWithHeroes(org.id),
   ]);
 
+  const previousPatchHeroes = activePatch
+    ? await getPreviousPatchHeroes(org.id, activePatch.id)
+    : [];
+
   return (
     <MetaPage
       orgSlug={slug}
       orgId={org.id}
       patches={patches}
       initialPatch={activePatch}
+      previousPatchHeroes={previousPatchHeroes}
       canEdit={canEdit}
     />
   );

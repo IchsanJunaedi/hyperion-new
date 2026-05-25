@@ -1,12 +1,34 @@
 "use client";
 
 import { useState } from "react";
-import { Gamepad2, Star, Users } from "lucide-react";
+import { Gamepad2, Star, Users, Zap } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { ROLE_LABELS } from "@/features/scrim/data/mlbb-heroes";
 import { getHeroImageUrl } from "@/features/scrim/data/mlbb-heroes";
 import { PlayerHeroModal } from "@/features/analytics/components/PlayerHeroModal";
 import type { EnterprisePlayerStat, PlayerHeroStat } from "@/features/analytics/queries";
+
+function computeImpactScore(p: EnterprisePlayerStat): number {
+  const attendance = p.attendanceRate;
+  const winRate = p.scrimsWhenPresent > 0 ? p.winRateWhenPresent : 50;
+  const rating = p.avgRating !== null ? (p.avgRating / 10) * 100 : 50;
+  return Math.round(attendance * 0.35 + winRate * 0.35 + rating * 0.30);
+}
+
+function impactColor(score: number): string {
+  if (score >= 80) return "text-emerald-400";
+  if (score >= 60) return "text-yellow-400";
+  if (score >= 40) return "text-amber-500";
+  return "text-rose-400";
+}
+
+function impactLabel(score: number): string {
+  if (score >= 80) return "Elite";
+  if (score >= 65) return "Core";
+  if (score >= 50) return "Solid";
+  if (score >= 35) return "Dev";
+  return "Bench";
+}
 
 interface PlayerStatsTabProps {
   playerStats: EnterprisePlayerStat[];
@@ -48,8 +70,48 @@ export function PlayerStatsTab({ playerStats, orgId }: PlayerStatsTabProps) {
     );
   }
 
+  const ranked = [...playerStats]
+    .map((p) => ({ ...p, impactScore: computeImpactScore(p) }))
+    .sort((a, b) => b.impactScore - a.impactScore);
+
   return (
     <>
+      {/* Player Impact Score leaderboard */}
+      <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-4 mb-2">
+        <div className="flex items-center gap-2 mb-3">
+          <Zap className="h-4 w-4 text-yellow-400" />
+          <h3 className="text-sm font-semibold text-white">Player Impact Score</h3>
+          <span className="ml-auto text-[10px] text-white/30">Kehadiran 35% · Win Rate 35% · Rating 30%</span>
+        </div>
+        <div className="space-y-2">
+          {ranked.map((p, i) => (
+            <div key={p.user_id} className="flex items-center gap-3">
+              <span className="w-5 text-center text-[10px] font-bold text-white/30">{i + 1}</span>
+              <span className="flex-1 truncate text-xs text-white/70">{p.display_name ?? "Unknown"}</span>
+              <div className="flex items-center gap-2">
+                <span className={cn("text-[10px] font-semibold", impactColor(p.impactScore))}>
+                  {impactLabel(p.impactScore)}
+                </span>
+                <div className="w-20 h-1.5 rounded-full bg-[#252525] overflow-hidden">
+                  <div
+                    className={cn("h-full rounded-full transition-all", {
+                      "bg-emerald-500": p.impactScore >= 80,
+                      "bg-yellow-400": p.impactScore >= 65 && p.impactScore < 80,
+                      "bg-amber-500": p.impactScore >= 50 && p.impactScore < 65,
+                      "bg-rose-500": p.impactScore < 50,
+                    })}
+                    style={{ width: `${p.impactScore}%` }}
+                  />
+                </div>
+                <span className={cn("w-7 text-right text-xs font-bold tabular-nums", impactColor(p.impactScore))}>
+                  {p.impactScore}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {playerStats.map((player) => (
           <PlayerCard
@@ -76,6 +138,7 @@ function PlayerCard({
   player: EnterprisePlayerStat;
   onClick: () => void;
 }) {
+  const impact = computeImpactScore(player);
   const streakPositive = player.streak > 0;
   const streakText =
     player.streak === 0
@@ -121,15 +184,23 @@ function PlayerCard({
             </span>
           )}
         </div>
-        {/* Coach rating badge */}
-        {player.avgRating !== null && (
-          <div className="flex shrink-0 flex-col items-center rounded-xl bg-[#252525] px-2 py-1">
-            <Star className="mb-0.5 h-3 w-3 text-yellow-400/70" />
-            <span className={cn("text-sm font-bold tabular-nums", ratingColor(player.avgRating))}>
-              {player.avgRating.toFixed(1)}
+        {/* Impact Score + Coach rating */}
+        <div className="flex shrink-0 items-center gap-2">
+          <div className="flex flex-col items-center rounded-xl bg-[#252525] px-2 py-1">
+            <Zap className="mb-0.5 h-3 w-3 text-yellow-400/60" />
+            <span className={cn("text-sm font-bold tabular-nums", impactColor(impact))}>
+              {impact}
             </span>
           </div>
-        )}
+          {player.avgRating !== null && (
+            <div className="flex flex-col items-center rounded-xl bg-[#252525] px-2 py-1">
+              <Star className="mb-0.5 h-3 w-3 text-yellow-400/70" />
+              <span className={cn("text-sm font-bold tabular-nums", ratingColor(player.avgRating))}>
+                {player.avgRating.toFixed(1)}
+              </span>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Attendance bar */}
