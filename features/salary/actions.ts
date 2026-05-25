@@ -58,6 +58,7 @@ export async function createContractAction(
     organization_id: orgId,
     user_id: parsed.data.user_id,
     monthly_salary: parsed.data.monthly_salary,
+    bonus_percentage: parsed.data.bonus_percentage,
     start_date: parsed.data.start_date,
     end_date: parsed.data.end_date ?? null,
     notes: parsed.data.notes ?? null,
@@ -96,6 +97,7 @@ export async function updateContractAction(
     .update({
       user_id: parsed.data.user_id,
       monthly_salary: parsed.data.monthly_salary,
+      bonus_percentage: parsed.data.bonus_percentage,
       start_date: parsed.data.start_date,
       end_date: parsed.data.end_date ?? null,
       notes: parsed.data.notes ?? null,

@@ -1209,6 +1209,7 @@ export type Database = {
       }
       player_contracts: {
         Row: {
+          bonus_percentage: number
           created_at: string | null
           created_by: string | null
           end_date: string | null
@@ -1222,6 +1223,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          bonus_percentage?: number
           created_at?: string | null
           created_by?: string | null
           end_date?: string | null
@@ -1235,6 +1237,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          bonus_percentage?: number
           created_at?: string | null
           created_by?: string | null
           end_date?: string | null
@@ -2283,6 +2286,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      tournament_bonus_distributions: {
+        Row: {
+          bonus_amount: number
+          bonus_percentage: number
+          contract_id: string
+          distributed_at: string
+          id: string
+          organization_id: string
+          placement: number | null
+          tournament_id: string
+          tournament_name: string
+          user_id: string
+        }
+        Insert: {
+          bonus_amount: number
+          bonus_percentage: number
+          contract_id: string
+          distributed_at?: string
+          id?: string
+          organization_id: string
+          placement?: number | null
+          tournament_id: string
+          tournament_name: string
+          user_id: string
+        }
+        Update: {
+          bonus_amount?: number
+          bonus_percentage?: number
+          contract_id?: string
+          distributed_at?: string
+          id?: string
+          organization_id?: string
+          placement?: number | null
+          tournament_id?: string
+          tournament_name?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       tournament_results: {
         Row: {

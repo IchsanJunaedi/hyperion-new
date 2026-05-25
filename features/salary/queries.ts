@@ -6,11 +6,22 @@ import type { Database } from "@/types/database";
 export type PlayerContract = Database["public"]["Tables"]["player_contracts"]["Row"];
 export type SalaryPayment = Database["public"]["Tables"]["salary_payments"]["Row"];
 
+export interface BonusDistribution {
+  id: string;
+  tournamentId: string;
+  tournamentName: string;
+  placement: number | null;
+  bonusAmount: number;
+  bonusPercentage: number;
+  distributedAt: string;
+}
+
 export interface ContractWithProfile extends PlayerContract {
   display_name: string | null;
   avatar_url: string | null;
   role: string | null;
   payments: SalaryPayment[];
+  bonusDistributions: BonusDistribution[];
 }
 
 export interface PayrollSummary {
@@ -41,7 +52,11 @@ export async function listContracts(orgId: string): Promise<ContractWithProfile[
   sixMonthsAgo.setDate(1);
   const since = sixMonthsAgo.toISOString().slice(0, 10);
 
-  const [profilesRes, membersRes, paymentsRes] = await Promise.all([
+  // Start of current month for bonus distributions
+  const now = new Date();
+  const monthStart = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-01`;
+
+  const [profilesRes, membersRes, paymentsRes, bonusRes] = await Promise.all([
     admin.from("profiles").select("id, display_name, avatar_url").in("id", userIds),
     admin
       .from("team_members")
@@ -55,6 +70,12 @@ export async function listContracts(orgId: string): Promise<ContractWithProfile[
       .in("contract_id", contractIds)
       .gte("pay_period", since)
       .order("pay_period", { ascending: false }),
+    admin
+      .from("tournament_bonus_distributions")
+      .select("id, tournament_id, contract_id, tournament_name, placement, bonus_amount, bonus_percentage, distributed_at")
+      .in("contract_id", contractIds)
+      .gte("distributed_at", monthStart)
+      .order("distributed_at", { ascending: false }),
   ]);
 
   const profileMap = new Map((profilesRes.data ?? []).map((p) => [p.id, p]));
@@ -65,6 +86,20 @@ export async function listContracts(orgId: string): Promise<ContractWithProfile[
     list.push(p as SalaryPayment);
     paymentsByContract.set(p.contract_id, list);
   }
+  const bonusByContract = new Map<string, BonusDistribution[]>();
+  for (const b of bonusRes.data ?? []) {
+    const list = bonusByContract.get(b.contract_id) ?? [];
+    list.push({
+      id: b.id,
+      tournamentId: b.tournament_id,
+      tournamentName: b.tournament_name,
+      placement: b.placement,
+      bonusAmount: Number(b.bonus_amount),
+      bonusPercentage: Number(b.bonus_percentage),
+      distributedAt: b.distributed_at,
+    });
+    bonusByContract.set(b.contract_id, list);
+  }
 
   return contracts.map((c) => ({
     ...(c as PlayerContract),
@@ -72,55 +107,10 @@ export async function listContracts(orgId: string): Promise<ContractWithProfile[
     avatar_url: profileMap.get(c.user_id)?.avatar_url ?? null,
     role: memberMap.get(c.user_id) ?? null,
     payments: paymentsByContract.get(c.id) ?? [],
+    bonusDistributions: bonusByContract.get(c.id) ?? [],
   }));
 }
 
-export interface TournamentPrize {
-  tournamentId: string;
-  name: string;
-  startDate: string;
-  prizeEarned: string;
-  placement: number | null;
-}
-
-/** Completed tournaments for this org that recorded a prize. Used for bonus calculation. */
-export async function listTournamentPrizes(orgId: string): Promise<TournamentPrize[]> {
-  const admin = createAdminClient();
-  const { data: tournaments } = await admin
-    .from("tournaments")
-    .select("id, name, start_date")
-    .eq("organization_id", orgId)
-    .eq("status", "completed")
-    .order("start_date", { ascending: false })
-    .limit(20);
-
-  if (!tournaments || tournaments.length === 0) return [];
-
-  const ids = tournaments.map((t) => t.id);
-  const { data: results } = await admin
-    .from("tournament_results")
-    .select("tournament_id, prize_earned, placement")
-    .in("tournament_id", ids)
-    .not("prize_earned", "is", null);
-
-  const resultMap = new Map((results ?? []).map((r) => [r.tournament_id, r]));
-
-  return tournaments
-    .filter((t) => {
-      const r = resultMap.get(t.id);
-      return r && r.prize_earned && r.prize_earned !== "0";
-    })
-    .map((t) => {
-      const r = resultMap.get(t.id)!;
-      return {
-        tournamentId: t.id,
-        name: t.name,
-        startDate: t.start_date,
-        prizeEarned: r.prize_earned!,
-        placement: r.placement ?? null,
-      };
-    });
-}
 
 export async function getPayrollSummary(orgId: string): Promise<PayrollSummary> {
   const admin = createAdminClient();

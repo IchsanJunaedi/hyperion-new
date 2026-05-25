@@ -53,6 +53,9 @@ export function SalaryFormModal({
   const [salaryRaw, setSalaryRaw] = useState<string>(
     contract?.monthly_salary != null ? String(contract.monthly_salary) : ""
   );
+  const [bonusPct, setBonusPct] = useState<string>(
+    contract?.bonus_percentage != null ? String(contract.bonus_percentage) : "0"
+  );
 
   const [startDate, setStartDate] = useState<string>(
     contract?.start_date ?? new Date().toISOString().slice(0, 10)
@@ -90,6 +93,7 @@ export function SalaryFormModal({
     const raw = {
       user_id: selectedUserId,
       monthly_salary: salaryRaw,
+      bonus_percentage: bonusPct || "0",
       start_date: fd.get("start_date"),
       end_date: endDate || undefined,
       notes: fd.get("notes") || undefined,
@@ -213,6 +217,29 @@ export function SalaryFormModal({
               }}
               className="h-10 w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-sm text-[#E5E2E1] focus:border-[#9B9A97] focus:outline-none"
             />
+          </div>
+
+          {/* Bonus percentage */}
+          <div>
+            <label className="block text-xs text-[#9B9A97] mb-1">
+              Persentase Bonus Turnamen (%)
+            </label>
+            <div className="relative">
+              <input
+                type="number"
+                min="0"
+                max="100"
+                step="0.1"
+                value={bonusPct}
+                onChange={(e) => setBonusPct(e.target.value)}
+                placeholder="0"
+                className="h-10 w-full rounded-md border border-[#2D2D2D] bg-[#191919] pl-3 pr-8 text-sm text-[#E5E2E1] focus:border-[#9B9A97] focus:outline-none"
+              />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#6B6A68]">%</span>
+            </div>
+            <p className="mt-1 text-[10px] text-[#6B6A68]">
+              Jatah otomatis saat tim menang turnamen berhadiah. 0 = tidak dapat bonus.
+            </p>
           </div>
 
           {/* Dates */}

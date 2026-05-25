@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { SalaryPageClient } from "@/features/salary/components/SalaryPageClient";
-import { listContracts, getPayrollSummary, listTournamentPrizes } from "@/features/salary/queries";
+import { listContracts, getPayrollSummary } from "@/features/salary/queries";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -33,10 +33,9 @@ export default async function DashboardSalariesPage({
   const orgId = sp.org ?? orgs?.[0]?.id ?? null;
   if (!orgId) redirect("/dashboard");
 
-  const [contracts, summary, tournamentPrizes, membersRes] = await Promise.all([
+  const [contracts, summary, membersRes] = await Promise.all([
     listContracts(orgId),
     getPayrollSummary(orgId),
-    listTournamentPrizes(orgId),
     admin
       .from("team_members")
       .select("user_id, role")
@@ -83,7 +82,6 @@ export default async function DashboardSalariesPage({
           summary={summary}
           members={members}
           revalidatePaths={["/dashboard/salaries", "/manage/salaries"]}
-          tournamentPrizes={tournamentPrizes}
         />
       </main>
     </>

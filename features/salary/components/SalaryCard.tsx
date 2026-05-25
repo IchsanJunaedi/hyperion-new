@@ -6,8 +6,8 @@ import { useState, useMemo, useTransition } from "react";
 
 import { useNotify } from "@/features/dashboard/components/NotifyModal";
 import { ConfirmDeleteDialog } from "@/features/dashboard/components/ConfirmDeleteDialog";
-import { markPaymentPaidAction, terminateContractAction } from "@/features/salary/actions";
-import type { ContractWithProfile, TournamentPrize } from "@/features/salary/queries";
+import { markPaymentPaidAction } from "@/features/salary/actions";
+import type { ContractWithProfile } from "@/features/salary/queries";
 
 const ROLE_COLORS: Record<string, string> = {
   owner: "text-yellow-400",
@@ -49,11 +49,10 @@ interface SalaryCardProps {
   contract: ContractWithProfile;
   orgId: string;
   revalidatePaths: string[];
-  tournamentPrizes: TournamentPrize[];
   onEdit: () => void;
 }
 
-export function SalaryCard({ contract, orgId, revalidatePaths, tournamentPrizes, onEdit }: SalaryCardProps) {
+export function SalaryCard({ contract, orgId, revalidatePaths, onEdit }: SalaryCardProps) {
   const router = useRouter();
   const { success, error: notifyError } = useNotify();
   const [historyOpen, setHistoryOpen] = useState(false);
@@ -61,26 +60,14 @@ export function SalaryCard({ contract, orgId, revalidatePaths, tournamentPrizes,
   const [terminating, startTerminate] = useTransition();
   const [confirmTerminateOpen, setConfirmTerminateOpen] = useState(false);
 
-  // Bonus tournament state
-  const [bonusTournamentId, setBonusTournamentId] = useState<string>("");
-  const [bonusPct, setBonusPct] = useState<string>("");
-  const [bonusDropOpen, setBonusDropOpen] = useState(false);
-
   const thisMonth = currentPayPeriod();
   const thisMonthPayment = contract.payments.find((p) => p.pay_period.slice(0, 7) === thisMonth.slice(0, 7));
   const isPaidThisMonth = thisMonthPayment?.status === "paid";
 
-  const selectedPrize = useMemo(
-    () => tournamentPrizes.find((t) => t.tournamentId === bonusTournamentId) ?? null,
-    [tournamentPrizes, bonusTournamentId],
+  const totalBonus = useMemo(
+    () => contract.bonusDistributions.reduce((sum, b) => sum + b.bonusAmount, 0),
+    [contract.bonusDistributions],
   );
-
-  const bonusAmount = useMemo(() => {
-    if (!selectedPrize || !bonusPct) return 0;
-    const pct = parseFloat(bonusPct);
-    if (isNaN(pct) || pct <= 0 || pct > 100) return 0;
-    return Math.round((parseInt(selectedPrize.prizeEarned, 10) * pct) / 100);
-  }, [selectedPrize, bonusPct]);
 
   const initials = (contract.display_name ?? "??")
     .split(" ")
@@ -91,8 +78,10 @@ export function SalaryCard({ contract, orgId, revalidatePaths, tournamentPrizes,
 
   function handleMarkPaid() {
     startPay(async () => {
-      const bonusNote = bonusAmount > 0 && selectedPrize
-        ? `Bonus turnamen "${selectedPrize.name}" ${bonusPct}% = Rp ${bonusAmount.toLocaleString("id-ID")}`
+      const bonusNote = totalBonus > 0
+        ? contract.bonusDistributions
+            .map((b) => `${b.placement ? `Juara ${b.placement} ` : ""}${b.tournamentName} (${b.bonusPercentage}%) = Rp ${b.bonusAmount.toLocaleString("id-ID")}`)
+            .join("; ")
         : null;
       const res = await markPaymentPaidAction(
         orgId,
@@ -100,13 +89,11 @@ export function SalaryCard({ contract, orgId, revalidatePaths, tournamentPrizes,
         thisMonth,
         contract.monthly_salary,
         revalidatePaths,
-        bonusAmount > 0 ? bonusAmount : undefined,
+        totalBonus > 0 ? totalBonus : undefined,
         bonusNote,
       );
       if (res.ok) {
-        success(bonusAmount > 0 ? "Gaji + bonus turnamen dibayar!" : "Gaji bulan ini ditandai sudah dibayar");
-        setBonusTournamentId("");
-        setBonusPct("");
+        success(totalBonus > 0 ? "Gaji + bonus turnamen dibayar!" : "Gaji bulan ini ditandai sudah dibayar");
         router.refresh();
       } else {
         notifyError(res.message);
@@ -116,6 +103,7 @@ export function SalaryCard({ contract, orgId, revalidatePaths, tournamentPrizes,
 
   function handleTerminate() {
     startTerminate(async () => {
+      const { terminateContractAction } = await import("@/features/salary/actions");
       const res = await terminateContractAction(orgId, contract.id, revalidatePaths);
       if (res.ok) {
         success("Kontrak diterminasi");
@@ -176,6 +164,12 @@ export function SalaryCard({ contract, orgId, revalidatePaths, tournamentPrizes,
         </div>
       </div>
 
+      {contract.bonus_percentage > 0 && (
+        <p className="text-[10px] text-[#6B6A68]">
+          Bonus turnamen: <span className="text-[#9B9A97] font-medium">{contract.bonus_percentage}% dari hadiah</span>
+        </p>
+      )}
+
       {expiring && (
         <p className="text-[10px] text-orange-400 bg-orange-500/10 rounded px-2 py-1">
           Kontrak berakhir dalam 30 hari
@@ -209,96 +203,37 @@ export function SalaryCard({ contract, orgId, revalidatePaths, tournamentPrizes,
                 className="inline-flex h-7 items-center gap-1.5 rounded-md bg-green-500 px-3 text-xs font-semibold text-white hover:bg-green-400 disabled:opacity-50 cursor-pointer"
               >
                 {paying ? <Loader2 className="h-3 w-3 animate-spin" /> : <CheckCircle2 className="h-3 w-3" />}
-                {bonusAmount > 0
-                  ? `Bayar Rp ${(contract.monthly_salary + bonusAmount).toLocaleString("id-ID")}`
+                {totalBonus > 0
+                  ? `Bayar Rp ${(contract.monthly_salary + totalBonus).toLocaleString("id-ID")}`
                   : "Bayar"}
               </button>
             )}
           </div>
 
-          {/* Bonus tournament section — only when not yet paid and prizes exist */}
-          {!isPaidThisMonth && tournamentPrizes.length > 0 && (
+          {/* Bonus distributions — read-only */}
+          {contract.bonusDistributions.length > 0 && (
             <div className="border-t border-[#2D2D2D] px-3 py-2.5 space-y-2">
               <p className="flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-wide text-[#6B6A68]">
                 <Gift className="h-3 w-3" />
-                Bonus Turnamen
+                Bonus Turnamen Bulan Ini
               </p>
-
-              {/* Tournament dropdown */}
-              <div className="relative">
-                <button
-                  type="button"
-                  onClick={() => setBonusDropOpen((v) => !v)}
-                  className="flex h-7 w-full items-center justify-between rounded border border-[#2D2D2D] bg-[#141414] px-2.5 text-xs text-[#E5E2E1] cursor-pointer"
-                >
-                  <span className={bonusTournamentId ? "text-[#E5E2E1]" : "text-[#6B6A68]"}>
-                    {selectedPrize
-                      ? `${selectedPrize.name}${selectedPrize.placement ? ` (Juara ${selectedPrize.placement})` : ""}`
-                      : "— Pilih turnamen —"}
-                  </span>
-                  <ChevronDown className={`h-3 w-3 text-[#6B6A68] transition-transform ${bonusDropOpen ? "rotate-180" : ""}`} />
-                </button>
-                {bonusDropOpen && (
-                  <div className="absolute left-0 top-full z-50 mt-1 w-full rounded border border-[#2D2D2D] bg-[#202020] py-1 shadow-xl max-h-36 overflow-y-auto">
-                    <button
-                      type="button"
-                      onClick={() => { setBonusTournamentId(""); setBonusDropOpen(false); }}
-                      className="w-full px-2.5 py-1.5 text-left text-xs text-[#6B6A68] hover:bg-[#2C2C2C] cursor-pointer"
-                    >
-                      — Tidak ada bonus —
-                    </button>
-                    {tournamentPrizes.map((t) => (
-                      <button
-                        key={t.tournamentId}
-                        type="button"
-                        onClick={() => { setBonusTournamentId(t.tournamentId); setBonusDropOpen(false); }}
-                        className="w-full px-2.5 py-1.5 text-left text-xs text-[#E5E2E1] hover:bg-[#2C2C2C] cursor-pointer"
-                      >
-                        <span className="font-medium">{t.name}</span>
-                        {t.placement && <span className="ml-1.5 text-yellow-400 text-[10px]">Juara {t.placement}</span>}
-                        <span className="ml-1.5 text-[#6B6A68]">
-                          Rp {Number(t.prizeEarned).toLocaleString("id-ID")}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Percentage input + calculated bonus */}
-              {bonusTournamentId && selectedPrize && (
-                <div className="flex items-center gap-2">
-                  <div className="relative flex-1">
-                    <input
-                      type="number"
-                      min="0"
-                      max="100"
-                      step="0.1"
-                      value={bonusPct}
-                      onChange={(e) => setBonusPct(e.target.value)}
-                      placeholder="Jatah %"
-                      className="h-7 w-full rounded border border-[#2D2D2D] bg-[#141414] pr-6 pl-2.5 text-xs text-[#E5E2E1] focus:border-[#9B9A97]/50 focus:outline-none"
-                    />
-                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-[#6B6A68]">%</span>
-                  </div>
-                  <div className="flex-1 text-right">
-                    {bonusAmount > 0 ? (
-                      <span className="text-xs font-semibold text-yellow-300">
-                        +Rp {bonusAmount.toLocaleString("id-ID")}
-                      </span>
-                    ) : (
-                      <span className="text-[10px] text-[#6B6A68]">Masukkan %</span>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* Total preview */}
-              {bonusAmount > 0 && (
+              <ul className="space-y-1">
+                {contract.bonusDistributions.map((b) => (
+                  <li key={b.id} className="flex items-center justify-between text-xs">
+                    <span className="text-[#9B9A97] truncate max-w-[160px]">
+                      {b.placement ? `Juara ${b.placement} — ` : ""}{b.tournamentName}
+                    </span>
+                    <span className="text-yellow-300 font-semibold shrink-0 ml-2">
+                      +Rp {b.bonusAmount.toLocaleString("id-ID")}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              {!isPaidThisMonth && totalBonus > 0 && (
                 <div className="flex items-center justify-between rounded bg-yellow-400/5 border border-yellow-400/15 px-2.5 py-1.5">
                   <span className="text-[10px] text-[#9B9A97]">Total dibayar</span>
                   <span className="text-xs font-bold text-yellow-300">
-                    Rp {(contract.monthly_salary + bonusAmount).toLocaleString("id-ID")}
+                    Rp {(contract.monthly_salary + totalBonus).toLocaleString("id-ID")}
                   </span>
                 </div>
               )}

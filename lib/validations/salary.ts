@@ -6,6 +6,11 @@ export const createContractSchema = z.object({
     .number({ error: "Nominal harus angka" })
     .int("Nominal harus bilangan bulat")
     .positive("Nominal harus lebih dari 0"),
+  bonus_percentage: z.coerce
+    .number({ error: "Persentase harus angka" })
+    .min(0, "Minimal 0")
+    .max(100, "Maksimal 100")
+    .default(0),
   start_date: z.string().min(1, "Tanggal mulai wajib diisi"),
   end_date: z.string().optional().transform((v) => (v && v.length > 0 ? v : null)),
   notes: z.string().trim().max(500).optional().transform((v) => (v && v.length > 0 ? v : null)),

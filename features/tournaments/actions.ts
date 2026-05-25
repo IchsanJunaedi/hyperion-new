@@ -519,25 +519,61 @@ export async function completeTournamentAction(
 
   if (resultError) return { ok: false, message: resultError.message };
 
-  // Auto-add prize income to finances when there's a prize
-  if (data.won && data.prizeEarned) {
-    const amount = parseInt(data.prizeEarned.replace(/\D/g, ""), 10);
-    if (amount > 0) {
-      const { data: org } = await supabase
-        .from("organizations")
-        .select("id")
-        .eq("slug", orgSlug)
-        .maybeSingle();
-      if (org) {
-        await admin.from("finances").insert({
+  const { data: org } = await supabase
+    .from("organizations")
+    .select("id")
+    .eq("slug", orgSlug)
+    .maybeSingle();
+
+  if (org) {
+    const prizeAmount = data.won && data.prizeEarned
+      ? parseInt(data.prizeEarned.replace(/\D/g, ""), 10)
+      : 0;
+
+    // Auto-add prize income to finances
+    if (prizeAmount > 0) {
+      await admin.from("finances").insert({
+        organization_id: org.id,
+        type: "income",
+        amount: prizeAmount,
+        category: "Hadiah Turnamen",
+        description: `Prize turnamen${data.placement ? ` — Juara ${data.placement}` : ""}`,
+        date: new Date().toISOString().slice(0, 10),
+        created_by: user.id,
+      });
+    }
+
+    // Auto-distribute bonus to each active contract with bonus_percentage > 0
+    if (prizeAmount > 0) {
+      const { data: contracts } = await admin
+        .from("player_contracts")
+        .select("id, user_id, bonus_percentage")
+        .eq("organization_id", org.id)
+        .eq("status", "active")
+        .gt("bonus_percentage", 0);
+
+      if (contracts && contracts.length > 0) {
+        const { data: tournamentRow } = await admin
+          .from("tournaments")
+          .select("name")
+          .eq("id", tournamentId)
+          .maybeSingle();
+        const tournamentName = tournamentRow?.name ?? "Turnamen";
+
+        const distributions = contracts.map((c) => ({
+          tournament_id: tournamentId,
+          contract_id: c.id,
           organization_id: org.id,
-          type: "income",
-          amount,
-          category: "Hadiah Turnamen",
-          description: `Prize turnamen${data.placement ? ` — Juara ${data.placement}` : ""}`,
-          date: new Date().toISOString().slice(0, 10),
-          created_by: user.id,
-        });
+          user_id: c.user_id,
+          tournament_name: tournamentName,
+          placement: data.placement ?? null,
+          bonus_amount: Math.round((prizeAmount * Number(c.bonus_percentage)) / 100),
+          bonus_percentage: Number(c.bonus_percentage),
+        }));
+
+        await admin
+          .from("tournament_bonus_distributions")
+          .upsert(distributions, { onConflict: "tournament_id,contract_id" });
       }
     }
   }
@@ -554,6 +590,8 @@ export async function completeTournamentAction(
   revalidatePath(`/${orgSlug}/tournaments/${tournamentId}`);
   revalidatePath("/manage/finances");
   revalidatePath("/dashboard/finances");
+  revalidatePath("/manage/salaries");
+  revalidatePath("/dashboard/salaries");
   return { ok: true };
 }
 
