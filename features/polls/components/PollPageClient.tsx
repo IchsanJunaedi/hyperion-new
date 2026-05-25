@@ -3,6 +3,7 @@
 import { BarChart3, Plus } from "lucide-react";
 import { useState } from "react";
 
+import { AvailabilityPollCard } from "./AvailabilityPollCard";
 import { CreatePollForm } from "./CreatePollForm";
 import { PollCard } from "./PollCard";
 import type { PollWithVotes } from "@/features/polls/queries";
@@ -50,17 +51,25 @@ export function PollPageClient({ polls, orgSlug, canManage, userId }: PollPageCl
           {activePolls.length > 0 && (
             <div className="space-y-3">
               <p className="text-xs font-semibold uppercase tracking-wider text-white/40">Poll Aktif</p>
-              {activePolls.map((poll) => (
-                <PollCard key={poll.id} poll={poll} orgSlug={orgSlug} canManage={canManage} userId={userId} />
-              ))}
+              {activePolls.map((poll) =>
+                poll.type === "availability" ? (
+                  <AvailabilityPollCard key={poll.id} poll={poll} orgSlug={orgSlug} canManage={canManage} userId={userId} />
+                ) : (
+                  <PollCard key={poll.id} poll={poll} orgSlug={orgSlug} canManage={canManage} userId={userId} />
+                )
+              )}
             </div>
           )}
           {closedPolls.length > 0 && (
             <div className="space-y-3">
               <p className="text-xs font-semibold uppercase tracking-wider text-white/40">Poll Selesai</p>
-              {closedPolls.map((poll) => (
-                <PollCard key={poll.id} poll={poll} orgSlug={orgSlug} canManage={canManage} userId={userId} />
-              ))}
+              {closedPolls.map((poll) =>
+                poll.type === "availability" ? (
+                  <AvailabilityPollCard key={poll.id} poll={poll} orgSlug={orgSlug} canManage={canManage} userId={userId} />
+                ) : (
+                  <PollCard key={poll.id} poll={poll} orgSlug={orgSlug} canManage={canManage} userId={userId} />
+                )
+              )}
             </div>
           )}
         </>

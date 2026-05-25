@@ -6,6 +6,9 @@ import { createClient } from "@/lib/supabase/server";
 import { getStrategyNote, listStrategyComments } from "@/features/strategy/queries";
 import { StrategyNoteActions } from "@/features/strategy/components/StrategyNoteActions";
 import { StrategyComments } from "@/features/strategy/components/StrategyComments";
+import { ContextFiles } from "@/features/files/components/ContextFiles";
+import { getLinkedFiles } from "@/features/files/queries";
+import { getCurrentUserRole } from "@/features/roster/queries";
 
 export const dynamic = "force-dynamic";
 
@@ -33,6 +36,12 @@ export default async function StrategyNoteDetailPage({
     listStrategyComments(id),
   ]);
   if (!note) notFound();
+
+  const [currentUserRole, linkedFiles] = await Promise.all([
+    getCurrentUserRole(note.organization_id),
+    getLinkedFiles(note.organization_id, "strategy", id),
+  ]);
+  const canUploadFiles = ["coach", "captain", "manager", "owner"].includes(currentUserRole ?? "");
 
   const date = new Date(note.updated_at).toLocaleString("id-ID", {
     weekday: "long",
@@ -85,6 +94,19 @@ export default async function StrategyNoteDetailPage({
       </article>
 
       <StrategyNoteActions orgSlug={slug} noteId={note.id} />
+
+      {(linkedFiles.length > 0 || canUploadFiles) && (
+        <article className="max-w-3xl rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
+          <ContextFiles
+            orgId={note.organization_id}
+            orgSlug={slug}
+            refType="strategy"
+            refId={id}
+            canUpload={canUploadFiles}
+            initialFiles={linkedFiles}
+          />
+        </article>
+      )}
 
       <div className="max-w-3xl">
         <StrategyComments

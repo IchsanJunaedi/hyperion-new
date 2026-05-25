@@ -1021,6 +1021,38 @@ export type Database = {
           },
         ]
       }
+      poll_availability_votes: {
+        Row: {
+          created_at: string
+          id: string
+          poll_id: string
+          slot_index: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          poll_id: string
+          slot_index: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          poll_id?: string
+          slot_index?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "poll_availability_votes_poll_id_fkey"
+            columns: ["poll_id"]
+            isOneToOne: false
+            referencedRelation: "polls"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       poll_votes: {
         Row: {
           created_at: string
@@ -1055,6 +1087,7 @@ export type Database = {
       }
       polls: {
         Row: {
+          availability_slots: Json | null
           created_at: string
           created_by: string
           expires_at: string | null
@@ -1063,8 +1096,10 @@ export type Database = {
           options: Json
           organization_id: string
           question: string
+          type: string
         }
         Insert: {
+          availability_slots?: Json | null
           created_at?: string
           created_by: string
           expires_at?: string | null
@@ -1073,8 +1108,10 @@ export type Database = {
           options?: Json
           organization_id: string
           question: string
+          type?: string
         }
         Update: {
+          availability_slots?: Json | null
           created_at?: string
           created_by?: string
           expires_at?: string | null
@@ -1083,6 +1120,7 @@ export type Database = {
           options?: Json
           organization_id?: string
           question?: string
+          type?: string
         }
         Relationships: [
           {

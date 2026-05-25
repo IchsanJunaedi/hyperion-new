@@ -25,6 +25,8 @@ export async function recordFileUploadAction(
     file_type: string;
     file_size: number;
     division_id?: string | null;
+    ref_type?: string | null;
+    ref_id?: string | null;
   },
 ): Promise<FileActionError | { ok: true; id: string }> {
   const supabase = await createClient();
@@ -44,6 +46,8 @@ export async function recordFileUploadAction(
       file_type: payload.file_type,
       file_size: payload.file_size,
       division_id: payload.division_id ?? null,
+      ref_type: payload.ref_type ?? null,
+      ref_id: payload.ref_id ?? null,
     })
     .select("id")
     .single();

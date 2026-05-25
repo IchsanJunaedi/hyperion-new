@@ -18,6 +18,8 @@ import {
 } from "@/features/scrim/queries";
 import { findOpponentByName } from "@/features/scouting/queries";
 import { ScoutingCard } from "@/features/scouting/components/ScoutingCard";
+import { ContextFiles } from "@/features/files/components/ContextFiles";
+import { getLinkedFiles } from "@/features/files/queries";
 
 export const dynamic = "force-dynamic";
 
@@ -39,10 +41,11 @@ export default async function ScrimDetailPage({
   const canManageScrims = ["captain", "manager", "owner"].includes(currentUserRole ?? "");
   const isCoach = currentUserRole === "coach";
 
-  const [opponentProfile, reviewRequest, opponentHistory] = await Promise.all([
+  const [opponentProfile, reviewRequest, opponentHistory, linkedFiles] = await Promise.all([
     findOpponentByName(scrim.organization_id, scrim.opponent_name),
     getScrimReviewRequest(id),
     getOpponentHistory(scrim.organization_id, scrim.opponent_name, id),
+    getLinkedFiles(scrim.organization_id, "scrim", id),
   ]);
 
   const scheduled = new Date(scrim.scheduled_at).toLocaleString("id-ID", {
@@ -190,6 +193,20 @@ export default async function ScrimDetailPage({
               reviewRequest={reviewRequest}
               scrimCompleted={scrim.status === "completed"}
             />
+          )}
+
+          {/* Files linked to this scrim */}
+          {(linkedFiles.length > 0 || isCoach || canManageScrims) && (
+            <article className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
+              <ContextFiles
+                orgId={scrim.organization_id}
+                orgSlug={slug}
+                refType="scrim"
+                refId={id}
+                canUpload={isCoach || canManageScrims}
+                initialFiles={linkedFiles}
+              />
+            </article>
           )}
 
           {/* Scouting info (auto-shown if opponent profile exists) */}
