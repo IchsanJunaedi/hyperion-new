@@ -62,4 +62,12 @@ scratch/
 # Playwright
 /playwright-report/
 /test-results/
+.playwright-mcp/
+
+# Loose image files at root (not in public/)
+/*.png
+/*.jpg
+/*.jpeg
+/*.webp
+/*.gif
 
