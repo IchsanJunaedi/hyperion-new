@@ -234,6 +234,9 @@ export function InviteForm({
         <input
           name="phone_wa"
           type="tel"
+          inputMode="numeric"
+          maxLength={15}
+          onInput={(e) => { e.currentTarget.value = e.currentTarget.value.replace(/\D/g, ""); }}
           className="h-9 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
         />
       </Field>

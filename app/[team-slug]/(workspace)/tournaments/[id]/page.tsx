@@ -9,6 +9,7 @@ import { TournamentCountdown } from "@/features/tournaments/components/Tournamen
 import { TournamentTimeline } from "@/features/tournaments/components/TournamentTimeline";
 import { TournamentJourney } from "@/features/tournaments/components/TournamentJourney";
 import { TournamentDetailActions } from "@/features/tournaments/components/TournamentDetailActions";
+import { TournamentBracketCard } from "@/features/tournaments/components/TournamentBracketCard";
 
 export const dynamic = "force-dynamic";
 
@@ -34,6 +35,7 @@ export default async function TournamentDetailPage({ params }: TournamentDetailP
 
   const currentUserRole = await getCurrentUserRole(organization.id);
   const canManage = ["captain", "manager", "owner"].includes(currentUserRole ?? "");
+  const canManageBracket = ["captain", "manager", "owner", "coach"].includes(currentUserRole ?? "");
 
   const isRegistrationExpired =
     detail.status === "upcoming" &&
@@ -138,6 +140,15 @@ export default async function TournamentDetailPage({ params }: TournamentDetailP
 
       <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
         <section className="space-y-6">
+          <TournamentBracketCard
+            orgSlug={slug}
+            orgId={organization.id}
+            tournamentId={detail.id}
+            initialBracketLink={detail.bracket_link}
+            initialBracketFilePath={detail.bracket_file_path}
+            canManage={canManageBracket}
+          />
+
           {/* Detail info card */}
           {(detail.registration_fee || detail.registration_url || detail.notes) && (
             <article className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5">

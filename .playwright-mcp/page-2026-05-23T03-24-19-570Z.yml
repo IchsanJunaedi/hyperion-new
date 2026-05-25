@@ -1,0 +1,405 @@
+- generic [ref=e3]:
+  - region "top of page"
+  - generic [ref=e10]:
+    - banner [ref=e11]:
+      - generic [ref=e40]:
+        - generic "logo evos.png" [ref=e45] [cursor=pointer]:
+          - link [ref=e46]:
+            - /url: https://www.evos.gg/id
+        - generic [ref=e51]:
+          - generic:
+            - generic:
+              - list "Bilah Sosial" [ref=e56]:
+                - listitem [ref=e57]:
+                  - generic "Discord" [ref=e58]:
+                    - img "Discord" [ref=e59]
+                - listitem [ref=e60]:
+                  - generic "Telegram" [ref=e61]:
+                    - img "Telegram" [ref=e62]
+                - listitem [ref=e63]:
+                  - link "Whatsapp" [ref=e64] [cursor=pointer]:
+                    - /url: https://neon.ly/NGwyJ
+                    - img "Whatsapp" [ref=e65]
+                - listitem [ref=e66]:
+                  - link "Instagram" [ref=e67] [cursor=pointer]:
+                    - /url: https://neon.ly/N43X2
+                    - img "Instagram" [ref=e68]
+                - listitem [ref=e69]:
+                  - link "Facebook" [ref=e70] [cursor=pointer]:
+                    - /url: https://neon.ly/NY39E
+                    - img "Facebook" [ref=e71]
+                - listitem [ref=e72]:
+                  - link "Youtube" [ref=e73] [cursor=pointer]:
+                    - /url: https://neon.ly/vqGyG
+                    - img "Youtube" [ref=e74]
+                - listitem [ref=e75]:
+                  - link "X" [ref=e76] [cursor=pointer]:
+                    - /url: https://neon.ly/NboJn
+                    - img "X" [ref=e77]
+                - listitem [ref=e78]:
+                  - link "TikTok" [ref=e79] [cursor=pointer]:
+                    - /url: https://neon.ly/v8xJj
+                    - img "TikTok" [ref=e80]
+              - button [ref=e83] [cursor=pointer]
+    - main [ref=e84]:
+      - generic [ref=e89]:
+        - generic:
+          - generic:
+            - generic:
+              - generic [ref=e90]:
+                - generic:
+                  - generic:
+                    - region [ref=e100]:
+                      - generic [ref=e102]:
+                        - generic:
+                          - generic [ref=e103]:
+                            - link "image"
+                          - generic:
+                            - link:
+                              - /url: https://www.evos.gg/news/evos-glory%3A-perjalanan-menuju-playoff-dari-poin-minus
+                              - generic [ref=e112] [cursor=pointer]:
+                                - link
+                          - generic:
+                            - link:
+                              - /url: https://www.evos.gg/news/evos-divine%3A-siap-bertarung-di-grand-finals-ffws-sea-spring-2024-di-vietnam
+                              - generic [ref=e121] [cursor=pointer]:
+                                - link
+                          - generic:
+                            - link:
+                              - /url: https://www.evos.gg/news/evos-glory%3A-perjalanan-menuju-playoff-dari-poin-minus
+                          - generic:
+                            - link:
+                              - /url: https://www.evos.gg/news/evos-divine%3A-siap-bertarung-di-grand-finals-ffws-sea-spring-2024-di-vietnam
+                    - generic [ref=e135]:
+                      - generic:
+                        - generic:
+                          - heading "scroll down" [level=6] [ref=e139]:
+                            - generic [ref=e140]: scroll down
+                          - generic:
+                            - generic:
+                              - generic:
+                                - img [ref=e143]
+                                - img [ref=e148]
+                          - img [ref=e153]
+              - generic [ref=e157]:
+                - generic:
+                  - generic:
+                    - img [ref=e163]
+                    - img [ref=e168]
+                    - img [ref=e173]
+                    - generic [ref=e180]:
+                      - generic [ref=e181]:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic:
+                                - generic:
+                                  - heading "MITRA KAMI" [level=6] [ref=e185]:
+                                    - text: MITRA
+                                    - generic [ref=e186]: KAMI
+                                  - link "EXPLORE" [ref=e188] [cursor=pointer]:
+                                    - /url: https://www.evos.gg/id/partners
+                                    - generic [ref=e190]: EXPLORE
+                            - img [ref=e193]
+                      - region "Slider gallery" [ref=e202]:
+                        - button "play backward" [ref=e203] [cursor=pointer]
+                        - button "play forward" [ref=e204] [cursor=pointer]
+                        - generic [ref=e206]:
+                          - img [ref=e208]:
+                            - img [ref=e209]
+                          - img [ref=e215]:
+                            - img [ref=e216]
+                          - img [ref=e222]:
+                            - img [ref=e223]
+                    - generic [ref=e233]:
+                      - generic [ref=e234]:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic:
+                                - generic:
+                                  - heading "JADWAL PERTANDINGAN" [level=6] [ref=e238]:
+                                    - text: JADWAL
+                                    - generic [ref=e239]: PERTANDINGAN
+                                  - img [ref=e242]
+                      - generic [ref=e247]:
+                        - generic:
+                          - generic:
+                            - img [ref=e253]
+                            - img [ref=e258]
+                            - list [ref=e262]:
+                              - listitem [ref=e264]:
+                                - generic [ref=e265]:
+                                  - generic:
+                                    - generic:
+                                      - heading [level=2] [ref=e269]
+                                      - heading [level=2] [ref=e270]
+                                      - heading [level=2] [ref=e271]
+                                      - generic:
+                                        - generic:
+                                          - generic:
+                                            - img "vs.png" [ref=e276]
+                                            - heading "VS" [level=2] [ref=e277]:
+                                              - generic [ref=e287]: VS
+                                      - heading "EVOS" [level=2] [ref=e293]:
+                                        - generic [ref=e296]: EVOS
+                                      - heading [level=2] [ref=e297]
+                                      - button "WATCH" [ref=e299] [cursor=pointer]:
+                                        - generic [ref=e300]:
+                                          - generic [ref=e301]: WATCH
+                                          - img [ref=e304]
+                                      - img [ref=e309]
+                              - listitem [ref=e313]:
+                                - generic [ref=e314]:
+                                  - generic:
+                                    - generic:
+                                      - heading "4 Maret 2024" [level=2] [ref=e318]:
+                                        - generic [ref=e320]: 4 Maret 2024
+                                      - heading "10.15 AM" [level=2] [ref=e321]:
+                                        - generic [ref=e322]: 10.15 AM
+                                      - heading "World Championships (WCS) 2023" [level=2] [ref=e323]:
+                                        - generic [ref=e326]: World Championships (WCS) 2023
+                                      - generic:
+                                        - generic:
+                                          - generic:
+                                            - img "vs.png" [ref=e331]
+                                            - heading "VS" [level=2] [ref=e332]:
+                                              - generic [ref=e342]: VS
+                                      - generic "OPPONENT LOGO2.png" [ref=e343]
+                                      - heading "EVOS" [level=2] [ref=e348]:
+                                        - generic [ref=e351]: EVOS
+                                      - heading "RRQ" [level=2] [ref=e352]:
+                                        - generic [ref=e355]: RRQ
+                                      - button "WATCH" [ref=e357] [cursor=pointer]:
+                                        - generic [ref=e358]:
+                                          - generic [ref=e359]: WATCH
+                                          - img [ref=e362]
+                                      - img [ref=e367]
+                              - listitem [ref=e371]:
+                                - generic [ref=e372]:
+                                  - generic:
+                                    - generic:
+                                      - heading "8 Maret 2024" [level=2] [ref=e376]:
+                                        - generic [ref=e378]: 8 Maret 2024
+                                      - heading "8.30 AM" [level=2] [ref=e379]:
+                                        - generic [ref=e380]: 8.30 AM
+                                      - heading "FF ML SEASON 4" [level=2] [ref=e381]:
+                                        - generic [ref=e384]: FF ML SEASON 4
+                                      - generic:
+                                        - generic:
+                                          - generic:
+                                            - img "vs.png" [ref=e389]
+                                            - heading "VS" [level=2] [ref=e390]:
+                                              - generic [ref=e400]: VS
+                                      - generic "syrenmoon.png" [ref=e401]
+                                      - heading "EVOS" [level=2] [ref=e406]:
+                                        - generic [ref=e409]: EVOS
+                                      - heading "Sireen Moon" [level=2] [ref=e410]:
+                                        - generic [ref=e413]: Sireen Moon
+                                      - button "WATCH" [ref=e415] [cursor=pointer]:
+                                        - generic [ref=e416]:
+                                          - generic [ref=e417]: WATCH
+                                          - img [ref=e420]
+                                      - img [ref=e425]
+                            - img [ref=e430]
+                            - generic [ref=e433]:
+                              - button "Next" [disabled]:
+                                - generic:
+                                  - generic:
+                                    - generic:
+                                      - img
+                            - generic [ref=e434]:
+                              - button "Next" [disabled]:
+                                - generic:
+                                  - generic:
+                                    - generic:
+                                      - img
+                    - generic [ref=e440]:
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic:
+                                - heading "SELURUH PERTANDINGAN" [level=6] [ref=e444]:
+                                  - generic [ref=e445]: SELURUH
+                                  - generic [ref=e447]: PERTANDINGAN
+                                - img [ref=e450]
+                                - img [ref=e457]
+                          - list [ref=e463]:
+                            - listitem [ref=e465]:
+                              - region "konten berubah saat hover" [ref=e466] [cursor=pointer]:
+                                - generic:
+                                  - generic:
+                                    - generic "MLpicture.jpeg" [ref=e470]
+                                    - heading "MOBILE LEGENDS" [level=6] [ref=e475]:
+                                      - generic [ref=e477]: MOBILE LEGENDS
+                                    - img [ref=e480]
+                                    - img [ref=e485]
+                                    - img [ref=e490]
+                            - listitem [ref=e496]:
+                              - region "konten berubah saat hover" [ref=e497] [cursor=pointer]:
+                                - generic:
+                                  - generic:
+                                    - generic "ffpicture.jpeg" [ref=e501]
+                                    - heading "FREE FIRE" [level=6] [ref=e506]:
+                                      - generic [ref=e508]: FREE FIRE
+                                    - img [ref=e511]
+                                    - img [ref=e516]
+                                    - img [ref=e521]
+                    - generic:
+                      - generic:
+                        - generic:
+                          - img [ref=e528]
+                          - img [ref=e533]
+                    - generic [ref=e536]:
+                      - img "pattern_jersey 2.png" [ref=e541]
+                      - generic [ref=e542]:
+                        - generic [ref=e543]:
+                          - generic:
+                            - generic:
+                              - heading "DIVISI" [level=6] [ref=e547]
+                              - img [ref=e550]
+                              - heading "KAMI" [level=6] [ref=e555]:
+                                - generic [ref=e556]: KAMI
+                              - generic:
+                                - generic:
+                                  - generic:
+                                    - link "KENALI" [ref=e558] [cursor=pointer]:
+                                      - /url: https://www.evos.gg/id/evos-teams
+                                      - generic [ref=e560]: KENALI
+                                    - img [ref=e563]
+                        - generic [ref=e566]:
+                          - generic:
+                            - generic:
+                              - img [ref=e572]
+                              - img [ref=e577]
+                              - list [ref=e581]:
+                                - listitem [ref=e583]:
+                                  - generic "mobile legends.png" [ref=e588]
+                                - listitem [ref=e592]:
+                                  - generic "FF.png" [ref=e597]
+                    - region [ref=e607]:
+                      - generic [ref=e608]:
+                        - generic [ref=e609]:
+                          - generic:
+                            - generic [ref=e610] [cursor=pointer]:
+                              - link "image"
+                            - generic [ref=e614] [cursor=pointer]:
+                              - link
+                            - generic [ref=e618] [cursor=pointer]:
+                              - link
+                            - generic [ref=e622] [cursor=pointer]:
+                              - link
+                            - generic [ref=e626] [cursor=pointer]:
+                              - link
+                        - button "Next Item" [ref=e630] [cursor=pointer]:
+                          - img [ref=e631]
+                    - heading "BERITA" [level=6] [ref=e635]
+                    - img [ref=e638]
+                    - heading "TERBARU" [level=6] [ref=e643]:
+                      - generic [ref=e644]: TERBARU
+                    - link "MORE NEWS" [ref=e646] [cursor=pointer]:
+                      - /url: https://www.evos.gg/id/blog
+                      - generic [ref=e648]: MORE NEWS
+                    - img [ref=e651]
+                    - list [ref=e655]:
+                      - listitem [ref=e657]:
+                        - generic [ref=e658]:
+                          - generic:
+                            - generic:
+                              - generic "hero sora.jpg" [ref=e662]
+                              - img [ref=e667]
+                              - img [ref=e672]
+                              - generic: Mobile Legends
+                              - link "READ MORE" [ref=e678] [cursor=pointer]:
+                                - /url: https://www.evos.gg/id/news/hero-sora-hadir-penjelasan-skill
+                                - generic [ref=e679]:
+                                  - generic [ref=e680]: READ MORE
+                                  - img [ref=e683]
+                      - listitem [ref=e687]:
+                        - generic [ref=e688]:
+                          - generic:
+                            - generic:
+                              - generic "December 5 - MLBB × Attack on Titan Event Rerun Recharge Event Dates-Phase 1 - December 12.jpg" [ref=e692]
+                              - img [ref=e697]
+                              - img [ref=e702]
+                              - generic: Mobile Legends
+                              - link "READ MORE" [ref=e708] [cursor=pointer]:
+                                - /url: https://www.evos.gg/id/news/kolaborasi-mlbb-%C3%97-attack-on-titan-2025-kembali!-inilah-detail-lengkapnya
+                                - generic [ref=e709]:
+                                  - generic [ref=e710]: READ MORE
+                                  - img [ref=e713]
+                    - generic [ref=e721]:
+                      - img "pattern_jersey 2.png" [ref=e726]
+                      - generic:
+                        - generic:
+                          - generic "teamImage.png" [ref=e727]:
+                            - img "REQ BPK BOSSS.png" [ref=e729]
+                          - heading "MENAMPILKAN JERSEY RESMI TERBARU" [level=2] [ref=e730]:
+                            - generic [ref=e731]: MENAMPILKAN JERSEY RESMI TERBARU
+                          - paragraph [ref=e732]:
+                            - generic [ref=e735]: Kami percaya dalam memberikan pengalaman terbaik bagi para penggemar beserta koleksi produk yang dengan bangga dipromosikan oleh para influencer. Jelajahi katalog online kami!
+                          - link "BELANJA SEKARANG" [ref=e737] [cursor=pointer]:
+                            - /url: https://shop.evos.gg/
+                            - generic [ref=e739]: BELANJA SEKARANG
+                          - img [ref=e742]
+              - generic [ref=e745]:
+                - img "BG package.jpg" [ref=e750]
+                - link [ref=e754] [cursor=pointer]:
+                  - /url: https://www.evos.gg/id/academy
+    - contentinfo [ref=e756]:
+      - generic [ref=e768]:
+        - generic:
+          - generic:
+            - img "evos-footer-logo.png" [ref=e774]
+            - generic:
+              - generic:
+                - generic:
+                  - heading "JOIN OUR" [level=6] [ref=e775]:
+                    - generic [ref=e776]: JOIN OUR
+                  - heading "NEWSLETTER" [level=6] [ref=e777]:
+                    - generic [ref=e778]: NEWSLETTER
+            - generic [ref=e780]:
+              - generic:
+                - generic:
+                  - textbox "Type your email" [ref=e783]
+                  - button "SUBSCRIBE" [ref=e785] [cursor=pointer]:
+                    - generic [ref=e786]: SUBSCRIBE
+            - paragraph [ref=e787]:
+              - generic [ref=e789]: ©2024 PT Evos Esports Indonesia All Rights Reserved
+            - heading "FOLLOW US" [level=6] [ref=e790]:
+              - generic [ref=e791]: FOLLOW US
+            - paragraph [ref=e792]:
+              - link "biz@whim.sg" [ref=e793] [cursor=pointer]:
+                - /url: mailto:biz@whim.sg
+                - generic [ref=e795]: biz@whim.sg
+            - list "Bilah Sosial" [ref=e797]:
+              - listitem [ref=e798]:
+                - link "Whatsapp" [ref=e799] [cursor=pointer]:
+                  - /url: https://neon.ly/NGwyJ
+                  - img "Whatsapp" [ref=e800]
+              - listitem [ref=e801]:
+                - link "Instagram" [ref=e802] [cursor=pointer]:
+                  - /url: https://neon.ly/N43X2
+                  - img "Instagram" [ref=e803]
+              - listitem [ref=e804]:
+                - link "Facebook" [ref=e805] [cursor=pointer]:
+                  - /url: https://neon.ly/NY39E
+                  - img "Facebook" [ref=e806]
+              - listitem [ref=e807]:
+                - link "Youtube" [ref=e808] [cursor=pointer]:
+                  - /url: https://neon.ly/vqGyG
+                  - img "Youtube" [ref=e809]
+              - listitem [ref=e810]:
+                - link "X" [ref=e811] [cursor=pointer]:
+                  - /url: https://neon.ly/NboJn
+                  - img "X" [ref=e812]
+              - listitem [ref=e813]:
+                - link "TikTok" [ref=e814] [cursor=pointer]:
+                  - /url: https://neon.ly/v8xJj
+                  - img "TikTok" [ref=e815]
+            - paragraph [ref=e816]:
+              - link "+62 21 3950 2225" [ref=e817] [cursor=pointer]:
+                - /url: tel:+622139502225
+                - generic [ref=e819]: +62 21 3950 2225
+  - region "bottom of page"

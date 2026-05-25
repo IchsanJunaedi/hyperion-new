@@ -83,6 +83,19 @@
 - Migration: `20260525000003_weekly_digest_cron.sql`
 - Requires `FONNTE_API_TOKEN` edge function env var (already set from existing WA system)
 
+## Features Completed (2026-05-25 session — part 3)
+
+### Tournament Bracket Resources
+- Added `bracket_link` (TEXT) and `bracket_file_path` (TEXT) columns to `tournaments` table.
+- Regenerated TypeScript database types.
+- Created `TournamentBracketCard` component supporting:
+  - Entering bracket links (e.g., Challonge, Battlefy) with an external link badge.
+  - Uploading tournament bracket files directly to the `org-private` storage bucket.
+  - Generating signed URLs for secure viewing of uploaded bracket files.
+  - Role-gated editing: Only Captain, Coach, and Manager roles can add/edit brackets, while all members can view/download.
+  - Dedicated server action `updateTournamentBracketAction` using admin client to update fields and log audit records.
+- Fixed pre-existing WhatsApp template test compilation errors by adding `registrationUrl` support to `TournamentRegisteredWaData` and its message builder.
+
 ## Features Completed (2026-05-25 session)
 
 ### Executive Summary Dashboard

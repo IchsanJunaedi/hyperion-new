@@ -130,7 +130,8 @@ export function ProfileSetupForm({ lockedValues, defaultValues }: ProfileSetupFo
             <input
               name="game_mlbb"
               value={mlbbId}
-              onChange={(e) => setMlbbId(e.target.value)}
+              inputMode="numeric"
+              onChange={(e) => setMlbbId(e.target.value.replace(/\D/g, ""))}
               className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm focus:border-primary focus:outline-none"
             />
           </Field>

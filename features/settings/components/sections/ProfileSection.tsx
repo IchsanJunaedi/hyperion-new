@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -194,7 +194,13 @@ export function ProfileSection({ userId }: { userId: string }) {
         </Field>
         <Field label="Nomor WhatsApp" className="col-span-2">
           <input
-            {...register("phone_wa")}
+            inputMode="numeric"
+            maxLength={15}
+            {...register("phone_wa", {
+              onChange: (e) => {
+                e.target.value = e.target.value.replace(/\D/g, "");
+              },
+            })}
             className={inputCls}
           />
         </Field>

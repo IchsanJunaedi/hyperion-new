@@ -1,4 +1,4 @@
-export type Json =
+﻿export type Json =
   | string
   | number
   | boolean
@@ -706,6 +706,7 @@ export type Database = {
         Row: {
           created_at: string
           created_by: string | null
+          division_id: string | null
           game: string
           id: string
           org_id: string
@@ -718,6 +719,7 @@ export type Database = {
         Insert: {
           created_at?: string
           created_by?: string | null
+          division_id?: string | null
           game: string
           id?: string
           org_id: string
@@ -730,6 +732,7 @@ export type Database = {
         Update: {
           created_at?: string
           created_by?: string | null
+          division_id?: string | null
           game?: string
           id?: string
           org_id?: string
@@ -740,6 +743,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "open_trials_division_id_fkey"
+            columns: ["division_id"]
+            isOneToOne: false
+            referencedRelation: "divisions"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "open_trials_org_id_fkey"
             columns: ["org_id"]
@@ -2043,6 +2053,8 @@ export type Database = {
       }
       tournaments: {
         Row: {
+          bracket_file_path: string | null
+          bracket_link: string | null
           created_at: string
           created_by: string | null
           day_reminder_sent_at: string | null
@@ -2066,6 +2078,8 @@ export type Database = {
           status: string
         }
         Insert: {
+          bracket_file_path?: string | null
+          bracket_link?: string | null
           created_at?: string
           created_by?: string | null
           day_reminder_sent_at?: string | null
@@ -2089,6 +2103,8 @@ export type Database = {
           status?: string
         }
         Update: {
+          bracket_file_path?: string | null
+          bracket_link?: string | null
           created_at?: string
           created_by?: string | null
           day_reminder_sent_at?: string | null

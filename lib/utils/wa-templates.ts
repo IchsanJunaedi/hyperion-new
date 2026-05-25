@@ -85,6 +85,7 @@ interface TournamentRegisteredWaData {
   organizer?: string | null;
   startDate: string;
   prizePool?: string | null;
+  registrationUrl?: string | null;
   tournamentUrl: string;
 }
 
@@ -106,6 +107,10 @@ export function buildTournamentRegisteredWaMessage(data: TournamentRegisteredWaD
 
   if (data.prizePool) {
     lines.push(`*Prize Pool:* ${data.prizePool}`);
+  }
+
+  if (data.registrationUrl) {
+    lines.push(`Link registrasi: ${data.registrationUrl}`);
   }
 
   lines.push("");

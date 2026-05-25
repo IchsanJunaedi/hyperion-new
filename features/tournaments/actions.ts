@@ -407,6 +407,74 @@ export async function deleteTournamentMatchAction(
   return { ok: true };
 }
 
+export async function updateTournamentBracketAction(
+  orgSlug: string,
+  tournamentId: string,
+  bracketLink: string | null,
+  bracketFilePath: string | null,
+): Promise<ActionError | { ok: true }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, message: "Anda harus login" };
+
+  const { data: org } = await supabase
+    .from("organizations")
+    .select("id")
+    .eq("slug", orgSlug)
+    .maybeSingle();
+  if (!org) return { ok: false, message: "Organisasi tidak ditemukan" };
+
+  const { data: member } = await supabase
+    .from("team_members")
+    .select("role")
+    .eq("organization_id", org.id)
+    .eq("user_id", user.id)
+    .eq("is_active", true)
+    .maybeSingle();
+
+  const ownerEmail = process.env.OWNER_EMAIL || process.env.E2E_OWNER_EMAIL;
+  const isGlobalOwner = user.email && user.email === ownerEmail;
+
+  const { data: orgWithOwner } = await supabase
+    .from("organizations")
+    .select("owner_id")
+    .eq("id", org.id)
+    .maybeSingle();
+  const isOrgOwner = orgWithOwner?.owner_id === user.id;
+
+  const role = member?.role;
+  const canUpdateBracket = isGlobalOwner || isOrgOwner || (role && ["captain", "manager", "coach"].includes(role));
+
+  if (!canUpdateBracket) {
+    return { ok: false, message: "Hanya manager, coach, dan captain yang dapat mengatur bracket" };
+  }
+
+  const adminClient = createAdminClient();
+  const { error } = await adminClient
+    .from("tournaments")
+    .update({
+      bracket_link: bracketLink || null,
+      bracket_file_path: bracketFilePath || null,
+    })
+    .eq("id", tournamentId);
+
+  if (error) {
+    return { ok: false, message: error.message };
+  }
+
+  await logAudit({
+    actorId: user.id,
+    action: "tournament.update_bracket",
+    entityType: "tournament",
+    entityId: tournamentId,
+  });
+
+  revalidatePath(`/${orgSlug}/tournaments/${tournamentId}`);
+  return { ok: true };
+}
+
 
 // ---------------------------------------------------------------------------
 // WA Blast for Registration Confirmed

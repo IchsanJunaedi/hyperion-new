@@ -174,7 +174,7 @@ export function TrialRegistrationForm({ trial }: { trial: TrialPublic }) {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label htmlFor="phone" className="block text-xs text-[#9B9A97] mb-1">No. WhatsApp <span className="text-red-400">*</span></label>
-            <input id="phone" name="phone" type="tel" required className={inputCls} />
+            <input id="phone" name="phone" type="tel" inputMode="numeric" maxLength={15} required className={inputCls} onInput={(e) => { e.currentTarget.value = e.currentTarget.value.replace(/\D/g, ""); }} />
           </div>
           <div>
             <label htmlFor="email" className="block text-xs text-[#9B9A97] mb-1">Email <span className="text-red-400">*</span></label>

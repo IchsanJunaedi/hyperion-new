@@ -201,7 +201,7 @@ export function SponsorFormModal({ open, onClose, orgId, editing, onSaved }: Spo
               </div>
               <div>
                 <label className={labelCls}>No. HP / WA</label>
-                <input value={form.contact_phone} onChange={(e) => set("contact_phone", e.target.value)} className={inputCls} />
+                <input value={form.contact_phone} inputMode="numeric" maxLength={15} onChange={(e) => set("contact_phone", e.target.value.replace(/\D/g, ""))} className={inputCls} />
               </div>
             </div>
           </div>
