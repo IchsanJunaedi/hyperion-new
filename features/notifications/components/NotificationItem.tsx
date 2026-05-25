@@ -39,7 +39,7 @@ function resolveRoute(
     case "tournament":
       return `/${orgSlug}/tournaments/${refId}`;
     case "calendar":
-      return `/${orgSlug}/calendar`;
+      return refId ? `/${orgSlug}/calendar/${refId}` : `/${orgSlug}/calendar`;
     case "poll":
       return `/${orgSlug}/polls`;
     case "strategy":
