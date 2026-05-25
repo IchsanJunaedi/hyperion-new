@@ -59,6 +59,36 @@
 
 ---
 
+## Features Completed (2026-05-25 session)
+
+### Executive Summary Dashboard
+- Widget di home dashboard owner: win rate, attendance rate, active members, sponsor count/value, net balance
+- Data dari: scrims+results, scrim_attendances, team_members, sponsors, finances
+- Files: `features/dashboard/queries/executiveSummary.ts`, `features/dashboard/components/ExecutiveSummary.tsx`, `app/dashboard/(panel)/page.tsx`
+
+### Announcement Read Receipt X/Y
+- AnnouncementCard sekarang tampilkan "4/18 dibaca" untuk captain+ (bukan hanya angka)
+- `totalMembers` di-fetch parallel dengan read counts di `app/[team-slug]/(workspace)/announcements/page.tsx`
+- Files: `features/announcements/components/AnnouncementCard.tsx`, announcement list page
+
+### Sponsors ROI Dashboard
+- Panel baru di bawah stats di halaman sponsor (dashboard + manage)
+- Menampilkan: completion bar per active sponsor, upcoming renewals (<90 hari), deal value breakdown by status, overall completion rate
+- Tidak perlu DB baru — compute dari data existing
+- Files: `features/sponsors/components/SponsorROIDashboard.tsx`, `SponsorListClient.tsx`
+
+### Finance Org Switcher
+- Owner dengan multi-org bisa switch org via tab buttons (hanya muncul jika >1 org)
+- Support `?org=` URL param yang sudah ada
+- Files: `features/finances/components/OrgSwitcher.tsx`, `app/dashboard/(panel)/finances/page.tsx`
+
+### Trials Pipeline Notes + Grid Fix
+- PipelineCard (kanban view) sekarang punya notes input + toggle (sebelumnya hanya tabel view)
+- Fix stats bar dari `grid-cols-4` ke `grid-cols-5` (ada 5 stats: Total/Pending/Diterima/Waitlist/Ditolak)
+- Files: `features/trials/components/TrialDetailClient.tsx`
+
+---
+
 ## P3 Features Completed (2026-05-23)
 
 ### Media Kit PDF Export
@@ -139,13 +169,14 @@ Matches live in `tournament_matches.stage_id → tournament_stages.id`. `getTour
 ---
 
 ## What's NOT Done (Future Work)
-- Read receipt count display on announcement **list** (currently only on detail page)
-- RSVP summary count per calendar event (how many hadir/tidak)
-- Scrim review request notification to coach via WA/bell
+- RSVP summary count per calendar event (how many hadir/tidak) in grid/week view
 - Strategy comments realtime subscription (currently requires page reload to see others' comments)
 - Player dev: coach can only see own targets on `/development` — separate manager view at `/manage/development` for cross-player view
 - Public profile activation
 - Reports page activation
+- **Polls Availability Grid** — WOW factor, needs new `poll_availability_slots` table + multi-vote support
+- **Files linked to context** — WOW factor, needs DB migration for file-context junction tables
+- **Notifications Weekly Digest** — WOW factor, needs Edge Function + Supabase cron
 
 ### P3 Remaining
 - `/[slug]/sponsors` workspace page → **tidak dibuat** (data bisnis, captain/coach/member tidak boleh lihat)
@@ -153,9 +184,11 @@ Matches live in `tournament_matches.stage_id → tournament_stages.id`. `getTour
 
 ---
 
-## Performance: Batch 2 — Pending Fixes (needs careful audit before implementing)
+## Performance: Batch 2 — Status (verified 2026-05-25)
 
-> Batch 1 (zero-risk) sudah selesai (2026-05-22). Batch 2 membutuhkan review per-komponen sebelum diimplementasi.
+> Batch 1 (zero-risk) sudah selesai (2026-05-22).
+> Setelah audit 2026-05-25: B2-3, B2-4, B2-5, B2-6, B2-8 sudah selesai (dikerjakan di sesi sebelumnya).
+> Yang tersisa hanya B2-1, B2-2, B2-7, B2-9.
 
 ### B2-1: Tambah `.limit()` pada query unbounded (butuh cek UI dulu)
 Beberapa query list tidak punya `.limit()` — data bisa grow unboundedly. Perlu audit dulu apakah halaman butuh pagination atau cukup slice.

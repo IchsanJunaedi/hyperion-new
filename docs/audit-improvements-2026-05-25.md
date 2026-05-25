@@ -5,15 +5,20 @@
 
 ---
 
-## Status Pengerjaan
+## Status Pengerjaan (diperbarui 2026-05-25)
 
 | Prioritas | Total | Selesai | Sisa |
 |-----------|-------|---------|------|
-| 🔴 Critical bugs | 6 | 0 | 6 |
-| 🟠 High (missing features) | 17 | 0 | 17 |
-| 🟡 Medium (UX buruk) | 13 | 0 | 13 |
-| 🟢 Quick wins | 10 | 0 | 10 |
-| ✨ Wow factors | 15 | 0 | 15 |
+| 🔴 Critical bugs | 6 | 6 | 0 |
+| 🟠 High (missing features) | 17 | 17 | 0 |
+| 🟡 Medium (UX buruk) | 13 | 13 | 0 |
+| 🟢 Quick wins | 10 | 10 | 0 |
+| ✨ Wow factors | 15 | 12 | 3 |
+
+**WOW factors tersisa (perlu DB migration):**
+- Polls Availability Grid — `poll_availability_slots` table + multi-vote
+- Files linked to context — junction table
+- Notifications Weekly Digest — Edge Function + cron
 
 ---
 
