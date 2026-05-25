@@ -1,11 +1,11 @@
 "use client";
 
-import { CalendarDays, List } from "lucide-react";
+import { CalendarDays, List, Swords } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils/cn";
 
 interface CalendarViewToggleProps {
-  activeView: "grid" | "list";
+  activeView: "grid" | "list" | "week";
 }
 
 export function CalendarViewToggle({ activeView }: CalendarViewToggleProps) {
@@ -13,7 +13,7 @@ export function CalendarViewToggle({ activeView }: CalendarViewToggleProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  function setView(view: "grid" | "list") {
+  function setView(view: "grid" | "list" | "week") {
     const params = new URLSearchParams(searchParams.toString());
     if (view === "grid") {
       params.delete("view");
@@ -36,6 +36,17 @@ export function CalendarViewToggle({ activeView }: CalendarViewToggleProps) {
         )}
       >
         <CalendarDays className="h-3.5 w-3.5" />
+      </button>
+      <button
+        type="button"
+        onClick={() => setView("week")}
+        title="War Room Mingguan"
+        className={cn(
+          "flex h-7 w-7 cursor-pointer items-center justify-center rounded transition",
+          activeView === "week" ? "bg-white/10 text-white" : "text-white/40 hover:text-white/70",
+        )}
+      >
+        <Swords className="h-3.5 w-3.5" />
       </button>
       <button
         type="button"

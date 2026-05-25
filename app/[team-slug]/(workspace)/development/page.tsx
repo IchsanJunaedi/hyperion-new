@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getOrgBySlug } from "@/features/teams/queries";
 import { getPlayerTargets } from "@/features/player-development/queries";
 import { PlayerTargetCard } from "@/features/player-development/components/PlayerTargetCard";
+import { SkillRadarChart } from "@/features/player-development/components/SkillRadarChart";
 
 export const dynamic = "force-dynamic";
 
@@ -50,16 +51,19 @@ export default async function WorkspaceDevelopmentPage({ params }: Props) {
           </p>
         </div>
       ) : (
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {targets.map((target) => (
-            <PlayerTargetCard
-              key={target.id}
-              target={target}
-              orgSlug={slug}
-              canManage={false}
-            />
-          ))}
-        </div>
+        <>
+          <SkillRadarChart targets={targets} />
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {targets.map((target) => (
+              <PlayerTargetCard
+                key={target.id}
+                target={target}
+                orgSlug={slug}
+                canManage={false}
+              />
+            ))}
+          </div>
+        </>
       )}
     </div>
   );

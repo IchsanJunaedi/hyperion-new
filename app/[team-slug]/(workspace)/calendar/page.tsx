@@ -6,6 +6,7 @@ import { Suspense } from "react";
 import { CalendarWithQuickAdd } from "@/features/calendar/components/CalendarWithQuickAdd";
 import { CalendarAgendaView } from "@/features/calendar/components/CalendarAgendaView";
 import { CalendarViewToggle } from "@/features/calendar/components/CalendarViewToggle";
+import { CalendarWeeklyWarRoom } from "@/features/calendar/components/CalendarWeeklyWarRoom";
 import { listUnifiedCalendarEvents } from "@/features/calendar/unified";
 import { getOrgBySlug } from "@/features/teams/queries";
 import { createClient } from "@/lib/supabase/server";
@@ -22,7 +23,7 @@ export default async function CalendarPage({
   searchParams,
 }: CalendarPageProps) {
   const [{ "team-slug": slug }, sp] = await Promise.all([params, searchParams]);
-  const viewMode = sp.view === "list" ? "list" : "grid";
+  const viewMode = sp.view === "list" ? "list" : sp.view === "week" ? "week" : "grid";
   const organization = await getOrgBySlug(slug);
   if (!organization) notFound();
 
@@ -52,12 +53,22 @@ export default async function CalendarPage({
   const year = sp.y ? parseInt(sp.y, 10) : now.getFullYear();
   const month = sp.m ? parseInt(sp.m, 10) : now.getMonth(); // 0-indexed
 
-  // Compute WIB-aware month boundaries for the query
+  // Compute WIB-aware date range for the query
   const WIB_OFFSET_MS = 7 * 60 * 60 * 1000;
-  const startUtcMs = Date.UTC(year, month, 1) - WIB_OFFSET_MS;
-  const endUtcMs = Date.UTC(year, month + 1, 0, 23, 59, 59) - WIB_OFFSET_MS;
-  const from = new Date(startUtcMs).toISOString();
-  const to = new Date(endUtcMs).toISOString();
+  let from: string;
+  let to: string;
+  if (viewMode === "week") {
+    // Week view needs ±8 weeks from today to allow navigation
+    const fromMs = now.getTime() - 8 * 7 * 24 * 60 * 60 * 1000;
+    const toMs = now.getTime() + 8 * 7 * 24 * 60 * 60 * 1000;
+    from = new Date(fromMs).toISOString();
+    to = new Date(toMs).toISOString();
+  } else {
+    const startUtcMs = Date.UTC(year, month, 1) - WIB_OFFSET_MS;
+    const endUtcMs = Date.UTC(year, month + 1, 0, 23, 59, 59) - WIB_OFFSET_MS;
+    from = new Date(startUtcMs).toISOString();
+    to = new Date(endUtcMs).toISOString();
+  }
 
   const events = await listUnifiedCalendarEvents(organization.id, from, to, isOwner ? "owner" : role);
 
@@ -79,7 +90,7 @@ export default async function CalendarPage({
         </div>
         <div className="flex items-center gap-2">
           <Suspense>
-            <CalendarViewToggle activeView={viewMode} />
+            <CalendarViewToggle activeView={viewMode as "grid" | "list" | "week"} />
           </Suspense>
           {canCreate && (
             <Link
@@ -94,7 +105,9 @@ export default async function CalendarPage({
       </header>
 
       <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-4 sm:p-6">
-        {viewMode === "list" ? (
+        {viewMode === "week" ? (
+          <CalendarWeeklyWarRoom orgSlug={slug} events={events} />
+        ) : viewMode === "list" ? (
           <CalendarAgendaView orgSlug={slug} events={events} />
         ) : (
           <CalendarWithQuickAdd
