@@ -7,6 +7,7 @@ import { getOrgBySlug } from "@/features/teams/queries";
 import { getTournamentDetail } from "@/features/tournaments/queries";
 import { TournamentCountdown } from "@/features/tournaments/components/TournamentCountdown";
 import { TournamentTimeline } from "@/features/tournaments/components/TournamentTimeline";
+import { TournamentJourney } from "@/features/tournaments/components/TournamentJourney";
 import { TournamentDetailActions } from "@/features/tournaments/components/TournamentDetailActions";
 
 export const dynamic = "force-dynamic";
@@ -173,6 +174,14 @@ export default async function TournamentDetailPage({ params }: TournamentDetailP
         </section>
 
         <aside className="space-y-6">
+          {/* Visual journey — show when there are completed stages with matches */}
+          {detail.stages.some((s) => s.matches.length > 0) && (
+            <article className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
+              <h3 className="mb-3 text-sm font-semibold text-[#E5E2E1]">Perjalanan Turnamen</h3>
+              <TournamentJourney stages={detail.stages} tournamentName={detail.name} />
+            </article>
+          )}
+
           {/* Timeline — show for all active statuses */}
           {(detail.status === "upcoming" || detail.status === "ongoing" || detail.status === "completed") && (
             <article className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
