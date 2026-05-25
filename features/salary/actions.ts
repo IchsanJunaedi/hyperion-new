@@ -151,9 +151,14 @@ export async function markPaymentPaidAction(
   payPeriod: string,
   amount: number,
   paths: string[],
+  bonusAmount?: number,
+  bonusNote?: string | null,
 ): Promise<ActionError | { ok: true }> {
   const user = await verifyManagerOrOwner(orgId);
   if (!user) return { ok: false, message: "Akses ditolak." };
+
+  const totalAmount = amount + (bonusAmount ?? 0);
+  const notes = bonusNote ?? null;
 
   const admin = createAdminClient();
   const { error } = await admin.from("salary_payments").upsert(
@@ -161,10 +166,11 @@ export async function markPaymentPaidAction(
       contract_id: contractId,
       organization_id: orgId,
       pay_period: payPeriod,
-      amount,
+      amount: totalAmount,
       status: "paid",
       paid_at: new Date().toISOString(),
       paid_by: user.id,
+      notes,
     },
     { onConflict: "contract_id,pay_period" },
   );
@@ -175,7 +181,7 @@ export async function markPaymentPaidAction(
     actorId: user.id,
     action: "salary_payment.mark_paid",
     entityType: "salary_payment",
-    metadata: { contractId, payPeriod, amount },
+    metadata: { contractId, payPeriod, amount: totalAmount, bonusAmount: bonusAmount ?? 0 },
   });
 
   revalidate(paths);

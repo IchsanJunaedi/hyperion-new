@@ -75,6 +75,53 @@ export async function listContracts(orgId: string): Promise<ContractWithProfile[
   }));
 }
 
+export interface TournamentPrize {
+  tournamentId: string;
+  name: string;
+  startDate: string;
+  prizeEarned: string;
+  placement: number | null;
+}
+
+/** Completed tournaments for this org that recorded a prize. Used for bonus calculation. */
+export async function listTournamentPrizes(orgId: string): Promise<TournamentPrize[]> {
+  const admin = createAdminClient();
+  const { data: tournaments } = await admin
+    .from("tournaments")
+    .select("id, name, start_date")
+    .eq("organization_id", orgId)
+    .eq("status", "completed")
+    .order("start_date", { ascending: false })
+    .limit(20);
+
+  if (!tournaments || tournaments.length === 0) return [];
+
+  const ids = tournaments.map((t) => t.id);
+  const { data: results } = await admin
+    .from("tournament_results")
+    .select("tournament_id, prize_earned, placement")
+    .in("tournament_id", ids)
+    .not("prize_earned", "is", null);
+
+  const resultMap = new Map((results ?? []).map((r) => [r.tournament_id, r]));
+
+  return tournaments
+    .filter((t) => {
+      const r = resultMap.get(t.id);
+      return r && r.prize_earned && r.prize_earned !== "0";
+    })
+    .map((t) => {
+      const r = resultMap.get(t.id)!;
+      return {
+        tournamentId: t.id,
+        name: t.name,
+        startDate: t.start_date,
+        prizeEarned: r.prize_earned!,
+        placement: r.placement ?? null,
+      };
+    });
+}
+
 export async function getPayrollSummary(orgId: string): Promise<PayrollSummary> {
   const admin = createAdminClient();
   const { data: contracts } = await admin

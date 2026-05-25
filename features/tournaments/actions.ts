@@ -476,6 +476,87 @@ export async function updateTournamentBracketAction(
 }
 
 
+export async function completeTournamentAction(
+  orgSlug: string,
+  tournamentId: string,
+  data: {
+    won: boolean;
+    placement?: number | null;
+    prizeEarned?: string | null;
+    eliminatedRound?: number | null;
+    notes?: string | null;
+  },
+): Promise<ActionError | { ok: true }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, message: "Anda harus login" };
+
+  const { error: statusError } = await supabase
+    .from("tournaments")
+    .update({ status: "completed" })
+    .eq("id", tournamentId);
+
+  if (statusError) return { ok: false, message: statusError.message };
+
+  const notesValue = data.won
+    ? (data.notes ?? null)
+    : `Gugur babak ${data.eliminatedRound ?? "penyisihan"}${data.notes ? ` — ${data.notes}` : ""}`;
+
+  const admin = createAdminClient();
+  const { error: resultError } = await admin.from("tournament_results").upsert(
+    {
+      tournament_id: tournamentId,
+      placement: data.won ? (data.placement ?? null) : null,
+      prize_earned: data.won && data.prizeEarned ? data.prizeEarned.replace(/\D/g, "") : null,
+      notes: notesValue,
+      recorded_by: user.id,
+      recorded_at: new Date().toISOString(),
+    },
+    { onConflict: "tournament_id" },
+  );
+
+  if (resultError) return { ok: false, message: resultError.message };
+
+  // Auto-add prize income to finances when there's a prize
+  if (data.won && data.prizeEarned) {
+    const amount = parseInt(data.prizeEarned.replace(/\D/g, ""), 10);
+    if (amount > 0) {
+      const { data: org } = await supabase
+        .from("organizations")
+        .select("id")
+        .eq("slug", orgSlug)
+        .maybeSingle();
+      if (org) {
+        await admin.from("finances").insert({
+          organization_id: org.id,
+          type: "income",
+          amount,
+          category: "Hadiah Turnamen",
+          description: `Prize turnamen${data.placement ? ` — Juara ${data.placement}` : ""}`,
+          date: new Date().toISOString().slice(0, 10),
+          created_by: user.id,
+        });
+      }
+    }
+  }
+
+  await logAudit({
+    actorId: user.id,
+    action: "tournament.complete",
+    entityType: "tournament",
+    entityId: tournamentId,
+    metadata: { won: data.won, placement: data.placement, prizeEarned: data.prizeEarned },
+  });
+
+  revalidatePath(`/${orgSlug}/tournaments`);
+  revalidatePath(`/${orgSlug}/tournaments/${tournamentId}`);
+  revalidatePath("/manage/finances");
+  revalidatePath("/dashboard/finances");
+  return { ok: true };
+}
+
 // ---------------------------------------------------------------------------
 // WA Blast for Registration Confirmed
 // ---------------------------------------------------------------------------

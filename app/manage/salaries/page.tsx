@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { SalaryPageClient } from "@/features/salary/components/SalaryPageClient";
-import { listContracts, getPayrollSummary } from "@/features/salary/queries";
+import { listContracts, getPayrollSummary, listTournamentPrizes } from "@/features/salary/queries";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -28,9 +28,10 @@ export default async function ManageSalariesPage() {
 
   const orgId = membership.organization_id;
 
-  const [contracts, summary, membersRes] = await Promise.all([
+  const [contracts, summary, tournamentPrizes, membersRes] = await Promise.all([
     listContracts(orgId),
     getPayrollSummary(orgId),
+    listTournamentPrizes(orgId),
     admin
       .from("team_members")
       .select("user_id, role")
@@ -68,6 +69,7 @@ export default async function ManageSalariesPage() {
         summary={summary}
         members={members}
         revalidatePaths={["/manage/salaries", "/dashboard/salaries"]}
+        tournamentPrizes={tournamentPrizes}
       />
     </div>
   );

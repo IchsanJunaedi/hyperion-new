@@ -1,13 +1,13 @@
 "use client";
 
-import { ChevronDown, CheckCircle2, Clock, Loader2, Pencil, XCircle } from "lucide-react";
+import { ChevronDown, CheckCircle2, Clock, Gift, Loader2, Pencil, XCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useState, useMemo, useTransition } from "react";
 
 import { useNotify } from "@/features/dashboard/components/NotifyModal";
 import { ConfirmDeleteDialog } from "@/features/dashboard/components/ConfirmDeleteDialog";
 import { markPaymentPaidAction, terminateContractAction } from "@/features/salary/actions";
-import type { ContractWithProfile } from "@/features/salary/queries";
+import type { ContractWithProfile, TournamentPrize } from "@/features/salary/queries";
 
 const ROLE_COLORS: Record<string, string> = {
   owner: "text-yellow-400",
@@ -49,10 +49,11 @@ interface SalaryCardProps {
   contract: ContractWithProfile;
   orgId: string;
   revalidatePaths: string[];
+  tournamentPrizes: TournamentPrize[];
   onEdit: () => void;
 }
 
-export function SalaryCard({ contract, orgId, revalidatePaths, onEdit }: SalaryCardProps) {
+export function SalaryCard({ contract, orgId, revalidatePaths, tournamentPrizes, onEdit }: SalaryCardProps) {
   const router = useRouter();
   const { success, error: notifyError } = useNotify();
   const [historyOpen, setHistoryOpen] = useState(false);
@@ -60,9 +61,26 @@ export function SalaryCard({ contract, orgId, revalidatePaths, onEdit }: SalaryC
   const [terminating, startTerminate] = useTransition();
   const [confirmTerminateOpen, setConfirmTerminateOpen] = useState(false);
 
+  // Bonus tournament state
+  const [bonusTournamentId, setBonusTournamentId] = useState<string>("");
+  const [bonusPct, setBonusPct] = useState<string>("");
+  const [bonusDropOpen, setBonusDropOpen] = useState(false);
+
   const thisMonth = currentPayPeriod();
   const thisMonthPayment = contract.payments.find((p) => p.pay_period.slice(0, 7) === thisMonth.slice(0, 7));
   const isPaidThisMonth = thisMonthPayment?.status === "paid";
+
+  const selectedPrize = useMemo(
+    () => tournamentPrizes.find((t) => t.tournamentId === bonusTournamentId) ?? null,
+    [tournamentPrizes, bonusTournamentId],
+  );
+
+  const bonusAmount = useMemo(() => {
+    if (!selectedPrize || !bonusPct) return 0;
+    const pct = parseFloat(bonusPct);
+    if (isNaN(pct) || pct <= 0 || pct > 100) return 0;
+    return Math.round((parseInt(selectedPrize.prizeEarned, 10) * pct) / 100);
+  }, [selectedPrize, bonusPct]);
 
   const initials = (contract.display_name ?? "??")
     .split(" ")
@@ -73,9 +91,22 @@ export function SalaryCard({ contract, orgId, revalidatePaths, onEdit }: SalaryC
 
   function handleMarkPaid() {
     startPay(async () => {
-      const res = await markPaymentPaidAction(orgId, contract.id, thisMonth, contract.monthly_salary, revalidatePaths);
+      const bonusNote = bonusAmount > 0 && selectedPrize
+        ? `Bonus turnamen "${selectedPrize.name}" ${bonusPct}% = Rp ${bonusAmount.toLocaleString("id-ID")}`
+        : null;
+      const res = await markPaymentPaidAction(
+        orgId,
+        contract.id,
+        thisMonth,
+        contract.monthly_salary,
+        revalidatePaths,
+        bonusAmount > 0 ? bonusAmount : undefined,
+        bonusNote,
+      );
       if (res.ok) {
-        success("Gaji bulan ini ditandai sudah dibayar");
+        success(bonusAmount > 0 ? "Gaji + bonus turnamen dibayar!" : "Gaji bulan ini ditandai sudah dibayar");
+        setBonusTournamentId("");
+        setBonusPct("");
         router.refresh();
       } else {
         notifyError(res.message);
@@ -153,31 +184,125 @@ export function SalaryCard({ contract, orgId, revalidatePaths, onEdit }: SalaryC
 
       {/* This month payment */}
       {contract.status === "active" && (
-        <div className="flex items-center justify-between rounded-lg border border-[#2D2D2D] bg-[#191919] px-3 py-2">
-          <div>
-            <p className="text-[10px] text-[#6B6A68] uppercase tracking-wide">Bulan ini</p>
-            {isPaidThisMonth ? (
-              <div className="flex items-center gap-1 mt-0.5">
-                <CheckCircle2 className="h-3.5 w-3.5 text-green-400" />
-                <span className="text-xs text-green-400">Sudah dibayar</span>
-              </div>
-            ) : (
-              <div className="flex items-center gap-1 mt-0.5">
-                <Clock className="h-3.5 w-3.5 text-orange-400" />
-                <span className="text-xs text-orange-400">Belum dibayar</span>
-              </div>
+        <div className="rounded-lg border border-[#2D2D2D] bg-[#191919] overflow-hidden">
+          {/* Status row */}
+          <div className="flex items-center justify-between px-3 py-2">
+            <div>
+              <p className="text-[10px] text-[#6B6A68] uppercase tracking-wide">Bulan ini</p>
+              {isPaidThisMonth ? (
+                <div className="flex items-center gap-1 mt-0.5">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-green-400" />
+                  <span className="text-xs text-green-400">Sudah dibayar</span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-1 mt-0.5">
+                  <Clock className="h-3.5 w-3.5 text-orange-400" />
+                  <span className="text-xs text-orange-400">Belum dibayar</span>
+                </div>
+              )}
+            </div>
+            {!isPaidThisMonth && (
+              <button
+                type="button"
+                onClick={handleMarkPaid}
+                disabled={paying}
+                className="inline-flex h-7 items-center gap-1.5 rounded-md bg-green-500 px-3 text-xs font-semibold text-white hover:bg-green-400 disabled:opacity-50 cursor-pointer"
+              >
+                {paying ? <Loader2 className="h-3 w-3 animate-spin" /> : <CheckCircle2 className="h-3 w-3" />}
+                {bonusAmount > 0
+                  ? `Bayar Rp ${(contract.monthly_salary + bonusAmount).toLocaleString("id-ID")}`
+                  : "Bayar"}
+              </button>
             )}
           </div>
-          {!isPaidThisMonth && (
-            <button
-              type="button"
-              onClick={handleMarkPaid}
-              disabled={paying}
-              className="inline-flex h-7 items-center gap-1.5 rounded-md bg-green-500 px-3 text-xs font-semibold text-white hover:bg-green-400 disabled:opacity-50 cursor-pointer"
-            >
-              {paying ? <Loader2 className="h-3 w-3 animate-spin" /> : <CheckCircle2 className="h-3 w-3" />}
-              Bayar
-            </button>
+
+          {/* Bonus tournament section — only when not yet paid and prizes exist */}
+          {!isPaidThisMonth && tournamentPrizes.length > 0 && (
+            <div className="border-t border-[#2D2D2D] px-3 py-2.5 space-y-2">
+              <p className="flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-wide text-[#6B6A68]">
+                <Gift className="h-3 w-3" />
+                Bonus Turnamen
+              </p>
+
+              {/* Tournament dropdown */}
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setBonusDropOpen((v) => !v)}
+                  className="flex h-7 w-full items-center justify-between rounded border border-[#2D2D2D] bg-[#141414] px-2.5 text-xs text-[#E5E2E1] cursor-pointer"
+                >
+                  <span className={bonusTournamentId ? "text-[#E5E2E1]" : "text-[#6B6A68]"}>
+                    {selectedPrize
+                      ? `${selectedPrize.name}${selectedPrize.placement ? ` (Juara ${selectedPrize.placement})` : ""}`
+                      : "— Pilih turnamen —"}
+                  </span>
+                  <ChevronDown className={`h-3 w-3 text-[#6B6A68] transition-transform ${bonusDropOpen ? "rotate-180" : ""}`} />
+                </button>
+                {bonusDropOpen && (
+                  <div className="absolute left-0 top-full z-20 mt-1 w-full rounded border border-[#2D2D2D] bg-[#202020] py-1 shadow-xl max-h-36 overflow-y-auto">
+                    <button
+                      type="button"
+                      onClick={() => { setBonusTournamentId(""); setBonusDropOpen(false); }}
+                      className="w-full px-2.5 py-1.5 text-left text-xs text-[#6B6A68] hover:bg-[#2C2C2C] cursor-pointer"
+                    >
+                      — Tidak ada bonus —
+                    </button>
+                    {tournamentPrizes.map((t) => (
+                      <button
+                        key={t.tournamentId}
+                        type="button"
+                        onClick={() => { setBonusTournamentId(t.tournamentId); setBonusDropOpen(false); }}
+                        className="w-full px-2.5 py-1.5 text-left text-xs text-[#E5E2E1] hover:bg-[#2C2C2C] cursor-pointer"
+                      >
+                        <span className="font-medium">{t.name}</span>
+                        {t.placement && <span className="ml-1.5 text-yellow-400 text-[10px]">Juara {t.placement}</span>}
+                        <span className="ml-1.5 text-[#6B6A68]">
+                          Rp {Number(t.prizeEarned).toLocaleString("id-ID")}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Percentage input + calculated bonus */}
+              {bonusTournamentId && selectedPrize && (
+                <div className="flex items-center gap-2">
+                  <div className="relative flex-1">
+                    <input
+                      type="number"
+                      min="0"
+                      max="100"
+                      step="0.1"
+                      value={bonusPct}
+                      onChange={(e) => setBonusPct(e.target.value)}
+                      placeholder="Jatah %"
+                      className="h-7 w-full rounded border border-[#2D2D2D] bg-[#141414] pr-6 pl-2.5 text-xs text-[#E5E2E1] focus:border-[#9B9A97]/50 focus:outline-none"
+                    />
+                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-[#6B6A68]">%</span>
+                  </div>
+                  <div className="flex-1 text-right">
+                    {bonusAmount > 0 ? (
+                      <span className="text-xs font-semibold text-yellow-300">
+                        +Rp {bonusAmount.toLocaleString("id-ID")}
+                      </span>
+                    ) : (
+                      <span className="text-[10px] text-[#6B6A68]">Masukkan %</span>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Total preview */}
+              {bonusAmount > 0 && (
+                <div className="flex items-center justify-between rounded bg-yellow-400/5 border border-yellow-400/15 px-2.5 py-1.5">
+                  <span className="text-[10px] text-[#9B9A97]">Total dibayar</span>
+                  <span className="text-xs font-bold text-yellow-300">
+                    Rp {(contract.monthly_salary + bonusAmount).toLocaleString("id-ID")}
+                  </span>
+                </div>
+              )}
+            </div>
           )}
         </div>
       )}

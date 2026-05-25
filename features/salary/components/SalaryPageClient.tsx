@@ -5,7 +5,7 @@ import { useState } from "react";
 
 import { SalaryCard } from "@/features/salary/components/SalaryCard";
 import { SalaryFormModal } from "@/features/salary/components/SalaryFormModal";
-import type { ContractWithProfile, PayrollSummary } from "@/features/salary/queries";
+import type { ContractWithProfile, PayrollSummary, TournamentPrize } from "@/features/salary/queries";
 
 interface Member {
   user_id: string;
@@ -19,6 +19,7 @@ interface SalaryPageClientProps {
   summary: PayrollSummary;
   members: Member[];
   revalidatePaths: string[];
+  tournamentPrizes: TournamentPrize[];
 }
 
 function formatRupiah(n: number) {
@@ -35,6 +36,7 @@ export function SalaryPageClient({
   summary,
   members,
   revalidatePaths,
+  tournamentPrizes,
 }: SalaryPageClientProps) {
   const [modalOpen, setModalOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<ContractWithProfile | undefined>(undefined);
@@ -120,6 +122,7 @@ export function SalaryPageClient({
               contract={c}
               orgId={orgId}
               revalidatePaths={revalidatePaths}
+              tournamentPrizes={tournamentPrizes}
               onEdit={() => openEdit(c)}
             />
           ))}
@@ -138,6 +141,7 @@ export function SalaryPageClient({
                 contract={c}
                 orgId={orgId}
                 revalidatePaths={revalidatePaths}
+                tournamentPrizes={tournamentPrizes}
                 onEdit={() => openEdit(c)}
               />
             ))}
