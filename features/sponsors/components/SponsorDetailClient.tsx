@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { notify } from "@/features/dashboard/components/NotifyModal";
+import { ConfirmDeleteDialog } from "@/features/dashboard/components/ConfirmDeleteDialog";
 import { cn } from "@/lib/utils/cn";
 import { SponsorStatusBadge } from "./SponsorStatusBadge";
 import { SponsorFormModal } from "./SponsorFormModal";
@@ -83,12 +84,12 @@ export function SponsorDetailClient({ sponsor: initial, orgId, backHref, listHre
   const [deliverables, setDeliverables] = useState<SponsorDeliverable[]>(initial.deliverables);
   const [historyNotes, setHistoryNotes] = useState<SponsorNote[]>(initial.historyNotes);
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [dlForm, setDlForm] = useState({ title: "", description: "", category: "content" as DeliverableCategory, due_date: "" });
   const [showDlForm, setShowDlForm] = useState(false);
   const [newNote, setNewNote] = useState("");
 
   function handleDelete() {
-    if (!confirm(`Hapus sponsor "${sponsor.name}"? Semua deliverable dan catatan akan ikut terhapus.`)) return;
     startTransition(async () => {
       const res = await deleteSponsorAction(orgId, sponsor.id);
       if (res.ok) {
@@ -96,6 +97,7 @@ export function SponsorDetailClient({ sponsor: initial, orgId, backHref, listHre
         router.push(listHref);
       } else {
         notify.error(res.message);
+        setConfirmDeleteOpen(false);
       }
     });
   }
@@ -183,11 +185,20 @@ export function SponsorDetailClient({ sponsor: initial, orgId, backHref, listHre
             <Pencil className="h-3.5 w-3.5" />
             Edit
           </button>
-          <button type="button" onClick={handleDelete} disabled={pending}
+          <button type="button" onClick={() => setConfirmDeleteOpen(true)} disabled={pending}
             className="inline-flex h-8 cursor-pointer items-center gap-2 rounded-md border border-red-500/20 px-3 text-xs text-red-400 transition hover:bg-red-500/10 disabled:opacity-50">
             <Trash2 className="h-3.5 w-3.5" />
             Hapus
           </button>
+          <ConfirmDeleteDialog
+            open={confirmDeleteOpen}
+            title="Hapus Sponsor"
+            message={`Hapus sponsor "${sponsor.name}"? Semua deliverable dan catatan akan ikut terhapus.`}
+            confirmText="Hapus"
+            pending={pending}
+            onConfirm={handleDelete}
+            onCancel={() => setConfirmDeleteOpen(false)}
+          />
         </div>
       </div>
 

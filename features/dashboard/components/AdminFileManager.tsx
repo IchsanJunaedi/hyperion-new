@@ -3,6 +3,7 @@
 import { File, Loader2, Search, Trash2, Download, Building2 } from "lucide-react";
 import { useState, useTransition } from "react";
 import { notify } from "@/features/dashboard/components/NotifyModal";
+import { ConfirmDeleteDialog } from "@/features/dashboard/components/ConfirmDeleteDialog";
 import { createClient } from "@/lib/supabase/client";
 
 interface StorageFileRecord {
@@ -31,6 +32,7 @@ export function AdminFileManager({
   const [selectedOrgId, setSelectedOrgId] = useState("");
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
+  const [pendingDeleteFile, setPendingDeleteFile] = useState<{ id: string; storagePath: string } | null>(null);
 
   // Filter files
   const filteredFiles = files.filter((file) => {
@@ -42,11 +44,8 @@ export function AdminFileManager({
   });
 
   async function handleDelete(id: string, storagePath: string) {
-    if (!confirm("Apakah Anda yakin ingin menghapus file ini secara permanen dari storage dan database?")) {
-      return;
-    }
-
     setDeletingId(id);
+    setPendingDeleteFile(null);
     const supabase = createClient();
 
     try {
@@ -246,7 +245,7 @@ export function AdminFileManager({
                         <button
                           type="button"
                           disabled={deletingId === file.id}
-                          onClick={() => handleDelete(file.id, file.storage_path)}
+                          onClick={() => setPendingDeleteFile({ id: file.id, storagePath: file.storage_path })}
                           className="rounded-lg p-1.5 text-white/40 hover:bg-red-500/10 hover:text-red-400 transition disabled:opacity-40"
                           title="Hapus permanen"
                         >
@@ -265,6 +264,16 @@ export function AdminFileManager({
           </table>
         </div>
       )}
+
+      <ConfirmDeleteDialog
+        open={!!pendingDeleteFile}
+        title="Hapus File Permanen"
+        message="File akan dihapus dari storage dan database secara permanen. Tindakan ini tidak bisa dibatalkan."
+        confirmText="Hapus Permanen"
+        pending={!!deletingId}
+        onConfirm={() => pendingDeleteFile && handleDelete(pendingDeleteFile.id, pendingDeleteFile.storagePath)}
+        onCancel={() => setPendingDeleteFile(null)}
+      />
     </div>
   );
 }

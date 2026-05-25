@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
 
 import { useNotify } from "@/features/dashboard/components/NotifyModal";
+import { ConfirmDeleteDialog } from "@/features/dashboard/components/ConfirmDeleteDialog";
 import { updateApplicantStatusAction, deleteApplicantAction } from "@/features/trials/actions";
 import type { ApplicantRow as ApplicantRowType } from "@/features/trials/queries";
 import { cn } from "@/lib/utils/cn";
@@ -29,6 +30,7 @@ export function ApplicantRow({ applicant, trialId, canManage, revalidatePaths }:
   const [dropOpen, setDropOpen] = useState(false);
   const [updating, startUpdate] = useTransition();
   const [deleting, startDelete] = useTransition();
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [showNotes, setShowNotes] = useState(!!applicant.notes);
   const [notesValue, setNotesValue] = useState(applicant.notes ?? "");
   const [notesSaving, startNotesSave] = useTransition();
@@ -63,11 +65,11 @@ export function ApplicantRow({ applicant, trialId, canManage, revalidatePaths }:
   }
 
   function handleDelete() {
-    if (!confirm(`Hapus pendaftar ${applicant.name}?`)) return;
     startDelete(async () => {
       const res = await deleteApplicantAction(applicant.id, trialId, revalidatePaths);
       if (res.ok) { success("Pendaftar dihapus"); router.refresh(); }
       else notifyError(res.message);
+      setConfirmDeleteOpen(false);
     });
   }
 
@@ -145,13 +147,22 @@ export function ApplicantRow({ applicant, trialId, canManage, revalidatePaths }:
               </button>
               <button
                 type="button"
-                onClick={handleDelete}
+                onClick={() => setConfirmDeleteOpen(true)}
                 disabled={deleting}
                 aria-label={`Hapus pendaftar ${applicant.name}`}
                 className="text-[#6B6A68] hover:text-red-400 cursor-pointer disabled:opacity-50"
               >
                 <Trash2 className="h-3.5 w-3.5" />
               </button>
+              <ConfirmDeleteDialog
+                open={confirmDeleteOpen}
+                title="Hapus Pendaftar"
+                message={`Hapus pendaftar ${applicant.name}? Tindakan ini tidak bisa dibatalkan.`}
+                confirmText="Hapus"
+                pending={deleting}
+                onConfirm={handleDelete}
+                onCancel={() => setConfirmDeleteOpen(false)}
+              />
             </>
           )}
         </div>

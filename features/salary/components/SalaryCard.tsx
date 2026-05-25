@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
 import { useNotify } from "@/features/dashboard/components/NotifyModal";
+import { ConfirmDeleteDialog } from "@/features/dashboard/components/ConfirmDeleteDialog";
 import { markPaymentPaidAction, terminateContractAction } from "@/features/salary/actions";
 import type { ContractWithProfile } from "@/features/salary/queries";
 
@@ -57,6 +58,7 @@ export function SalaryCard({ contract, orgId, revalidatePaths, onEdit }: SalaryC
   const [historyOpen, setHistoryOpen] = useState(false);
   const [paying, startPay] = useTransition();
   const [terminating, startTerminate] = useTransition();
+  const [confirmTerminateOpen, setConfirmTerminateOpen] = useState(false);
 
   const thisMonth = currentPayPeriod();
   const thisMonthPayment = contract.payments.find((p) => p.pay_period.slice(0, 7) === thisMonth.slice(0, 7));
@@ -82,7 +84,6 @@ export function SalaryCard({ contract, orgId, revalidatePaths, onEdit }: SalaryC
   }
 
   function handleTerminate() {
-    if (!confirm(`Terminate kontrak ${contract.display_name ?? "player ini"}? Tindakan ini tidak bisa dibatalkan.`)) return;
     startTerminate(async () => {
       const res = await terminateContractAction(orgId, contract.id, revalidatePaths);
       if (res.ok) {
@@ -91,6 +92,7 @@ export function SalaryCard({ contract, orgId, revalidatePaths, onEdit }: SalaryC
       } else {
         notifyError(res.message);
       }
+      setConfirmTerminateOpen(false);
     });
   }
 
@@ -218,15 +220,26 @@ export function SalaryCard({ contract, orgId, revalidatePaths, onEdit }: SalaryC
 
       {/* Terminate */}
       {contract.status === "active" && (
-        <button
-          type="button"
-          onClick={handleTerminate}
-          disabled={terminating}
-          className="flex w-full items-center justify-center gap-1.5 rounded-md border border-red-500/20 py-1.5 text-xs text-red-400 hover:bg-red-500/10 disabled:opacity-50 cursor-pointer"
-        >
-          {terminating ? <Loader2 className="h-3 w-3 animate-spin" /> : <XCircle className="h-3 w-3" />}
-          Terminate Kontrak
-        </button>
+        <>
+          <button
+            type="button"
+            onClick={() => setConfirmTerminateOpen(true)}
+            disabled={terminating}
+            className="flex w-full items-center justify-center gap-1.5 rounded-md border border-red-500/20 py-1.5 text-xs text-red-400 hover:bg-red-500/10 disabled:opacity-50 cursor-pointer"
+          >
+            {terminating ? <Loader2 className="h-3 w-3 animate-spin" /> : <XCircle className="h-3 w-3" />}
+            Terminate Kontrak
+          </button>
+          <ConfirmDeleteDialog
+            open={confirmTerminateOpen}
+            title="Terminate Kontrak"
+            message={`Terminate kontrak ${contract.display_name ?? "player ini"}? Tindakan ini tidak bisa dibatalkan.`}
+            confirmText="Terminate"
+            pending={terminating}
+            onConfirm={handleTerminate}
+            onCancel={() => setConfirmTerminateOpen(false)}
+          />
+        </>
       )}
     </div>
   );
