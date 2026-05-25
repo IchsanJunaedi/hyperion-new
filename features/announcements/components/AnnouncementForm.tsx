@@ -32,6 +32,7 @@ export function AnnouncementForm({ orgSlug, divisions }: AnnouncementFormProps) 
             division_id: fd.get("division_id") || null,
             is_pinned: fd.get("is_pinned") === "on",
             send_wa_blast: fd.get("send_wa_blast") === "on",
+            requires_ack: fd.get("requires_ack") === "on",
           });
           if (!res.ok) {
             setGlobalError(res.message);
@@ -93,11 +94,7 @@ export function AnnouncementForm({ orgSlug, divisions }: AnnouncementFormProps) 
             <span className="block text-[10px] text-white/40">Sematkan pengumuman di bagian atas</span>
           </div>
           <label className="relative inline-flex cursor-pointer items-center">
-            <input
-              type="checkbox"
-              name="is_pinned"
-              className="peer sr-only"
-            />
+            <input type="checkbox" name="is_pinned" className="peer sr-only" />
             <div className="peer h-5 w-9 rounded-full bg-zinc-800 transition-all duration-300 after:absolute after:top-[2px] after:left-[2px] after:h-4 after:w-4 after:rounded-full after:bg-white/60 after:transition-all after:content-[''] peer-checked:bg-yellow-400 peer-checked:after:translate-x-full peer-checked:after:bg-black peer-hover:bg-zinc-700/80"></div>
           </label>
         </div>
@@ -109,12 +106,20 @@ export function AnnouncementForm({ orgSlug, divisions }: AnnouncementFormProps) 
             <span className="block text-[10px] text-white/40">Kirim notifikasi WhatsApp ke member</span>
           </div>
           <label className="relative inline-flex cursor-pointer items-center">
-            <input
-              type="checkbox"
-              name="send_wa_blast"
-              className="peer sr-only"
-            />
+            <input type="checkbox" name="send_wa_blast" className="peer sr-only" />
             <div className="peer h-5 w-9 rounded-full bg-zinc-800 transition-all duration-300 after:absolute after:top-[2px] after:left-[2px] after:h-4 after:w-4 after:rounded-full after:bg-white/60 after:transition-all after:content-[''] peer-checked:bg-yellow-400 peer-checked:after:translate-x-full peer-checked:after:bg-black peer-hover:bg-zinc-700/80"></div>
+          </label>
+        </div>
+
+        {/* Toggle Acknowledgement Required */}
+        <div className="flex items-center justify-between rounded-xl bg-zinc-900/40 border border-orange-500/10 px-4 py-3 sm:col-span-2">
+          <div className="space-y-0.5">
+            <span className="block text-xs font-semibold text-orange-400">Wajib Konfirmasi Baca</span>
+            <span className="block text-[10px] text-white/40">Member harus klik konfirmasi — kamu bisa lihat siapa yang belum</span>
+          </div>
+          <label className="relative inline-flex cursor-pointer items-center">
+            <input type="checkbox" name="requires_ack" className="peer sr-only" />
+            <div className="peer h-5 w-9 rounded-full bg-zinc-800 transition-all duration-300 after:absolute after:top-[2px] after:left-[2px] after:h-4 after:w-4 after:rounded-full after:bg-white/60 after:transition-all after:content-[''] peer-checked:bg-orange-500 peer-checked:after:translate-x-full peer-checked:after:bg-black peer-hover:bg-zinc-700/80"></div>
           </label>
         </div>
       </div>

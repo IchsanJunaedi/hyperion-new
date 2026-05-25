@@ -83,6 +83,65 @@ export async function getAnnouncementReadCount(announcementId: string): Promise<
 }
 
 /**
+ * Check if the current user has acknowledged a specific announcement.
+ */
+export async function hasCurrentUserAcknowledged(announcementId: string): Promise<boolean> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return false;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data } = await (supabase as any)
+    .from("announcement_reads")
+    .select("announcement_id")
+    .eq("announcement_id", announcementId)
+    .eq("user_id", user.id)
+    .maybeSingle();
+  return !!data;
+}
+
+/**
+ * Get details of who has acknowledged a requires_ack announcement.
+ * Returns { acknowledged: string[], pending: string[] } of display names.
+ */
+export async function getAcknowledgementDetails(
+  announcementId: string,
+  organizationId: string,
+): Promise<{ acknowledgedCount: number; pendingCount: number; pendingNames: string[] }> {
+  const supabase = await createClient();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: reads } = await (supabase as any)
+    .from("announcement_reads")
+    .select("user_id")
+    .eq("announcement_id", announcementId);
+  const readUserIds = new Set<string>((reads ?? []).map((r: { user_id: string }) => r.user_id));
+
+  const { data: members } = await supabase
+    .from("team_members")
+    .select("user_id, profiles(display_name, username)")
+    .eq("organization_id", organizationId)
+    .eq("is_active", true);
+
+  const allMembers = (members ?? []) as Array<{
+    user_id: string;
+    profiles: { display_name: string | null; username: string | null } | null;
+  }>;
+
+  const pendingNames: string[] = [];
+  let acknowledgedCount = 0;
+
+  for (const m of allMembers) {
+    if (readUserIds.has(m.user_id)) {
+      acknowledgedCount++;
+    } else {
+      const name = m.profiles?.display_name ?? m.profiles?.username ?? "Unknown";
+      pendingNames.push(name);
+    }
+  }
+
+  return { acknowledgedCount, pendingCount: pendingNames.length, pendingNames };
+}
+
+/**
  * Batch-fetch read counts for a list of announcement IDs.
  * Returns a Map<announcement_id, count>.
  */

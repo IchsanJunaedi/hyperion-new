@@ -1,4 +1,4 @@
-import { Eye, Megaphone, Pin } from "lucide-react";
+import { AlertCircle, Eye, Megaphone, Pin } from "lucide-react";
 import Link from "next/link";
 
 import type { Database } from "@/types/database";
@@ -35,6 +35,9 @@ export function AnnouncementCard({
             {announcement.title}
           </h3>
         </div>
+        {announcement.requires_ack && (
+          <AlertCircle className="h-3.5 w-3.5 shrink-0 text-orange-400" />
+        )}
         {announcement.is_pinned && (
           <Pin className="h-3.5 w-3.5 shrink-0 text-yellow-400" />
         )}

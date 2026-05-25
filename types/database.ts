@@ -111,6 +111,7 @@ export type Database = {
           is_pinned: boolean
           organization_id: string
           published_at: string | null
+          requires_ack: boolean
           send_wa_blast: boolean
           title: string
         }
@@ -123,6 +124,7 @@ export type Database = {
           is_pinned?: boolean
           organization_id: string
           published_at?: string | null
+          requires_ack?: boolean
           send_wa_blast?: boolean
           title: string
         }
@@ -135,6 +137,7 @@ export type Database = {
           is_pinned?: boolean
           organization_id?: string
           published_at?: string | null
+          requires_ack?: boolean
           send_wa_blast?: boolean
           title?: string
         }
