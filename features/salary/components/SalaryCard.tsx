@@ -184,7 +184,7 @@ export function SalaryCard({ contract, orgId, revalidatePaths, tournamentPrizes,
 
       {/* This month payment */}
       {contract.status === "active" && (
-        <div className="rounded-lg border border-[#2D2D2D] bg-[#191919] overflow-hidden">
+        <div className="rounded-lg border border-[#2D2D2D] bg-[#191919]">
           {/* Status row */}
           <div className="flex items-center justify-between px-3 py-2">
             <div>
@@ -239,7 +239,7 @@ export function SalaryCard({ contract, orgId, revalidatePaths, tournamentPrizes,
                   <ChevronDown className={`h-3 w-3 text-[#6B6A68] transition-transform ${bonusDropOpen ? "rotate-180" : ""}`} />
                 </button>
                 {bonusDropOpen && (
-                  <div className="absolute left-0 top-full z-20 mt-1 w-full rounded border border-[#2D2D2D] bg-[#202020] py-1 shadow-xl max-h-36 overflow-y-auto">
+                  <div className="absolute left-0 top-full z-50 mt-1 w-full rounded border border-[#2D2D2D] bg-[#202020] py-1 shadow-xl max-h-36 overflow-y-auto">
                     <button
                       type="button"
                       onClick={() => { setBonusTournamentId(""); setBonusDropOpen(false); }}
