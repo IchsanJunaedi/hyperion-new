@@ -181,6 +181,32 @@ FONNTE_WEBHOOK_SECRET=
 - Don't modify files unrelated to the current task
 - Don't use `font-[Inter]` or `font-[Instrument_Sans]` class (font is already set globally via CSS variable)
 
+## Reusable Components (Jangan Buat Ulang)
+
+Sebelum membuat komponen baru, cek apakah sudah ada:
+
+| Kebutuhan | Komponen | Path |
+|-----------|----------|------|
+| Dropdown / select | `CustomSelect` | `@/features/dashboard/components/CustomSelect` |
+| Konfirmasi hapus | `ConfirmDeleteDialog` | `@/features/dashboard/components/ConfirmDeleteDialog` |
+| Notifikasi dashboard/manage | `useNotify()` | `@/features/dashboard/components/NotifyModal` |
+| Notifikasi workspace | `toast` | `sonner` |
+| Audit log | `logAudit()` | `@/lib/audit` |
+
+### Pola Dropdown di Dalam Card
+Dropdown `absolute` di dalam card **WAJIB** ikuti aturan ini atau akan terpotong:
+- Container parent: **JANGAN** pakai `overflow-hidden`
+- List dropdown: gunakan `absolute`, `z-50`, `top-full`
+- Referensi implementasi: `features/salary/components/SalaryCard.tsx` (bonus turnamen dropdown)
+
+### Pola Konfirmasi Hapus
+Selalu gunakan `ConfirmDeleteDialog` dengan `confirmPhrase="HAPUS"` untuk aksi destruktif. Jangan buat dialog konfirmasi custom.
+
+### Pola Modal
+- Modal overlay: `fixed inset-0 z-50 flex items-center justify-center bg-black/60`
+- Klik backdrop menutup modal (pasang `onClick={onClose}` di overlay, `onClick={(e) => e.stopPropagation()}` di inner div)
+- Referensi: `features/tournaments/components/TournamentCompleteModal.tsx`
+
 ### Database
 - Migrations go in `supabase/migrations/` with timestamp prefix (format: `YYYYMMDDHHMMSS_description.sql`)
 - Push with: `npx supabase db push`
