@@ -1,20 +1,14 @@
 # MEMORY.md — Index
-> One line per entry. Read this first, then open relevant files only.
+> Baca ini di awal sesi. Buka file individual hanya jika relevan dengan task.
+> Jangan simpan hal yang sudah ada di CLAUDE.md atau progress.md.
 > Last updated: 2026-05-27
 
 ## user
-- [[user-developer-profile]] — Ichsan Junaedi, Indonesian solo dev, Bahasa Indonesia UI, prefers premium dark UI, concise responses, per-category commits
+- [[ichsan-working-style]] — Bahasa Indonesia, jawaban singkat, koreksi pendek langsung implement, premium design taste, expect commit+push selesai tanpa diminta
 
 ## project
-- [[project-hyperion-overview]] — Esports OS for MLBB team, Next.js 15 + Supabase, solo dev, OWNER_EMAIL detection, project ID pqzdukrlmbwjjgjyoqva, source of truth: CLAUDE.md + progress.md
-- [[project-scrim-domain-rules]] — Owner excluded from salary, two VOD concepts (vod_link vs vod_timestamps), canManageScrims excludes coach so add isCoach separately
-- [[project-feature-planning-style]] — Plan first (confirm scope), then full implementation including migration + typecheck + commit; user simplifies scope mid-plan, just comply
+- [[owner-is-not-employee]] — Owner sengaja dikecualikan dari salary/kontrak — mereka dapat revenue share, bukan gaji. Filter di setiap form uang/kontrak.
 
 ## feedback
-- [[feedback-webpack-hmr-fix]] — Next.js 15 HMR crash fix: always use `const X = ...; export { X }` never `export function` or `export default function`
-- [[feedback-supabase-workflow]] — `npx supabase` (not bare `supabase`), repair commands for migration conflicts, project ID pqzdukrlmbwjjgjyoqva, manual types edit when gen fails
-- [[feedback-git-workflow]] — Stage specific files per category, rtk commit preferred (fallback git commit if not in PATH), always push after commit, never `git add .`
-- [[feedback-ui-design-preferences]] — No border on role badges/pills, no leading zeros in number inputs, NumberInput component required, hero portrait circular pattern, justify-between for name+role dropdowns
-
-## reference
-- [[reference-key-locations]] — Where to find: DB types, reusable components, scrim files, salary files, analytics files, permission utilities
+- [[rtk-not-in-path]] — `rtk commit` kadang tidak ditemukan di PATH saat AI run command, fallback ke `git commit` — bukan blocker
+- [[coach-excluded-from-canmanagescrims]] — `canManageScrims` tidak include coach, harus tambah `|| isCoach` secara eksplisit untuk fitur yang coach boleh akses
