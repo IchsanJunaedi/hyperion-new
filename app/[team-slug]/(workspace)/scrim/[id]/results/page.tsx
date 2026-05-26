@@ -41,6 +41,7 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
     { data: gameResults },
     { data: draftPicks },
     { data: vodTimestamps },
+    { data: attendances },
     memberRes,
   ] = await Promise.all([
     admin
@@ -58,6 +59,11 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
       .select("*")
       .eq("scrim_id", id)
       .order("timestamp_secs", { ascending: true }),
+    admin
+      .from("scrim_attendances")
+      .select("user_id")
+      .eq("scrim_id", id)
+      .in("status", ["confirmed", "tentative"]),
     user
       ? admin
           .from("team_members")
@@ -89,25 +95,29 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
     }),
   );
 
-  // Collect all player_ids from draft picks (our side) to resolve display names
-  const playerIds = Array.from(
-    new Set(
-      (draftPicks ?? [])
-        .filter((p) => p.side === "our" && p.player_id)
-        .map((p) => p.player_id as string),
-    ),
-  );
+  // Collect all user_ids we need profiles for: draft picks + attendances
+  const draftPlayerIds = (draftPicks ?? [])
+    .filter((p) => p.side === "our" && p.player_id)
+    .map((p) => p.player_id as string);
+  const attendanceUserIds = (attendances ?? []).map((a) => a.user_id);
+  const allUserIds = Array.from(new Set([...draftPlayerIds, ...attendanceUserIds]));
 
   const playerProfileMap = new Map<string, string>();
-  if (playerIds.length > 0) {
+  if (allUserIds.length > 0) {
     const { data: profiles } = await admin
       .from("profiles")
       .select("id, display_name")
-      .in("id", playerIds);
+      .in("id", allUserIds);
     for (const p of profiles ?? []) {
       if (p.display_name) playerProfileMap.set(p.id, p.display_name);
     }
   }
+
+  // Build attending players list for VOD dropdown (from scrim_attendances)
+  const attendingPlayers = (attendances ?? [])
+    .map((a) => ({ userId: a.user_id, displayName: playerProfileMap.get(a.user_id) ?? a.user_id }))
+    .filter((p) => p.displayName)
+    .sort((a, b) => a.displayName.localeCompare(b.displayName));
 
   // Group draft picks by game_number → side → role
   type DraftPick = { role: string; hero_name: string; player_id: string | null };
@@ -145,18 +155,6 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
     });
   }
 
-  // Build per-game player list (our side, with player_id → display_name)
-  const playersByGame: Record<number, { userId: string; displayName: string }[]> = {};
-  for (const pick of draftPicks ?? []) {
-    if (pick.side !== "our" || !pick.player_id) continue;
-    const displayName = playerProfileMap.get(pick.player_id);
-    if (!displayName) continue;
-    if (!playersByGame[pick.game_number]) playersByGame[pick.game_number] = [];
-    const already = playersByGame[pick.game_number]!.some((p) => p.userId === pick.player_id);
-    if (!already) {
-      playersByGame[pick.game_number]!.push({ userId: pick.player_id, displayName });
-    }
-  }
 
   const wins = gamesWithUrls.filter((g) => g.is_win).length;
   const losses = gamesWithUrls.filter((g) => !g.is_win).length;
@@ -202,7 +200,6 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
           const enemyPicks = draft?.enemy ?? [];
           const hasDraft = ourPicks.length > 0 || enemyPicks.length > 0;
           const gameTimestamps = vodByGame[game.game_number] ?? [];
-          const gamePlayers = playersByGame[game.game_number] ?? [];
 
           return (
             <div
@@ -339,7 +336,7 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
                 scrimId={id}
                 gameNumber={game.game_number}
                 initialTimestamps={gameTimestamps}
-                players={gamePlayers}
+                players={attendingPlayers}
                 canEdit={canEdit}
                 currentUserId={currentUserId}
                 isCoach={isCoach}
