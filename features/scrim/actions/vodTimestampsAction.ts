@@ -45,8 +45,8 @@ export async function addVodTimestampAction(
     .eq("is_active", true)
     .maybeSingle();
 
-  if (!member || !["coach", "captain"].includes(member.role)) {
-    return { ok: false, message: "Hanya Coach dan Captain yang bisa menambah timestamp" };
+  if (!member || !["manager", "coach", "captain"].includes(member.role)) {
+    return { ok: false, message: "Hanya Manager, Coach, dan Captain yang bisa menambah timestamp" };
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -134,7 +134,7 @@ export async function deleteVodTimestampAction(
       .eq("is_active", true)
       .maybeSingle();
 
-    if (!member || member.role !== "coach") {
+    if (!member || !["manager", "coach"].includes(member.role)) {
       return { ok: false, message: "Tidak punya izin menghapus timestamp ini" };
     }
   }

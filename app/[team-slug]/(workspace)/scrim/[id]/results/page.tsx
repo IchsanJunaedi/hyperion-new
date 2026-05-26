@@ -70,8 +70,9 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
   ]);
 
   const userRole = (memberRes as { data: { role: string } | null }).data?.role ?? null;
-  const canEdit = userRole === "coach" || userRole === "captain";
-  const isCoach = userRole === "coach";
+  const isOwner = user?.email === process.env.OWNER_EMAIL;
+  const canEdit = isOwner || ["manager", "coach", "captain"].includes(userRole ?? "");
+  const isCoach = isOwner || userRole === "manager" || userRole === "coach";
   const currentUserId = user?.id ?? "";
 
   // Get signed URLs for game screenshots
