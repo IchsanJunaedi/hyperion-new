@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { NumberInput } from "@/components/ui/number-input";
 import { X } from "lucide-react";
 import { toast } from "sonner";
 
@@ -94,14 +95,13 @@ export function JoinModal() {
                 <label className="text-[11px] font-bold uppercase tracking-widest text-white/40">
                   Age
                 </label>
-                <input
+                <NumberInput
                   name="age"
-                  type="number"
                   min={10}
                   max={25}
                   required
                   placeholder="e.g. 16"
-                  className={INPUT_CLASS}
+                  className="bg-[#0A0A0A] border-white/10 text-white placeholder-white/20 focus:border-[#F5C400]/50 h-10 mt-1.5"
                 />
               </div>
 

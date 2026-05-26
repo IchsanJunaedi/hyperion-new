@@ -3,6 +3,7 @@
 import { CheckCircle2, Circle, Loader2, Pencil, Plus, Swords, Trash2, X } from "lucide-react";
 import { useState, useTransition } from "react";
 
+import { NumberInput } from "@/components/ui/number-input";
 import { useNotify } from "@/features/dashboard/components/NotifyModal";
 import {
   createTournamentStageAction,
@@ -228,21 +229,19 @@ function MatchRow({
           className="h-7 w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-2 text-xs text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none"
         />
         <div className="grid grid-cols-3 gap-1.5">
-          <input
-            type="number"
+          <NumberInput
             min={0}
             value={ourScore}
             onChange={(e) => setOurScore(e.target.value)}
             placeholder="Skor kita"
-            className="h-7 rounded-md border border-[#2D2D2D] bg-[#191919] px-2 text-xs text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none"
+            className="h-7 text-xs focus:border-yellow-400/50"
           />
-          <input
-            type="number"
+          <NumberInput
             min={0}
             value={oppScore}
             onChange={(e) => setOppScore(e.target.value)}
             placeholder="Skor lawan"
-            className="h-7 rounded-md border border-[#2D2D2D] bg-[#191919] px-2 text-xs text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none"
+            className="h-7 text-xs focus:border-yellow-400/50"
           />
           <select
             value={isWin}
@@ -364,21 +363,19 @@ function AddMatchForm({
         className="h-8 w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-xs text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none"
       />
       <div className="grid grid-cols-3 gap-2">
-        <input
-          type="number"
+        <NumberInput
           min={0}
           value={ourScore}
           onChange={(e) => setOurScore(e.target.value)}
           placeholder="Skor kita"
-          className="h-8 rounded-md border border-[#2D2D2D] bg-[#191919] px-2 text-xs text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none"
+          className="h-8 text-xs focus:border-yellow-400/50"
         />
-        <input
-          type="number"
+        <NumberInput
           min={0}
           value={oppScore}
           onChange={(e) => setOppScore(e.target.value)}
           placeholder="Skor lawan"
-          className="h-8 rounded-md border border-[#2D2D2D] bg-[#191919] px-2 text-xs text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none"
+          className="h-8 text-xs focus:border-yellow-400/50"
         />
         <select
           value={isWin}

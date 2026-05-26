@@ -4,6 +4,7 @@ import { Loader2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
+import { NumberInput } from "@/components/ui/number-input";
 import { useNotify } from "@/features/dashboard/components/NotifyModal";
 import { createFinanceAction } from "@/features/finances/actions";
 import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from "@/lib/validations/finance";
@@ -81,13 +82,12 @@ export function FinanceForm({ orgId, revalidatePaths, onClose }: FinanceFormProp
 
           <div>
             <label className="block text-xs text-[#9B9A97] mb-1">Jumlah (Rp)</label>
-            <input
+            <NumberInput
               name="amount"
-              type="number"
               min={1}
               required
               placeholder="500000"
-              className="h-10 w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-sm text-[#E5E2E1] focus:border-[#E5E2E1] focus:outline-none"
+              className="focus:border-[#E5E2E1]"
             />
           </div>
 

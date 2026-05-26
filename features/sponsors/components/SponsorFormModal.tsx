@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useTransition } from "react";
 import { ImagePlus, Loader2, X } from "lucide-react";
 import { notify } from "@/features/dashboard/components/NotifyModal";
+import { NumberInput } from "@/components/ui/number-input";
 import { cn } from "@/lib/utils/cn";
 import { createClient } from "@/lib/supabase/client";
 import { createSponsorAction, updateSponsorAction } from "../actions";
@@ -212,7 +213,12 @@ export function SponsorFormModal({ open, onClose, orgId, editing, onSaved }: Spo
             <div className="grid grid-cols-3 gap-2">
               <div className="col-span-2">
                 <label className={labelCls}>Nilai Deal</label>
-                <input type="number" value={form.deal_value} onChange={(e) => set("deal_value", e.target.value)} min="0" className={inputCls} />
+                <NumberInput
+                  value={form.deal_value}
+                  onChange={(e) => set("deal_value", e.target.value)}
+                  min="0"
+                  className="bg-[#141414] text-white focus:border-white/30 h-10"
+                />
               </div>
               <div>
                 <label className={labelCls}>Mata Uang</label>

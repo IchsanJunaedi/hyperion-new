@@ -5,6 +5,7 @@ import { useState, useTransition } from "react";
 
 import { ConfirmDeleteDialog } from "@/features/dashboard/components/ConfirmDeleteDialog";
 import { useNotify } from "@/features/dashboard/components/NotifyModal";
+import { NumberInput } from "@/components/ui/number-input";
 import { deletePlayerTargetAction, updatePlayerTargetAction } from "@/features/player-development/actions";
 import type { PlayerTargetWithHistory } from "@/features/player-development/queries";
 
@@ -90,13 +91,13 @@ export function PlayerTargetCard({ target, orgSlug, canManage }: PlayerTargetCar
         <div className="flex items-center gap-2 pt-1 border-t border-[#2D2D2D]">
           {editing ? (
             <div className="flex items-center gap-2 flex-1">
-              <input
-                type="number"
+              <NumberInput
                 min={1}
                 max={10}
                 value={newLevel}
                 onChange={(e) => setNewLevel(Number(e.target.value))}
-                className="h-6 w-12 rounded border border-[#2D2D2D] bg-[#191919] px-1 text-center text-xs text-[#E5E2E1] focus:outline-none"
+                className="h-6 text-center text-xs focus:outline-none"
+                containerClassName="w-18 shrink-0"
               />
               <button
                 type="button"

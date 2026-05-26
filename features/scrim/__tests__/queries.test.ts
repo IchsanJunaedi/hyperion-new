@@ -83,100 +83,92 @@ describe("summarizeAttendance", () => {
 });
 
 describe("getScrimWinLossRecord", () => {
-  let mockFrom: any;
   let mockSupabase: any;
+  let mockSingle: any;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    mockFrom = {
-      select: vi.fn().mockReturnThis(),
-      eq: vi.fn().mockReturnThis(),
+    mockSingle = {
+      single: vi.fn(),
     };
     mockSupabase = {
-      from: vi.fn().mockReturnValue(mockFrom),
+      rpc: vi.fn().mockReturnValue(mockSingle),
     };
     vi.mocked(createClient).mockResolvedValue(mockSupabase as any);
   });
 
   it("returns all zeros when no scrims are found", async () => {
-    mockFrom.then = vi.fn((resolve) => resolve({ data: [], error: null }));
+    mockSingle.single.mockResolvedValue({ data: null, error: null });
 
     const record = await getScrimWinLossRecord("org-123");
     expect(record).toEqual({ wins: 0, losses: 0, draws: 0, total: 0 });
   });
 
   it("returns all zeros when database error occurs", async () => {
-    mockFrom.then = vi.fn((resolve) => resolve({ data: null, error: { message: "Error" } }));
+    mockSingle.single.mockResolvedValue({ data: null, error: { message: "Error" } });
 
     const record = await getScrimWinLossRecord("org-123");
     expect(record).toEqual({ wins: 0, losses: 0, draws: 0, total: 0 });
   });
 
   it("counts wins correctly when all are wins", async () => {
-    const dbData = [
-      { id: "1", scrim_results: [{ is_win: true }] },
-      { id: "2", scrim_results: [{ is_win: true }] },
-    ];
-    mockFrom.then = vi.fn((resolve) => resolve({ data: dbData, error: null }));
+    mockSingle.single.mockResolvedValue({
+      data: { wins: 2, losses: 0, draws: 0, total: 2 },
+      error: null,
+    });
 
     const record = await getScrimWinLossRecord("org-123");
     expect(record).toEqual({ wins: 2, losses: 0, draws: 0, total: 2 });
   });
 
   it("counts losses correctly when all are losses", async () => {
-    const dbData = [
-      { id: "1", scrim_results: [{ is_win: false }] },
-    ];
-    mockFrom.then = vi.fn((resolve) => resolve({ data: dbData, error: null }));
+    mockSingle.single.mockResolvedValue({
+      data: { wins: 0, losses: 1, draws: 0, total: 1 },
+      error: null,
+    });
 
     const record = await getScrimWinLossRecord("org-123");
     expect(record).toEqual({ wins: 0, losses: 1, draws: 0, total: 1 });
   });
 
   it("counts draws correctly when all are draws", async () => {
-    const dbData = [
-      { id: "1", scrim_results: [{ is_win: null }] },
-      { id: "2", scrim_results: [{ is_win: undefined }] },
-    ];
-    mockFrom.then = vi.fn((resolve) => resolve({ data: dbData, error: null }));
+    mockSingle.single.mockResolvedValue({
+      data: { wins: 0, losses: 0, draws: 2, total: 2 },
+      error: null,
+    });
 
     const record = await getScrimWinLossRecord("org-123");
     expect(record).toEqual({ wins: 0, losses: 0, draws: 2, total: 2 });
   });
 
   it("counts mixed wins, losses, and draws correctly", async () => {
-    const dbData = [
-      { id: "1", scrim_results: [{ is_win: true }] },
-      { id: "2", scrim_results: [{ is_win: false }] },
-      { id: "3", scrim_results: [{ is_win: null }] },
-      { id: "4", scrim_results: [{ is_win: undefined }] },
-    ];
-    mockFrom.then = vi.fn((resolve) => resolve({ data: dbData, error: null }));
+    mockSingle.single.mockResolvedValue({
+      data: { wins: 1, losses: 1, draws: 2, total: 4 },
+      error: null,
+    });
 
     const record = await getScrimWinLossRecord("org-123");
     expect(record).toEqual({ wins: 1, losses: 1, draws: 2, total: 4 });
   });
 
   it("handles scrim_results as a single object (non-array fallback)", async () => {
-    const dbData = [
-      { id: "1", scrim_results: { is_win: true } },
-      { id: "2", scrim_results: { is_win: false } },
-    ];
-    mockFrom.then = vi.fn((resolve) => resolve({ data: dbData, error: null }));
+    mockSingle.single.mockResolvedValue({
+      data: { wins: 1, losses: 1, draws: 0, total: 2 },
+      error: null,
+    });
 
     const record = await getScrimWinLossRecord("org-123");
     expect(record).toEqual({ wins: 1, losses: 1, draws: 0, total: 2 });
   });
 
   it("correctly triggers query with expected filters", async () => {
-    mockFrom.then = vi.fn((resolve) => resolve({ data: [], error: null }));
+    mockSingle.single.mockResolvedValue({ data: null, error: null });
 
     await getScrimWinLossRecord("org-xyz");
 
-    expect(mockSupabase.from).toHaveBeenCalledWith("scrims");
-    expect(mockFrom.select).toHaveBeenCalledWith("id, scrim_results(is_win)");
-    expect(mockFrom.eq).toHaveBeenNthCalledWith(1, "organization_id", "org-xyz");
-    expect(mockFrom.eq).toHaveBeenNthCalledWith(2, "status", "completed");
+    expect(mockSupabase.rpc).toHaveBeenCalledWith("get_scrim_win_loss", {
+      p_org_id: "org-xyz",
+    });
   });
 });
 

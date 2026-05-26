@@ -4,6 +4,7 @@ import { ChevronDown, Check, Loader2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
 
+import { NumberInput } from "@/components/ui/number-input";
 import { useNotify } from "@/features/dashboard/components/NotifyModal";
 import { createContractAction, updateContractAction } from "@/features/salary/actions";
 import type { ContractWithProfile } from "@/features/salary/queries";
@@ -22,11 +23,12 @@ interface SalaryFormModalProps {
   onClose: () => void;
 }
 
-const ROLE_COLORS: Record<string, string> = {
-  manager: "text-green-400",
-  coach: "text-blue-400",
-  captain: "text-purple-400",
-  member: "text-[#9B9A97]",
+const ROLE_BADGES: Record<string, { text: string; bg: string }> = {
+  owner: { text: "text-amber-400", bg: "bg-amber-400/10" },
+  manager: { text: "text-emerald-400", bg: "bg-emerald-400/10" },
+  coach: { text: "text-sky-400", bg: "bg-sky-400/10" },
+  captain: { text: "text-violet-400", bg: "bg-violet-400/10" },
+  member: { text: "text-[#E5E2E1]", bg: "bg-white/5" },
 };
 
 function formatSalaryDisplay(raw: string): string {
@@ -35,13 +37,13 @@ function formatSalaryDisplay(raw: string): string {
   return Number(digits).toLocaleString("id-ID");
 }
 
-export function SalaryFormModal({
+const SalaryFormModal = ({
   orgId,
   members,
   contract,
   revalidatePaths,
   onClose,
-}: SalaryFormModalProps) {
+}: SalaryFormModalProps) => {
   const router = useRouter();
   const { success, error: notifyError } = useNotify();
   const [pending, startTransition] = useTransition();
@@ -68,6 +70,7 @@ export function SalaryFormModal({
 
   const isEdit = !!contract;
 
+  const eligibleMembers = members.filter((m) => m.role?.toLowerCase() !== "owner");
   const selectedMember = members.find((m) => m.user_id === selectedUserId);
 
   useEffect(() => {
@@ -148,26 +151,30 @@ export function SalaryFormModal({
                 className="h-10 w-full flex items-center justify-between rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-sm text-[#E5E2E1] focus:border-[#9B9A97] focus:outline-none cursor-pointer"
               >
                 {selectedMember ? (
-                  <span className="flex items-center gap-2">
-                    <span>{selectedMember.display_name ?? selectedMember.user_id}</span>
+                  <div className="flex-1 flex items-center justify-between min-w-0 mr-2">
+                    <span className="truncate pr-2 text-left">{selectedMember.display_name ?? selectedMember.user_id}</span>
                     {selectedMember.role && (
-                      <span className={`text-[10px] font-semibold uppercase ${ROLE_COLORS[selectedMember.role] ?? "text-[#9B9A97]"}`}>
+                      <span className={`inline-flex items-center rounded-full px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider shrink-0 ${
+                        (ROLE_BADGES[selectedMember.role.toLowerCase()] || { text: "text-[#9B9A97]", bg: "bg-white/5" }).text
+                      } ${
+                        (ROLE_BADGES[selectedMember.role.toLowerCase()] || { text: "text-[#9B9A97]", bg: "bg-white/5" }).bg
+                      }`}>
                         {selectedMember.role}
                       </span>
                     )}
-                  </span>
+                  </div>
                 ) : (
                   <span className="text-[#6B6A68]">— Pilih player —</span>
                 )}
-                <ChevronDown className={`h-4 w-4 text-[#6B6A68] transition-transform ${dropdownOpen ? "rotate-180" : ""}`} />
+                <ChevronDown className={`h-4 w-4 text-[#6B6A68] shrink-0 transition-transform ${dropdownOpen ? "rotate-180" : ""}`} />
               </button>
 
               {dropdownOpen && (
                 <div className="absolute left-0 top-full z-50 mt-1 w-full rounded-lg border border-[#2D2D2D] bg-[#202020] py-1 shadow-xl max-h-48 overflow-y-auto scroll-premium">
-                  {members.length === 0 ? (
+                  {eligibleMembers.length === 0 ? (
                     <p className="px-3 py-2 text-xs text-[#6B6A68]">Tidak ada member tersedia</p>
                   ) : (
-                    members.map((m) => (
+                    eligibleMembers.map((m) => (
                       <button
                         key={m.user_id}
                         type="button"
@@ -177,16 +184,22 @@ export function SalaryFormModal({
                         }}
                         className="flex w-full items-center justify-between px-3 py-2 text-sm text-[#E5E2E1] hover:bg-[#2C2C2C] cursor-pointer"
                       >
-                        <span className="flex items-center gap-2">
-                          <span>{m.display_name ?? m.user_id}</span>
+                        <div className="flex-1 flex items-center justify-between min-w-0 mr-2">
+                          <span className="truncate pr-2 text-left">{m.display_name ?? m.user_id}</span>
                           {m.role && (
-                            <span className={`text-[10px] font-semibold uppercase ${ROLE_COLORS[m.role] ?? "text-[#9B9A97]"}`}>
+                            <span className={`inline-flex items-center rounded-full px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider shrink-0 ${
+                              (ROLE_BADGES[m.role.toLowerCase()] || { text: "text-[#9B9A97]", bg: "bg-white/5" }).text
+                            } ${
+                              (ROLE_BADGES[m.role.toLowerCase()] || { text: "text-[#9B9A97]", bg: "bg-white/5" }).bg
+                            }`}>
                               {m.role}
                             </span>
                           )}
-                        </span>
-                        {selectedUserId === m.user_id && (
-                          <Check className="h-3.5 w-3.5 text-[#9B9A97]" />
+                        </div>
+                        {selectedUserId === m.user_id ? (
+                          <Check className="h-3.5 w-3.5 text-[#9B9A97] shrink-0" />
+                        ) : (
+                          <div className="h-3.5 w-3.5 shrink-0" />
                         )}
                       </button>
                     ))
@@ -224,19 +237,15 @@ export function SalaryFormModal({
             <label className="block text-xs text-[#9B9A97] mb-1">
               Persentase Bonus Turnamen (%)
             </label>
-            <div className="relative">
-              <input
-                type="number"
-                min="0"
-                max="100"
-                step="0.1"
-                value={bonusPct}
-                onChange={(e) => setBonusPct(e.target.value)}
-                placeholder="0"
-                className="h-10 w-full rounded-md border border-[#2D2D2D] bg-[#191919] pl-3 pr-8 text-sm text-[#E5E2E1] focus:border-[#9B9A97] focus:outline-none"
-              />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#6B6A68]">%</span>
-            </div>
+            <NumberInput
+              min="0"
+              max="100"
+              step="0.1"
+              value={bonusPct}
+              onChange={(e) => setBonusPct(e.target.value)}
+              placeholder="0"
+              suffix="%"
+            />
             <p className="mt-1 text-[10px] text-[#6B6A68]">
               Jatah otomatis saat tim menang turnamen berhadiah. 0 = tidak dapat bonus.
             </p>
@@ -311,4 +320,6 @@ export function SalaryFormModal({
       </div>
     </div>
   );
-}
+};
+
+export { SalaryFormModal };

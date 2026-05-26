@@ -8,6 +8,7 @@ import {
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
+import { NumberInput } from "@/components/ui/number-input";
 import { finishScrimAction } from "../actions/finishScrimAction";
 import { createClient } from "@/lib/supabase/client";
 import {
@@ -454,8 +455,7 @@ export function FinishScrimForm({
                     </div>
                     <div className="flex shrink-0 items-center gap-1.5">
                       <span className="text-[10px] text-[#6B6A68]">Rating</span>
-                      <input
-                        type="number"
+                      <NumberInput
                         min={0}
                         max={10}
                         step={0.1}
@@ -468,7 +468,8 @@ export function FinishScrimForm({
                           })
                         }
                         placeholder="0–10"
-                        className="h-7 w-16 rounded-lg border border-white/10 bg-zinc-900 px-2 text-center text-xs text-white focus:border-yellow-400 focus:outline-none"
+                        className="h-7 text-center text-xs text-white bg-zinc-900 border-white/10 focus:border-yellow-400 focus:outline-none"
+                        containerClassName="w-20 shrink-0"
                       />
                     </div>
                   </div>

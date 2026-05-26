@@ -371,6 +371,8 @@ describe("getOverviewStats", () => {
     mockQuery = {
       select: vi.fn().mockReturnThis(),
       eq: vi.fn().mockReturnThis(),
+      limit: vi.fn().mockReturnThis(),
+      gte: vi.fn().mockReturnThis(),
     };
     mockSupabase = {
       from: vi.fn().mockReturnValue(mockQuery),
@@ -518,7 +520,7 @@ describe("getEnterprisePlayerStats", () => {
 
   const makeThenable = (data: any) => {
     const q: any = {};
-    for (const m of ["select", "eq", "in", "order", "not"]) {
+    for (const m of ["select", "eq", "in", "order", "not", "limit"]) {
       q[m] = vi.fn().mockReturnValue(q);
     }
     q.then = (resolve: any) => resolve({ data, error: null });

@@ -190,7 +190,9 @@ describe("Finance Calculations and Queries", () => {
 
       expect(result).toEqual(dbRows);
       expect(mockAdmin.from).toHaveBeenCalledWith("finances");
-      expect(mockFrom.select).toHaveBeenCalledWith("*");
+      expect(mockFrom.select).toHaveBeenCalledWith(
+        "id, type, amount, description, date, category, created_at",
+      );
       expect(mockFrom.eq).toHaveBeenCalledWith("organization_id", "org-123");
       expect(mockFrom.gte).toHaveBeenCalledWith("date", "2026-05-01");
       expect(mockFrom.lte).toHaveBeenCalledWith("date", "2026-05-31"); // last day of May

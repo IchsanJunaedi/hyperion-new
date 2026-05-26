@@ -3,6 +3,7 @@
 import { AlertTriangle, Loader2, Trophy, X } from "lucide-react";
 import { useState, useTransition } from "react";
 
+import { NumberInput } from "@/components/ui/number-input";
 import { useNotify } from "@/features/dashboard/components/NotifyModal";
 import { completeTournamentAction } from "@/features/tournaments/actions";
 
@@ -169,15 +170,14 @@ export function TournamentCompleteModal({
                   Posisi Juara <span className="text-[#6B6A68]">(misal: 1, 2, 3)</span>
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-bold text-yellow-400">Juara</span>
-                  <input
-                    type="number"
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-bold text-yellow-400 z-10">Juara</span>
+                  <NumberInput
                     min="1"
                     max="999"
                     value={placement}
                     onChange={(e) => setPlacement(e.target.value)}
                     placeholder="1"
-                    className="h-10 w-full rounded-md border border-[#2D2D2D] bg-[#141414] pl-16 pr-3 text-sm text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none"
+                    className="bg-[#141414] pl-16 focus:border-yellow-400/50 h-10"
                   />
                 </div>
               </div>
@@ -229,13 +229,13 @@ export function TournamentCompleteModal({
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-xs text-[#6B6A68] shrink-0">Lainnya:</span>
-                <input
-                  type="number"
+                <NumberInput
                   min="1"
                   value={customRound}
                   onChange={(e) => { setCustomRound(e.target.value); setEliminatedRound(null); }}
                   placeholder="misal: 8"
-                  className="h-8 w-28 rounded-md border border-[#2D2D2D] bg-[#141414] px-3 text-xs text-[#E5E2E1] focus:border-[#9B9A97]/50 focus:outline-none"
+                  className="bg-[#141414] focus:border-[#9B9A97]/50 h-8 text-xs"
+                  containerClassName="w-28 shrink-0"
                 />
               </div>
             </div>

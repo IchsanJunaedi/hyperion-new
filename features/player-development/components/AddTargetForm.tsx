@@ -5,6 +5,7 @@ import { useState, useTransition } from "react";
 
 import { CustomSelect } from "@/features/dashboard/components/CustomSelect";
 import { useNotify } from "@/features/dashboard/components/NotifyModal";
+import { NumberInput } from "@/components/ui/number-input";
 import { createPlayerTargetAction } from "@/features/player-development/actions";
 
 interface AddTargetFormProps {
@@ -69,24 +70,22 @@ export function AddTargetForm({ orgSlug, members, onDone }: AddTargetFormProps) 
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className="text-xs text-[#9B9A97] mb-1 block">Level Sekarang (1-10)</label>
-          <input
-            type="number"
+          <NumberInput
             min={1}
             max={10}
             value={currentLevel}
             onChange={(e) => setCurrentLevel(Number(e.target.value))}
-            className="h-8 w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-xs text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none"
+            className="h-8 text-xs focus:border-yellow-400/50"
           />
         </div>
         <div>
           <label className="text-xs text-[#9B9A97] mb-1 block">Target Level (1-10)</label>
-          <input
-            type="number"
+          <NumberInput
             min={1}
             max={10}
             value={targetLevel}
             onChange={(e) => setTargetLevel(Number(e.target.value))}
-            className="h-8 w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-xs text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none"
+            className="h-8 text-xs focus:border-yellow-400/50"
           />
         </div>
       </div>

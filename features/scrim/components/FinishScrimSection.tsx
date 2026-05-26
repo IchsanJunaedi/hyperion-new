@@ -4,6 +4,7 @@ import { Loader2, Star, Trophy, Upload, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
 
+import { NumberInput } from "@/components/ui/number-input";
 import { submitResultAction } from "@/features/scrim/actions";
 import { createClient } from "@/lib/supabase/client";
 import type { ScrimResult } from "@/features/scrim/queries";
@@ -294,26 +295,24 @@ function ResultForm({
         <div className="grid grid-cols-2 gap-3">
           <label className="block text-xs font-medium text-white/70">
             Skor kami
-            <input
-              type="number"
+            <NumberInput
               name="our_score"
               required
               min={0}
               max={5}
               defaultValue={0}
-              className="mt-1 h-12 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-2xl font-bold text-white focus:border-yellow-400 focus:outline-none"
+              className="mt-1 h-12 text-2xl font-bold text-white bg-zinc-900 border-white/10 focus:border-yellow-400 focus:outline-none"
             />
           </label>
           <label className="block text-xs font-medium text-white/70">
             Skor lawan
-            <input
-              type="number"
+            <NumberInput
               name="opponent_score"
               required
               min={0}
               max={5}
               defaultValue={0}
-              className="mt-1 h-12 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-2xl font-bold text-white focus:border-yellow-400 focus:outline-none"
+              className="mt-1 h-12 text-2xl font-bold text-white bg-zinc-900 border-white/10 focus:border-yellow-400 focus:outline-none"
             />
           </label>
         </div>
