@@ -3,7 +3,11 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { createAdminClient } from "@/lib/supabase/admin";
+import { createClient } from "@/lib/supabase/server";
+import { getHeroImageUrl } from "@/features/scrim/data/mlbb-heroes";
 import { getScrimDetail } from "@/features/scrim/queries";
+import { VodReviewSection } from "@/features/scrim/components/VodReviewSection";
+import type { VodTimestampRow } from "@/features/scrim/actions/vodTimestampsAction";
 
 export const dynamic = "force-dynamic";
 
@@ -29,8 +33,16 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
   const { scrim, result } = detail;
 
   const admin = createAdminClient();
+  const supabase = await createClient();
 
-  const [{ data: gameResults }, { data: draftPicks }] = await Promise.all([
+  const { data: { user } } = await supabase.auth.getUser();
+
+  const [
+    { data: gameResults },
+    { data: draftPicks },
+    { data: vodTimestamps },
+    memberRes,
+  ] = await Promise.all([
     admin
       .from("scrim_game_results")
       .select("*")
@@ -41,7 +53,26 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
       .select("*")
       .eq("scrim_id", id)
       .order("game_number", { ascending: true }),
+    admin
+      .from("scrim_vod_timestamps" as never)
+      .select("*")
+      .eq("scrim_id", id)
+      .order("timestamp_secs", { ascending: true }),
+    user
+      ? admin
+          .from("team_members")
+          .select("role")
+          .eq("organization_id", scrim.organization_id)
+          .eq("user_id", user.id)
+          .eq("is_active", true)
+          .maybeSingle()
+      : Promise.resolve({ data: null }),
   ]);
+
+  const userRole = (memberRes as { data: { role: string } | null }).data?.role ?? null;
+  const canEdit = userRole === "coach" || userRole === "captain";
+  const isCoach = userRole === "coach";
+  const currentUserId = user?.id ?? "";
 
   // Get signed URLs for game screenshots
   const gamesWithUrls = await Promise.all(
@@ -57,6 +88,26 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
     }),
   );
 
+  // Collect all player_ids from draft picks (our side) to resolve display names
+  const playerIds = Array.from(
+    new Set(
+      (draftPicks ?? [])
+        .filter((p) => p.side === "our" && p.player_id)
+        .map((p) => p.player_id as string),
+    ),
+  );
+
+  const playerProfileMap = new Map<string, string>();
+  if (playerIds.length > 0) {
+    const { data: profiles } = await admin
+      .from("profiles")
+      .select("id, display_name")
+      .in("id", playerIds);
+    for (const p of profiles ?? []) {
+      if (p.display_name) playerProfileMap.set(p.id, p.display_name);
+    }
+  }
+
   // Group draft picks by game_number → side → role
   type DraftPick = { role: string; hero_name: string; player_id: string | null };
   const draftByGame: Record<number, { our: DraftPick[]; enemy: DraftPick[] }> = {};
@@ -70,6 +121,39 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
       gameDraft.our.push({ role: pick.role, hero_name: pick.hero_name, player_id: pick.player_id });
     } else {
       gameDraft.enemy.push({ role: pick.role, hero_name: pick.hero_name, player_id: pick.player_id });
+    }
+  }
+
+  // Group VOD timestamps by game_number, attach player name
+  const vodByGame: Record<number, VodTimestampRow[]> = {};
+  for (const ts of (vodTimestamps ?? []) as Record<string, unknown>[]) {
+    const gn = ts.game_number as number;
+    if (!vodByGame[gn]) vodByGame[gn] = [];
+    vodByGame[gn].push({
+      id: ts.id as string,
+      scrim_id: ts.scrim_id as string,
+      game_number: gn,
+      timestamp_secs: ts.timestamp_secs as number,
+      tagged_player_id: ts.tagged_player_id as string | null,
+      note: ts.note as string,
+      created_by: ts.created_by as string,
+      created_at: ts.created_at as string,
+      tagged_player_name: ts.tagged_player_id
+        ? (playerProfileMap.get(ts.tagged_player_id as string) ?? null)
+        : null,
+    });
+  }
+
+  // Build per-game player list (our side, with player_id → display_name)
+  const playersByGame: Record<number, { userId: string; displayName: string }[]> = {};
+  for (const pick of draftPicks ?? []) {
+    if (pick.side !== "our" || !pick.player_id) continue;
+    const displayName = playerProfileMap.get(pick.player_id);
+    if (!displayName) continue;
+    if (!playersByGame[pick.game_number]) playersByGame[pick.game_number] = [];
+    const already = playersByGame[pick.game_number]!.some((p) => p.userId === pick.player_id);
+    if (!already) {
+      playersByGame[pick.game_number]!.push({ userId: pick.player_id, displayName });
     }
   }
 
@@ -116,6 +200,8 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
           const ourPicks = draft?.our ?? [];
           const enemyPicks = draft?.enemy ?? [];
           const hasDraft = ourPicks.length > 0 || enemyPicks.length > 0;
+          const gameTimestamps = vodByGame[game.game_number] ?? [];
+          const gamePlayers = playersByGame[game.game_number] ?? [];
 
           return (
             <div
@@ -148,14 +234,38 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
                       </div>
                       {ROLE_ORDER.map((role) => {
                         const pick = ourPicks.find((p) => p.role === role);
+                        const displayName = pick?.player_id
+                          ? playerProfileMap.get(pick.player_id)
+                          : undefined;
                         return (
-                          <div key={role} className="flex items-center gap-2 rounded-md bg-white/[0.04] px-2.5 py-1.5">
+                          <div key={role} className="flex items-center gap-2 rounded-md bg-white/[0.04] px-2.5 py-1.5 min-w-0">
                             <span className="text-[10px] font-bold uppercase tracking-wider text-white/30 w-9 shrink-0">
                               {ROLE_LABELS[role] ?? role}
                             </span>
-                            <span className={`text-xs font-medium truncate ${pick ? "text-white/90" : "text-white/20"}`}>
-                              {pick?.hero_name ?? "—"}
-                            </span>
+                            {pick ? (
+                              <div className="flex items-center gap-2 min-w-0">
+                                <div className="h-5 w-5 shrink-0 overflow-hidden rounded-full border border-white/10 bg-zinc-800">
+                                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                                  <img
+                                    src={getHeroImageUrl(pick.hero_name)}
+                                    alt={pick.hero_name}
+                                    className="h-full w-full object-cover"
+                                  />
+                                </div>
+                                <div className="min-w-0">
+                                  <span className="text-xs font-medium text-white/90 truncate block">
+                                    {pick.hero_name}
+                                  </span>
+                                  {displayName && (
+                                    <span className="text-[10px] text-white/40 truncate block">
+                                      {displayName}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            ) : (
+                              <span className="text-xs font-medium text-white/20">—</span>
+                            )}
                           </div>
                         );
                       })}
@@ -172,13 +282,27 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
                       {ROLE_ORDER.map((role) => {
                         const pick = enemyPicks.find((p) => p.role === role);
                         return (
-                          <div key={role} className="flex items-center gap-2 rounded-md bg-white/[0.04] px-2.5 py-1.5">
+                          <div key={role} className="flex items-center gap-2 rounded-md bg-white/[0.04] px-2.5 py-1.5 min-w-0">
                             <span className="text-[10px] font-bold uppercase tracking-wider text-white/30 w-9 shrink-0">
                               {ROLE_LABELS[role] ?? role}
                             </span>
-                            <span className={`text-xs font-medium truncate ${pick ? "text-white/90" : "text-white/20"}`}>
-                              {pick?.hero_name ?? "—"}
-                            </span>
+                            {pick ? (
+                              <div className="flex items-center gap-2 min-w-0">
+                                <div className="h-5 w-5 shrink-0 overflow-hidden rounded-full border border-white/10 bg-zinc-800">
+                                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                                  <img
+                                    src={getHeroImageUrl(pick.hero_name)}
+                                    alt={pick.hero_name}
+                                    className="h-full w-full object-cover"
+                                  />
+                                </div>
+                                <span className="text-xs font-medium text-white/90 truncate">
+                                  {pick.hero_name}
+                                </span>
+                              </div>
+                            ) : (
+                              <span className="text-xs font-medium text-white/20">—</span>
+                            )}
                           </div>
                         );
                       })}
@@ -208,6 +332,17 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
                   </a>
                 )}
               </div>
+
+              {/* VOD Review accordion */}
+              <VodReviewSection
+                scrimId={id}
+                gameNumber={game.game_number}
+                initialTimestamps={gameTimestamps}
+                players={gamePlayers}
+                canEdit={canEdit}
+                currentUserId={currentUserId}
+                isCoach={isCoach}
+              />
             </div>
           );
         })}
