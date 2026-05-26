@@ -39,6 +39,8 @@ test.describe("VOD Review — results page", () => {
   });
 
   test("dapat menambah timestamp dengan waktu, username, dan alasan", async ({ page }) => {
+    const uniqueNote = `E2E-tambah-${Date.now()}`;
+
     // Expand first game VOD Review
     await page.getByRole("button", { name: /vod review/i }).first().click();
     await page.getByRole("button", { name: /tambah timestamp/i }).click();
@@ -54,26 +56,26 @@ test.describe("VOD Review — results page", () => {
     let selectedPlayerName: string | null = null;
 
     if (playerCount > 1) {
-      // Select the first real player (index 1, skip "— Tidak ada —")
       const firstOption = playerSelect.locator("option").nth(1);
       selectedPlayerName = await firstOption.textContent();
       await playerSelect.selectOption({ index: 1 });
     }
 
-    // Fill alasan/catatan
+    // Fill alasan/catatan (unique per run)
     const noteInput = page.locator('input[placeholder*="Positioning"]');
     await expect(noteInput).toBeVisible();
-    await noteInput.fill("Test: positioning salah saat lord spawn");
+    await noteInput.fill(uniqueNote);
 
     // Submit
     await page.getByRole("button", { name: /simpan/i }).click();
 
-    // Verify timestamp appears in the list
-    await expect(page.getByText("5:30")).toBeVisible({ timeout: 8_000 });
-    await expect(page.getByText("Test: positioning salah saat lord spawn")).toBeVisible();
+    // Verify by unique note text (waktu bisa duplikat antar run)
+    const savedRow = page.locator('[data-testid="vod-timestamp-row"]').filter({ hasText: uniqueNote });
+    await expect(savedRow).toBeVisible({ timeout: 8_000 });
+    await expect(savedRow.getByText("5:30")).toBeVisible();
 
     if (selectedPlayerName) {
-      await expect(page.getByText(`@${selectedPlayerName.trim()}`)).toBeVisible();
+      await expect(savedRow.getByText(`@${selectedPlayerName.trim()}`)).toBeVisible();
     }
   });
 
