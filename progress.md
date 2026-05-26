@@ -247,6 +247,16 @@ All `<input type="number">` must use `<NumberInput>` from `@/components/ui/numbe
 - Reports page activation
 - `/[slug]/sponsors` workspace page — intentionally not built (business data, not for members)
 
+### Light/Dark Mode Theming Refactor (future, before light mode launch)
+- **Problem:** 146 file TSX hardcode hex design-system colors (`#191919`, `#2D2D2D`, dll) — akan salah di light mode
+- **Root cause:** `globals.css` pakai `oklch()` generic, tidak ada CSS variable spesifik untuk Notion-dark palette
+- **Fix needed:**
+  1. Tentukan light mode color palette (padanan tiap token)
+  2. Tambah CSS vars ke `globals.css` (`:root` light + `.dark`) + `@theme inline` untuk Tailwind utility
+  3. Update 146 file: ganti `bg-[#191919]` → `bg-surface`, `text-[#9B9A97]` → `text-muted`, dll
+- **Scope:** ~146 TSX files di `app/`, `features/`, `components/`
+- **Do NOT start** sebelum light mode color palette diputuskan
+
 ---
 
 ## Performance: Batch 2 — Remaining Items
