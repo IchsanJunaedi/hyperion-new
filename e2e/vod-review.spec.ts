@@ -25,7 +25,7 @@ test.describe("VOD Review — results page", () => {
   test("results page loads with game cards", async ({ page }) => {
     await expect(page.getByRole("heading", { name: /hasil pertandingan/i })).toBeVisible();
     // At least one game card should exist
-    await expect(page.getByText(/^Game \d/)).toBeVisible();
+    await expect(page.getByText(/^Game \d/).first()).toBeVisible();
   });
 
   test("VOD Review accordion expands and shows form for Coach/Manager/Captain", async ({ page }) => {
@@ -78,28 +78,30 @@ test.describe("VOD Review — results page", () => {
   });
 
   test("timestamp yang ditambah bisa dihapus", async ({ page }) => {
+    // Use unique text per run to avoid DB leftovers from previous runs
+    const uniqueNote = `E2E-hapus-${Date.now()}`;
+
     // Expand VOD accordion
     await page.getByRole("button", { name: /vod review/i }).first().click();
     await page.getByRole("button", { name: /tambah timestamp/i }).click();
 
     // Add a timestamp
     await page.locator('input[placeholder="12:34"]').fill("09:15");
-    await page.locator('input[placeholder*="Positioning"]').fill("Timestamp untuk dihapus");
+    await page.locator('input[placeholder*="Positioning"]').fill(uniqueNote);
     await page.getByRole("button", { name: /simpan/i }).click();
 
     // Wait for it to appear
-    await expect(page.getByText("Timestamp untuk dihapus")).toBeVisible({ timeout: 8_000 });
+    await expect(page.getByText(uniqueNote)).toBeVisible({ timeout: 8_000 });
 
     // Hover the row to reveal delete button
-    const tsRow = page.locator("div").filter({ hasText: "Timestamp untuk dihapus" }).first();
+    const tsRow = page.locator('[data-testid="vod-timestamp-row"]').filter({ hasText: uniqueNote });
     await tsRow.hover();
 
-    // Click X button in that row
-    const deleteBtn = tsRow.locator("button").filter({ has: page.locator("svg") });
-    await deleteBtn.click();
+    // Click the X (delete) button in that specific row
+    await tsRow.locator('[data-testid="vod-delete-btn"]').click();
 
     // Verify removed
-    await expect(page.getByText("Timestamp untuk dihapus")).not.toBeVisible({ timeout: 8_000 });
+    await expect(page.getByText(uniqueNote)).not.toBeVisible({ timeout: 8_000 });
   });
 
   test("input waktu format salah menampilkan error", async ({ page }) => {

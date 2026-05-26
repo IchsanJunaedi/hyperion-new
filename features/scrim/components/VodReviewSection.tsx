@@ -144,6 +144,7 @@ export function VodReviewSection({
               {timestamps.map((ts) => (
                 <div
                   key={ts.id}
+                  data-testid="vod-timestamp-row"
                   className="group flex items-start gap-3 rounded-md bg-white/[0.03] px-3 py-2"
                 >
                   <span className="shrink-0 font-mono text-[11px] font-bold text-blue-400/80 pt-0.5 w-10">
@@ -159,6 +160,7 @@ export function VodReviewSection({
                   </div>
                   {canDelete(ts) && (
                     <button
+                      data-testid="vod-delete-btn"
                       onClick={() => handleDelete(ts.id)}
                       disabled={deletingId === ts.id}
                       className={cn(

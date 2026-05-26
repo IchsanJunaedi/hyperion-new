@@ -36,17 +36,20 @@ export async function addVodTimestampAction(
     .maybeSingle();
   if (!scrim) return { ok: false, message: "Scrim tidak ditemukan" };
 
-  // Verify user is coach or captain
-  const { data: member } = await admin
-    .from("team_members")
-    .select("role")
-    .eq("organization_id", scrim.organization_id)
-    .eq("user_id", user.id)
-    .eq("is_active", true)
-    .maybeSingle();
+  const isOwner = user.email === process.env.OWNER_EMAIL;
 
-  if (!member || !["manager", "coach", "captain"].includes(member.role)) {
-    return { ok: false, message: "Hanya Manager, Coach, dan Captain yang bisa menambah timestamp" };
+  if (!isOwner) {
+    const { data: member } = await admin
+      .from("team_members")
+      .select("role")
+      .eq("organization_id", scrim.organization_id)
+      .eq("user_id", user.id)
+      .eq("is_active", true)
+      .maybeSingle();
+
+    if (!member || !["manager", "coach", "captain"].includes(member.role)) {
+      return { ok: false, message: "Hanya Manager, Coach, dan Captain yang bisa menambah timestamp" };
+    }
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -116,8 +119,9 @@ export async function deleteVodTimestampAction(
 
   const tsRow = ts as Record<string, unknown>;
 
-  // Check if user is creator or coach
-  if (tsRow.created_by !== user.id) {
+  // Check if user is creator, owner, or coach/manager
+  const isOwner = user.email === process.env.OWNER_EMAIL;
+  if (!isOwner && tsRow.created_by !== user.id) {
     const { data: scrim } = await admin
       .from("scrims")
       .select("organization_id")
