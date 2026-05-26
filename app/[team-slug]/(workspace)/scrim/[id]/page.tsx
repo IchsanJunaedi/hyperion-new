@@ -9,6 +9,7 @@ import { CancelScrimButton } from "@/features/scrim/components/CancelScrimButton
 import { FinishScrimSection } from "@/features/scrim/components/FinishScrimSection";
 import { ScrimReviewSection } from "@/features/scrim/components/ScrimReviewSection";
 import { ScrimStatusBadge } from "@/features/scrim/components/StatusBadge";
+import { ScrimVodLinkSection } from "@/features/scrim/components/ScrimVodLinkSection";
 import { getCurrentUserRole } from "@/features/roster/queries";
 import {
   getScrimDetail,
@@ -173,6 +174,14 @@ export default async function ScrimDetailPage({
               ) : null}
             </article>
           ) : null}
+
+          {(scrim.vod_link || canManageScrims || isCoach) && (
+            <ScrimVodLinkSection
+              scrimId={scrim.id}
+              initialLink={scrim.vod_link}
+              canEdit={canManageScrims || isCoach}
+            />
+          )}
         </section>
 
         <aside className="space-y-6">

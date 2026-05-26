@@ -1888,6 +1888,7 @@ export type Database = {
           server_region: string | null
           status: Database["public"]["Enums"]["scrim_status"]
           updated_at: string
+          vod_link: string | null
         }
         Insert: {
           created_at?: string
@@ -1908,6 +1909,7 @@ export type Database = {
           server_region?: string | null
           status?: Database["public"]["Enums"]["scrim_status"]
           updated_at?: string
+          vod_link?: string | null
         }
         Update: {
           created_at?: string
@@ -1928,6 +1930,7 @@ export type Database = {
           server_region?: string | null
           status?: Database["public"]["Enums"]["scrim_status"]
           updated_at?: string
+          vod_link?: string | null
         }
         Relationships: [
           {
