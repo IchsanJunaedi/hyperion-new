@@ -120,7 +120,11 @@ function HeroCard({
 }) {
   const style = TIER_STYLES[hero.tier as Tier] ?? TIER_STYLES.D;
   return (
-    <div className="group relative w-[72px] shrink-0 select-none">
+    <div
+      className="group relative w-[72px] shrink-0 select-none"
+      draggable={editMode}
+      onDragStart={editMode ? (e) => { e.dataTransfer.setData("heroId", hero.id); e.dataTransfer.effectAllowed = "move"; } : undefined}
+    >
       <div
         className={cn(
           "relative aspect-square w-full overflow-hidden rounded-xl border-2 transition group-hover:scale-105",
@@ -226,7 +230,7 @@ function HeroPickerPanel({
   style: typeof TIER_STYLES[Tier];
 }) {
   const [search, setSearch] = useState("");
-  const [selected, setSelected] = useState<string | null>(null);
+  const [selectedHeroes, setSelectedHeroes] = useState<Set<string>>(new Set());
   const [configRole, setConfigRole] = useState<RoleTag>(null);
   const [configBan, setConfigBan] = useState(false);
   const [configLearn, setConfigLearn] = useState(false);
@@ -242,43 +246,51 @@ function HeroPickerPanel({
     ? available.filter((h) => h.toLowerCase().includes(search.toLowerCase()))
     : available;
 
-  function selectHero(heroName: string) {
-    setSelected(heroName);
-    setConfigRole(null);
-    setConfigBan(false);
-    setConfigLearn(false);
+  function toggleHero(heroName: string) {
+    setSelectedHeroes((prev) => {
+      const next = new Set(prev);
+      if (next.has(heroName)) next.delete(heroName);
+      else next.add(heroName);
+      return next;
+    });
   }
 
   function clearSelection() {
-    setSelected(null);
+    setSelectedHeroes(new Set());
     setConfigRole(null);
     setConfigBan(false);
     setConfigLearn(false);
   }
 
   async function handleConfirm() {
-    if (!selected || adding) return;
+    if (selectedHeroes.size === 0 || adding) return;
     setAdding(true);
 
-    const res = await upsertHeroRatingAction(orgSlug, orgId, patchId, {
-      hero_name: selected,
-      tier,
-      role_tag: configRole,
-      is_ban_priority: configBan,
-      priority_to_learn: configLearn,
-      notes: "",
-      draft_notes: "",
-      counters: [],
-      synergies: [],
-    });
+    const results = await Promise.all(
+      Array.from(selectedHeroes).map((heroName) =>
+        upsertHeroRatingAction(orgSlug, orgId, patchId, {
+          hero_name: heroName,
+          tier,
+          role_tag: configRole,
+          is_ban_priority: configBan,
+          priority_to_learn: configLearn,
+          notes: "",
+          draft_notes: "",
+          counters: [],
+          synergies: [],
+        })
+      )
+    );
 
-    if (res.ok) {
-      onAdd(res.hero);
-      clearSelection();
-      searchRef.current?.focus();
-    } else {
-      toast.error(res.message);
-    }
+    const successes = results.filter((r): r is { ok: true; hero: MetaHeroRating } => r.ok);
+    const failCount = results.length - successes.length;
+
+    for (const r of successes) onAdd(r.hero);
+    if (failCount > 0) toast.error(`${failCount} hero gagal ditambahkan`);
+    if (successes.length > 0) toast.success(`${successes.length} hero ditambahkan ke tier ${tier}`);
+
+    clearSelection();
+    searchRef.current?.focus();
     setAdding(false);
   }
 
@@ -301,31 +313,33 @@ function HeroPickerPanel({
         )}
       </div>
 
-      {/* Config strip — shown after hero is selected */}
-      {selected && (
+      {/* Config strip — shown after heroes are selected */}
+      {selectedHeroes.size > 0 && (
         <div className="mb-3 rounded-lg border border-[#2D2D2D] bg-[#1C1C1C] p-3 space-y-3">
-          {/* Hero identity + action buttons */}
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-white/10">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={getHeroImageUrl(selected)}
-                alt={selected}
-                className="h-full w-full object-cover"
-              />
+          {/* Selected hero chips */}
+          <div className="flex items-start gap-2">
+            <div className="flex flex-1 flex-wrap gap-1.5 min-w-0">
+              {Array.from(selectedHeroes).map((heroName) => (
+                <div key={heroName} className="flex items-center gap-1 rounded-full border border-[#2D2D2D] bg-[#252525] pl-0.5 pr-1.5 py-0.5">
+                  <div className="h-4 w-4 shrink-0 overflow-hidden rounded-full">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={getHeroImageUrl(heroName)} alt={heroName} className="h-full w-full object-cover" />
+                  </div>
+                  <span className="max-w-[72px] truncate text-[10px] text-white/80">{heroName}</span>
+                  <button type="button" onClick={() => toggleHero(heroName)} className="cursor-pointer text-white/30 hover:text-white/80">
+                    <X className="h-2.5 w-2.5" />
+                  </button>
+                </div>
+              ))}
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="truncate text-sm font-semibold text-white">{selected}</p>
-              <p className={cn("text-xs", style.label)}>Tier {tier}</p>
-            </div>
-            <button
-              type="button"
-              onClick={clearSelection}
-              className="cursor-pointer text-white/30 hover:text-white shrink-0"
-            >
+            <button type="button" onClick={clearSelection} className="shrink-0 cursor-pointer text-white/30 hover:text-white">
               <X className="h-4 w-4" />
             </button>
           </div>
+
+          <p className={cn("text-[10px]", style.label)}>
+            {selectedHeroes.size} hero → Tier {tier}
+          </p>
 
           {/* Role selector */}
           <div className="flex flex-wrap items-center gap-1.5">
@@ -385,7 +399,7 @@ function HeroPickerPanel({
               ) : (
                 <Plus className="h-3.5 w-3.5" />
               )}
-              Tambahkan
+              Tambahkan {selectedHeroes.size > 1 ? `${selectedHeroes.size} Hero` : "Hero"}
             </button>
           </div>
         </div>
@@ -398,12 +412,12 @@ function HeroPickerPanel({
         ) : (
           <div className="flex flex-wrap gap-2">
             {filtered.map((heroName) => {
-              const isSelected = selected === heroName;
+              const isSelected = selectedHeroes.has(heroName);
               return (
                 <button
                   key={heroName}
                   type="button"
-                  onClick={() => selectHero(heroName)}
+                  onClick={() => toggleHero(heroName)}
                   title={heroName}
                   className={cn(
                     "group relative w-14 shrink-0 cursor-pointer rounded-lg border p-0.5 transition focus:outline-none",
@@ -434,7 +448,7 @@ function HeroPickerPanel({
       </div>
 
       <p className="mt-3 text-[10px] text-white/25">
-        {available.length} hero tersedia · Pilih hero → atur lane & flag → Tambahkan
+        {available.length} hero tersedia · Klik beberapa hero → atur lane & flag → Tambahkan
       </p>
     </div>
   );
@@ -473,6 +487,7 @@ export function MetaPage({ orgSlug, orgId, patches, initialPatch, previousPatchH
   const [settingsDescriptions, setSettingsDescriptions] = useState<Record<string, string>>({});
   const [confirmDeleteHeroId, setConfirmDeleteHeroId] = useState<string | null>(null);
   const [confirmDeletePatch, setConfirmDeletePatch] = useState(false);
+  const [dragOverTier, setDragOverTier] = useState<Tier | null>(null);
 
   // Close picker when edit mode is turned off
   useEffect(() => {
@@ -494,6 +509,45 @@ export function MetaPage({ orgSlug, orgId, patches, initialPatch, previousPatchH
     setActivePatch((prev) =>
       prev ? { ...prev, heroes: [...prev.heroes, hero] } : prev,
     );
+  }
+
+  function handleTierDrop(e: React.DragEvent, targetTier: Tier) {
+    e.preventDefault();
+    setDragOverTier(null);
+    if (!activePatch) return;
+    const heroId = e.dataTransfer.getData("heroId");
+    if (!heroId) return;
+    const hero = heroes.find((h) => h.id === heroId);
+    if (!hero || hero.tier === targetTier) return;
+
+    setActivePatch((prev) =>
+      prev ? { ...prev, heroes: prev.heroes.map((h) => h.id === heroId ? { ...h, tier: targetTier } : h) } : prev,
+    );
+
+    startTransition(async () => {
+      const res = await upsertHeroRatingAction(orgSlug, orgId, activePatch.id, {
+        hero_name: hero.hero_name,
+        tier: targetTier,
+        role_tag: hero.role_tag as ("exp_lane" | "jungler" | "mid_lane" | "gold_lane" | "roamer" | null),
+        is_ban_priority: hero.is_ban_priority,
+        priority_to_learn: hero.priority_to_learn,
+        notes: hero.notes ?? "",
+        draft_notes: hero.draft_notes ?? "",
+        counters: hero.counters ?? [],
+        synergies: hero.synergies ?? [],
+      });
+      if (res.ok) {
+        setActivePatch((prev) =>
+          prev ? { ...prev, heroes: prev.heroes.map((h) => h.id === heroId ? res.hero : h) } : prev,
+        );
+        toast.success(`${hero.hero_name} dipindah ke tier ${targetTier}`);
+      } else {
+        setActivePatch((prev) =>
+          prev ? { ...prev, heroes: prev.heroes.map((h) => h.id === heroId ? hero : h) } : prev,
+        );
+        toast.error(res.message);
+      }
+    });
   }
 
   function handleDelete(ratingId: string, _heroName: string) {
@@ -921,7 +975,13 @@ export function MetaPage({ orgSlug, orgId, patches, initialPatch, previousPatchH
                   if (roleFilter !== "all" && tierHeroes.length === 0) return null;
 
                   return (
-                    <div key={tier} className={cn("rounded-xl border p-4", style.bg, style.border)}>
+                    <div
+                      key={tier}
+                      className={cn("rounded-xl border p-4 transition-colors", style.bg, style.border, dragOverTier === tier && editMode && "ring-2 ring-white/20")}
+                      onDragOver={editMode ? (e) => { e.preventDefault(); setDragOverTier(tier); } : undefined}
+                      onDragLeave={editMode ? (e) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setDragOverTier(null); } : undefined}
+                      onDrop={editMode ? (e) => handleTierDrop(e, tier) : undefined}
+                    >
                       <div className="flex items-start gap-4">
                         {/* Tier badge + count + description */}
                         <div className="flex shrink-0 flex-col items-center gap-1">
