@@ -53,7 +53,8 @@ export async function listTrials(orgId: string): Promise<TrialWithCount[]> {
     .from("open_trials")
     .select("*, divisions(name), trial_applicants(count)")
     .eq("org_id", orgId)
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .limit(50);
 
   if (error || !data) return [];
 

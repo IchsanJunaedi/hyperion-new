@@ -268,9 +268,10 @@ export interface WinLossRecord {
 
 export async function getScrimWinLossRecord(orgId: string): Promise<WinLossRecord> {
   const supabase = await createClient();
-  const { data } = await supabase
+  const { data, error } = await supabase
     .rpc("get_scrim_win_loss", { p_org_id: orgId })
-    .single();
+    .maybeSingle();
+  if (error) console.error("[getScrimWinLossRecord]", error);
 
   return {
     wins: Number(data?.wins ?? 0),

@@ -85,7 +85,7 @@ export async function GET(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let query = (supabase as any)
       .from("calendar_audit_logs")
-      .select("*", { count: "exact" })
+      .select("id, action, actor_id, calendar_id, changes, created_at, entity_type, event_id, metadata, organization_id", { count: "exact" })
       .eq("calendar_id", calendarId)
       .eq("organization_id", orgId!)
       .order("created_at", { ascending: false });

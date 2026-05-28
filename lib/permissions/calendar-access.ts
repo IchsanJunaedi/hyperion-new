@@ -610,7 +610,6 @@ export async function getAccessibleCalendars(
         deleted_at,
         updated_by
       `,
-        { count: "exact" },
       )
       .eq("organization_id", organizationId)
       .eq("is_active", true);
@@ -718,7 +717,6 @@ export async function getAccessibleEvents(
         created_by,
         calendar_id
       `,
-        { count: "exact" },
       )
       .eq("organization_id", organizationId)
       .in("calendar_id", calendarIds)

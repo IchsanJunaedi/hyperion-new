@@ -417,7 +417,7 @@ export async function getCalendarAuditLogsAction(
     // Build query
     let query = supabase
       .from("calendar_audit_logs")
-      .select("*", { count: "exact" })
+      .select("id, action, actor_id, calendar_id, changes, created_at, entity_type, event_id, metadata, organization_id", { count: "exact" })
       .eq("organization_id", org.id);
 
     if (calendarId) {

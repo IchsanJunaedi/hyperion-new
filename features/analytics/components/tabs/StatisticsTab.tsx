@@ -81,11 +81,14 @@ const StatisticsTab = ({ orgId }: { orgId: string }) => {
   const [selectedHero, setSelectedHero] = useState<string | null>(null);
 
   useEffect(() => {
+    let mounted = true;
     getHeroStatisticsAction(orgId).then((res) => {
+      if (!mounted) return;
       if (res.ok) setRows(res.data);
       else toast.error(res.message);
       setLoading(false);
     });
+    return () => { mounted = false; };
   }, [orgId]);
 
   function handleSort(key: SortKey) {

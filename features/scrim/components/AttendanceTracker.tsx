@@ -63,12 +63,8 @@ const AttendanceTracker = ({
           filter: `scrim_id=eq.${scrimId}`,
         },
         () => {
-          // Soft refresh — server actions already revalidate the page,
-          // this just covers updates from peers.
-          startTransition(() => {
-            // no-op placeholder; revalidation comes from the page level
-            // (router.refresh is owned by AttendanceList wrapper).
-          });
+          // Soft refresh — revalidation comes from the page level
+          // (router.refresh is owned by AttendanceList wrapper).
         },
       )
       .subscribe();

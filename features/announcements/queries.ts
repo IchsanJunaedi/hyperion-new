@@ -61,12 +61,13 @@ export async function markAnnouncementRead(announcementId: string): Promise<void
   if (!user) return;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  await (supabase as any)
+  const { error } = await (supabase as any)
     .from("announcement_reads")
     .upsert(
       { announcement_id: announcementId, user_id: user.id },
       { onConflict: "announcement_id,user_id", ignoreDuplicates: true },
     );
+  if (error) console.error("[markAnnouncementRead]", error);
 }
 
 /**
@@ -151,10 +152,11 @@ export async function getAnnouncementReadCountsBatch(
   if (announcementIds.length === 0) return new Map();
   const supabase = await createClient();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data } = await (supabase as any)
+  const { data, error } = await (supabase as any)
     .from("announcement_reads")
     .select("announcement_id")
     .in("announcement_id", announcementIds);
+  if (error) console.error("[getAnnouncementReadCountsBatch]", error);
 
   const counts = new Map<string, number>();
   for (const row of (data ?? []) as Array<{ announcement_id: string }>) {

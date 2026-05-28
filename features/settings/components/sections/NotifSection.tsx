@@ -43,28 +43,23 @@ const NotifSection = ({ orgId }: { orgId: string }) => {
   );
 
   useEffect(() => {
+    let mounted = true;
     const supabase = createClient();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (supabase as any)
       .from("notification_preferences")
       .select("event_type,wa_enabled")
       .eq("org_id", orgId)
-      .then(
-        ({
-          data,
-        }: {
-          data: Array<{ event_type: string; wa_enabled: boolean }> | null;
-        }) => {
-          if (data && data.length > 0) {
-            const map: Record<string, boolean> = {};
-            data.forEach((r) => {
-              map[r.event_type] = r.wa_enabled;
-            });
-            setPrefs((prev) => ({ ...prev, ...map }));
-          }
-          setLoading(false);
-        },
-      );
+      .then(({ data }: { data: Array<{ event_type: string; wa_enabled: boolean }> | null }) => {
+        if (!mounted) return;
+        if (data && data.length > 0) {
+          const map: Record<string, boolean> = {};
+          data.forEach((r) => { map[r.event_type] = r.wa_enabled; });
+          setPrefs((prev) => ({ ...prev, ...map }));
+        }
+        setLoading(false);
+      });
+    return () => { mounted = false; };
   }, [orgId]);
 
   async function handleSave() {

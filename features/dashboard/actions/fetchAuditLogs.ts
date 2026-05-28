@@ -45,7 +45,7 @@ export async function fetchAuditLogs(params: {
 
   let query = admin
     .from("audit_logs")
-    .select("*", { count: "exact" })
+    .select("id, action, actor_id, entity_type, entity_id, metadata, created_at", { count: "exact" })
     .order("created_at", { ascending: false })
     .range(rangeFrom, rangeTo);
 

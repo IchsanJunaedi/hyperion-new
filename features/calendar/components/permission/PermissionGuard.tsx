@@ -101,18 +101,16 @@ const PermissionGuard = ({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let mounted = true;
     const checkAccess = async () => {
       setLoading(true);
-      const hasPermission = await checkPermission(
-        calendarId,
-        requiredPermission,
-        requireAll,
-      );
+      const hasPermission = await checkPermission(calendarId, requiredPermission, requireAll);
+      if (!mounted) return;
       setAllowed(hasPermission);
       setLoading(false);
     };
-
     checkAccess();
+    return () => { mounted = false; };
   }, [calendarId, requiredPermission, requireAll]);
 
   if (loading) {
@@ -176,21 +174,17 @@ const PermissionButton = ({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let mounted = true;
     const checkAccess = async () => {
       setLoading(true);
-      const hasPermission = await checkPermission(
-        calendarId,
-        requiredPermission,
-        requireAll,
-      );
+      const hasPermission = await checkPermission(calendarId, requiredPermission, requireAll);
+      if (!mounted) return;
       setAllowed(hasPermission);
-      if (!hasPermission && onPermissionDenied) {
-        onPermissionDenied();
-      }
+      if (!hasPermission && onPermissionDenied) onPermissionDenied();
       setLoading(false);
     };
-
     checkAccess();
+    return () => { mounted = false; };
   }, [calendarId, requiredPermission, requireAll, onPermissionDenied]);
 
   const isDisabled = loading || !allowed || disabled;
@@ -256,20 +250,17 @@ const PermissionConfirmDialog = ({
   const [checking, setChecking] = useState(true);
 
   useEffect(() => {
-    if (open) {
-      const checkAccess = async () => {
-        setChecking(true);
-        const hasPermission = await checkPermission(
-          calendarId,
-          requiredPermission,
-          false,
-        );
-        setAllowed(hasPermission);
-        setChecking(false);
-      };
-
-      checkAccess();
-    }
+    if (!open) return;
+    let mounted = true;
+    const checkAccess = async () => {
+      setChecking(true);
+      const hasPermission = await checkPermission(calendarId, requiredPermission, false);
+      if (!mounted) return;
+      setAllowed(hasPermission);
+      setChecking(false);
+    };
+    checkAccess();
+    return () => { mounted = false; };
   }, [open, calendarId, requiredPermission]);
 
   const handleConfirm = async () => {

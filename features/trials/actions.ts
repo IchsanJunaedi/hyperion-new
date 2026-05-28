@@ -5,6 +5,50 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { sendWaMessage } from "@/lib/utils/fonnte";
 
+const STORAGE_PREFIX = process.env.NEXT_PUBLIC_SUPABASE_URL
+  ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/`
+  : null;
+
+function isValidStorageUrl(url: string | null): boolean {
+  if (!url) return true;
+  if (!STORAGE_PREFIX) return true;
+  return url.startsWith(STORAGE_PREFIX);
+}
+
+const TRIAL_RATE_LIMIT_MAX = 3;
+const TRIAL_RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
+
+async function checkTrialRateLimit(email: string): Promise<boolean> {
+  const admin = createAdminClient();
+  const identifier = `trial:${email}`;
+  const now = new Date();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data } = await (admin as any)
+    .from("login_rate_limits")
+    .select("attempts, locked_until")
+    .eq("identifier", identifier)
+    .maybeSingle();
+
+  if (data?.locked_until && new Date(data.locked_until) > now) return false;
+
+  const lockExpired = !data?.locked_until || new Date(data.locked_until) <= now;
+  const prevAttempts = lockExpired ? 0 : (data?.attempts ?? 0);
+  const newAttempts = prevAttempts + 1;
+  const lockedUntil = newAttempts >= TRIAL_RATE_LIMIT_MAX
+    ? new Date(now.getTime() + TRIAL_RATE_LIMIT_WINDOW_MS).toISOString()
+    : null;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await (admin as any).from("login_rate_limits").upsert({
+    identifier,
+    attempts: newAttempts,
+    locked_until: lockedUntil,
+    updated_at: now.toISOString(),
+  });
+
+  return true;
+}
+
 type ActionResult = { ok: true } | { ok: false; message: string };
 
 async function getManagerOrCoach() {
@@ -225,6 +269,15 @@ export async function registerApplicantAction(raw: {
 
   if (!screenshotUrl) {
     return { ok: false, message: "Screenshot profil wajib diupload" };
+  }
+
+  if (!isValidStorageUrl(screenshotUrl) || !isValidStorageUrl(cvUrl)) {
+    return { ok: false, message: "URL file tidak valid" };
+  }
+
+  const allowed = await checkTrialRateLimit(email);
+  if (!allowed) {
+    return { ok: false, message: "Terlalu banyak pendaftaran. Coba lagi dalam 1 jam." };
   }
 
   const admin = createAdminClient();
