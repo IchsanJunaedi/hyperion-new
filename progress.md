@@ -297,22 +297,24 @@ All `<input type="number">` must use `<NumberInput>` from `@/components/ui/numbe
 > Batch 1 (zero-risk) done (2026-05-22). B2-3 through B2-6 and B2-8 done in prior sessions.
 > B2-7 confirmed resolved (2026-05-28 audit). See audit-report-2026-05-28.md for full detail.
 
-### B2-1: Tambah `.limit()` pada query unbounded ⚠️ Partial
+### B2-1: Tambah `.limit()` pada query unbounded ✅ Done
 - ✅ `getDraftAnalytics` — fixed `.limit(200)` (2026-05-28)
 - ✅ `getOverviewStats` — sudah ada `.limit(200)`
 - ✅ `getEnterprisePlayerStats` — sudah ada `.limit(100)`
-- ❌ `getPersonalPlayerStats` — masih unbounded
-- ❌ `getScrimWinLossRecord` — harusnya via SQL COUNT/SUM RPC
-- ❌ `player_target_history` — `.limit(30)` semantically wrong (per-all not per-target, should be 200+)
+- ✅ `getPersonalPlayerStats` — sudah ada `.limit(50)` pada scrims (verified 2026-05-28)
+- ✅ `getScrimWinLossRecord` — sudah via `.rpc("get_scrim_win_loss")` (verified 2026-05-28)
+- ✅ `player_target_history` — raised `.limit(200)` (2026-05-28)
+- ✅ `listPlayerTargets` — added `.limit(100)` on player_targets (2026-05-28)
+- ✅ `listCalendarEvents` — added safety `.limit(200)` (2026-05-28)
 
-### B2-2: Ganti `select("*")` dengan kolom spesifik ⚠️ Partial
+### B2-2: Ganti `select("*")` dengan kolom spesifik ✅ Done
 - ✅ `features/sponsors/queries.ts` — list sudah pakai kolom spesifik
 - ✅ `features/notifications/queries.ts` — sudah spesifik
 - ✅ `features/finances/queries.ts` — sudah spesifik
-- ❌ `features/calendar/queries.ts` — `calendar_events` masih `select("*")`
-- ❌ `features/strategy/queries.ts` — masih `select("*")` (content field dipakai di list card)
-- ❌ `features/salary/queries.ts` — masih `select("*")`
-- ❌ `features/player-development/queries.ts` — masih `select("*")`
+- ✅ `features/calendar/queries.ts` — explicit cols on all queries (2026-05-28)
+- ✅ `features/strategy/queries.ts` — explicit cols on all queries (2026-05-28)
+- ✅ `features/salary/queries.ts` — explicit cols on player_contracts + salary_payments (2026-05-28)
+- ✅ `features/player-development/queries.ts` — explicit cols on all queries (2026-05-28)
 - Note: announcements & scrims skip `body`/spread type karena diperlukan di list view
 
 ### B2-7: `admin.auth.admin.listUsers` → query dari tabel `profiles`
@@ -326,7 +328,7 @@ All `<input type="number">` must use `<NumberInput>` from `@/components/ui/numbe
 ## Audit Items Remaining (dari audit-report-2026-05-28.md)
 
 ### Medium Priority (belum dikerjakan)
-- **M1** — `player_target_history` limit semantically wrong (`features/player-development/queries.ts` line 31–35) — raise ke `.limit(200)`
+- ✅ **M1** — fixed: `player_target_history` limit raised to `.limit(200)`, explicit cols (2026-05-28)
 - **M2** — `count: "exact"` tanpa `head: true` di 5 file audit routes (double cost)
 - **M3** — `generateMonthlyReport` masih ~7 serial round-trips (`features/reports/queries.ts`)
 - **M4** — `PermissionGuard` async dalam useEffect tanpa cleanup/mounted flag
@@ -337,8 +339,8 @@ All `<input type="number">` must use `<NumberInput>` from `@/components/ui/numbe
 
 ### Low Priority (belum dikerjakan)
 - **L1** — `NotifSection` post-unmount state update via `.then()`
-- **L2** — `listPlayerTargets` tidak ada `.limit()`
-- **L3** — `listCalendarEvents` tidak ada safety limit
+- ✅ **L2** — fixed: `listPlayerTargets` added `.limit(100)` (2026-05-28)
+- ✅ **L3** — fixed: `listCalendarEvents` added `.limit(200)` (2026-05-28)
 - **L4** — `getAnnouncementReadCountsBatch` tidak ada error check
 - **L5** — `markAnnouncementRead` error silently swallowed
 - **L6** — `listTrials` tidak ada `.limit()` pada historical trials
