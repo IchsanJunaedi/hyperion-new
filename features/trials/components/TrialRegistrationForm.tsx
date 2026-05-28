@@ -106,13 +106,13 @@ const HeroTagsInput = ({
         value={input}
         onChange={(e) => setInput(e.target.value)}
         onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === ",") { e.preventDefault(); add(); }
+          if (e.key === "Enter" || e.key === "," || e.key === " ") { e.preventDefault(); add(); }
           if (e.key === "Backspace" && !input && value.length > 0) {
             onChange(value.slice(0, -1));
           }
         }}
         onBlur={add}
-        placeholder={value.length === 0 ? "Ketik nama hero, tekan Enter" : ""}
+        placeholder={value.length === 0 ? "Ketik nama hero, tekan Enter atau Spasi" : ""}
         className="flex-1 min-w-24 bg-transparent text-sm text-[#E5E2E1] placeholder:text-[#6B6A68] focus:outline-none"
       />
     </div>
@@ -424,7 +424,7 @@ const TrialRegistrationForm = ({ trial }: { trial: TrialPublic }) => {
 
             <div>
               <label className="block text-xs text-[#9B9A97] mb-1">
-                Hero Pool / Signature Heroes <span className="text-[#6B6A68]">(ketik + Enter)</span>
+                Hero Pool / Signature Heroes <span className="text-[#6B6A68]">(ketik + Enter / Spasi)</span>
               </label>
               <HeroTagsInput value={heroPool} onChange={setHeroPool} />
             </div>
