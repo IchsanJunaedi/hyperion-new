@@ -127,11 +127,11 @@ const ScoutingDetailModal = ({ profile, onClose }: ScoutingDetailModalProps) => 
       onClick={onClose}
     >
       <div
-        className="my-4 w-full max-w-2xl overflow-hidden rounded-xl border border-[#2D2D2D] bg-[#202020] shadow-2xl"
+        className="my-4 w-full max-w-3xl overflow-hidden rounded-xl border border-[#2D2D2D] bg-[#202020] shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-[#2D2D2D] px-6 py-5">
+        <div className="flex items-center justify-between border-b border-[#2D2D2D] px-6 py-4">
           <div className="min-w-0">
             <h3 className="text-base font-bold text-[#E5E2E1] truncate">
               {profile.opponent_name}
@@ -160,76 +160,69 @@ const ScoutingDetailModal = ({ profile, onClose }: ScoutingDetailModalProps) => 
         </div>
 
         {/* Body */}
-        <div className="max-h-[80vh] overflow-y-auto p-6 space-y-4">
-          {/* Playstyle section */}
+        <div className="p-4 space-y-3">
+          {/* Playstyle — compact inline */}
           {data.playstyle && (
-            <div className="rounded-lg border border-[#2D2D2D] bg-[#191919] px-4 py-3">
-              <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-[#6B6A68]">
-                Playstyle Tim
-              </p>
+            <div className="rounded-lg border border-[#2D2D2D] bg-[#191919] px-4 py-2.5 flex items-baseline gap-2">
+              <span className="text-xs font-semibold uppercase tracking-wider text-[#6B6A68] shrink-0">
+                Playstyle
+              </span>
               <p className="text-sm text-[#E5E2E1]">{data.playstyle}</p>
             </div>
           )}
 
-          {/* Role sections */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-[#6B6A68]">
-              Roster Tim
-            </h4>
-
+          {/* Role grid — 2 columns, Roamer spans full width */}
+          <div className="grid grid-cols-2 gap-2.5">
             {ROLE_CONFIG.map(({ key, label, Icon }, idx) => {
               const role = data.roster?.[key];
               return (
-                <div key={key} className="rounded-lg border border-[#2D2D2D] p-4 space-y-3">
-                  {/* Role header */}
-                  <div className="flex items-center gap-2">
-                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#2C2C2C] text-xs font-medium text-[#9B9A97]">
+                <div
+                  key={key}
+                  className={`rounded-lg border border-[#2D2D2D] p-3 space-y-2${idx === 4 ? " col-span-2" : ""}`}
+                >
+                  {/* Role header row: number + icon + label + nickname */}
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#2C2C2C] text-xs font-medium text-[#9B9A97]">
                       {idx + 1}
                     </span>
-                    <Icon className="h-4 w-4 text-[#9B9A97]" />
-                    <span className="text-xs font-semibold uppercase tracking-wider text-[#E5E2E1]">
+                    <Icon className="h-3.5 w-3.5 shrink-0 text-[#9B9A97]" />
+                    <span className="text-xs font-semibold uppercase tracking-wider text-[#9B9A97]">
                       {label}
                     </span>
+                    {role?.nickname && (
+                      <>
+                        <span className="text-[#2D2D2D]">·</span>
+                        <span className="text-sm font-semibold text-[#E5E2E1] truncate">{role.nickname}</span>
+                      </>
+                    )}
                   </div>
 
                   {role?.nickname ? (
                     <>
-                      {/* Nickname */}
-                      <div className="flex items-baseline gap-2 text-sm">
-                        <span className="text-xs text-[#6B6A68] shrink-0">Nickname</span>
-                        <span className="text-[#D4D4D4] font-medium">{role.nickname}</span>
-                      </div>
-
                       {/* Hero pool */}
                       {(role.heroPool?.length ?? 0) > 0 && (
-                        <div>
-                          <p className="mb-1.5 text-xs text-[#6B6A68]">Hero Pool</p>
-                          <div className="flex flex-wrap gap-1.5">
-                            {role.heroPool!.map((hero) => (
-                              <span
-                                key={hero}
-                                className="inline-flex items-center gap-1.5 rounded-full border border-[#2D2D2D] bg-[#2C2C2C] px-2 py-1 text-xs text-[#D4D4D4]"
-                              >
-                                <div className="h-4 w-4 shrink-0 overflow-hidden rounded-full border border-white/10 bg-zinc-800">
-                                  <img
-                                    src={getHeroImageUrl(hero)}
-                                    alt={hero}
-                                    className="h-full w-full object-cover"
-                                  />
-                                </div>
-                                {hero}
-                              </span>
-                            ))}
-                          </div>
+                        <div className="flex flex-wrap gap-1">
+                          {role.heroPool!.map((hero) => (
+                            <span
+                              key={hero}
+                              className="inline-flex items-center gap-1 rounded-full border border-[#2D2D2D] bg-[#2C2C2C] px-1.5 py-0.5 text-xs text-[#D4D4D4]"
+                            >
+                              <div className="h-3.5 w-3.5 shrink-0 overflow-hidden rounded-full border border-white/10 bg-zinc-800">
+                                <img
+                                  src={getHeroImageUrl(hero)}
+                                  alt={hero}
+                                  className="h-full w-full object-cover"
+                                />
+                              </div>
+                              {hero}
+                            </span>
+                          ))}
                         </div>
                       )}
 
                       {/* Habit */}
                       {role.habit && (
-                        <div>
-                          <p className="mb-1 text-xs text-[#6B6A68]">Habit</p>
-                          <p className="text-sm text-[#9B9A97]">{role.habit}</p>
-                        </div>
+                        <p className="text-xs text-[#9B9A97] leading-relaxed">{role.habit}</p>
                       )}
                     </>
                   ) : (
