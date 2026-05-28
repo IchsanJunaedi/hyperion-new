@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
 
 import { ProfileDropdown } from "@/components/landing/ProfileDropdown";
 
@@ -24,40 +25,41 @@ const NAV_LINKS = [
 
 const HeaderClient = ({ authed }: HeaderProps) => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
 
-  // Close mobile menu on route change
   useEffect(() => {
     setMobileOpen(false);
   }, [pathname]);
 
-  // Prevent body scroll when mobile menu is open
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [mobileOpen]);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 32);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
     <>
-      <header className="sticky top-0 z-40 w-full border-b border-white/5 bg-[#070707]/95 backdrop-blur-md">
-        {/* Top utility bar */}
-        <div className="flex h-8 items-center justify-end gap-3 border-b border-white/[0.04] px-4 sm:px-8">
-          <Link
-            href="https://www.instagram.com/hyperionteam.id/"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Instagram"
-            className="inline-flex h-6 w-6 items-center justify-center text-white/30 transition hover:text-[#F5C400]"
-          >
-            <Instagram className="h-3.5 w-3.5" />
-          </Link>
-          <div className="h-3 w-px bg-white/10" />
-          <ProfileDropdown authed={authed} />
-        </div>
-
-        {/* Main nav */}
-        <div className="flex h-14 items-center justify-between px-4 sm:px-8">
-          {/* Logo + wordmark */}
+      <header
+        className="fixed top-0 z-50 w-full transition-all duration-500"
+        style={{
+          background: scrolled ? "rgba(5,5,5,0.9)" : "rgba(5,5,5,0.18)",
+          backdropFilter: "blur(28px) saturate(160%)",
+          WebkitBackdropFilter: "blur(28px) saturate(160%)",
+          borderBottom: scrolled
+            ? "1px solid rgba(255,255,255,0.07)"
+            : "1px solid rgba(255,255,255,0.02)",
+        }}
+      >
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8">
+          {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5" aria-label="Hyperion Team">
             <Image
               src="/brand/logo.jpg"
@@ -65,42 +67,68 @@ const HeaderClient = ({ authed }: HeaderProps) => {
               width={36}
               height={36}
               priority
-              className="h-9 w-9 rounded object-cover"
+              className="h-9 w-9 rounded-lg object-cover"
+              style={{ boxShadow: "0 0 0 1px rgba(255,255,255,0.08)" }}
             />
             <span className="text-sm font-black uppercase tracking-wider text-white">
               Hyperion<span className="text-[#F5C400]">.</span>
             </span>
           </Link>
 
-          {/* Desktop nav links */}
-          <nav aria-label="Main" className="hidden md:block">
-            <ul className="flex items-center gap-7 text-xs font-bold uppercase tracking-widest">
+          {/* Centered desktop nav */}
+          <nav
+            aria-label="Main"
+            className="absolute left-1/2 hidden -translate-x-1/2 md:block"
+          >
+            <ul className="flex items-center gap-8 text-[11px] font-bold uppercase tracking-widest">
               {NAV_LINKS.map((link) => {
                 const active = pathname === link.href;
                 return (
-                  <li key={link.href}>
+                  <li key={link.href} className="relative py-1">
                     <Link
                       href={link.href}
-                      className={`transition hover:text-[#F5C400] ${
-                        active ? "text-[#F5C400]" : "text-white/50"
+                      className={`transition-colors duration-200 hover:text-white ${
+                        active ? "text-white" : "text-white/40"
                       }`}
                     >
                       {link.label}
                     </Link>
+                    {active && (
+                      <motion.div
+                        layoutId="nav-underline"
+                        className="absolute -bottom-0.5 left-0 right-0 h-px bg-[#F5C400]"
+                      />
+                    )}
                   </li>
                 );
               })}
             </ul>
           </nav>
 
-          {/* Desktop right: Join Now (if no user) */}
-          <div className="hidden md:flex items-center gap-3">
-            {!authed && (
+          {/* Right side */}
+          <div className="hidden items-center gap-3 md:flex">
+            <Link
+              href="https://www.instagram.com/hyperionteam.id/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram"
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-white/8 text-white/30 transition hover:border-white/20 hover:text-white/80"
+            >
+              <Instagram className="h-3.5 w-3.5" />
+            </Link>
+            {authed ? (
+              <ProfileDropdown authed={authed} />
+            ) : (
               <Link
-                href="/register"
-                className="inline-flex h-8 items-center bg-[#F5C400] px-4 text-[11px] font-black uppercase tracking-widest text-black transition hover:bg-yellow-300"
+                href="/login"
+                className="inline-flex h-8 items-center rounded-full px-5 text-[11px] font-bold uppercase tracking-widest transition-all duration-200 hover:bg-[#F5C400]/10"
+                style={{
+                  background: "rgba(245,196,0,0.06)",
+                  border: "1px solid rgba(245,196,0,0.22)",
+                  color: "#F5C400",
+                }}
               >
-                Join Now
+                Login
               </Link>
             )}
           </div>
@@ -118,109 +146,123 @@ const HeaderClient = ({ authed }: HeaderProps) => {
         </div>
       </header>
 
-      {/* Mobile drawer overlay */}
-      {mobileOpen && (
-        <div
-          className="fixed inset-0 z-30 bg-black/60 backdrop-blur-sm md:hidden"
-          onClick={() => setMobileOpen(false)}
-        />
-      )}
+      {/* Mobile overlay */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-40 bg-black/70 backdrop-blur-sm md:hidden"
+            onClick={() => setMobileOpen(false)}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Mobile drawer */}
-      <div
-        className={`fixed right-0 top-0 z-50 flex h-full w-72 flex-col bg-[#0A0A0A] border-l border-white/10 transition-transform duration-300 md:hidden ${
-          mobileOpen ? "translate-x-0" : "translate-x-full"
-        }`}
-      >
-        {/* Drawer header */}
-        <div className="flex h-16 items-center justify-between border-b border-white/5 px-5">
-          <span className="text-sm font-black uppercase tracking-wider text-white">
-            Hyperion<span className="text-[#F5C400]">.</span>
-          </span>
-          <button
-            type="button"
-            aria-label="Close menu"
-            onClick={() => setMobileOpen(false)}
-            className="flex h-8 w-8 cursor-pointer items-center justify-center text-white/40 hover:text-white"
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            initial={{ x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "100%" }}
+            transition={{ type: "spring", stiffness: 320, damping: 32 }}
+            className="fixed right-0 top-0 z-50 flex h-full w-72 flex-col border-l border-white/8 md:hidden"
+            style={{
+              background: "rgba(8,8,8,0.97)",
+              backdropFilter: "blur(32px)",
+            }}
           >
-            <X className="h-4 w-4" />
-          </button>
-        </div>
+            {/* Drawer header */}
+            <div className="flex h-16 items-center justify-between border-b border-white/5 px-5">
+              <span className="text-sm font-black uppercase tracking-wider text-white">
+                Hyperion<span className="text-[#F5C400]">.</span>
+              </span>
+              <button
+                type="button"
+                aria-label="Close menu"
+                onClick={() => setMobileOpen(false)}
+                className="flex h-8 w-8 cursor-pointer items-center justify-center text-white/40 hover:text-white"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
 
-        {/* Drawer links */}
-        <nav className="flex-1 overflow-y-auto px-5 py-6">
-          <ul className="space-y-1">
-            {NAV_LINKS.map((link) => {
-              const active = pathname === link.href;
-              return (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    onClick={() => setMobileOpen(false)}
-                    className={`flex h-11 items-center text-base font-semibold transition ${
-                      active
-                        ? "text-[#F5C400]"
-                        : "text-white/70 hover:text-white"
-                    }`}
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
+            {/* Drawer links */}
+            <nav className="flex-1 overflow-y-auto px-5 py-6">
+              <ul className="space-y-1">
+                {NAV_LINKS.map((link) => {
+                  const active = pathname === link.href;
+                  return (
+                    <li key={link.href}>
+                      <Link
+                        href={link.href}
+                        onClick={() => setMobileOpen(false)}
+                        className={`flex h-11 items-center text-base font-semibold transition ${
+                          active ? "text-[#F5C400]" : "text-white/60 hover:text-white"
+                        }`}
+                      >
+                        {link.label}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
 
-          <div className="mt-8 border-t border-white/5 pt-6">
-            {authed ? (
-              <div className="space-y-1">
-                <p className="mb-2 text-[10px] uppercase tracking-widest text-white/30">
-                  Masuk sebagai
-                </p>
-                <p className="text-sm font-semibold text-white">{authed.displayName}</p>
-                {authed.workspaceHref && (
-                  <Link
-                    href={authed.workspaceHref}
-                    onClick={() => setMobileOpen(false)}
-                    className="mt-3 flex h-10 items-center justify-center bg-[#F5C400] text-xs font-black uppercase tracking-widest text-black"
-                  >
-                    Masuk ke Tim
-                  </Link>
+              <div className="mt-8 border-t border-white/5 pt-6">
+                {authed ? (
+                  <div className="space-y-1">
+                    <p className="mb-2 text-[10px] uppercase tracking-widest text-white/30">
+                      Masuk sebagai
+                    </p>
+                    <p className="text-sm font-semibold text-white">{authed.displayName}</p>
+                    {authed.workspaceHref && (
+                      <Link
+                        href={authed.workspaceHref}
+                        onClick={() => setMobileOpen(false)}
+                        className="mt-3 flex h-10 items-center justify-center bg-[#F5C400] text-xs font-black uppercase tracking-widest text-black"
+                      >
+                        Masuk ke Tim
+                      </Link>
+                    )}
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <Link
+                      href="/login"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex h-10 items-center justify-center border border-white/15 text-xs font-bold uppercase tracking-widest text-white/70 hover:border-white/30 hover:text-white"
+                    >
+                      Login
+                    </Link>
+                    <Link
+                      href="/register"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex h-10 items-center justify-center bg-[#F5C400] text-xs font-black uppercase tracking-widest text-black hover:bg-yellow-300"
+                    >
+                      Join Now
+                    </Link>
+                  </div>
                 )}
               </div>
-            ) : (
-              <div className="space-y-2">
-                <Link
-                  href="/login"
-                  onClick={() => setMobileOpen(false)}
-                  className="flex h-10 items-center justify-center border border-white/15 text-xs font-bold uppercase tracking-widest text-white/70 hover:border-white/30 hover:text-white"
-                >
-                  Login
-                </Link>
-                <Link
-                  href="/register"
-                  onClick={() => setMobileOpen(false)}
-                  className="flex h-10 items-center justify-center bg-[#F5C400] text-xs font-black uppercase tracking-widest text-black hover:bg-yellow-300"
-                >
-                  Join Now
-                </Link>
-              </div>
-            )}
-          </div>
-        </nav>
+            </nav>
 
-        {/* Drawer footer */}
-        <div className="border-t border-white/5 px-5 py-4">
-          <Link
-            href="https://www.instagram.com/hyperionteam.id/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 text-xs text-white/30 hover:text-white"
-          >
-            <Instagram className="h-3.5 w-3.5" />
-            @hyperionteam.id
-          </Link>
-        </div>
-      </div>
+            {/* Drawer footer */}
+            <div className="border-t border-white/5 px-5 py-4">
+              <Link
+                href="https://www.instagram.com/hyperionteam.id/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-xs text-white/30 hover:text-white"
+              >
+                <Instagram className="h-3.5 w-3.5" />
+                @hyperionteam.id
+              </Link>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 };

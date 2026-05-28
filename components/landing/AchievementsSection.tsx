@@ -1,74 +1,148 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useEffect, useState } from "react";
-import { motion, useScroll, useTransform } from "motion/react";
+import { useRef } from "react";
+import { motion, useInView } from "motion/react";
+import { Trophy } from "lucide-react";
 
-interface Achievement {
-  year: string;
-  title: string;
-  description: string;
-  images: string[];
-}
-
-const ACHIEVEMENTS: Achievement[] = [
+const ACHIEVEMENTS = [
   {
     year: "2024",
+    rank: "#1 National",
     title: "Juara 1 Liga Esport Nasional Pelajar 2024",
     description:
-      "Ini dia SANG JUARA LIGA ESPORTS NASIONAL PELAJAR 2024 - MOBILE LEGENDS. Perjuangan keras tidak mengkhianati hasil dari kerjasama tim. Tetap semangat dan semoga bisa terus mendapatkan juara.",
-    images: [
+      "SANG JUARA LIGA ESPORTS NASIONAL PELAJAR 2024 — MOBILE LEGENDS. Perjuangan keras tidak mengkhianati hasil dari kerjasama tim yang solid.",
+    image:
       "https://hyperionteam.id/storage/timelines/01JZN7JDHN76Z29F9R2NW4VX8K.jpeg",
-    ],
   },
   {
     year: "2024",
-    title: "Champion RRQ MABAR Esports Tournament Season 4",
+    rank: "Champion",
+    title: "RRQ MABAR Esports Tournament Season 4",
     description:
-      "Ribuan pelajar telah bertanding di RRQ MABAR Esports Tournament Season 4 dan inilah juaranya! SMAS Xaverius 1 Palembang berhasil raih back to back champion setelah menang 3-1 di Grand Final melawan SMAK Yos Sudarso Batam.",
-    images: [
+      "Back to back champion setelah menang 3-1 di Grand Final. SMAS Xaverius 1 Palembang raih gelar berganda melawan SMAK Yos Sudarso Batam.",
+    image:
       "https://hyperionteam.id/storage/timelines/01JZPD3B2P75DVSJT6N1609AM3.jpeg",
-    ],
   },
   {
     year: "2023",
-    title: "Champion H3RO ROOKIE TOURNAMENT 4.0",
+    rank: "Champion",
+    title: "H3RO Rookie Tournament 4.0",
     description:
-      "H3RO Esports 4.0 is the 4th edition of the event organized by H3RO. Champion qualifies to Seleknas IESF 2023.",
-    images: [
+      "H3RO Esports 4.0 — the 4th edition organized by H3RO. Champion qualifies directly to Seleknas IESF 2023.",
+    image:
       "https://hyperionteam.id/storage/timelines/01JZPD3RM26KW2BNB68WFYTT6X.jpeg",
-    ],
   },
-];
+] as const;
+
+interface AchievementCardProps {
+  item: (typeof ACHIEVEMENTS)[number];
+  index: number;
+}
+
+const AchievementCard = ({ item, index }: AchievementCardProps) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-60px" });
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 44 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{
+        duration: 0.7,
+        delay: index * 0.13,
+        ease: [0.25, 0.46, 0.45, 0.94],
+      }}
+      className="group relative overflow-hidden rounded-2xl border border-white/6 transition-all duration-500 hover:border-[#F5C400]/18"
+      style={{
+        background: "rgba(255,255,255,0.018)",
+        backdropFilter: "blur(20px)",
+        boxShadow:
+          "0 20px 60px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.04)",
+      }}
+    >
+      {/* Image */}
+      <div className="relative h-52 overflow-hidden sm:h-60">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={item.image}
+          alt={item.title}
+          loading={index === 0 ? "eager" : "lazy"}
+          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+          style={{ filter: "saturate(0.85)" }}
+        />
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(to bottom, transparent 38%, rgba(5,5,5,0.94) 100%)",
+          }}
+        />
+        {/* Year chip */}
+        <div
+          className="absolute left-4 top-4 rounded-full px-3 py-1"
+          style={{
+            background: "rgba(0,0,0,0.68)",
+            backdropFilter: "blur(12px)",
+            border: "1px solid rgba(255,255,255,0.08)",
+          }}
+        >
+          <span className="text-[10px] font-bold uppercase tracking-widest text-white/52">
+            {item.year}
+          </span>
+        </div>
+        {/* Rank badge */}
+        <div className="absolute right-4 top-4">
+          <span className="rounded-full bg-[#F5C400] px-3 py-1 text-[10px] font-black uppercase tracking-widest text-black">
+            {item.rank}
+          </span>
+        </div>
+      </div>
+
+      {/* Body */}
+      <div className="p-6">
+        <div className="mb-3 flex items-center gap-2">
+          <Trophy className="h-3 w-3 text-[#F5C400]/48" />
+          <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#F5C400]/48">
+            Achievement
+          </span>
+        </div>
+        <h3 className="text-base font-black uppercase leading-snug tracking-tight text-white sm:text-lg">
+          {item.title}
+        </h3>
+        <p className="mt-3 text-sm leading-relaxed text-white/40">
+          {item.description}
+        </p>
+      </div>
+
+      {/* Hover inner glow */}
+      <div
+        className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+        style={{ boxShadow: "inset 0 0 80px rgba(245,196,0,0.03)" }}
+      />
+    </motion.div>
+  );
+};
 
 const AchievementsSection = () => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const lineRef = useRef<HTMLDivElement>(null);
-  const [lineHeight, setLineHeight] = useState(0);
-
-  useEffect(() => {
-    if (lineRef.current) {
-      setLineHeight(lineRef.current.getBoundingClientRect().height);
-    }
-  }, []);
-
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start 10%", "end 50%"],
-  });
-
-  const heightTransform = useTransform(scrollYProgress, [0, 1], [0, lineHeight]);
-  const opacityTransform = useTransform(scrollYProgress, [0, 0.1], [0, 1]);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const headerInView = useInView(headerRef, { once: true });
 
   return (
     <section
       id="achievements"
-      className="bg-[#070707] px-6 py-24 sm:px-10 lg:px-16"
-      ref={containerRef}
+      className="scroll-mt-16 bg-[#060606] px-6 py-24 sm:px-10 lg:px-16"
     >
       <div className="mx-auto max-w-7xl">
         {/* Section header */}
-        <div className="mb-4">
+        <motion.div
+          ref={headerRef}
+          initial={{ opacity: 0, y: 24 }}
+          animate={headerInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.55 }}
+          className="mb-14"
+        >
           <div className="mb-3 flex items-center gap-3">
             <div className="h-px w-8 bg-[#F5C400]" />
             <span className="text-[11px] font-bold uppercase tracking-[0.3em] text-[#F5C400]">
@@ -76,89 +150,34 @@ const AchievementsSection = () => {
             </span>
           </div>
           <h2 className="text-3xl font-black uppercase tracking-tight text-white sm:text-4xl lg:text-5xl">
-            OUR ACHIEVEMENT
+            Our Achievement
           </h2>
-          <p className="mt-3 max-w-xl text-sm text-white/40">
+          <p className="mt-3 max-w-xl text-sm text-white/36">
             We began our journey in 2020. Here are the awards we have received since then.
           </p>
-        </div>
+        </motion.div>
 
-        {/* Timeline */}
-        <div className="relative mt-16" ref={lineRef}>
-          {/* Static track line */}
-          <div
-            className="absolute bottom-0 left-4 top-0 w-[2px] overflow-hidden md:left-8"
-            style={{
-              background:
-                "linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.06) 10%, rgba(255,255,255,0.06) 90%, transparent 100%)",
-            }}
-          >
-            {/* Growing yellow line */}
-            <motion.div
-              style={{ height: heightTransform, opacity: opacityTransform }}
-              className="absolute inset-x-0 top-0 w-[2px] rounded-full bg-gradient-to-t from-[#F5C400] via-[#F5C400] to-transparent"
-            />
-          </div>
-
-          {ACHIEVEMENTS.map((item, index) => (
-            <div key={item.title} className="flex gap-6 py-14 md:gap-12">
-              {/* Left: dot + year */}
-              <div className="relative z-10 flex shrink-0 flex-col items-center" style={{ width: "2rem" }}>
-                <div className="flex h-10 w-10 -translate-x-[calc(50%-1px)] items-center justify-center rounded-full bg-[#070707]">
-                  <div className="h-4 w-4 rounded-full border border-[#F5C400]/50 bg-[#070707] p-1">
-                    <div className="h-full w-full rounded-full bg-[#F5C400]" />
-                  </div>
-                </div>
-                <span className="mt-3 hidden text-5xl font-black leading-none text-white/[0.05] md:block">
-                  {item.year}
-                </span>
-              </div>
-
-              {/* Right: content */}
-              <div className="flex-1 min-w-0 pb-4">
-                <p className="mb-2 text-xs font-bold uppercase tracking-widest text-[#F5C400]/50 md:hidden">
-                  {item.year}
-                </p>
-
-                <h3 className="text-lg font-black uppercase leading-tight tracking-tight text-white sm:text-xl lg:text-2xl">
-                  {item.title}
-                </h3>
-
-                <p className="mt-3 text-sm leading-relaxed text-white/50">
-                  {item.description}
-                </p>
-
-                {item.images.length > 0 && (
-                  <div
-                    className={`mt-6 gap-4 ${
-                      item.images.length > 1 ? "grid grid-cols-2" : "block"
-                    }`}
-                  >
-                    {item.images.map((src, i) => (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        key={i}
-                        src={src}
-                        alt={item.title}
-                        loading={index === 0 ? "eager" : "lazy"}
-                        className="h-44 w-full rounded-sm object-cover shadow-lg sm:h-52 lg:h-64"
-                      />
-                    ))}
-                  </div>
-                )}
-
-                <div className="mt-5">
-                  <Link
-                    href="/gallery"
-                    className="inline-flex items-center gap-2 border border-[#F5C400]/30 px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-[#F5C400] transition hover:border-[#F5C400] hover:bg-[#F5C400]/8"
-                  >
-                    Load More
-                  </Link>
-                </div>
-              </div>
-            </div>
+        {/* Glass cards grid */}
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {ACHIEVEMENTS.map((item, i) => (
+            <AchievementCard key={item.title} item={item} index={i} />
           ))}
         </div>
+
+        {/* View all link */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={headerInView ? { opacity: 1 } : {}}
+          transition={{ duration: 0.5, delay: 0.65 }}
+          className="mt-10 text-center"
+        >
+          <Link
+            href="/gallery"
+            className="inline-flex items-center gap-2 border border-[#F5C400]/20 px-8 py-3 text-xs font-bold uppercase tracking-widest text-[#F5C400] transition hover:border-[#F5C400]/45 hover:bg-[#F5C400]/5"
+          >
+            View All in Gallery
+          </Link>
+        </motion.div>
       </div>
     </section>
   );
