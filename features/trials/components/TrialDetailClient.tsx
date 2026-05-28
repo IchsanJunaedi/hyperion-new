@@ -4,6 +4,7 @@ import { Check, Copy, LayoutGrid, List, Loader2, MessageSquare, Users } from "lu
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
 
+import { CustomSelect } from "@/features/dashboard/components/CustomSelect";
 import { useNotify } from "@/features/dashboard/components/NotifyModal";
 import { updateTrialStatusAction, updateApplicantStatusAction } from "@/features/trials/actions";
 import { ApplicantRow } from "@/features/trials/components/ApplicantRow";
@@ -127,7 +128,17 @@ export function TrialDetailClient({ trial, applicants, canManage, appUrl, revali
   const [updating, startUpdate] = useTransition();
   const [copied, setCopied] = useState(false);
   const [viewMode, setViewMode] = useState<"table" | "pipeline">("table");
+  const [roleFilter, setRoleFilter] = useState("");
   const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const uniqueRoles = [...new Set(applicants.map((a) => a.role_applied).filter(Boolean))] as string[];
+  const roleOptions = [
+    { value: "", label: "Semua Role" },
+    ...uniqueRoles.map((r) => ({ value: r, label: r })),
+  ];
+  const visibleApplicants = roleFilter
+    ? applicants.filter((a) => a.role_applied === roleFilter)
+    : applicants;
 
   const registrationUrl = `${appUrl}/trial/${trial.public_token}`;
 
@@ -232,11 +243,22 @@ export function TrialDetailClient({ trial, applicants, canManage, appUrl, revali
 
       {/* View toggle + applicants */}
       <div className="space-y-3">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-3">
           <p className="text-sm font-semibold text-[#E5E2E1]">
-            Pendaftar <span className="text-[#6B6A68] font-normal">({applicants.length})</span>
+            Pendaftar{" "}
+            <span className="text-[#6B6A68] font-normal">
+              ({roleFilter ? `${visibleApplicants.length}/${applicants.length}` : applicants.length})
+            </span>
           </p>
-          <div className="flex items-center rounded-md border border-white/10 p-0.5">
+          <div className="flex items-center gap-2">
+            {uniqueRoles.length > 0 && (
+              <CustomSelect
+                value={roleFilter}
+                options={roleOptions}
+                onChange={setRoleFilter}
+              />
+            )}
+            <div className="flex items-center rounded-md border border-white/10 p-0.5">
             <button
               type="button"
               onClick={() => setViewMode("table")}
@@ -260,6 +282,7 @@ export function TrialDetailClient({ trial, applicants, canManage, appUrl, revali
               <LayoutGrid className="h-3.5 w-3.5" />
             </button>
           </div>
+          </div>
         </div>
 
         {applicants.length === 0 ? (
@@ -269,10 +292,15 @@ export function TrialDetailClient({ trial, applicants, canManage, appUrl, revali
               {trial.status === "active" ? "Belum ada pendaftar." : "Tidak ada pendaftar."}
             </p>
           </div>
+        ) : visibleApplicants.length === 0 ? (
+          <div className="rounded-xl border border-[#2D2D2D] bg-[#202020] py-10 text-center">
+            <Users className="mx-auto h-7 w-7 text-[#6B6A68]" />
+            <p className="mt-3 text-sm text-[#9B9A97]">Tidak ada pendaftar untuk role ini.</p>
+          </div>
         ) : viewMode === "pipeline" ? (
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             {PIPELINE_COLS.map((col) => {
-              const colApps = applicants.filter((a) => a.status === col.status);
+              const colApps = visibleApplicants.filter((a) => a.status === col.status);
               return (
                 <div key={col.status} className="space-y-2">
                   <div className={cn("flex items-center gap-2 rounded-lg border px-3 py-2", col.color)}>
@@ -306,7 +334,7 @@ export function TrialDetailClient({ trial, applicants, canManage, appUrl, revali
                 <p key={h} className="text-[10px] font-semibold uppercase tracking-wide text-[#6B6A68]">{h}</p>
               ))}
             </div>
-            {applicants.map((a) => (
+            {visibleApplicants.map((a) => (
               <ApplicantRow
                 key={a.id}
                 applicant={a}
