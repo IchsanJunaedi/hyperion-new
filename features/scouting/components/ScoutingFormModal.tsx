@@ -1,6 +1,7 @@
 "use client";
 
-import { Loader2, X } from "lucide-react";
+import { Coins, Leaf, Loader2, Search, Shield, Sword, X, Zap } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import { toast } from "sonner";
@@ -10,6 +11,214 @@ import {
   updateOpponentProfileAction,
 } from "@/features/scouting/actions";
 import type { OpponentProfile } from "@/features/scouting/queries";
+import { getHeroImageUrl, MLBB_HEROES } from "@/features/scrim/data/mlbb-heroes";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+type RoleKey = "exp_laner" | "jungler" | "mid_laner" | "gold_laner" | "roamer";
+
+interface RoleData {
+  nickname: string;
+  heroPool: string[];
+  habit: string;
+}
+
+type RosterState = Record<RoleKey, RoleData>;
+
+const EMPTY_ROLE: RoleData = { nickname: "", heroPool: [], habit: "" };
+
+const ROLE_CONFIG: Array<{ key: RoleKey; label: string; Icon: LucideIcon; index: number }> = [
+  { key: "exp_laner",  label: "EXP Laner",  Icon: Sword,  index: 1 },
+  { key: "jungler",   label: "Jungler",    Icon: Leaf,   index: 2 },
+  { key: "mid_laner", label: "Mid Laner",  Icon: Zap,    index: 3 },
+  { key: "gold_laner",label: "Gold Laner", Icon: Coins,  index: 4 },
+  { key: "roamer",    label: "Roamer",     Icon: Shield, index: 5 },
+];
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function parseRoleData(raw: unknown): RoleData {
+  if (!raw || typeof raw !== "object") return { ...EMPTY_ROLE };
+  const r = raw as Record<string, unknown>;
+  return {
+    nickname: typeof r.nickname === "string" ? r.nickname : "",
+    heroPool: Array.isArray(r.heroPool) ? (r.heroPool as string[]) : [],
+    habit:    typeof r.habit    === "string" ? r.habit    : "",
+  };
+}
+
+function initRoster(profileData: Record<string, unknown>): RosterState {
+  const raw = profileData.roster as Record<string, unknown> | undefined;
+  return {
+    exp_laner:  parseRoleData(raw?.exp_laner),
+    jungler:    parseRoleData(raw?.jungler),
+    mid_laner:  parseRoleData(raw?.mid_laner),
+    gold_laner: parseRoleData(raw?.gold_laner),
+    roamer:     parseRoleData(raw?.roamer),
+  };
+}
+
+// ─── HeroPicker ───────────────────────────────────────────────────────────────
+
+interface HeroPickerProps {
+  selected: string[];
+  onChange: (next: string[]) => void;
+}
+
+const HeroPicker = ({ selected, onChange }: HeroPickerProps) => {
+  const [search, setSearch] = useState("");
+
+  const filtered =
+    search.trim().length > 0
+      ? MLBB_HEROES.filter(
+          (h) =>
+            h.toLowerCase().includes(search.toLowerCase()) &&
+            !selected.includes(h),
+        ).slice(0, 8)
+      : [];
+
+  const add = (hero: string) => {
+    if (!selected.includes(hero)) onChange([...selected, hero]);
+    setSearch("");
+  };
+
+  const remove = (hero: string) => onChange(selected.filter((h) => h !== hero));
+
+  return (
+    <div className="space-y-2">
+      {/* Search input */}
+      <div className="relative">
+        <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[#6B6A68]" />
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Cari hero..."
+          className="h-9 w-full rounded-md border border-[#2D2D2D] bg-[#191919] pl-9 pr-3 text-sm text-[#E5E2E1] placeholder:text-[#6B6A68] focus:border-[#9B9A97] focus:outline-none"
+        />
+      </div>
+
+      {/* Result list */}
+      {filtered.length > 0 && (
+        <div className="divide-y divide-[#2D2D2D] overflow-hidden rounded-md border border-[#2D2D2D] bg-[#191919]">
+          {filtered.map((hero) => (
+            <button
+              key={hero}
+              type="button"
+              onClick={() => add(hero)}
+              className="flex w-full cursor-pointer items-center gap-2.5 px-3 py-2 text-left text-sm text-[#E5E2E1] transition-colors hover:bg-[#2C2C2C]"
+            >
+              <div className="h-6 w-6 shrink-0 overflow-hidden rounded-full border border-white/10 bg-zinc-800">
+                <img
+                  src={getHeroImageUrl(hero)}
+                  alt={hero}
+                  className="h-full w-full object-cover"
+                />
+              </div>
+              {hero}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Selected chips */}
+      {selected.length > 0 ? (
+        <div className="flex flex-wrap gap-1.5">
+          {selected.map((hero) => (
+            <span
+              key={hero}
+              className="inline-flex items-center gap-1.5 rounded-full border border-[#2D2D2D] bg-[#2C2C2C] px-2 py-1 text-xs text-[#D4D4D4]"
+            >
+              <div className="h-4 w-4 shrink-0 overflow-hidden rounded-full border border-white/10 bg-zinc-800">
+                <img
+                  src={getHeroImageUrl(hero)}
+                  alt={hero}
+                  className="h-full w-full object-cover"
+                />
+              </div>
+              {hero}
+              <button
+                type="button"
+                onClick={() => remove(hero)}
+                className="cursor-pointer text-[#6B6A68] transition-colors hover:text-[#E5E2E1]"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </span>
+          ))}
+        </div>
+      ) : (
+        search.trim().length === 0 && (
+          <p className="text-xs text-[#6B6A68]">Ketik nama hero di atas untuk mencari.</p>
+        )
+      )}
+    </div>
+  );
+};
+
+// ─── RoleSection ──────────────────────────────────────────────────────────────
+
+interface RoleSectionProps {
+  config: (typeof ROLE_CONFIG)[number];
+  data: RoleData;
+  onUpdate: (patch: Partial<RoleData>) => void;
+}
+
+const RoleSection = ({ config, data, onUpdate }: RoleSectionProps) => {
+  const { Icon, label, index } = config;
+  return (
+    <div className="rounded-lg border border-[#2D2D2D] p-4 space-y-3">
+      {/* Header */}
+      <div className="flex items-center gap-2">
+        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#2C2C2C] text-xs font-medium text-[#9B9A97]">
+          {index}
+        </span>
+        <Icon className="h-4 w-4 text-[#9B9A97]" />
+        <span className="text-xs font-semibold uppercase tracking-wider text-[#E5E2E1]">
+          {label}
+        </span>
+      </div>
+
+      {/* Nickname */}
+      <div>
+        <label className="mb-1 block text-xs text-[#9B9A97]">
+          Nickname <span className="text-red-400">*</span>
+        </label>
+        <input
+          type="text"
+          required
+          value={data.nickname}
+          onChange={(e) => onUpdate({ nickname: e.target.value })}
+          placeholder={`Nickname ${label}`}
+          className="h-9 w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-sm text-[#E5E2E1] placeholder:text-[#6B6A68] focus:border-[#9B9A97] focus:outline-none"
+        />
+      </div>
+
+      {/* Hero Pool */}
+      <div>
+        <label className="mb-1 block text-xs text-[#9B9A97]">Hero Pool</label>
+        <HeroPicker
+          selected={data.heroPool}
+          onChange={(heroes) => onUpdate({ heroPool: heroes })}
+        />
+      </div>
+
+      {/* Habit */}
+      <div>
+        <label className="mb-1 block text-xs text-[#9B9A97]">Habit</label>
+        <textarea
+          rows={2}
+          value={data.habit}
+          onChange={(e) => onUpdate({ habit: e.target.value })}
+          placeholder="Kebiasaan mikro/makro pemain..."
+          className="w-full resize-none rounded-md border border-[#2D2D2D] bg-[#191919] px-3 py-2 text-sm text-[#E5E2E1] placeholder:text-[#6B6A68] focus:border-[#9B9A97] focus:outline-none"
+        />
+      </div>
+    </div>
+  );
+};
+
+// ─── ScoutingFormModal ────────────────────────────────────────────────────────
 
 interface ScoutingFormModalProps {
   orgSlug: string;
@@ -17,21 +226,17 @@ interface ScoutingFormModalProps {
   onClose: () => void;
 }
 
-export function ScoutingFormModal({ orgSlug, profile, onClose }: ScoutingFormModalProps) {
+const ScoutingFormModal = ({ orgSlug, profile, onClose }: ScoutingFormModalProps) => {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
   const isEdit = !!profile;
-  const data = (profile?.data ?? {}) as Record<string, unknown>;
+  const existingData = (profile?.data ?? {}) as Record<string, unknown>;
 
-  // Controlled tag inputs
-  const [heroPool, setHeroPool] = useState<string>(
-    ((data.hero_pool as string[]) ?? []).join(", "),
-  );
-  const [usernames, setUsernames] = useState<string>(
-    ((data.usernames as string[]) ?? []).join(", "),
-  );
+  const [teamName, setTeamName] = useState(profile?.opponent_name ?? "");
+  const [playstyle, setPlaystyle] = useState((existingData.playstyle as string) ?? "");
+  const [roster, setRoster] = useState<RosterState>(() => initRoster(existingData));
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -41,38 +246,34 @@ export function ScoutingFormModal({ orgSlug, profile, onClose }: ScoutingFormMod
     return () => document.removeEventListener("keydown", handler);
   }, [onClose]);
 
-  function parseTags(raw: string): string[] {
-    return raw
-      .split(",")
-      .map((s) => s.trim())
-      .filter(Boolean);
-  }
+  const updateRole = (key: RoleKey) => (patch: Partial<RoleData>) => {
+    setRoster((prev) => ({ ...prev, [key]: { ...prev[key], ...patch } }));
+  };
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const fd = new FormData(e.currentTarget);
 
     const payload = {
-      opponent_name: fd.get("opponent_name") as string,
+      opponent_name: teamName.trim(),
       data: {
-        team_name: (fd.get("team_name") as string) || undefined,
-        high_rank: (fd.get("high_rank") as string) || undefined,
-        current_rank: (fd.get("current_rank") as string) || undefined,
-        playstyle: (fd.get("playstyle") as string) || undefined,
-        weaknesses: (fd.get("weaknesses") as string) || undefined,
-        notes: (fd.get("notes") as string) || undefined,
-        hero_pool: parseTags(heroPool),
-        usernames: parseTags(usernames),
+        playstyle: playstyle.trim() || undefined,
+        roster: Object.fromEntries(
+          ROLE_CONFIG.map(({ key }) => [
+            key,
+            {
+              nickname: roster[key].nickname.trim(),
+              heroPool: roster[key].heroPool,
+              habit:    roster[key].habit.trim() || undefined,
+            },
+          ]),
+        ),
       },
     };
 
     startTransition(async () => {
       setError(null);
       const res = isEdit
-        ? await updateOpponentProfileAction(orgSlug, {
-            profile_id: profile.id,
-            ...payload,
-          })
+        ? await updateOpponentProfileAction(orgSlug, { profile_id: profile.id, ...payload })
         : await createOpponentProfileAction(orgSlug, payload);
 
       if (res.ok) {
@@ -87,151 +288,107 @@ export function ScoutingFormModal({ orgSlug, profile, onClose }: ScoutingFormMod
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+      className="fixed inset-0 z-50 flex items-start justify-center bg-black/60 p-4"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-lg rounded-xl border border-[#2D2D2D] bg-[#202020] p-6 shadow-2xl max-h-[90vh] overflow-y-auto"
+        className="my-4 w-full max-w-2xl overflow-hidden rounded-xl border border-[#2D2D2D] bg-[#202020] shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between mb-5">
+        {/* Sticky header */}
+        <div className="flex items-center justify-between border-b border-[#2D2D2D] bg-[#202020] px-6 py-5">
           <h3 className="text-base font-bold text-[#E5E2E1]">
             {isEdit ? "Edit Profil Lawan" : "Tambah Profil Lawan"}
           </h3>
-          <button type="button" onClick={onClose} className="text-[#9B9A97] hover:text-[#E5E2E1]">
+          <button
+            type="button"
+            onClick={onClose}
+            className="cursor-pointer text-[#9B9A97] hover:text-[#E5E2E1]"
+          >
             <X className="h-4 w-4" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-xs text-[#9B9A97] mb-1">
-              Nama Lawan / Tim <span className="text-red-400">*</span>
-            </label>
-            <input
-              name="opponent_name"
-              required
-              defaultValue={profile?.opponent_name ?? ""}
-              placeholder="Team Alpha"
-              className="h-10 w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-sm text-[#E5E2E1] focus:border-[#9B9A97] focus:outline-none"
-            />
-          </div>
+        {/* Scrollable body */}
+        <div className="max-h-[80vh] overflow-y-auto">
+          <form onSubmit={handleSubmit} className="space-y-6 p-6">
+            {/* ── Section 1: Team Info ── */}
+            <section className="space-y-3">
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-[#6B6A68]">
+                Informasi Tim
+              </h4>
 
-          <div>
-            <label className="block text-xs text-[#9B9A97] mb-1">Nama Tim Lengkap</label>
-            <input
-              name="team_name"
-              defaultValue={(data.team_name as string) ?? ""}
-              placeholder="Team Alpha Esports"
-              className="h-10 w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-sm text-[#E5E2E1] focus:border-[#9B9A97] focus:outline-none"
-            />
-          </div>
+              <div>
+                <label className="mb-1 block text-xs text-[#9B9A97]">
+                  Nama Tim Lawan <span className="text-red-400">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={teamName}
+                  onChange={(e) => setTeamName(e.target.value)}
+                  placeholder="Team Alpha"
+                  className="h-10 w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-sm text-[#E5E2E1] placeholder:text-[#6B6A68] focus:border-[#9B9A97] focus:outline-none"
+                />
+              </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block text-xs text-[#9B9A97] mb-1">High Rank</label>
-              <input
-                name="high_rank"
-                defaultValue={(data.high_rank as string) ?? ""}
-                placeholder="Mythical Glory"
-                className="h-10 w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-sm text-[#E5E2E1] focus:border-[#9B9A97] focus:outline-none"
-              />
+              <div>
+                <label className="mb-1 block text-xs text-[#9B9A97]">Playstyle Tim</label>
+                <textarea
+                  rows={2}
+                  value={playstyle}
+                  onChange={(e) => setPlaystyle(e.target.value)}
+                  placeholder="Agresif early game, suka invade jungle..."
+                  className="w-full resize-none rounded-md border border-[#2D2D2D] bg-[#191919] px-3 py-2 text-sm text-[#E5E2E1] placeholder:text-[#6B6A68] focus:border-[#9B9A97] focus:outline-none"
+                />
+              </div>
+            </section>
+
+            {/* ── Section 2: Roster ── */}
+            <section className="space-y-3">
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-[#6B6A68]">
+                Roster Tim — Semua Role Wajib Diisi
+              </h4>
+
+              {ROLE_CONFIG.map((config) => (
+                <RoleSection
+                  key={config.key}
+                  config={config}
+                  data={roster[config.key]}
+                  onUpdate={updateRole(config.key)}
+                />
+              ))}
+            </section>
+
+            {error && (
+              <p className="rounded border border-red-500/20 bg-red-500/10 px-3 py-2 text-xs text-red-400">
+                {error}
+              </p>
+            )}
+
+            {/* Footer */}
+            <div className="flex justify-end gap-3 border-t border-[#2D2D2D] pt-4">
+              <button
+                type="button"
+                onClick={onClose}
+                className="h-9 cursor-pointer rounded-md border border-[#2D2D2D] px-4 text-sm text-[#9B9A97] transition-colors hover:bg-[#2C2C2C]"
+              >
+                Batal
+              </button>
+              <button
+                type="submit"
+                disabled={pending}
+                className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-md bg-[#E5E2E1] px-4 text-sm font-semibold text-[#191919] transition-colors hover:bg-white disabled:opacity-50"
+              >
+                {pending && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+                {isEdit ? "Simpan Perubahan" : "Simpan Profil"}
+              </button>
             </div>
-            <div>
-              <label className="block text-xs text-[#9B9A97] mb-1">Current Rank</label>
-              <input
-                name="current_rank"
-                defaultValue={(data.current_rank as string) ?? ""}
-                placeholder="Mythic"
-                className="h-10 w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-sm text-[#E5E2E1] focus:border-[#9B9A97] focus:outline-none"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-xs text-[#9B9A97] mb-1">
-              Hero / Champion Pool{" "}
-              <span className="text-[#6B6A68]">(pisahkan dengan koma)</span>
-            </label>
-            <input
-              value={heroPool}
-              onChange={(e) => setHeroPool(e.target.value)}
-              placeholder="Fanny, Gusion, Lancelot"
-              className="h-10 w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-sm text-[#E5E2E1] focus:border-[#9B9A97] focus:outline-none"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs text-[#9B9A97] mb-1">
-              Username In-Game{" "}
-              <span className="text-[#6B6A68]">(pisahkan dengan koma)</span>
-            </label>
-            <input
-              value={usernames}
-              onChange={(e) => setUsernames(e.target.value)}
-              placeholder="AlphaPlayer, AlphaTwo"
-              className="h-10 w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-sm text-[#E5E2E1] focus:border-[#9B9A97] focus:outline-none"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs text-[#9B9A97] mb-1">Playstyle</label>
-            <textarea
-              name="playstyle"
-              rows={2}
-              defaultValue={(data.playstyle as string) ?? ""}
-              placeholder="Agresif early game, suka invade jungle..."
-              className="w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 py-2 text-sm text-[#E5E2E1] focus:border-[#9B9A97] focus:outline-none resize-none"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs text-[#9B9A97] mb-1">Kelemahan</label>
-            <textarea
-              name="weaknesses"
-              rows={2}
-              defaultValue={(data.weaknesses as string) ?? ""}
-              placeholder="Lemah terhadap CC chain, roaming lambat..."
-              className="w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 py-2 text-sm text-[#E5E2E1] focus:border-[#9B9A97] focus:outline-none resize-none"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs text-[#9B9A97] mb-1">Catatan</label>
-            <textarea
-              name="notes"
-              rows={2}
-              defaultValue={(data.notes as string) ?? ""}
-              placeholder="Info tambahan..."
-              className="w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 py-2 text-sm text-[#E5E2E1] focus:border-[#9B9A97] focus:outline-none resize-none"
-            />
-          </div>
-
-          {error && (
-            <p className="text-xs text-red-400 rounded border border-red-500/20 bg-red-500/10 px-3 py-2">
-              {error}
-            </p>
-          )}
-
-          <div className="flex justify-end gap-3 pt-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="h-9 rounded-md border border-[#2D2D2D] px-4 text-sm text-[#9B9A97] hover:bg-[#2C2C2C] cursor-pointer"
-            >
-              Batal
-            </button>
-            <button
-              type="submit"
-              disabled={pending}
-              className="inline-flex h-9 items-center gap-2 rounded-md bg-[#E5E2E1] px-4 text-sm font-semibold text-[#191919] hover:bg-white disabled:opacity-50 cursor-pointer"
-            >
-              {pending && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
-              {isEdit ? "Simpan Perubahan" : "Tambah Profil"}
-            </button>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   );
-}
+};
+
+export { ScoutingFormModal };
