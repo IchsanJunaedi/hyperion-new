@@ -16,7 +16,7 @@ export async function DivisionsSection() {
   if (items.length === 0) return null;
 
   return (
-    <section className="bg-[#060606] px-6 py-24 sm:px-10 lg:px-16">
+    <section className="bg-black px-5 py-20 sm:px-8 lg:px-10">
       <div className="mx-auto max-w-7xl">
         <DivisionsGrid divisions={items} />
       </div>

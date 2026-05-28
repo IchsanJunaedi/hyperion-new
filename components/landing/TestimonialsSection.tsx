@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useInView } from "motion/react";
-import { ArrowLeft, ArrowRight, Quote } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 interface Testimonial {
   name: string;
@@ -38,10 +38,6 @@ const TESTIMONIALS: Testimonial[] = [
   },
 ];
 
-function randomRotate() {
-  return Math.floor(Math.random() * 16) - 8;
-}
-
 const TestimonialsSection = () => {
   const [active, setActive] = useState(0);
   const total = TESTIMONIALS.length;
@@ -60,171 +56,135 @@ const TestimonialsSection = () => {
   return (
     <section
       ref={sectionRef}
-      className="bg-[#060606] px-6 py-24 sm:px-10 lg:px-16"
+      className="bg-black px-5 py-20 sm:px-8 lg:px-10"
     >
       <div className="mx-auto max-w-7xl">
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.55 }}
-          className="mb-14"
+          transition={{ duration: 0.5 }}
+          className="mb-0 border-b border-white/8 pb-8"
         >
-          <div className="mb-3 flex items-center gap-3">
-            <div className="h-px w-8 bg-[#F5C400]" />
-            <span className="text-[11px] font-bold uppercase tracking-[0.3em] text-[#F5C400]">
-              Alumni
-            </span>
-          </div>
+          <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.4em] text-white/28">
+            03 — Alumni
+          </p>
           <h2 className="text-3xl font-black uppercase tracking-tight text-white sm:text-4xl lg:text-5xl">
             Testimonials
           </h2>
         </motion.div>
 
-        <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-20">
-          {/* Left: stacked photo cards */}
+        <div className="grid grid-cols-1 gap-0 lg:grid-cols-2">
+          {/* Left: stacked photo */}
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            animate={inView ? { opacity: 1, x: 0 } : {}}
+            initial={{ opacity: 0 }}
+            animate={inView ? { opacity: 1 } : {}}
             transition={{ duration: 0.7, delay: 0.15 }}
+            className="border-b border-white/8 py-10 lg:border-b-0 lg:border-r lg:py-14 lg:pr-16"
           >
-            <div className="relative h-72 w-full sm:h-80 md:h-96">
-              <AnimatePresence>
-                {TESTIMONIALS.map((t, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{
-                      opacity: 0,
-                      scale: 0.9,
-                      z: -100,
-                      rotate: randomRotate(),
-                    }}
-                    animate={{
-                      opacity: index === active ? 1 : 0.5,
-                      scale: index === active ? 1 : 0.93,
-                      z: index === active ? 0 : -100,
-                      rotate: index === active ? 0 : randomRotate(),
-                      zIndex:
-                        index === active
-                          ? 40
-                          : TESTIMONIALS.length + 2 - index,
-                      y: index === active ? [0, -48, 0] : 0,
-                    }}
-                    exit={{
-                      opacity: 0,
-                      scale: 0.9,
-                      z: 100,
-                      rotate: randomRotate(),
-                    }}
-                    transition={{ duration: 0.45, ease: [0.25, 0.46, 0.45, 0.94] }}
-                    className="absolute inset-0 origin-bottom overflow-hidden rounded-3xl"
-                    style={{
-                      boxShadow:
-                        index === active
-                          ? "0 40px 80px rgba(0,0,0,0.65), 0 0 0 1px rgba(255,255,255,0.06)"
-                          : "0 20px 40px rgba(0,0,0,0.4)",
-                    }}
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={t.image}
-                      alt={t.name}
-                      draggable={false}
-                      loading="lazy"
-                      className="h-full w-full object-cover object-top"
-                      style={{ filter: "saturate(0.82)" }}
-                    />
-                  </motion.div>
-                ))}
+            <div className="relative h-64 w-full sm:h-80">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={active}
+                  initial={{ opacity: 0, scale: 0.96 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 1.02 }}
+                  transition={{ duration: 0.4, ease: "easeOut" }}
+                  className="absolute inset-0 overflow-hidden"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={TESTIMONIALS[active]!.image}
+                    alt={TESTIMONIALS[active]!.name}
+                    draggable={false}
+                    loading="lazy"
+                    className="h-full w-full object-cover object-top"
+                    style={{ filter: "saturate(0.75) brightness(0.9)" }}
+                  />
+                </motion.div>
               </AnimatePresence>
             </div>
           </motion.div>
 
-          {/* Right: glass quote card */}
+          {/* Right: quote */}
           <motion.div
-            initial={{ opacity: 0, x: 30 }}
+            initial={{ opacity: 0, x: 20 }}
             animate={inView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.7, delay: 0.25 }}
-            className="flex flex-col justify-center"
+            transition={{ duration: 0.6, delay: 0.25 }}
+            className="flex flex-col justify-center py-10 lg:py-14 lg:pl-16"
           >
-            <div
-              className="rounded-3xl border border-white/6 p-8"
-              style={{
-                background: "rgba(255,255,255,0.02)",
-                backdropFilter: "blur(20px)",
-                boxShadow:
-                  "0 25px 60px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.04)",
-              }}
-            >
-              <Quote className="mb-5 h-8 w-8 text-[#F5C400]/22" />
+            {/* Large faint quotation mark */}
+            <p className="mb-4 text-8xl font-black leading-none text-white/6 sm:text-9xl">
+              &ldquo;
+            </p>
 
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={active}
-                  initial={{ opacity: 0, y: 14 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -14 }}
-                  transition={{ duration: 0.28, ease: "easeOut" }}
-                >
-                  <h3 className="text-xl font-black uppercase tracking-tight text-white">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={active}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ duration: 0.28, ease: "easeOut" }}
+              >
+                <p className="text-sm leading-relaxed text-white/55 sm:text-base">
+                  {TESTIMONIALS[active]!.description}
+                </p>
+                <div className="mt-6 border-l-2 border-[#F5C400] pl-4">
+                  <p className="font-black uppercase tracking-tight text-white">
                     {TESTIMONIALS[active]!.name}
-                  </h3>
-                  <p className="mt-1 text-xs font-bold uppercase tracking-wider text-[#F5C400]/48">
+                  </p>
+                  <p className="mt-0.5 text-xs font-bold uppercase tracking-wider text-white/35">
                     {TESTIMONIALS[active]!.position}
                   </p>
-                  <p className="mt-5 text-sm leading-relaxed text-white/50 sm:text-[15px]">
-                    &ldquo;{TESTIMONIALS[active]!.description}&rdquo;
-                  </p>
-                </motion.div>
-              </AnimatePresence>
-
-              {/* Nav controls */}
-              <div className="mt-8 flex items-center gap-3">
-                <button
-                  type="button"
-                  onClick={handlePrev}
-                  aria-label="Previous"
-                  className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-white/10 text-white/35 transition hover:border-[#F5C400]/38 hover:text-[#F5C400]"
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                </button>
-                <button
-                  type="button"
-                  onClick={handleNext}
-                  aria-label="Next"
-                  className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-white/10 text-white/35 transition hover:border-[#F5C400]/38 hover:text-[#F5C400]"
-                >
-                  <ArrowRight className="h-4 w-4" />
-                </button>
-                {/* Pill dot indicators */}
-                <div className="ml-2 flex items-center gap-2">
-                  {TESTIMONIALS.map((_, i) => (
-                    <button
-                      key={i}
-                      type="button"
-                      onClick={() => setActive(i)}
-                      aria-label={`Go to testimonial ${i + 1}`}
-                      className="cursor-pointer py-1"
-                    >
-                      <motion.div
-                        animate={{
-                          width: i === active ? 18 : 6,
-                          background:
-                            i === active
-                              ? "rgb(245,196,0)"
-                              : "rgba(255,255,255,0.18)",
-                        }}
-                        transition={{ duration: 0.3 }}
-                        className="h-1.5 rounded-full"
-                      />
-                    </button>
-                  ))}
                 </div>
-                <span className="ml-auto text-[10px] tabular-nums text-white/20">
-                  {String(active + 1).padStart(2, "0")} /{" "}
-                  {String(total).padStart(2, "0")}
-                </span>
+              </motion.div>
+            </AnimatePresence>
+
+            {/* Controls */}
+            <div className="mt-10 flex items-center gap-3">
+              <button
+                type="button"
+                onClick={handlePrev}
+                aria-label="Previous"
+                className="flex h-9 w-9 cursor-pointer items-center justify-center border border-white/12 text-white/35 transition hover:border-white/35 hover:text-white"
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </button>
+              <button
+                type="button"
+                onClick={handleNext}
+                aria-label="Next"
+                className="flex h-9 w-9 cursor-pointer items-center justify-center border border-white/12 text-white/35 transition hover:border-white/35 hover:text-white"
+              >
+                <ArrowRight className="h-4 w-4" />
+              </button>
+              <div className="ml-2 flex items-center gap-2">
+                {TESTIMONIALS.map((_, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => setActive(i)}
+                    aria-label={`Go to testimonial ${i + 1}`}
+                    className="cursor-pointer py-1"
+                  >
+                    <motion.div
+                      animate={{
+                        width: i === active ? 18 : 6,
+                        background:
+                          i === active
+                            ? "rgb(245,196,0)"
+                            : "rgba(255,255,255,0.18)",
+                      }}
+                      transition={{ duration: 0.3 }}
+                      className="h-px rounded-full"
+                    />
+                  </button>
+                ))}
               </div>
+              <span className="ml-auto text-[10px] tabular-nums text-white/20">
+                {String(active + 1).padStart(2, "0")} /{" "}
+                {String(total).padStart(2, "0")}
+              </span>
             </div>
           </motion.div>
         </div>
