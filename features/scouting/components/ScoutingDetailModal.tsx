@@ -23,11 +23,11 @@ interface ProfileData {
 }
 
 const ROLE_CONFIG: Array<{ key: RoleKey; label: string; Icon: LucideIcon }> = [
-  { key: "exp_laner",  label: "EXP Laner",  Icon: Sword  },
   { key: "jungler",   label: "Jungler",    Icon: Leaf   },
   { key: "mid_laner", label: "Mid Laner",  Icon: Zap    },
-  { key: "gold_laner",label: "Gold Laner", Icon: Coins  },
   { key: "roamer",    label: "Roamer",     Icon: Shield },
+  { key: "gold_laner",label: "Gold Laner", Icon: Coins  },
+  { key: "exp_laner", label: "EXP Laner",  Icon: Sword  },
 ];
 
 // ─── Print helper ─────────────────────────────────────────────────────────────

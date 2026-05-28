@@ -28,11 +28,11 @@ type RosterState = Record<RoleKey, RoleData>;
 const EMPTY_ROLE: RoleData = { nickname: "", heroPool: [], habit: "" };
 
 const ROLE_CONFIG: Array<{ key: RoleKey; label: string; Icon: LucideIcon; index: number }> = [
-  { key: "exp_laner",  label: "EXP Laner",  Icon: Sword,  index: 1 },
-  { key: "jungler",   label: "Jungler",    Icon: Leaf,   index: 2 },
-  { key: "mid_laner", label: "Mid Laner",  Icon: Zap,    index: 3 },
+  { key: "jungler",   label: "Jungler",    Icon: Leaf,   index: 1 },
+  { key: "mid_laner", label: "Mid Laner",  Icon: Zap,    index: 2 },
+  { key: "roamer",    label: "Roamer",     Icon: Shield, index: 3 },
   { key: "gold_laner",label: "Gold Laner", Icon: Coins,  index: 4 },
-  { key: "roamer",    label: "Roamer",     Icon: Shield, index: 5 },
+  { key: "exp_laner", label: "EXP Laner",  Icon: Sword,  index: 5 },
 ];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
