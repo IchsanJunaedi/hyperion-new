@@ -20,7 +20,7 @@ function ratingColor(r: number): string {
   return "text-rose-400";
 }
 
-export function TeamHome({
+const TeamHome = ({
   data,
   canManageScrims,
   personalStats,
@@ -28,7 +28,7 @@ export function TeamHome({
   data: TeamHomeData;
   canManageScrims: boolean;
   personalStats?: PersonalPlayerStats | null;
-}) {
+}) => {
   const slug = data.organization.slug;
 
   return (
@@ -310,4 +310,5 @@ function formatRelative(iso: string): string {
   if (days < 30) return `${days}h`;
   const months = Math.floor(days / 30);
   return `${months}b`;
-}
+};
+export { TeamHome };

@@ -9,7 +9,7 @@ interface DashboardNavLinkProps {
   label: string;
 }
 
-export function DashboardNavLink({ href, Icon, label }: DashboardNavLinkProps) {
+const DashboardNavLink = ({ href, Icon, label }: DashboardNavLinkProps) => {
   const pathname = usePathname();
   const active =
     href === "/dashboard" ? pathname === "/dashboard" : pathname?.startsWith(href);
@@ -27,4 +27,5 @@ export function DashboardNavLink({ href, Icon, label }: DashboardNavLinkProps) {
       {label}
     </Link>
   );
-}
+};
+export { DashboardNavLink };

@@ -9,7 +9,7 @@ const PARTNERS = [
   { name: "Partner 8", imageUrl: "https://hyperionteam.id/storage/partners/01JZPD8PBS7TAJ9AWVKCHQKT75.png" },
 ];
 
-export function PartnersSection() {
+const PartnersSection = () => {
   return (
     <section className="bg-[#080808] px-6 py-20 sm:px-10 lg:px-16">
       <div className="mx-auto max-w-7xl">
@@ -42,4 +42,5 @@ export function PartnersSection() {
       </div>
     </section>
   );
-}
+};
+export { PartnersSection };

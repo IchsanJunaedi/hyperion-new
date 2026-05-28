@@ -36,7 +36,7 @@ function getQueryClient() {
   return browserQueryClient;
 }
 
-export function QueryProvider({ children }: { children: ReactNode }) {
+const QueryProvider = ({ children }: { children: ReactNode }) => {
   // Defer client creation to a state initializer so it isn't recreated
   // on each render in dev (Strict Mode + Fast Refresh).
   const [queryClient] = useState(getQueryClient);
@@ -44,4 +44,5 @@ export function QueryProvider({ children }: { children: ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
-}
+};
+export { QueryProvider };

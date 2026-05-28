@@ -42,7 +42,7 @@ function randomRotate() {
   return Math.floor(Math.random() * 21) - 10;
 }
 
-export function TestimonialsSection() {
+const TestimonialsSection = () => {
   const [active, setActive] = useState(0);
   const total = TESTIMONIALS.length;
 
@@ -184,4 +184,5 @@ export function TestimonialsSection() {
       </div>
     </section>
   );
-}
+};
+export { TestimonialsSection };

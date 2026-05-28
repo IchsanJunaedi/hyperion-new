@@ -41,7 +41,7 @@ const ACHIEVEMENTS: Achievement[] = [
   },
 ];
 
-export function AchievementsSection() {
+const AchievementsSection = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const lineRef = useRef<HTMLDivElement>(null);
   const [lineHeight, setLineHeight] = useState(0);
@@ -162,4 +162,5 @@ export function AchievementsSection() {
       </div>
     </section>
   );
-}
+};
+export { AchievementsSection };

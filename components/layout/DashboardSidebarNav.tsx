@@ -56,7 +56,7 @@ const NAV_GROUPS = [
   },
 ];
 
-export function DashboardSidebarNav() {
+const DashboardSidebarNav = () => {
   const pathname = usePathname();
 
   return (
@@ -93,4 +93,5 @@ export function DashboardSidebarNav() {
       ))}
     </nav>
   );
-}
+};
+export { DashboardSidebarNav };

@@ -17,7 +17,7 @@ const ITEMS = [
   },
 ] as const;
 
-export function MobileBottomNav({ orgSlug }: { orgSlug: string }) {
+const MobileBottomNav = ({ orgSlug }: { orgSlug: string }) => {
   const pathname = usePathname();
   return (
     <nav
@@ -51,4 +51,5 @@ export function MobileBottomNav({ orgSlug }: { orgSlug: string }) {
       <div className="h-[env(safe-area-inset-bottom)]" />
     </nav>
   );
-}
+};
+export { MobileBottomNav };

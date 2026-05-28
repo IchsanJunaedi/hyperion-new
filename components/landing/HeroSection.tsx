@@ -8,7 +8,7 @@ import { motion } from "motion/react";
 const WORDS_LINE1 = "WE ARE".split(" ");
 const WORDS_TITLE = "HYPERION TEAM".split(" ");
 
-export function HeroSection() {
+const HeroSection = () => {
   return (
     <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#070707]">
       {/* Dot grid */}
@@ -131,4 +131,5 @@ export function HeroSection() {
       </div>
     </section>
   );
-}
+};
+export { HeroSection };

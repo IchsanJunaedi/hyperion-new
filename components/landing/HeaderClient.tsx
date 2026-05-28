@@ -22,7 +22,7 @@ const NAV_LINKS = [
   { href: "/divisions", label: "Division" },
 ] as const;
 
-export function HeaderClient({ authed }: HeaderProps) {
+const HeaderClient = ({ authed }: HeaderProps) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
 
@@ -223,4 +223,5 @@ export function HeaderClient({ authed }: HeaderProps) {
       </div>
     </>
   );
-}
+};
+export { HeaderClient };

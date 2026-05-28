@@ -230,14 +230,14 @@ const ROLE_BADGE: Record<string, string> = {
   captain: "text-green-400 drop-shadow-[0_0_8px_rgba(74,222,128,0.5)]",
 };
 
-export function WorkspaceSidebar({
+const WorkspaceSidebar = ({
   orgSlug,
   orgId,
   orgName,
   orgLogoUrl,
   divisions,
   user,
-}: WorkspaceSidebarProps) {
+}: WorkspaceSidebarProps) => {
   const pathname = usePathname();
   const activeDivisionId = useWorkspaceStore((s) => s.activeDivisionId);
   const setActiveDivision = useWorkspaceStore((s) => s.setActiveDivision);
@@ -445,4 +445,5 @@ export function WorkspaceSidebar({
       </div>
     </aside>
   );
-}
+};
+export { WorkspaceSidebar };

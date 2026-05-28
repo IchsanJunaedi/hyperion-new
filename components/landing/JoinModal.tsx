@@ -8,7 +8,7 @@ import { toast } from "sonner";
 const INPUT_CLASS =
   "mt-1.5 w-full border border-white/10 bg-[#0A0A0A] px-4 py-2.5 text-sm text-white placeholder-white/20 outline-none transition focus:border-[#F5C400]/50 focus:ring-0";
 
-export function JoinModal() {
+const JoinModal = () => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -130,4 +130,5 @@ export function JoinModal() {
       )}
     </>
   );
-}
+};
+export { JoinModal };

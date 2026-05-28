@@ -1,6 +1,6 @@
 import { JoinModal } from "./JoinModal";
 
-export function JoinUsSection() {
+const JoinUsSection = () => {
   return (
     <section className="relative overflow-hidden bg-[#070707] px-6 py-28 sm:px-10 lg:px-16">
       {/* Background dot grid */}
@@ -57,4 +57,5 @@ export function JoinUsSection() {
       </div>
     </section>
   );
-}
+};
+export { JoinUsSection };

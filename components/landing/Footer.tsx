@@ -15,7 +15,7 @@ const LINKS = {
   ],
 };
 
-export function Footer() {
+const Footer = () => {
   return (
     <footer className="border-t border-white/5 bg-[#070707] px-6 pb-10 pt-16 sm:px-10 lg:px-16">
       <div className="mx-auto max-w-7xl">
@@ -90,4 +90,5 @@ export function Footer() {
       </div>
     </footer>
   );
-}
+};
+export { Footer };

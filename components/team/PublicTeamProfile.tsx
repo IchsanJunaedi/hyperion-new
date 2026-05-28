@@ -13,11 +13,11 @@ export interface PublicTeamProfileProps {
   memberCount: number;
 }
 
-export function PublicTeamProfile({
+const PublicTeamProfile = ({
   organization,
   divisions,
   memberCount,
-}: PublicTeamProfileProps) {
+}: PublicTeamProfileProps) => {
   return (
     <main className="mx-auto max-w-4xl flex-1 px-6 py-12 sm:py-20">
       <header className="flex flex-col items-center gap-6 text-center sm:flex-row sm:text-left">
@@ -127,4 +127,5 @@ function Stat({
       <p className="mt-2 text-2xl font-bold capitalize text-white">{value}</p>
     </div>
   );
-}
+};
+export { PublicTeamProfile };

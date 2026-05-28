@@ -22,7 +22,7 @@ const ROUTE_LABELS: Record<string, string> = {
   "/manage/reports": "Laporan",
 };
 
-export function ManageBreadcrumb({ orgName, orgSlug, userId }: ManageBreadcrumbProps) {
+const ManageBreadcrumb = ({ orgName, orgSlug, userId }: ManageBreadcrumbProps) => {
   const pathname = usePathname();
   const activeLabel = ROUTE_LABELS[pathname ?? ""] ?? "Manager Panel";
 
@@ -38,4 +38,5 @@ export function ManageBreadcrumb({ orgName, orgSlug, userId }: ManageBreadcrumbP
       <NotificationBell userId={userId} orgSlug={orgSlug} />
     </header>
   );
-}
+};
+export { ManageBreadcrumb };

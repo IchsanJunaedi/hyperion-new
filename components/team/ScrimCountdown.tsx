@@ -46,7 +46,7 @@ function stableWibLabel(target: Date): string {
   return `${dd}/${mm} · ${hh}:${mi} WIB`;
 }
 
-export function ScrimCountdown({ scrim, orgSlug, myAttendanceStatus }: ScrimCountdownProps) {
+const ScrimCountdown = ({ scrim, orgSlug, myAttendanceStatus }: ScrimCountdownProps) => {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -213,4 +213,5 @@ function CountdownCell({ value, label }: { value: number; label: string }) {
       </span>
     </span>
   );
-}
+};
+export { ScrimCountdown };

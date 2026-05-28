@@ -7,13 +7,13 @@ import type { Database } from "@/types/database";
 
 type Organization = Database["public"]["Tables"]["organizations"]["Row"];
 
-export function WorkspaceTopbar({
+const WorkspaceTopbar = ({
   organization,
   userId,
 }: {
   organization: Pick<Organization, "name" | "slug" | "logo_url">;
   userId: string;
-}) {
+}) => {
   return (
     <header className="print-hide sticky top-0 z-30 flex h-14 items-center justify-between gap-3 border-b border-white/5 bg-background/85 px-4 backdrop-blur md:hidden">
       <Link href={`/${organization.slug}`} className="flex items-center gap-2">
@@ -36,4 +36,5 @@ export function WorkspaceTopbar({
       <NotificationBell userId={userId} orgSlug={organization.slug} />
     </header>
   );
-}
+};
+export { WorkspaceTopbar };

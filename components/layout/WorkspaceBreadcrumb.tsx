@@ -25,12 +25,12 @@ const ROUTE_LABELS: Record<string, string> = {
   "/settings": "Settings",
 };
 
-export function WorkspaceBreadcrumb({
+const WorkspaceBreadcrumb = ({
   orgName,
   orgSlug,
   userId,
   className = "",
-}: WorkspaceBreadcrumbProps) {
+}: WorkspaceBreadcrumbProps) => {
   const pathname = usePathname();
   const segments = pathname?.split("/").filter(Boolean) ?? [];
   const subRoute = segments[1] ? `/${segments[1]}` : "";
@@ -53,4 +53,5 @@ export function WorkspaceBreadcrumb({
       <NotificationBell userId={userId} orgSlug={orgSlug} />
     </header>
   );
-}
+};
+export { WorkspaceBreadcrumb };
