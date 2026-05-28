@@ -327,22 +327,22 @@ All `<input type="number">` must use `<NumberInput>` from `@/components/ui/numbe
 
 ## Audit Items Remaining (dari audit-report-2026-05-28.md)
 
-### Medium Priority (belum dikerjakan)
+### Medium Priority
 - ✅ **M1** — fixed: `player_target_history` limit raised to `.limit(200)`, explicit cols (2026-05-28)
-- **M2** — `count: "exact"` tanpa `head: true` di 5 file audit routes (double cost)
-- **M3** — `generateMonthlyReport` masih ~7 serial round-trips (`features/reports/queries.ts`)
-- **M4** — `PermissionGuard` async dalam useEffect tanpa cleanup/mounted flag
-- **M5** — `getScrimWinLossRecord` pakai `.single()` tanpa error handling
-- **M6** — `registerApplicantAction` — `screenshotUrl`/`cvUrl` tidak divalidasi domain
-- **M7** — `subscribeToOrganizationCalendars` dead code + channel leak → bisa didelete
-- **M8** — `registerApplicantAction` tidak ada rate limiting (form publik)
+- ✅ **M2** — fixed: removed unused `count:exact` from calendar-access.ts; explicit cols on all audit routes (2026-05-28)
+- **M3** — `generateMonthlyReport` masih ~7 serial round-trips (`features/reports/queries.ts`) — reports page not public yet, defer
+- ✅ **M4** — fixed: mounted flag added to all 3 useEffects in PermissionGuard (2026-05-28)
+- ✅ **M5** — fixed: `.single()` → `.maybeSingle()` + error log in `getScrimWinLossRecord` (2026-05-28)
+- ✅ **M6** — fixed: screenshotUrl/cvUrl validated against Supabase storage prefix (2026-05-28)
+- ✅ **M7** — fixed: deleted dead `subscribeToOrganizationCalendars` channel leak (2026-05-28)
+- ✅ **M8** — fixed: email-based rate limit (3/hr) added to `registerApplicantAction` (2026-05-28)
 
-### Low Priority (belum dikerjakan)
-- **L1** — `NotifSection` post-unmount state update via `.then()`
+### Low Priority
+- ✅ **L1** — fixed: mounted flag in NotifSection useEffect .then() (2026-05-28)
 - ✅ **L2** — fixed: `listPlayerTargets` added `.limit(100)` (2026-05-28)
 - ✅ **L3** — fixed: `listCalendarEvents` added `.limit(200)` (2026-05-28)
-- **L4** — `getAnnouncementReadCountsBatch` tidak ada error check
-- **L5** — `markAnnouncementRead` error silently swallowed
-- **L6** — `listTrials` tidak ada `.limit()` pada historical trials
-- **L7** — `AttendanceTracker` `startTransition(no-op)` tiap realtime update
-- **L8** — `StatisticsTab` fire-and-forget `.then()` tanpa cleanup
+- ✅ **L4** — fixed: error check added to `getAnnouncementReadCountsBatch` (2026-05-28)
+- ✅ **L5** — fixed: error log added to `markAnnouncementRead` (2026-05-28)
+- ✅ **L6** — fixed: `.limit(50)` added to `listTrials` (2026-05-28)
+- ✅ **L7** — fixed: no-op startTransition removed from AttendanceTracker realtime handler (2026-05-28)
+- ✅ **L8** — fixed: mounted flag added to StatisticsTab useEffect .then() (2026-05-28)

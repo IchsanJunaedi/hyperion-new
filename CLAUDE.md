@@ -217,6 +217,33 @@ FONNTE_WEBHOOK_SECRET=
 - All server actions must validate auth and return `{ ok: true }` or `{ ok: false, message: string }`
 - Use `cn()` for conditional Tailwind classes, not string concatenation
 
+### Query Rules (Supabase) — WAJIB setiap kali nulis query baru
+1. **Selalu `.limit()`** — setiap `.select()` dari tabel yang bisa tumbuh WAJIB punya `.limit()`. Default safe: list page = `50`, analytics = `200`, per-user/per-item = `30`.
+2. **Jangan `select("*")`** — selalu tulis kolom eksplisit. Exception: tabel kecil yang dipakai di detail page (bukan list).
+3. **`count: "exact"` tanpa `head: true`** — hanya boleh jika hasil `count` *dan* `data` keduanya dipakai (pagination). Jika hanya butuh count, tambah `head: true`. Jika count tidak dipakai sama sekali, hapus `{ count: "exact" }`.
+4. **`.single()` → `.maybeSingle()`** — jangan pernah pakai `.single()` kecuali yakin 100% row selalu ada. Kalau error bisa terjadi, pakai `.maybeSingle()` + cek error.
+5. **Error handling** — selalu destructure `{ data, error }` dan `console.error` jika ada error. Jangan biarkan error ter-swallow diam-diam.
+
+### React useEffect Rules — WAJIB setiap kali nulis useEffect baru
+1. **Mounted flag untuk async** — setiap `useEffect` yang isi-nya `async` atau `.then()` WAJIB pakai mounted flag:
+   ```ts
+   useEffect(() => {
+     let mounted = true;
+     someAsyncFn().then((result) => {
+       if (!mounted) return;  // ← WAJIB
+       setState(result);
+     });
+     return () => { mounted = false; };
+   }, [dep]);
+   ```
+2. **Cleanup channel realtime** — setiap Supabase `channel.subscribe()` WAJIB `return () => supabase.removeChannel(channel)`.
+3. **Jangan no-op dalam startTransition** — `startTransition(() => {})` kosong itu waste. Hapus atau isi dengan aksi nyata.
+4. **Jangan fire-and-forget `.then()`** — promise yang tidak di-await dan tidak ada cleanup dapat update state setelah unmount.
+
+### Public Action / Form Rules
+1. **Rate limiting** — setiap server action yang bisa dipanggil tanpa auth (form publik) WAJIB ada rate limiting. Gunakan `login_rate_limits` table dengan identifier = `{prefix}:{email/phone}`.
+2. **Validasi URL upload** — URL dari upload (screenshot, CV) WAJIB divalidasi harus berasal dari Supabase storage (`process.env.NEXT_PUBLIC_SUPABASE_URL/storage/v1/object/public/`). Jangan terima URL arbitrary dari user.
+
 ### HMR / Webpack Crash Prevention (CRITICAL)
 Next.js 15 Webpack HMR crashes (`__webpack_modules__[moduleId] is not a function`) with inline-exported components.
 
