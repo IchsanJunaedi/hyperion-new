@@ -101,6 +101,39 @@
 
 ---
 
+## Features & Fixes Completed (2026-05-28 session)
+
+### Bug & Performance Fixes (from audit-report-2026-05-28.md)
+
+**H1 — TypeScript types regenerated**
+- `types/database.ts` di-regenerate via Supabase MCP
+- 11 tabel missing sekarang ada: `announcement_reads`, `calendar_event_rsvps`, `scrim_review_requests`, `tournament_matches`, `scrim_draft_bans`, `notification_preferences`, `login_rate_limits`, `strategy_comments`, `poll_availability_votes`, `scrim_vod_timestamps`, `bonus_distributions`
+- 30+ `(supabase as any)` casts tidak lagi diperlukan secara teknis
+
+**H2 — `getDraftAnalytics` unbounded query fixed**
+- `features/analytics/queries.ts` — tambah `.order("scheduled_at", { ascending: false }).limit(200)` pada scrim fetch
+- Sebelumnya fetch semua completed scrims tanpa batas → potensi lag saat org punya 500+ scrims
+
+**H4 — Export function pattern fixed (168 file)**
+- Seluruh komponen di `features/` diubah dari `export function X()` ke `const X = (); export { X }`
+- Mencegah Next.js 15 Webpack HMR crash (`__webpack_modules__[moduleId] is not a function`)
+- Scope: analytics, announcements, auth, calendar, content, dashboard, files, finances, invite, manage, matchmaking, meta, notifications, onboarding, player-development, polls, reports, roster, salary, scrim, settings, sponsors, strategy, tournaments, trials
+
+**H5 — Silent error swallowing di analytics fixed**
+- `getDraftAnalytics` + `getEnterprisePlayerStats` — semua parallel queries sekarang check `.error` dan log ke console
+- User tidak lagi lihat dashboard kosong tanpa tahu ada error
+
+**H6 — WA throw di `registerApplicantAction` fixed**
+- `features/trials/actions.ts` — `sendWaMessage` dibungkus `try/catch`
+- WA API failure tidak lagi cancel registrasi yang sudah berhasil di-insert ke DB
+
+### Analytics Overview — 10 Scrim Terakhir Clickable
+- Row di list "10 Scrim Terakhir" sekarang bisa diklik → navigate ke `/[slug]/scrim/[id]`
+- Hover effect: background berubah `#2C2C2C`, nama lawan jadi lebih terang, `ChevronRight` icon muncul
+- `slug` prop diteruskan dari page → `AnalyticsDashboard` → `OverviewTab`
+
+---
+
 ## Features Completed (2026-05-26 — 2026-05-27 session)
 
 ### NumberInput Premium Stepper Component
@@ -262,22 +295,52 @@ All `<input type="number">` must use `<NumberInput>` from `@/components/ui/numbe
 ## Performance: Batch 2 — Remaining Items
 
 > Batch 1 (zero-risk) done (2026-05-22). B2-3 through B2-6 and B2-8 done in prior sessions.
+> B2-7 confirmed resolved (2026-05-28 audit). See audit-report-2026-05-28.md for full detail.
 
-### B2-1: Tambah `.limit()` pada query unbounded
-- `getPersonalPlayerStats`: semua completed scrims
-- `getScrimWinLossRecord`: harusnya via SQL COUNT/SUM RPC
-- `getOverviewStats`, `getEnterprisePlayerStats`: semua completed scrims tanpa limit
-- `player_target_history`: semua history tanpa limit (target: `.limit(30)`)
+### B2-1: Tambah `.limit()` pada query unbounded ⚠️ Partial
+- ✅ `getDraftAnalytics` — fixed `.limit(200)` (2026-05-28)
+- ✅ `getOverviewStats` — sudah ada `.limit(200)`
+- ✅ `getEnterprisePlayerStats` — sudah ada `.limit(100)`
+- ❌ `getPersonalPlayerStats` — masih unbounded
+- ❌ `getScrimWinLossRecord` — harusnya via SQL COUNT/SUM RPC
+- ❌ `player_target_history` — `.limit(30)` semantically wrong (per-all not per-target, should be 200+)
 
-### B2-2: Ganti `select("*")` dengan kolom spesifik
-- `features/calendar/unified.ts` + `calendar/queries.ts` → `calendar_events`
-- `features/sponsors/queries.ts` → sponsors list (ada kolom `notes` teks panjang)
-- `features/finances/queries.ts` → finances rows
-- `features/notifications/queries.ts` → notifications + `count: "exact"` (mahal)
+### B2-2: Ganti `select("*")` dengan kolom spesifik ⚠️ Partial
+- ✅ `features/sponsors/queries.ts` — list sudah pakai kolom spesifik
+- ✅ `features/notifications/queries.ts` — sudah spesifik
+- ✅ `features/finances/queries.ts` — sudah spesifik
+- ❌ `features/calendar/queries.ts` — `calendar_events` masih `select("*")`
+- ❌ `features/strategy/queries.ts` — masih `select("*")` (content field dipakai di list card)
+- ❌ `features/salary/queries.ts` — masih `select("*")`
+- ❌ `features/player-development/queries.ts` — masih `select("*")`
+- Note: announcements & scrims skip `body`/spread type karena diperlukan di list view
 
 ### B2-7: `admin.auth.admin.listUsers` → query dari tabel `profiles`
-- `app/dashboard/(panel)/users/page.tsx`, `app/dashboard/(panel)/assign/page.tsx`
-- Email sudah ada di `profiles.email` (migration `20260523100000`) — tinggal query dari sana
+- ✅ Sudah resolved — kedua page sudah query dari `profiles` table
 
 ### B2-9: Waterfall di `generateMonthlyReport`
-- `features/reports/queries.ts` — 8+ serial awaits — bisa diparallelkan sebagian besar
+- `features/reports/queries.ts` — masih ~7 serial round-trips (step trend sudah parallel, sisanya belum)
+
+---
+
+## Audit Items Remaining (dari audit-report-2026-05-28.md)
+
+### Medium Priority (belum dikerjakan)
+- **M1** — `player_target_history` limit semantically wrong (`features/player-development/queries.ts` line 31–35) — raise ke `.limit(200)`
+- **M2** — `count: "exact"` tanpa `head: true` di 5 file audit routes (double cost)
+- **M3** — `generateMonthlyReport` masih ~7 serial round-trips (`features/reports/queries.ts`)
+- **M4** — `PermissionGuard` async dalam useEffect tanpa cleanup/mounted flag
+- **M5** — `getScrimWinLossRecord` pakai `.single()` tanpa error handling
+- **M6** — `registerApplicantAction` — `screenshotUrl`/`cvUrl` tidak divalidasi domain
+- **M7** — `subscribeToOrganizationCalendars` dead code + channel leak → bisa didelete
+- **M8** — `registerApplicantAction` tidak ada rate limiting (form publik)
+
+### Low Priority (belum dikerjakan)
+- **L1** — `NotifSection` post-unmount state update via `.then()`
+- **L2** — `listPlayerTargets` tidak ada `.limit()`
+- **L3** — `listCalendarEvents` tidak ada safety limit
+- **L4** — `getAnnouncementReadCountsBatch` tidak ada error check
+- **L5** — `markAnnouncementRead` error silently swallowed
+- **L6** — `listTrials` tidak ada `.limit()` pada historical trials
+- **L7** — `AttendanceTracker` `startTransition(no-op)` tiap realtime update
+- **L8** — `StatisticsTab` fire-and-forget `.then()` tanpa cleanup

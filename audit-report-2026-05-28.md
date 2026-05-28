@@ -1,17 +1,15 @@
 # Bug & Performance Audit Report — Hyperion Esports OS
-*28 Mei 2026*
+*28 Mei 2026 — Updated 28 Mei 2026*
 
 ---
 
 ## Ringkasan Eksekutif
 
-| Severity | Jumlah | Status |
-|----------|--------|--------|
-| 🔴 High | 6 | Perlu segera diperbaiki |
-| 🟡 Medium | 10 | Fix sebelum traffic naik |
-| 🟢 Low | 8 | Nice-to-fix, bukan blocker |
-
-**Good news:** B2-7 (`admin.auth.admin.listUsers`) sudah resolved. `notifications/queries.ts` dan `finances/queries.ts` dari B2-2 juga sudah bersih.
+| Severity | Jumlah | Selesai | Sisa |
+|----------|--------|---------|------|
+| 🔴 High | 6 | 5 ✅ | 1 ⏳ |
+| 🟡 Medium | 10 | 0 | 10 ❌ |
+| 🟢 Low | 8 | 0 | 8 ❌ |
 
 ---
 
@@ -19,27 +17,33 @@
 
 | Item | Status |
 |------|--------|
-| B2-1 (unbounded queries) | ⚠️ Partial — `getDraftAnalytics` belum fix, `getOverviewStats` sudah |
-| B2-2 (select *) | ⚠️ Partial — `notifications` & `finances` sudah fix, `announcements`/`scrims`/`sponsors` belum |
-| B2-7 (listUsers) | ✅ Sudah resolved |
+| B2-1 (unbounded queries) | ⚠️ Partial — `getDraftAnalytics` ✅ fixed, `getPersonalPlayerStats` + `player_target_history` masih ❌ |
+| B2-2 (select *) | ⚠️ Partial — `notifications`, `finances`, `sponsors` ✅, sisanya masih ❌ |
+| B2-7 (listUsers) | ✅ Sudah resolved sebelum audit |
 | B2-9 (waterfall report) | ⚠️ Partial — masih ~7 serial round-trips |
 
 ---
 
-## Rekomendasi Urutan Fix
+## Progress Fix
 
-1. **H6** — Fix WA throw di `registerApplicantAction` (5 menit, risk tinggi)
-2. **H2** — Add `.limit()` di `getDraftAnalytics` (5 menit, performance impact besar)
-3. **H5** — Add error checks di analytics parallel queries (15 menit)
-4. **H1** — Regenerate `types/database.ts` (eliminasi 30+ `as any` casts)
-5. **M1** — Fix `player_target_history` limit semantics
-6. **H3** — Ganti `select("*")` di announcements list (ambil kolom spesifik, skip `body`)
+| Item | Status | Commit |
+|------|--------|--------|
+| H1 — Regenerate types/database.ts | ✅ Done | `11f9b6b` |
+| H2 — getDraftAnalytics unbounded | ✅ Done | `11f9b6b` |
+| H4 — export function HMR pattern (168 file) | ✅ Done | `11f9b6b` |
+| H5 — Silent error swallowing analytics | ✅ Done | `11f9b6b` |
+| H6 — WA throw registerApplicantAction | ✅ Done | `11f9b6b` |
+| H3 — select("*") large tables | ⏳ Partial | Sponsors ✅, scrims/salary/strategy butuh type refactor |
+| M1–M8 | ❌ Belum | — |
+| L1–L8 | ❌ Belum | — |
+
+---
 
 ---
 
 ## 🔴 HIGH — Harus Diperbaiki
 
-### H1. `types/database.ts` — 30+ lokasi `as any` cast
+### H1. `types/database.ts` — 30+ lokasi `as any` cast ✅ SELESAI
 
 **Root cause:** 8 tabel tidak ada di type definitions sehingga dev terpaksa cast `(supabase as any).from(...)`.
 
@@ -69,7 +73,7 @@ Atau tambah table definitions secara manual ke `types/database.ts` jika gen fail
 
 ---
 
-### H2. `getDraftAnalytics` — Unbounded Scrim Fetch
+### H2. `getDraftAnalytics` — Unbounded Scrim Fetch ✅ SELESAI
 
 **File:** `features/analytics/queries.ts` ~line 233
 
@@ -102,7 +106,7 @@ Kalau org punya 500+ scrims, ini tarik ribuan row ke memory sekaligus. **Ini yan
 
 ---
 
-### H3. `select("*")` pada Tabel Besar — List Views
+### H3. `select("*")` pada Tabel Besar — List Views ⏳ PARTIAL
 
 Files yang paling impactful (ganti dengan kolom spesifik):
 
@@ -119,7 +123,7 @@ Files yang paling impactful (ganti dengan kolom spesifik):
 
 ---
 
-### H4. `export function` Pattern — HMR Crash Risk (~100+ komponen)
+### H4. `export function` Pattern — HMR Crash Risk (~100+ komponen) ✅ SELESAI
 
 Per CLAUDE.md, semua komponen harus `const X = ...; export { X }`. Ini violasi yang belum di-enforce.
 
@@ -154,7 +158,7 @@ export { TrialListClient };
 
 ---
 
-### H5. Silent Error Swallowing — Analytics Parallel Queries
+### H5. Silent Error Swallowing — Analytics Parallel Queries ✅ SELESAI
 
 **File:** `features/analytics/queries.ts` line 244–255
 
@@ -181,7 +185,7 @@ const gameResults = gameResultsRes.data ?? [];
 
 ---
 
-### H6. `registerApplicantAction` — WA Throw Bisa Cancel Registrasi
+### H6. `registerApplicantAction` — WA Throw Bisa Cancel Registrasi ✅ SELESAI
 
 **File:** `features/trials/actions.ts` line 277
 
@@ -206,9 +210,9 @@ try {
 
 ---
 
-## 🟡 MEDIUM — Fix Sebelum Traffic Naik
+## 🟡 MEDIUM — Fix Sebelum Traffic Naik ❌ BELUM DIKERJAKAN
 
-### M1. `player_target_history` — Limit Semantically Wrong
+### M1. `player_target_history` — Limit Semantically Wrong ❌
 
 **File:** `features/player-development/queries.ts` line 31–35
 
@@ -218,7 +222,7 @@ try {
 
 ---
 
-### M2. `count: "exact"` Tanpa `head: true` — Double Cost
+### M2. `count: "exact"` Tanpa `head: true` — Double Cost ❌
 
 **Files:**
 - `app/api/calendar/audit-logs/[calendarId]/route.ts` line 88
@@ -240,7 +244,7 @@ try {
 
 ---
 
-### M3. `generateMonthlyReport` — Masih ~7 Serial Round-Trips
+### M3. `generateMonthlyReport` — Masih ~7 Serial Round-Trips ❌
 
 **File:** `features/reports/queries.ts` line 138–463
 
@@ -251,7 +255,7 @@ B2-9 sudah partial fix (step trend sudah pakai `Promise.all`) tapi masih ada cha
 
 ---
 
-### M4. `PermissionGuard` — Async dalam useEffect Tanpa Cleanup
+### M4. `PermissionGuard` — Async dalam useEffect Tanpa Cleanup ❌
 
 **File:** `features/calendar/components/permission/PermissionGuard.tsx` line 103–116
 
@@ -281,7 +285,7 @@ Sama di `PermissionButton` (line ~178) dan `PermissionConfirmDialog` (line ~258)
 
 ---
 
-### M5. `getScrimWinLossRecord` — `.single()` Tanpa Error Handling
+### M5. `getScrimWinLossRecord` — `.single()` Tanpa Error Handling ❌
 
 **File:** `features/scrim/queries.ts` line 271–280
 
@@ -299,7 +303,7 @@ if (error) console.error("getScrimWinLossRecord:", error);
 
 ---
 
-### M6. `registerApplicantAction` — URL Storage Tidak Divalidasi
+### M6. `registerApplicantAction` — URL Storage Tidak Divalidasi ❌
 
 **File:** `features/trials/actions.ts` line 214–215
 
@@ -315,7 +319,7 @@ if (screenshotUrl && !screenshotUrl.startsWith(STORAGE_DOMAIN)) {
 
 ---
 
-### M7. `subscribeToOrganizationCalendars` — Dead Code + Channel Leak
+### M7. `subscribeToOrganizationCalendars` — Dead Code + Channel Leak ❌
 
 **File:** `lib/supabase/calendar-realtime.ts` line 346–365
 
@@ -325,7 +329,7 @@ Fungsi ini **tidak pernah dipanggil** di mana pun (dead code). Kalau dipanggil, 
 
 ---
 
-### M8. `registerApplicantAction` — Tidak Ada Rate Limiting
+### M8. `registerApplicantAction` — Tidak Ada Rate Limiting ❌
 
 **File:** `features/trials/actions.ts`
 
@@ -335,7 +339,7 @@ Form trial publik (tidak butuh login). Bot bisa spam submission dengan nomor pho
 
 ---
 
-## 🟢 LOW — Nice-to-Fix
+## 🟢 LOW — Nice-to-Fix ❌ BELUM DIKERJAKAN
 
 | # | Issue | File | Line |
 |---|-------|------|------|
