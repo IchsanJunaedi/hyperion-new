@@ -14,7 +14,7 @@ interface AddTargetFormProps {
   onDone?: () => void;
 }
 
-export function AddTargetForm({ orgSlug, members, onDone }: AddTargetFormProps) {
+const AddTargetForm = ({ orgSlug, members, onDone }: AddTargetFormProps) => {
   const [userId, setUserId] = useState(members[0]?.user_id ?? "");
   const [skillName, setSkillName] = useState("");
   const [targetLevel, setTargetLevel] = useState(5);
@@ -121,4 +121,5 @@ export function AddTargetForm({ orgSlug, members, onDone }: AddTargetFormProps) 
       </div>
     </div>
   );
-}
+};
+export { AddTargetForm };

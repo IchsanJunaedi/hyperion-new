@@ -15,7 +15,7 @@ interface NotificationBellProps {
   orgSlug: string;
 }
 
-export function NotificationBell({ userId, orgSlug }: NotificationBellProps) {
+const NotificationBell = ({ userId, orgSlug }: NotificationBellProps) => {
   const { data: unreadCount } = useUnreadCount(userId);
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
@@ -147,4 +147,5 @@ export function NotificationBell({ userId, orgSlug }: NotificationBellProps) {
       )}
     </div>
   );
-}
+};
+export { NotificationBell };

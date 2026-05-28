@@ -30,7 +30,7 @@ export interface AttendingPlayer {
   mainRole: string | null;
 }
 
-export function makeBlankDraft(): DraftPicks {
+const makeBlankDraft = (): DraftPicks => {
   const blankSlot = (): OurDraftSlot => ({ hero: "", playerId: null });
   return {
     our: {
@@ -46,7 +46,7 @@ export function makeBlankDraft(): DraftPicks {
       enemy: Array(BAN_COUNT).fill(""),
     },
   };
-}
+};
 
 // ─── Ban Slot Picker — circular trigger + dropdown ────────────────────────────
 
@@ -268,7 +268,7 @@ interface DraftSectionProps {
   onBanChange: (side: "our" | "enemy", index: number, hero: string) => void;
 }
 
-export function DraftSection({ draft, attendingPlayers, onOurChange, onEnemyChange, onBanChange }: DraftSectionProps) {
+const DraftSection = ({ draft, attendingPlayers, onOurChange, onEnemyChange, onBanChange }: DraftSectionProps) => {
   const allPicked = new Set<string>();
   for (const slot of Object.values(draft.our)) if (slot.hero) allPicked.add(slot.hero);
   for (const hero of Object.values(draft.enemy)) if (hero) allPicked.add(hero);
@@ -386,4 +386,5 @@ export function DraftSection({ draft, attendingPlayers, onOurChange, onEnemyChan
       </div>
     </div>
   );
-}
+};
+export { makeBlankDraft, DraftSection };

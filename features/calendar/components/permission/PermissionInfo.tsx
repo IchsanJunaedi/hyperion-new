@@ -173,7 +173,7 @@ function RoleBadge({ role, compact = false }: RoleBadgeProps) {
 // Main Component
 // ============================================================================
 
-export function PermissionInfo({
+const PermissionInfo = ({
   userRole,
   calendarVisibility,
   userPermissions,
@@ -181,7 +181,7 @@ export function PermissionInfo({
   canRequestAccess = false,
   onRequestAccess,
   compact = false,
-}: PermissionInfoProps) {
+}: PermissionInfoProps) => {
   const { success } = useNotify();
   const [copied, setCopied] = useState(false);
 
@@ -323,6 +323,6 @@ Permissions: ${permList || "None"}`;
       )}
     </div>
   );
-}
-
+};
+export { PermissionInfo };
 export type { PermissionInfoProps };

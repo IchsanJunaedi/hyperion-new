@@ -26,7 +26,7 @@ const STATUS_LABELS: Record<string, string> = {
   cancelled: "Dibatalkan",
 };
 
-export function TournamentCard({ tournament, orgSlug }: TournamentCardProps) {
+const TournamentCard = ({ tournament, orgSlug }: TournamentCardProps) => {
   const startDate = new Date(tournament.start_date).toLocaleDateString("id-ID", {
     day: "numeric",
     month: "short",
@@ -81,4 +81,5 @@ export function TournamentCard({ tournament, orgSlug }: TournamentCardProps) {
       </div>
     </Link>
   );
-}
+};
+export { TournamentCard };

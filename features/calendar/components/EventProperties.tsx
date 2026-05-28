@@ -31,11 +31,11 @@ interface EventPropertiesProps {
   readOnly?: boolean;
 }
 
-export function EventProperties({
+const EventProperties = ({
   event,
   onPropertyChange,
   readOnly = false,
-}: EventPropertiesProps) {
+}: EventPropertiesProps) => {
   const handlePropertyChange = (field: string, value: unknown) => {
     onPropertyChange(field, value);
   };
@@ -130,4 +130,5 @@ export function EventProperties({
       />
     </div>
   );
-}
+};
+export { EventProperties };

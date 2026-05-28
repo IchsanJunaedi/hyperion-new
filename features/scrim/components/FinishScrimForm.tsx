@@ -83,13 +83,13 @@ interface FinishScrimFormProps {
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
-export function FinishScrimForm({
+const FinishScrimForm = ({
   scrimId,
   orgSlug,
   orgId,
   format,
   scrimId_detail,
-}: FinishScrimFormProps) {
+}: FinishScrimFormProps) => {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -530,4 +530,5 @@ export function FinishScrimForm({
       </button>
     </div>
   );
-}
+};
+export { FinishScrimForm };

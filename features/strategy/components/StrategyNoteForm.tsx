@@ -11,7 +11,7 @@ interface StrategyNoteFormProps {
   divisions: Array<{ id: string; name: string }>;
 }
 
-export function StrategyNoteForm({ orgSlug, divisions }: StrategyNoteFormProps) {
+const StrategyNoteForm = ({ orgSlug, divisions }: StrategyNoteFormProps) => {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [globalError, setGlobalError] = useState<string | null>(null);
@@ -113,7 +113,8 @@ export function StrategyNoteForm({ orgSlug, divisions }: StrategyNoteFormProps) 
       </button>
     </form>
   );
-}
+};
+export { StrategyNoteForm };
 
 function Field({
   label,

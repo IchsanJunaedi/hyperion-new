@@ -28,14 +28,14 @@ function formatSize(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-export function ContextFiles({
+const ContextFiles = ({
   orgId,
   orgSlug,
   refType,
   refId,
   canUpload,
   initialFiles = [],
-}: ContextFilesProps) {
+}: ContextFilesProps) => {
   const [files, setFiles] = useState<FileRow[]>(initialFiles);
   const [uploading, setUploading] = useState(false);
   const [openingId, setOpeningId] = useState<string | null>(null);
@@ -180,4 +180,5 @@ export function ContextFiles({
       )}
     </div>
   );
-}
+};
+export { ContextFiles };

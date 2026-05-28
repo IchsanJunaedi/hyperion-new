@@ -10,7 +10,7 @@ interface StrategyNoteCardProps {
   orgSlug: string;
 }
 
-export function StrategyNoteCard({ note, orgSlug }: StrategyNoteCardProps) {
+const StrategyNoteCard = ({ note, orgSlug }: StrategyNoteCardProps) => {
   const date = new Date(note.updated_at).toLocaleDateString("id-ID", {
     day: "numeric",
     month: "short",
@@ -47,4 +47,5 @@ export function StrategyNoteCard({ note, orgSlug }: StrategyNoteCardProps) {
       <p className="mt-3 text-xs text-white/40">Diperbarui {date}</p>
     </Link>
   );
-}
+};
+export { StrategyNoteCard };

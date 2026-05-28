@@ -30,7 +30,7 @@ const EMPTY_MESSAGES: Record<WaFilter, string> = {
   failed: "Tidak ada pengiriman gagal.",
 };
 
-export function WaDeliveryTable({ orgId, orgSlug }: WaDeliveryTableProps) {
+const WaDeliveryTable = ({ orgId, orgSlug }: WaDeliveryTableProps) => {
   const [filter, setFilter] = useState<WaFilter>("all");
   const [page, setPage] = useState(0);
   const queryClient = useQueryClient();
@@ -136,7 +136,8 @@ export function WaDeliveryTable({ orgId, orgSlug }: WaDeliveryTableProps) {
       )}
     </div>
   );
-}
+};
+export { WaDeliveryTable };
 
 // --- Individual row with retry logic ---
 

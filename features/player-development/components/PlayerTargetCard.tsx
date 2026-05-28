@@ -15,7 +15,7 @@ interface PlayerTargetCardProps {
   canManage: boolean;
 }
 
-export function PlayerTargetCard({ target, orgSlug, canManage }: PlayerTargetCardProps) {
+const PlayerTargetCard = ({ target, orgSlug, canManage }: PlayerTargetCardProps) => {
   const [pending, startTransition] = useTransition();
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [editing, setEditing] = useState(false);
@@ -147,4 +147,5 @@ export function PlayerTargetCard({ target, orgSlug, canManage }: PlayerTargetCar
       />
     </div>
   );
-}
+};
+export { PlayerTargetCard };

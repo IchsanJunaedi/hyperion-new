@@ -39,13 +39,13 @@ const SECTION_LABELS: Record<Tab, string> = {
   security: "Keamanan Akun",
 };
 
-export function SettingsModal({
+const SettingsModal = ({
   open,
   onClose,
   userId,
   orgId,
   role,
-}: SettingsModalProps) {
+}: SettingsModalProps) => {
   const [tab, setTab] = useState<Tab>("profile");
 
   const showOrg = role === "owner" || role === "manager";
@@ -144,4 +144,5 @@ export function SettingsModal({
   );
 
   return createPortal(modalContent, document.body);
-}
+};
+export { SettingsModal };

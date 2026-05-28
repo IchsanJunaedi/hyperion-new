@@ -48,7 +48,7 @@ function Field({
   );
 }
 
-export function ProfileSection({ userId }: { userId: string }) {
+const ProfileSection = ({ userId }: { userId: string }) => {
   const [loading, setLoading] = useState(true);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -225,4 +225,5 @@ export function ProfileSection({ userId }: { userId: string }) {
       </button>
     </form>
   );
-}
+};
+export { ProfileSection };

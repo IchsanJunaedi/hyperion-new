@@ -8,7 +8,7 @@ interface CalendarViewToggleProps {
   activeView: "grid" | "list" | "week";
 }
 
-export function CalendarViewToggle({ activeView }: CalendarViewToggleProps) {
+const CalendarViewToggle = ({ activeView }: CalendarViewToggleProps) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -61,4 +61,5 @@ export function CalendarViewToggle({ activeView }: CalendarViewToggleProps) {
       </button>
     </div>
   );
-}
+};
+export { CalendarViewToggle };

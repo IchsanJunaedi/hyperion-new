@@ -15,12 +15,13 @@ const STATUS_LABELS: Record<SponsorStatus, string> = {
   ended:    "Selesai",
 };
 
-export function SponsorStatusBadge({ status }: { status: SponsorStatus }) {
+const SponsorStatusBadge = ({ status }: { status: SponsorStatus }) => {
   return (
     <span className={cn("inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium", STATUS_STYLES[status])}>
       {STATUS_LABELS[status]}
     </span>
   );
-}
+};
+export { SponsorStatusBadge };
 
 export { STATUS_LABELS, STATUS_STYLES };

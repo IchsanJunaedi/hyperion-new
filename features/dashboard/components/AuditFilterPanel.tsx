@@ -38,7 +38,7 @@ function savePresets(presets: Preset[]) {
   localStorage.setItem(PRESETS_KEY, JSON.stringify(presets));
 }
 
-export function AuditFilterPanel({ filters, actors }: AuditFilterPanelProps) {
+const AuditFilterPanel = ({ filters, actors }: AuditFilterPanelProps) => {
   const router = useRouter();
   const pathname = usePathname();
   const [search, setSearch] = useState(filters.search);
@@ -190,4 +190,5 @@ export function AuditFilterPanel({ filters, actors }: AuditFilterPanelProps) {
       )}
     </div>
   );
-}
+};
+export { AuditFilterPanel };

@@ -21,7 +21,7 @@ interface TournamentTimelineProps {
   canManage: boolean;
 }
 
-export function TournamentTimeline({ stages, tournamentId, orgSlug, canManage }: TournamentTimelineProps) {
+const TournamentTimeline = ({ stages, tournamentId, orgSlug, canManage }: TournamentTimelineProps) => {
   const [showForm, setShowForm] = useState(false);
 
   return (
@@ -65,7 +65,8 @@ export function TournamentTimeline({ stages, tournamentId, orgSlug, canManage }:
       )}
     </div>
   );
-}
+};
+export { TournamentTimeline };
 
 function StageItem({
   stage,

@@ -32,7 +32,7 @@ function toDatetimeLocal(isoString?: string | null): string {
   return `${yyyy}-${mm}-${dd}T${hh}:${min}`;
 }
 
-export function TournamentForm({ orgSlug, divisionId, tournament, onSuccess }: TournamentFormProps) {
+const TournamentForm = ({ orgSlug, divisionId, tournament, onSuccess }: TournamentFormProps) => {
   const isEdit = !!tournament;
   const [pending, startTransition] = useTransition();
   const { success, error } = useNotify();
@@ -224,4 +224,5 @@ export function TournamentForm({ orgSlug, divisionId, tournament, onSuccess }: T
       </button>
     </div>
   );
-}
+};
+export { TournamentForm };

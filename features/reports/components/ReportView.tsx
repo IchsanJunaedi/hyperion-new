@@ -467,7 +467,7 @@ const TABS: TabDef[] = [
 ];
 
 // ─── Component ────────────────────────────────────────────────────────────────
-export function ReportView({ report }: { report: MonthlyReport }) {
+const ReportView = ({ report }: { report: MonthlyReport }) => {
   const [activeTab, setActiveTab] = useState<TabKey>("overview");
   const [downloading, setDownloading] = useState(false);
 
@@ -524,4 +524,5 @@ export function ReportView({ report }: { report: MonthlyReport }) {
       {activeTab === "sponsor" && report.sponsors && <SponsorTab sponsors={report.sponsors} />}
     </div>
   );
-}
+};
+export { ReportView };

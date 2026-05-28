@@ -24,7 +24,7 @@ interface OrgSettingsCardProps {
   }>;
 }
 
-export function OrgSettingsCard({ org, divisions }: OrgSettingsCardProps) {
+const OrgSettingsCard = ({ org, divisions }: OrgSettingsCardProps) => {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [editing, setEditing] = useState(false);
@@ -110,4 +110,5 @@ export function OrgSettingsCard({ org, divisions }: OrgSettingsCardProps) {
       </div>
     </div>
   );
-}
+};
+export { OrgSettingsCard };

@@ -12,12 +12,12 @@ interface AnnouncementCardProps {
   totalMembers?: number;
 }
 
-export function AnnouncementCard({
+const AnnouncementCard = ({
   announcement,
   orgSlug,
   readCount,
   totalMembers,
-}: AnnouncementCardProps) {
+}: AnnouncementCardProps) => {
   const date = new Date(announcement.created_at).toLocaleDateString("id-ID", {
     day: "numeric",
     month: "short",
@@ -58,4 +58,5 @@ export function AnnouncementCard({
       </div>
     </Link>
   );
-}
+};
+export { AnnouncementCard };

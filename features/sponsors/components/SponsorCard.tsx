@@ -22,7 +22,7 @@ interface SponsorCardProps {
   detailHref: string;
 }
 
-export function SponsorCard({ sponsor, detailHref }: SponsorCardProps) {
+const SponsorCard = ({ sponsor, detailHref }: SponsorCardProps) => {
   const days = daysUntil(sponsor.end_date);
   const formattedValue = formatCurrency(sponsor.deal_value, sponsor.currency);
   const progressPct =
@@ -86,4 +86,5 @@ export function SponsorCard({ sponsor, detailHref }: SponsorCardProps) {
       </Link>
     </div>
   );
-}
+};
+export { SponsorCard };

@@ -20,12 +20,12 @@ const OPTIONS: Array<{ value: MemberAvailability; label: string; dotColor: strin
   { value: "unavailable", label: "Tidak Tersedia", dotColor: "bg-red-500" },
 ];
 
-export function AvailabilitySelector({
+const AvailabilitySelector = ({
   orgSlug,
   memberId,
   currentAvailability,
   direction = "down",
-}: AvailabilitySelectorProps) {
+}: AvailabilitySelectorProps) => {
   const [pending, startTransition] = useTransition();
   const [isOpen, setIsOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -138,4 +138,5 @@ export function AvailabilitySelector({
       )}
     </div>
   );
-}
+};
+export { AvailabilitySelector };

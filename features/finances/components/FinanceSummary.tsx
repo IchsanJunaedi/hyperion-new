@@ -9,7 +9,7 @@ function formatRupiah(amount: number) {
   }).format(amount);
 }
 
-export function FinanceSummaryCards({ summary }: { summary: FinanceSummary }) {
+const FinanceSummaryCards = ({ summary }: { summary: FinanceSummary }) => {
   const isPositive = summary.balance >= 0;
 
   return (
@@ -48,4 +48,5 @@ export function FinanceSummaryCards({ summary }: { summary: FinanceSummary }) {
       </div>
     </div>
   );
-}
+};
+export { FinanceSummaryCards };

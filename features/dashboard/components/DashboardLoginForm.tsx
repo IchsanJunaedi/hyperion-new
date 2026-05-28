@@ -6,7 +6,7 @@ import { useState, useTransition } from "react";
 
 import { dashboardLoginAction } from "../actions";
 
-export function DashboardLoginForm() {
+const DashboardLoginForm = () => {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -74,4 +74,5 @@ export function DashboardLoginForm() {
       </button>
     </form>
   );
-}
+};
+export { DashboardLoginForm };

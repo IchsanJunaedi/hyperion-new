@@ -11,7 +11,7 @@ interface ManagerDivisionListProps {
   }>;
 }
 
-export function ManagerDivisionList({ divisions }: ManagerDivisionListProps) {
+const ManagerDivisionList = ({ divisions }: ManagerDivisionListProps) => {
   if (divisions.length === 0) {
     return (
       <p className="rounded-lg border border-white/5 bg-white/[0.02] px-4 py-8 text-center text-sm text-white/40">
@@ -41,4 +41,5 @@ export function ManagerDivisionList({ divisions }: ManagerDivisionListProps) {
       ))}
     </div>
   );
-}
+};
+export { ManagerDivisionList };

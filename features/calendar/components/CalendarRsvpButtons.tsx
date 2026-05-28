@@ -43,12 +43,12 @@ const COUNT_KEY: Record<string, keyof { hadir: number; tentative: number; tidak_
   tidak_hadir: "tidak_hadir",
 };
 
-export function CalendarRsvpButtons({
+const CalendarRsvpButtons = ({
   orgSlug,
   eventId,
   currentStatus,
   rsvpCounts,
-}: CalendarRsvpButtonsProps) {
+}: CalendarRsvpButtonsProps) => {
   const [pending, startTransition] = useTransition();
 
   function handleRsvp(status: "hadir" | "tidak_hadir" | "tentative") {
@@ -95,4 +95,5 @@ export function CalendarRsvpButtons({
       })}
     </div>
   );
-}
+};
+export { CalendarRsvpButtons };

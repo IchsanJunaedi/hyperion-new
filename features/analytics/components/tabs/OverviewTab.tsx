@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { ChevronRight } from "lucide-react";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
 import type { OverviewStats, FormatStat, RecentScrim } from "@/features/analytics/queries";
@@ -6,6 +8,7 @@ interface OverviewTabProps {
   stats: OverviewStats;
   formatBreakdown: FormatStat[];
   recentScrims: RecentScrim[];
+  slug: string;
 }
 
 const FORMAT_LABELS: Record<string, string> = {
@@ -17,7 +20,7 @@ const FORMAT_LABELS: Record<string, string> = {
   "4match": "4 Match",
 };
 
-export function OverviewTab({ stats, formatBreakdown, recentScrims }: OverviewTabProps) {
+const OverviewTab = ({ stats, formatBreakdown, recentScrims, slug }: OverviewTabProps) => {
   return (
     <div className="space-y-6">
       {/* Stat Cards */}
@@ -142,12 +145,13 @@ export function OverviewTab({ stats, formatBreakdown, recentScrims }: OverviewTa
         ) : (
           <div className="divide-y divide-[#2D2D2D]">
             {recentScrims.map((s) => (
-              <div
+              <Link
                 key={s.id}
-                className="grid grid-cols-[1fr_auto_auto_auto] items-center gap-4 px-5 py-3"
+                href={`/${slug}/scrim/${s.id}`}
+                className="group grid grid-cols-[1fr_auto_auto_auto_auto] items-center gap-4 px-5 py-3 transition-colors hover:bg-[#2C2C2C] cursor-pointer"
               >
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-medium text-[#E5E2E1]">
+                  <p className="truncate text-sm font-medium text-[#E5E2E1] transition-colors group-hover:text-white">
                     vs {s.opponent_name}
                   </p>
                   <p className="text-xs text-[#6B6A68]">
@@ -176,14 +180,16 @@ export function OverviewTab({ stats, formatBreakdown, recentScrims }: OverviewTa
                 >
                   {s.is_win === true ? "W" : s.is_win === false ? "L" : "D"}
                 </span>
-              </div>
+                <ChevronRight className="h-4 w-4 text-[#6B6A68] opacity-0 transition-opacity group-hover:opacity-100" />
+              </Link>
             ))}
           </div>
         )}
       </div>
     </div>
   );
-}
+};
+export { OverviewTab };
 
 function StatCard({
   label,

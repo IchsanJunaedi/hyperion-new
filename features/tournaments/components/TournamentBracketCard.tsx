@@ -27,14 +27,14 @@ function getFileName(path: string | null): string {
   return stripTimestampPrefix(parts[parts.length - 1] || "");
 }
 
-export function TournamentBracketCard({
+const TournamentBracketCard = ({
   orgSlug,
   orgId,
   tournamentId,
   initialBracketLink,
   initialBracketFilePath,
   canManage,
-}: TournamentBracketCardProps) {
+}: TournamentBracketCardProps) => {
   const [editing, setEditing] = useState(false);
   const [bracketLink, setBracketLink] = useState(initialBracketLink ?? "");
   const [filePath, setFilePath] = useState(initialBracketFilePath ?? "");
@@ -259,4 +259,5 @@ export function TournamentBracketCard({
       )}
     </article>
   );
-}
+};
+export { TournamentBracketCard };

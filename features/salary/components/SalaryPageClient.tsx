@@ -29,13 +29,13 @@ function formatRupiah(n: number) {
   }).format(n);
 }
 
-export function SalaryPageClient({
+const SalaryPageClient = ({
   orgId,
   contracts,
   summary,
   members,
   revalidatePaths,
-}: SalaryPageClientProps) {
+}: SalaryPageClientProps) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<ContractWithProfile | undefined>(undefined);
 
@@ -158,4 +158,5 @@ export function SalaryPageClient({
       )}
     </>
   );
-}
+};
+export { SalaryPageClient };

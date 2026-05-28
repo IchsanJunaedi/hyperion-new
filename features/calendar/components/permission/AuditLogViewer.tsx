@@ -378,13 +378,13 @@ function FilterControls({
  * Audit log viewer with timeline, filtering, and export functionality.
  * Displays all permission changes and calendar operations.
  */
-export function AuditLogViewer({
+const AuditLogViewer = ({
   logs,
   onExport,
   onFilterChange,
   isLoading = false,
   compact = false,
-}: AuditLogViewerProps) {
+}: AuditLogViewerProps) => {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [filters, setFilters] = useState<AuditFilterOptions>({});
   const [exporting, setExporting] = useState(false);
@@ -547,6 +547,6 @@ export function AuditLogViewer({
       )}
     </div>
   );
-}
-
+};
+export { AuditLogViewer };
 export type { AuditLogViewerProps, AuditFilterOptions };

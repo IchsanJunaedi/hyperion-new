@@ -11,7 +11,7 @@ interface OrgSwitcherProps {
   month: number;
 }
 
-export function OrgSwitcher({ orgs, currentOrgId, basePath, year, month }: OrgSwitcherProps) {
+const OrgSwitcher = ({ orgs, currentOrgId, basePath, year, month }: OrgSwitcherProps) => {
   if (orgs.length <= 1) return null;
 
   return (
@@ -35,4 +35,5 @@ export function OrgSwitcher({ orgs, currentOrgId, basePath, year, month }: OrgSw
       })}
     </div>
   );
-}
+};
+export { OrgSwitcher };

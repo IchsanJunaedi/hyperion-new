@@ -15,13 +15,13 @@ interface ScrimReviewSectionProps {
   scrimCompleted: boolean;
 }
 
-export function ScrimReviewSection({
+const ScrimReviewSection = ({
   orgSlug,
   scrimId,
   role,
   reviewRequest: initial,
   scrimCompleted,
-}: ScrimReviewSectionProps) {
+}: ScrimReviewSectionProps) => {
   const [reviewRequest, setReviewRequest] = useState(initial);
   const [notes, setNotes] = useState("");
   const [reviewNotes, setReviewNotes] = useState("");
@@ -206,4 +206,5 @@ export function ScrimReviewSection({
       )}
     </article>
   );
-}
+};
+export { ScrimReviewSection };

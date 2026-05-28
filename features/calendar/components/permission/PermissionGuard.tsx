@@ -90,13 +90,13 @@ async function checkPermission(
  *   <EditEventForm />
  * </PermissionGuard>
  */
-export function PermissionGuard({
+const PermissionGuard = ({
   requiredPermission,
   calendarId,
   children,
   fallback,
   requireAll = false,
-}: PermissionGuardProps) {
+}: PermissionGuardProps) => {
   const [allowed, setAllowed] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -142,7 +142,7 @@ export function PermissionGuard({
   }
 
   return <>{children}</>;
-}
+};
 
 // ============================================================================
 // Permission Button Component
@@ -161,7 +161,7 @@ export function PermissionGuard({
  *   Create Event
  * </PermissionButton>
  */
-export function PermissionButton({
+const PermissionButton = ({
   requiredPermission,
   calendarId,
   children,
@@ -171,7 +171,7 @@ export function PermissionButton({
   disabled,
   title,
   ...props
-}: PermissionButtonProps) {
+}: PermissionButtonProps) => {
   const [allowed, setAllowed] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -222,7 +222,7 @@ export function PermissionButton({
       )}
     </button>
   );
-}
+};
 
 // ============================================================================
 // Permission Confirm Dialog Component
@@ -242,7 +242,7 @@ export function PermissionButton({
  *   <p>Are you sure you want to grant access?</p>
  * </PermissionConfirmDialog>
  */
-export function PermissionConfirmDialog({
+const PermissionConfirmDialog = ({
   requiredPermission,
   calendarId,
   action,
@@ -250,7 +250,7 @@ export function PermissionConfirmDialog({
   onConfirm,
   onCancel,
   loading = false,
-}: PermissionConfirmDialogProps) {
+}: PermissionConfirmDialogProps) => {
   const [open, setOpen] = useState(false);
   const [allowed, setAllowed] = useState<boolean | null>(null);
   const [checking, setChecking] = useState(true);
@@ -341,8 +341,8 @@ export function PermissionConfirmDialog({
       )}
     </>
   );
-}
-
+};
+export { PermissionGuard, PermissionButton, PermissionConfirmDialog };
 export type {
   PermissionGuardProps,
   PermissionButtonProps,

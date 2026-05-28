@@ -11,7 +11,7 @@ const STATUS_CONFIG: Record<string, { label: string; cls: string }> = {
   ended:    { label: "Selesai",  cls: "bg-zinc-500/10 text-zinc-400 border-zinc-500/20" },
 };
 
-export function SponsorTab({ sponsors }: { sponsors: NonNullable<MonthlyReport["sponsors"]> }) {
+const SponsorTab = ({ sponsors }: { sponsors: NonNullable<MonthlyReport["sponsors"]> }) => {
   return (
     <div className="space-y-6">
       {/* Stat cards */}
@@ -79,4 +79,5 @@ export function SponsorTab({ sponsors }: { sponsors: NonNullable<MonthlyReport["
       )}
     </div>
   );
-}
+};
+export { SponsorTab };

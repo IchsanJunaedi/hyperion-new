@@ -77,7 +77,7 @@ interface AuditLogListProps {
   showSearch?: boolean;
 }
 
-export function AuditLogList({ logs, showSearch = false }: AuditLogListProps) {
+const AuditLogList = ({ logs, showSearch = false }: AuditLogListProps) => {
   const [query, setQuery] = useState("");
 
   const filtered = query.trim()
@@ -166,4 +166,5 @@ export function AuditLogList({ logs, showSearch = false }: AuditLogListProps) {
       )}
     </div>
   );
-}
+};
+export { AuditLogList };

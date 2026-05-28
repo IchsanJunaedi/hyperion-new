@@ -9,7 +9,7 @@ interface AuditPaginationProps {
   total: number;
 }
 
-export function AuditPagination({ page, pageCount, total }: AuditPaginationProps) {
+const AuditPagination = ({ page, pageCount, total }: AuditPaginationProps) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -46,4 +46,5 @@ export function AuditPagination({ page, pageCount, total }: AuditPaginationProps
       </div>
     </div>
   );
-}
+};
+export { AuditPagination };

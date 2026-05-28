@@ -15,7 +15,7 @@ interface FinanceFormProps {
   onClose: () => void;
 }
 
-export function FinanceForm({ orgId, revalidatePaths, onClose }: FinanceFormProps) {
+const FinanceForm = ({ orgId, revalidatePaths, onClose }: FinanceFormProps) => {
   const router = useRouter();
   const { success, error: notifyError } = useNotify();
   const [pending, startTransition] = useTransition();
@@ -151,4 +151,5 @@ export function FinanceForm({ orgId, revalidatePaths, onClose }: FinanceFormProp
       </div>
     </div>
   );
-}
+};
+export { FinanceForm };

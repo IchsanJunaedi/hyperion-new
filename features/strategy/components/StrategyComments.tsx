@@ -19,13 +19,13 @@ interface StrategyCommentsProps {
   comments: StrategyCommentWithProfile[];
 }
 
-export function StrategyComments({
+const StrategyComments = ({
   orgSlug,
   noteId,
   currentUserId,
   currentUserDisplayName,
   comments: initialComments,
-}: StrategyCommentsProps) {
+}: StrategyCommentsProps) => {
   const [comments, setComments] = useState(initialComments);
   const [text, setText] = useState("");
   const [addPending, startAdd] = useTransition();
@@ -190,4 +190,5 @@ export function StrategyComments({
       </div>
     </div>
   );
-}
+};
+export { StrategyComments };

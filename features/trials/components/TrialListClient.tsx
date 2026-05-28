@@ -27,7 +27,7 @@ interface TrialListClientProps {
   revalidatePaths: string[];
 }
 
-export function TrialListClient({ orgSlug, trials, divisionId, canManage, revalidatePaths }: TrialListClientProps) {
+const TrialListClient = ({ orgSlug, trials, divisionId, canManage, revalidatePaths }: TrialListClientProps) => {
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
@@ -106,4 +106,5 @@ export function TrialListClient({ orgSlug, trials, divisionId, canManage, revali
       )}
     </>
   );
-}
+};
+export { TrialListClient };

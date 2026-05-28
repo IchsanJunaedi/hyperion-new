@@ -24,14 +24,14 @@ interface RosterTableProps {
   divisions: Array<{ id: string; name: string }>;
 }
 
-export function RosterTable({
+const RosterTable = ({
   members,
   currentUserId,
   currentUserRole,
   orgSlug,
   orgId,
   divisions,
-}: RosterTableProps) {
+}: RosterTableProps) => {
   const [showInviteForm, setShowInviteForm] = useState(false);
   const isCaptainOrAbove =
     currentUserRole === "owner" || currentUserRole === "captain";
@@ -229,4 +229,5 @@ export function RosterTable({
       </div>
     </div>
   );
-}
+};
+export { RosterTable };

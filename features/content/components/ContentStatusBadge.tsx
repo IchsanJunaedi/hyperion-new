@@ -7,11 +7,12 @@ const config: Record<ContentStatus, { label: string; className: string }> = {
   published: { label: "Published", className: "bg-blue-500/10 text-blue-400" },
 };
 
-export function ContentStatusBadge({ status }: { status: ContentStatus }) {
+const ContentStatusBadge = ({ status }: { status: ContentStatus }) => {
   const { label, className } = config[status];
   return (
     <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${className}`}>
       {label}
     </span>
   );
-}
+};
+export { ContentStatusBadge };

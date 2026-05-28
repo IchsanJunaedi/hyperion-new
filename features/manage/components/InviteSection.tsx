@@ -27,7 +27,7 @@ interface InviteSectionProps {
 
 const ROLES: MemberRole[] = ["member", "captain", "coach", "manager"];
 
-export function InviteSection({ orgId, orgSlug, divisions, pendingInvites }: InviteSectionProps) {
+const InviteSection = ({ orgId, orgSlug, divisions, pendingInvites }: InviteSectionProps) => {
   const router = useRouter();
   const { success, error: notifyError } = useNotify();
   const [pending, startTransition] = useTransition();
@@ -196,4 +196,5 @@ export function InviteSection({ orgId, orgSlug, divisions, pendingInvites }: Inv
       />
     </section>
   );
-}
+};
+export { InviteSection };

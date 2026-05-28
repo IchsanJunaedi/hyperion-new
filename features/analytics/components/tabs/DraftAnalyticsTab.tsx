@@ -23,7 +23,7 @@ function heroColour(name: string) {
   return AVATAR_COLOURS[h % AVATAR_COLOURS.length]!;
 }
 
-export function DraftAnalyticsTab({ data }: DraftAnalyticsTabProps) {
+const DraftAnalyticsTab = ({ data }: DraftAnalyticsTabProps) => {
   const hasData = data.topOverall.length > 0;
 
   if (!hasData) {
@@ -78,7 +78,8 @@ export function DraftAnalyticsTab({ data }: DraftAnalyticsTabProps) {
       </div>
     </div>
   );
-}
+};
+export { DraftAnalyticsTab };
 
 function HeroRow({
   hero,

@@ -20,7 +20,7 @@ interface ProfileSetupFormProps {
   };
 }
 
-export function ProfileSetupForm({ lockedValues, defaultValues }: ProfileSetupFormProps) {
+const ProfileSetupForm = ({ lockedValues, defaultValues }: ProfileSetupFormProps) => {
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
@@ -231,7 +231,8 @@ export function ProfileSetupForm({ lockedValues, defaultValues }: ProfileSetupFo
       </button>
     </form>
   );
-}
+};
+export { ProfileSetupForm };
 
 function Field({
   label,

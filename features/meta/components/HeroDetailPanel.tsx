@@ -53,7 +53,7 @@ interface HeroDetailPanelProps {
   onClose: () => void;
 }
 
-export function HeroDetailPanel({ hero: initialHero, allHeroes, onClose }: HeroDetailPanelProps) {
+const HeroDetailPanel = ({ hero: initialHero, allHeroes, onClose }: HeroDetailPanelProps) => {
   const [navStack, setNavStack] = useState<MetaHeroRating[]>([]);
 
   const current: MetaHeroRating = navStack.length > 0 ? navStack[navStack.length - 1]! : initialHero;
@@ -167,4 +167,5 @@ export function HeroDetailPanel({ hero: initialHero, allHeroes, onClose }: HeroD
       </div>
     </>
   );
-}
+};
+export { HeroDetailPanel };

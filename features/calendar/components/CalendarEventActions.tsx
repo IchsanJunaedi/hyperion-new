@@ -12,10 +12,10 @@ interface CalendarEventActionsProps {
   eventId: string;
 }
 
-export function CalendarEventActions({
+const CalendarEventActions = ({
   orgSlug,
   eventId,
-}: CalendarEventActionsProps) {
+}: CalendarEventActionsProps) => {
   const router = useRouter();
   const [deletePending, startDeleteTransition] = useTransition();
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -58,4 +58,5 @@ export function CalendarEventActions({
       </button>
     </div>
   );
-}
+};
+export { CalendarEventActions };

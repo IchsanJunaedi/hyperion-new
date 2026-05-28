@@ -13,10 +13,10 @@ interface StrategyNoteActionsProps {
   noteId: string;
 }
 
-export function StrategyNoteActions({
+const StrategyNoteActions = ({
   orgSlug,
   noteId,
-}: StrategyNoteActionsProps) {
+}: StrategyNoteActionsProps) => {
   const router = useRouter();
   const [deletePending, startDeleteTransition] = useTransition();
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -67,4 +67,5 @@ export function StrategyNoteActions({
       </button>
     </div>
   );
-}
+};
+export { StrategyNoteActions };

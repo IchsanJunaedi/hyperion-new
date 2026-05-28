@@ -38,12 +38,12 @@ function toWibDatetimeLocal(utcIso: string): string {
   return local.toISOString().slice(0, 16);
 }
 
-export function ScrimEditForm({
+const ScrimEditForm = ({
   orgSlug,
   scrimId,
   divisions,
   initialValues,
-}: ScrimEditFormProps) {
+}: ScrimEditFormProps) => {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [globalError, setGlobalError] = useState<string | null>(null);
@@ -215,7 +215,8 @@ export function ScrimEditForm({
       </button>
     </form>
   );
-}
+};
+export { ScrimEditForm };
 
 function Field({
   label,

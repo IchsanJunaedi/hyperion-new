@@ -17,7 +17,7 @@ const POSITION_SUGGESTIONS = [
   "Jungler", "Mid Lane", "Exp Lane", "Roamer", "Gold Lane",
 ];
 
-export function TrialFormModal({ divisionId, revalidatePaths, onClose }: TrialFormModalProps) {
+const TrialFormModal = ({ divisionId, revalidatePaths, onClose }: TrialFormModalProps) => {
   const router = useRouter();
   const { success, error: notifyError } = useNotify();
   const [pending, startTransition] = useTransition();
@@ -175,4 +175,5 @@ export function TrialFormModal({ divisionId, revalidatePaths, onClose }: TrialFo
       </div>
     </div>
   );
-}
+};
+export { TrialFormModal };

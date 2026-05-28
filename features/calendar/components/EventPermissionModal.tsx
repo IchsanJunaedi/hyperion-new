@@ -156,12 +156,12 @@ function PermissionBreakdown({
  * Event permission management modal
  * Shows visibility level, override indicators, and permission breakdown
  */
-export function EventPermissionModal({
+const EventPermissionModal = ({
   eventId,
   isOpen,
   onClose,
   onPermissionChange,
-}: EventPermissionModalProps) {
+}: EventPermissionModalProps) => {
   const [selectedVisibility, setSelectedVisibility] = useState<CalendarVisibility | null>(null);
   const { visibility, calendarVisibility, isOverridden, allowedMembers, isLoading, error, setEventVisibility } = useEventPermission(eventId);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -313,4 +313,5 @@ export function EventPermissionModal({
       </div>
     </>
   );
-}
+};
+export { EventPermissionModal };

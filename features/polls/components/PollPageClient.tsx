@@ -15,7 +15,7 @@ interface PollPageClientProps {
   userId: string;
 }
 
-export function PollPageClient({ polls, orgSlug, canManage, userId }: PollPageClientProps) {
+const PollPageClient = ({ polls, orgSlug, canManage, userId }: PollPageClientProps) => {
   const [showForm, setShowForm] = useState(false);
 
   const now = new Date();
@@ -76,4 +76,5 @@ export function PollPageClient({ polls, orgSlug, canManage, userId }: PollPageCl
       )}
     </div>
   );
-}
+};
+export { PollPageClient };

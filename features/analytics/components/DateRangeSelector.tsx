@@ -11,7 +11,7 @@ const RANGES = [
 
 type RangeValue = (typeof RANGES)[number]["value"];
 
-export function DateRangeSelector({ activeRange }: { activeRange: RangeValue }) {
+const DateRangeSelector = ({ activeRange }: { activeRange: RangeValue }) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -41,4 +41,5 @@ export function DateRangeSelector({ activeRange }: { activeRange: RangeValue }) 
       ))}
     </div>
   );
-}
+};
+export { DateRangeSelector };

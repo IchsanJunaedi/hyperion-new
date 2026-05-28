@@ -235,7 +235,9 @@ export async function getDraftAnalytics(orgId: string): Promise<DraftAnalyticsDa
     .from("scrims")
     .select("id")
     .eq("organization_id", orgId)
-    .eq("status", "completed");
+    .eq("status", "completed")
+    .order("scheduled_at", { ascending: false })
+    .limit(200);
 
   if (!scrims?.length) return { byRole: {}, topOverall: [] };
 
@@ -253,6 +255,9 @@ export async function getDraftAnalytics(orgId: string): Promise<DraftAnalyticsDa
       .select("scrim_id, game_number, is_win")
       .in("scrim_id", scrimIds),
   ]);
+
+  if (picksRes.error) console.error("[getDraftAnalytics] picks:", picksRes.error);
+  if (gameResultsRes.error) console.error("[getDraftAnalytics] gameResults:", gameResultsRes.error);
 
   const picks = picksRes.data ?? [];
   if (!picks.length) return { byRole: {}, topOverall: [] };
@@ -344,6 +349,11 @@ export async function getEnterprisePlayerStats(orgId: string): Promise<Enterpris
       .eq("side", "our")
       .not("player_id", "is", null),
   ]);
+
+  if (profilesRes.error) console.error("[getEnterprisePlayerStats] profiles:", profilesRes.error);
+  if (attendancesRes.error) console.error("[getEnterprisePlayerStats] attendances:", attendancesRes.error);
+  if (gameResultsRes.error) console.error("[getEnterprisePlayerStats] gameResults:", gameResultsRes.error);
+  if (picksRes.error) console.error("[getEnterprisePlayerStats] picks:", picksRes.error);
 
   const profileMap = new Map(
     (profilesRes.data ?? []).map((p) => [p.id, { display_name: p.display_name, avatar_url: p.avatar_url }]),

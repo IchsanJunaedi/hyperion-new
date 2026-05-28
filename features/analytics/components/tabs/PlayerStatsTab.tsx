@@ -51,7 +51,7 @@ function ratingColor(r: number): string {
   return "text-rose-400";
 }
 
-export function PlayerStatsTab({ playerStats, orgId }: PlayerStatsTabProps) {
+const PlayerStatsTab = ({ playerStats, orgId }: PlayerStatsTabProps) => {
   const [selectedPlayer, setSelectedPlayer] = useState<EnterprisePlayerStat | null>(null);
 
   if (playerStats.length === 0) {
@@ -129,7 +129,8 @@ export function PlayerStatsTab({ playerStats, orgId }: PlayerStatsTabProps) {
       />
     </>
   );
-}
+};
+export { PlayerStatsTab };
 
 function PlayerCard({
   player,

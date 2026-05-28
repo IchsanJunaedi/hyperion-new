@@ -15,7 +15,7 @@ interface TournamentDetailActionsProps {
   orgSlug: string;
 }
 
-export function TournamentDetailActions({ tournament, orgSlug }: TournamentDetailActionsProps) {
+const TournamentDetailActions = ({ tournament, orgSlug }: TournamentDetailActionsProps) => {
   const router = useRouter();
   const { success, error } = useNotify();
   const [pending, startTransition] = useTransition();
@@ -152,4 +152,5 @@ export function TournamentDetailActions({ tournament, orgSlug }: TournamentDetai
       />
     </>
   );
-}
+};
+export { TournamentDetailActions };

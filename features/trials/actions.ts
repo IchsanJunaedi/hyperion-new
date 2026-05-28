@@ -274,10 +274,14 @@ export async function registerApplicantAction(raw: {
 
   if (error) return { ok: false, message: error.message };
 
-  await sendWaMessage(
-    phone,
-    `Halo ${name}! Pendaftaran trial *${trial.title}* berhasil diterima.\n\nData kamu:\n- IGN: ${ign}\n- Role: ${roleApplied}\n- Rank: ${rank}\n\nTim akan menghubungi kamu setelah proses seleksi selesai. Semangat!`
-  );
+  try {
+    await sendWaMessage(
+      phone,
+      `Halo ${name}! Pendaftaran trial *${trial.title}* berhasil diterima.\n\nData kamu:\n- IGN: ${ign}\n- Role: ${roleApplied}\n- Rank: ${rank}\n\nTim akan menghubungi kamu setelah proses seleksi selesai. Semangat!`
+    );
+  } catch (err) {
+    console.error("[registerApplicantAction] WA send failed:", err);
+  }
 
   return { ok: true };
 }

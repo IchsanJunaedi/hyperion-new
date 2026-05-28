@@ -27,7 +27,7 @@ interface AuditDashboardProps {
   currentFilters: CurrentFilters;
 }
 
-export function AuditDashboard({
+const AuditDashboard = ({
   items,
   total,
   pageCount,
@@ -35,7 +35,7 @@ export function AuditDashboard({
   activityData30,
   actors,
   currentFilters,
-}: AuditDashboardProps) {
+}: AuditDashboardProps) => {
   return (
     <div className="space-y-6">
       <div>
@@ -80,4 +80,5 @@ export function AuditDashboard({
       />
     </div>
   );
-}
+};
+export { AuditDashboard };

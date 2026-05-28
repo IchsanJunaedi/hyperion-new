@@ -21,7 +21,7 @@ interface FinanceChartProps {
   summary: FinanceSummary;
 }
 
-export function FinanceChart({ rows, summary }: FinanceChartProps) {
+const FinanceChart = ({ rows, summary }: FinanceChartProps) => {
   const total = summary.totalIncome + summary.totalExpense;
   const incomeW = total > 0 ? (summary.totalIncome / total) * 100 : 0;
   const expenseW = total > 0 ? (summary.totalExpense / total) * 100 : 0;
@@ -147,4 +147,5 @@ export function FinanceChart({ rows, summary }: FinanceChartProps) {
       </div>
     </div>
   );
-}
+};
+export { FinanceChart };

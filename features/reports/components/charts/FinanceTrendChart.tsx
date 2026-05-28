@@ -11,7 +11,7 @@ function formatRp(v: number) {
   return String(v);
 }
 
-export function FinanceTrendChart({ data }: { data: FinanceTrendPoint[] }) {
+const FinanceTrendChart = ({ data }: { data: FinanceTrendPoint[] }) => {
   return (
     <ResponsiveContainer width="100%" height={160}>
       <BarChart data={data} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
@@ -35,4 +35,5 @@ export function FinanceTrendChart({ data }: { data: FinanceTrendPoint[] }) {
       </BarChart>
     </ResponsiveContainer>
   );
-}
+};
+export { FinanceTrendChart };

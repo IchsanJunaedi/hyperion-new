@@ -10,12 +10,12 @@ interface CollapsibleSectionProps {
   children: React.ReactNode;
 }
 
-export function CollapsibleSection({
+const CollapsibleSection = ({
   title,
   subtitle,
   defaultOpen = true,
   children,
-}: CollapsibleSectionProps) {
+}: CollapsibleSectionProps) => {
   const [open, setOpen] = useState(defaultOpen);
 
   return (
@@ -38,4 +38,5 @@ export function CollapsibleSection({
       {open && children}
     </section>
   );
-}
+};
+export { CollapsibleSection };

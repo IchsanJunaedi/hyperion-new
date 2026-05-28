@@ -12,7 +12,7 @@ interface CreatePollFormProps {
   onDone?: () => void;
 }
 
-export function CreatePollForm({ orgSlug, onDone }: CreatePollFormProps) {
+const CreatePollForm = ({ orgSlug, onDone }: CreatePollFormProps) => {
   const [pollType, setPollType] = useState<"regular" | "availability">("regular");
   const [question, setQuestion] = useState("");
   const [options, setOptions] = useState(["", ""]);
@@ -248,4 +248,5 @@ export function CreatePollForm({ orgSlug, onDone }: CreatePollFormProps) {
       </div>
     </div>
   );
-}
+};
+export { CreatePollForm };

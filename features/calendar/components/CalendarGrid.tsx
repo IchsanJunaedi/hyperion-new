@@ -33,7 +33,7 @@ const EVENT_TYPE_COLORS: Record<string, string> = {
   other: "bg-white/40",
 };
 
-export function CalendarGrid({
+const CalendarGrid = ({
   orgSlug,
   events,
   year,
@@ -42,7 +42,7 @@ export function CalendarGrid({
   navBasePath,
   canCreate = false,
   onDayClick,
-}: CalendarGridProps) {
+}: CalendarGridProps) => {
   const router = useRouter();
   const [expandedDay, setExpandedDay] = useState<number | null>(null);
 
@@ -312,4 +312,5 @@ export function CalendarGrid({
       })()}
     </div>
   );
-}
+};
+export { CalendarGrid };

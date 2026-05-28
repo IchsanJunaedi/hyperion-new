@@ -122,7 +122,7 @@ function PipelineCard({
   );
 }
 
-export function TrialDetailClient({ trial, applicants, canManage, appUrl, revalidatePaths }: TrialDetailClientProps) {
+const TrialDetailClient = ({ trial, applicants, canManage, appUrl, revalidatePaths }: TrialDetailClientProps) => {
   const router = useRouter();
   const { success, error: notifyError } = useNotify();
   const [updating, startUpdate] = useTransition();
@@ -348,4 +348,5 @@ export function TrialDetailClient({ trial, applicants, canManage, appUrl, revali
       </div>
     </div>
   );
-}
+};
+export { TrialDetailClient };

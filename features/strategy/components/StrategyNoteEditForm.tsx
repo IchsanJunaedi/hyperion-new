@@ -17,11 +17,11 @@ interface StrategyNoteEditFormProps {
   };
 }
 
-export function StrategyNoteEditForm({
+const StrategyNoteEditForm = ({
   orgSlug,
   noteId,
   initialValues,
-}: StrategyNoteEditFormProps) {
+}: StrategyNoteEditFormProps) => {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [globalError, setGlobalError] = useState<string | null>(null);
@@ -115,7 +115,8 @@ export function StrategyNoteEditForm({
       </button>
     </form>
   );
-}
+};
+export { StrategyNoteEditForm };
 
 function Field({
   label,

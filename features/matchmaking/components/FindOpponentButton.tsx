@@ -21,12 +21,12 @@ interface FindOpponentButtonProps {
   activeDivisionId: string | null;
 }
 
-export function FindOpponentButton({
+const FindOpponentButton = ({
   orgSlug,
   divisions,
   matchableTeams,
   activeDivisionId,
-}: FindOpponentButtonProps) {
+}: FindOpponentButtonProps) => {
   const [open, setOpen] = useState(false);
   const [selectedTeam, setSelectedTeam] = useState<string>("");
   const [divisionId, setDivisionId] = useState(activeDivisionId ?? divisions[0]?.id ?? "");
@@ -195,4 +195,5 @@ export function FindOpponentButton({
       )}
     </>
   );
-}
+};
+export { FindOpponentButton };

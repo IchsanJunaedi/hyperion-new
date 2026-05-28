@@ -24,14 +24,14 @@ const ROLE_CONFIG: Record<MemberRole, { label: string; className: string }> = {
   },
 };
 
-export function standardizeRole(role: string): MemberRole {
+const standardizeRole = (role: string): MemberRole => {
   const lower = role.toLowerCase().trim();
   if (lower === "pelatih") return "coach";
   if (lower === "manajer") return "manager";
   return lower as MemberRole;
-}
+};
 
-export function RoleBadge({ role }: { role: MemberRole | string }) {
+const RoleBadge = ({ role }: { role: MemberRole | string }) => {
   const cleanRole = standardizeRole(role);
   const config = ROLE_CONFIG[cleanRole] || {
     label: cleanRole,
@@ -45,4 +45,5 @@ export function RoleBadge({ role }: { role: MemberRole | string }) {
       </span>
     </div>
   );
-}
+};
+export { standardizeRole, RoleBadge };

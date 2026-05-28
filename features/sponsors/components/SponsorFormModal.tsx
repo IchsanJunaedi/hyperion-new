@@ -30,7 +30,7 @@ interface SponsorFormModalProps {
   onSaved: (id: string) => void;
 }
 
-export function SponsorFormModal({ open, onClose, orgId, editing, onSaved }: SponsorFormModalProps) {
+const SponsorFormModal = ({ open, onClose, orgId, editing, onSaved }: SponsorFormModalProps) => {
   const [pending, startTransition] = useTransition();
   const [form, setForm] = useState(EMPTY);
   const [logoUploading, setLogoUploading] = useState(false);
@@ -265,4 +265,5 @@ export function SponsorFormModal({ open, onClose, orgId, editing, onSaved }: Spo
       </div>
     </div>
   );
-}
+};
+export { SponsorFormModal };

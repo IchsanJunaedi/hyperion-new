@@ -77,7 +77,7 @@ function groupByScrim(games: PlayerScrimGame[]): { scrim_id: string; opponent_na
   return Array.from(scrimMap.values());
 }
 
-export function PlayerHeroModal({ player, orgId, onClose }: PlayerHeroModalProps) {
+const PlayerHeroModal = ({ player, orgId, onClose }: PlayerHeroModalProps) => {
   const [data, setData] = useState<PlayerHeroHistory | null>(null);
   const [loading, setLoading] = useState(false);
   const [sortKey, setSortKey] = useState<"picks" | "winRate">("picks");
@@ -370,7 +370,8 @@ export function PlayerHeroModal({ player, orgId, onClose }: PlayerHeroModalProps
       </div>
     </div>
   );
-}
+};
+export { PlayerHeroModal };
 
 function RatingTrendSection({
   ratingHistory,

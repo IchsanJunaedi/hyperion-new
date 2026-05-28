@@ -35,12 +35,12 @@ const CHOICES: Array<{
   },
 ];
 
-export function AttendanceTracker({
+const AttendanceTracker = ({
   scrimId,
   orgSlug,
   initialStatus,
   locked,
-}: AttendanceTrackerProps) {
+}: AttendanceTrackerProps) => {
   // Optimistic value the user just clicked; falls back to server value
   // after the action resolves.
   const [status, setStatus] = useState<AttendanceStatus>(initialStatus);
@@ -130,4 +130,5 @@ export function AttendanceTracker({
       ) : null}
     </div>
   );
-}
+};
+export { AttendanceTracker };

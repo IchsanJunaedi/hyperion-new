@@ -28,7 +28,7 @@ const roleColors: Record<string, string> = {
   none: "text-[#6B6A68]",
 };
 
-export function HomeSection({ title, icon, href, rows, emptyText = "Belum ada data" }: HomeSectionProps) {
+const HomeSection = ({ title, icon, href, rows, emptyText = "Belum ada data" }: HomeSectionProps) => {
   const [selected, setSelected] = useState<UserDetail | null>(null);
 
   return (
@@ -74,5 +74,5 @@ export function HomeSection({ title, icon, href, rows, emptyText = "Belum ada da
       <UserDetailModal user={selected} onClose={() => setSelected(null)} />
     </>
   );
-}
-
+};
+export { HomeSection };

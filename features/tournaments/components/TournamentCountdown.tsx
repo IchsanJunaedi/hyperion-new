@@ -32,7 +32,7 @@ function diffParts(target: Date): CountdownParts {
   };
 }
 
-export function TournamentCountdown({ name, startDate, startTime, prizePool, organizer }: TournamentCountdownProps) {
+const TournamentCountdown = ({ name, startDate, startTime, prizePool, organizer }: TournamentCountdownProps) => {
   const target = useMemo(() => {
     const timeStr = startTime || "00:00";
     return new Date(`${startDate}T${timeStr}:00+07:00`);
@@ -117,7 +117,8 @@ export function TournamentCountdown({ name, startDate, startTime, prizePool, org
       </div>
     </article>
   );
-}
+};
+export { TournamentCountdown };
 
 function CountdownCell({ value, label }: { value: number; label: string }) {
   return (

@@ -8,7 +8,7 @@ interface RosterViewToggleProps {
   activeView: "table" | "cards";
 }
 
-export function RosterViewToggle({ activeView }: RosterViewToggleProps) {
+const RosterViewToggle = ({ activeView }: RosterViewToggleProps) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -50,4 +50,5 @@ export function RosterViewToggle({ activeView }: RosterViewToggleProps) {
       </button>
     </div>
   );
-}
+};
+export { RosterViewToggle };

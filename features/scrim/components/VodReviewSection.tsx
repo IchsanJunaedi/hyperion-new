@@ -39,7 +39,7 @@ function parseTimestamp(input: string): number | null {
   return parseInt(match[1]!) * 60 + secs;
 }
 
-export function VodReviewSection({
+const VodReviewSection = ({
   scrimId,
   gameNumber,
   initialTimestamps,
@@ -47,7 +47,7 @@ export function VodReviewSection({
   canEdit,
   currentUserId,
   isCoach,
-}: VodReviewSectionProps) {
+}: VodReviewSectionProps) => {
   const [expanded, setExpanded] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [timestamps, setTimestamps] = useState<VodTimestampRow[]>(
@@ -276,4 +276,5 @@ export function VodReviewSection({
       )}
     </div>
   );
-}
+};
+export { VodReviewSection };

@@ -16,11 +16,11 @@ interface AnnouncementEditFormProps {
   };
 }
 
-export function AnnouncementEditForm({
+const AnnouncementEditForm = ({
   orgSlug,
   announcementId,
   initialValues,
-}: AnnouncementEditFormProps) {
+}: AnnouncementEditFormProps) => {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [globalError, setGlobalError] = useState<string | null>(null);
@@ -108,7 +108,8 @@ export function AnnouncementEditForm({
       </div>
     </form>
   );
-}
+};
+export { AnnouncementEditForm };
 
 function Field({
   label,

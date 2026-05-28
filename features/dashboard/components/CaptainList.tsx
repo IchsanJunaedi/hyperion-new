@@ -15,7 +15,7 @@ interface CaptainListProps {
   }>;
 }
 
-export function CaptainList({ captains }: CaptainListProps) {
+const CaptainList = ({ captains }: CaptainListProps) => {
   if (captains.length === 0) {
     return (
       <p className="rounded-lg border border-white/5 bg-white/[0.02] px-4 py-8 text-center text-sm text-white/40">
@@ -50,4 +50,5 @@ export function CaptainList({ captains }: CaptainListProps) {
       </table>
     </div>
   );
-}
+};
+export { CaptainList };

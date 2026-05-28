@@ -12,7 +12,7 @@ const STATUS_CLASS: Record<string, string> = {
   cancelled: "bg-zinc-500/10 text-zinc-400 border-zinc-500/20",
 };
 
-export function TournamentTab({ report }: { report: MonthlyReport }) {
+const TournamentTab = ({ report }: { report: MonthlyReport }) => {
   const { tournaments } = report;
 
   return (
@@ -91,4 +91,5 @@ export function TournamentTab({ report }: { report: MonthlyReport }) {
       )}
     </div>
   );
-}
+};
+export { TournamentTab };

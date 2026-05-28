@@ -11,13 +11,13 @@ import { cn } from "@/lib/utils/cn";
 const inputCls =
   "w-full rounded border border-[#2D2D2D] bg-[#191919] px-3 py-1.5 text-sm text-[#E5E2E1] placeholder-[#6B6A68] focus:outline-none focus:border-[#4D4D4D] transition disabled:opacity-50 disabled:cursor-not-allowed";
 
-export function OrgSection({
+const OrgSection = ({
   orgId,
   isOwner,
 }: {
   orgId: string;
   isOwner: boolean;
-}) {
+}) => {
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState("");
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
@@ -161,4 +161,5 @@ export function OrgSection({
       )}
     </div>
   );
-}
+};
+export { OrgSection };

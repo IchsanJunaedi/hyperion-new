@@ -30,13 +30,14 @@ export const notify = {
 };
 
 // ── Backward-compat hook (for components already using useNotify) ──────────
-export function useNotify() {
+const useNotify = () => {
   return {
     notify: (type: NotifyType, message: string) => _emit(type, message),
     success: (message: string) => _emit("success", message),
     error:   (message: string) => _emit("error",   message),
   };
-}
+};
+export { useNotify };
 
 // ── Icon map ──────────────────────────────────────────────────────────────
 const ICON: Record<NotifyType, React.ReactNode> = {
@@ -47,7 +48,7 @@ const ICON: Record<NotifyType, React.ReactNode> = {
 };
 
 // ── Provider — mount once at root layout ──────────────────────────────────
-export function NotifyProvider({ children }: { children: React.ReactNode }) {
+const NotifyProvider = ({ children }: { children: React.ReactNode }) => {
   const [state, setState] = useState<NotifyState>({
     open: false, type: "success", message: "", key: 0,
   });
@@ -91,5 +92,5 @@ export function NotifyProvider({ children }: { children: React.ReactNode }) {
       )}
     </>
   );
-}
-
+};
+export { NotifyProvider };

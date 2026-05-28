@@ -77,7 +77,7 @@ interface SponsorDetailClientProps {
   listHref: string;
 }
 
-export function SponsorDetailClient({ sponsor: initial, orgId, backHref, listHref }: SponsorDetailClientProps) {
+const SponsorDetailClient = ({ sponsor: initial, orgId, backHref, listHref }: SponsorDetailClientProps) => {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [sponsor] = useState(initial);
@@ -375,4 +375,5 @@ export function SponsorDetailClient({ sponsor: initial, orgId, backHref, listHre
       />
     </div>
   );
-}
+};
+export { SponsorDetailClient };

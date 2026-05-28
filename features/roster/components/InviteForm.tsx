@@ -22,13 +22,13 @@ const ROLES: Array<{ value: MemberRole; label: string }> = [
   { value: "manager", label: "Manajer" },
 ];
 
-export function InviteForm({
+const InviteForm = ({
   orgSlug,
   orgId,
   divisions,
   members = [],
   onClose,
-}: InviteFormProps) {
+}: InviteFormProps) => {
   const [selectedDivisionId, setSelectedDivisionId] = useState<string>(
     divisions[0]?.id ?? ""
   );
@@ -261,7 +261,8 @@ export function InviteForm({
       </button>
     </form>
   );
-}
+};
+export { InviteForm };
 
 function Field({
   label,

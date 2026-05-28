@@ -11,7 +11,7 @@ interface AcknowledgeButtonProps {
   announcementId: string;
 }
 
-export function AcknowledgeButton({ orgSlug, announcementId }: AcknowledgeButtonProps) {
+const AcknowledgeButton = ({ orgSlug, announcementId }: AcknowledgeButtonProps) => {
   const [pending, startTransition] = useTransition();
   const router = useRouter();
 
@@ -42,4 +42,5 @@ export function AcknowledgeButton({ orgSlug, announcementId }: AcknowledgeButton
       Saya Sudah Membaca & Memahami
     </button>
   );
-}
+};
+export { AcknowledgeButton };

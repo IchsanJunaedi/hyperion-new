@@ -16,12 +16,12 @@ interface ManagerAssignFormProps {
   orgHasCaptain: Record<string, boolean>;
 }
 
-export function ManagerAssignForm({
+const ManagerAssignForm = ({
   users,
   organizations,
   divisions,
   orgHasCaptain,
-}: ManagerAssignFormProps) {
+}: ManagerAssignFormProps) => {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const { success, error: notifyError } = useNotify();
@@ -177,7 +177,8 @@ export function ManagerAssignForm({
       </button>
     </form>
   );
-}
+};
+export { ManagerAssignForm };
 
 function Field({
   label,

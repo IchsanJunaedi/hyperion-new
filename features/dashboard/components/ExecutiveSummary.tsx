@@ -39,7 +39,7 @@ interface ExecutiveSummaryProps {
   orgName: string;
 }
 
-export function ExecutiveSummary({ summary, orgName }: ExecutiveSummaryProps) {
+const ExecutiveSummary = ({ summary, orgName }: ExecutiveSummaryProps) => {
   const winRateColor =
     summary.winRate >= 60 ? "text-green-400" :
     summary.winRate >= 40 ? "text-yellow-400" : "text-red-400";
@@ -102,4 +102,5 @@ export function ExecutiveSummary({ summary, orgName }: ExecutiveSummaryProps) {
       </div>
     </div>
   );
-}
+};
+export { ExecutiveSummary };

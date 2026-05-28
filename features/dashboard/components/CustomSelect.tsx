@@ -10,7 +10,7 @@ interface CustomSelectProps {
   disabled?: boolean;
 }
 
-export function CustomSelect({ value, options, onChange, disabled }: CustomSelectProps) {
+const CustomSelect = ({ value, options, onChange, disabled }: CustomSelectProps) => {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -60,4 +60,5 @@ export function CustomSelect({ value, options, onChange, disabled }: CustomSelec
       )}
     </div>
   );
-}
+};
+export { CustomSelect };

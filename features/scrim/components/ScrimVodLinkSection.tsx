@@ -29,7 +29,7 @@ function detectPlatform(url: string) {
   return { name: "Video", icon: LinkIcon, color: "text-blue-400", bg: "bg-blue-500/10" };
 }
 
-export function ScrimVodLinkSection({ scrimId, initialLink, canEdit }: ScrimVodLinkSectionProps) {
+const ScrimVodLinkSection = ({ scrimId, initialLink, canEdit }: ScrimVodLinkSectionProps) => {
   const [vodLink, setVodLink] = useState<string | null>(initialLink);
   const [isEditing, setIsEditing] = useState(false);
   const [inputUrl, setInputUrl] = useState(initialLink ?? "");
@@ -129,4 +129,5 @@ export function ScrimVodLinkSection({ scrimId, initialLink, canEdit }: ScrimVodL
       )}
     </article>
   );
-}
+};
+export { ScrimVodLinkSection };

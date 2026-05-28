@@ -47,7 +47,7 @@ function RoleBadge({ role }: { role: string }) {
   );
 }
 
-export function ManageMemberTable({ members, orgName }: ManageMemberTableProps) {
+const ManageMemberTable = ({ members, orgName }: ManageMemberTableProps) => {
   const [selected, setSelected] = useState<UserDetail | null>(null);
 
   return (
@@ -129,4 +129,5 @@ export function ManageMemberTable({ members, orgName }: ManageMemberTableProps) 
       <UserDetailModal user={selected} onClose={() => setSelected(null)} />
     </>
   );
-}
+};
+export { ManageMemberTable };

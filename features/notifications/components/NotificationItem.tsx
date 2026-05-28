@@ -53,12 +53,12 @@ function resolveRoute(
   }
 }
 
-export function NotificationItem({
+const NotificationItem = ({
   notification,
   userId,
   orgSlug,
   onNavigate,
-}: NotificationItemProps) {
+}: NotificationItemProps) => {
   const router = useRouter();
   const pathname = usePathname();
   const queryClient = useQueryClient();
@@ -144,4 +144,5 @@ export function NotificationItem({
       </div>
     </button>
   );
-}
+};
+export { NotificationItem };

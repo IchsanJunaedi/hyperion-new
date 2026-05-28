@@ -32,7 +32,7 @@ interface ContentListProps {
   canCreate: boolean;
 }
 
-export function ContentList({ rows, orgId, currentUserId, isOwner, canCreate }: ContentListProps) {
+const ContentList = ({ rows, orgId, currentUserId, isOwner, canCreate }: ContentListProps) => {
   const [filter, setFilter] = useState<ContentStatus | "all">("all");
   const [showForm, setShowForm] = useState(false);
 
@@ -120,4 +120,5 @@ export function ContentList({ rows, orgId, currentUserId, isOwner, canCreate }: 
       {showForm && <ContentForm orgId={orgId} onClose={() => setShowForm(false)} />}
     </>
   );
-}
+};
+export { ContentList };

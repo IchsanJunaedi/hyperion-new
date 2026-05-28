@@ -30,7 +30,7 @@ const EVENT_STATUSES = [
   { value: "cancelled", label: "Dibatalkan" },
 ];
 
-export function CalendarToolbar({
+const CalendarToolbar = ({
   year,
   month,
   onNavigate,
@@ -38,7 +38,7 @@ export function CalendarToolbar({
   onFilterType,
   onFilterStatus,
   currentFilters = {},
-}: CalendarToolbarProps) {
+}: CalendarToolbarProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTypeFilters, setActiveTypeFilters] = useState<string[]>(
     currentFilters.types ?? [],
@@ -297,4 +297,5 @@ export function CalendarToolbar({
       )}
     </div>
   );
-}
+};
+export { CalendarToolbar };

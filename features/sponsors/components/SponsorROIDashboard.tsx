@@ -18,7 +18,7 @@ interface SponsorROIDashboardProps {
   sponsors: SponsorWithStats[];
 }
 
-export function SponsorROIDashboard({ sponsors }: SponsorROIDashboardProps) {
+const SponsorROIDashboard = ({ sponsors }: SponsorROIDashboardProps) => {
   const activeSponsors = sponsors.filter((s) => s.status === "active");
 
   // Deliverable completion for active sponsors with deliverables
@@ -194,4 +194,5 @@ export function SponsorROIDashboard({ sponsors }: SponsorROIDashboardProps) {
       })()}
     </div>
   );
-}
+};
+export { SponsorROIDashboard };

@@ -11,7 +11,7 @@ interface AnnouncementFormProps {
   divisions: Array<{ id: string; name: string }>;
 }
 
-export function AnnouncementForm({ orgSlug, divisions }: AnnouncementFormProps) {
+const AnnouncementForm = ({ orgSlug, divisions }: AnnouncementFormProps) => {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [globalError, setGlobalError] = useState<string | null>(null);
@@ -142,7 +142,8 @@ export function AnnouncementForm({ orgSlug, divisions }: AnnouncementFormProps) 
       </div>
     </form>
   );
-}
+};
+export { AnnouncementForm };
 
 function Field({
   label,

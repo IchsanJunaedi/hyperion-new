@@ -13,7 +13,7 @@ interface SkillRadarChartProps {
   targets: PlayerTargetWithHistory[];
 }
 
-export function SkillRadarChart({ targets }: SkillRadarChartProps) {
+const SkillRadarChart = ({ targets }: SkillRadarChartProps) => {
   if (targets.length < 3) return null;
 
   const data = targets.map((t) => ({
@@ -65,4 +65,5 @@ export function SkillRadarChart({ targets }: SkillRadarChartProps) {
       </div>
     </div>
   );
-}
+};
+export { SkillRadarChart };

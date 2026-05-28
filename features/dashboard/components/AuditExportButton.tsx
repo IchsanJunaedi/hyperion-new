@@ -28,7 +28,7 @@ function rowsToCsv(rows: { timestamp: string; actor: string; action: string; act
   return lines.join("\n");
 }
 
-export function AuditExportButton({ filters }: AuditExportButtonProps) {
+const AuditExportButton = ({ filters }: AuditExportButtonProps) => {
   const [loading, setLoading] = useState(false);
 
   const handleExport = async () => {
@@ -70,4 +70,5 @@ export function AuditExportButton({ filters }: AuditExportButtonProps) {
       Export CSV
     </button>
   );
-}
+};
+export { AuditExportButton };

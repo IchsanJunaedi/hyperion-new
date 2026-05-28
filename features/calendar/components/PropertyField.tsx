@@ -42,7 +42,7 @@ const PRIORITY_OPTIONS = [
   { value: "urgent", label: "Urgent" },
 ];
 
-export function PropertyField({
+const PropertyField = ({
   label,
   icon,
   value,
@@ -53,7 +53,7 @@ export function PropertyField({
   editable = true,
   isEditing: isEditingProp,
   onEdit,
-}: PropertyFieldProps) {
+}: PropertyFieldProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [inputValue, setInputValue] = useState(String(value || ""));
@@ -312,4 +312,5 @@ export function PropertyField({
       </div>
     </div>
   );
-}
+};
+export { PropertyField };

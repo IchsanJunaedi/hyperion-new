@@ -107,11 +107,11 @@ function EmptyCol({ label }: { label: string }) {
   );
 }
 
-export function HeroStatDetailModal({
+const HeroStatDetailModal = ({
   orgId,
   heroName,
   onClose,
-}: HeroStatDetailModalProps) {
+}: HeroStatDetailModalProps) => {
   const [data, setData] = useState<HeroDetailData | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -229,4 +229,5 @@ export function HeroStatDetailModal({
       </div>
     </div>
   );
-}
+};
+export { HeroStatDetailModal };

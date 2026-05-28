@@ -21,7 +21,7 @@ interface CalendarWithQuickAddProps {
   userRole?: string;
 }
 
-export function CalendarWithQuickAdd({
+const CalendarWithQuickAdd = ({
   orgSlug,
   events,
   year,
@@ -30,7 +30,7 @@ export function CalendarWithQuickAdd({
   canCreate = true,
   navBasePath,
   userRole = "member",
-}: CalendarWithQuickAddProps) {
+}: CalendarWithQuickAddProps) => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
   const handleDayClick = useCallback((date: Date) => {
@@ -65,4 +65,5 @@ export function CalendarWithQuickAdd({
       )}
     </>
   );
-}
+};
+export { CalendarWithQuickAdd };

@@ -11,7 +11,7 @@ interface CreateTeamFormProps {
   existingDivisions: Array<{ id: string; name: string }>;
 }
 
-export function CreateTeamForm({ existingDivisions }: CreateTeamFormProps) {
+const CreateTeamForm = ({ existingDivisions }: CreateTeamFormProps) => {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -130,4 +130,5 @@ export function CreateTeamForm({ existingDivisions }: CreateTeamFormProps) {
       </button>
     </form>
   );
-}
+};
+export { CreateTeamForm };

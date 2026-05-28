@@ -15,12 +15,12 @@ interface PlayerDevelopmentClientProps {
   grouped: Record<string, PlayerTargetWithHistory[]>;
 }
 
-export function PlayerDevelopmentClient({
+const PlayerDevelopmentClient = ({
   targets,
   orgSlug,
   members,
   grouped,
-}: PlayerDevelopmentClientProps) {
+}: PlayerDevelopmentClientProps) => {
   const [showForm, setShowForm] = useState(false);
 
   return (
@@ -70,4 +70,5 @@ export function PlayerDevelopmentClient({
       )}
     </div>
   );
-}
+};
+export { PlayerDevelopmentClient };

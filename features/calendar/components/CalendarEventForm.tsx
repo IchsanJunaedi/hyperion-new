@@ -106,7 +106,7 @@ function PremiumSelect({ id, name, options, defaultValue = "" }: PremiumSelectPr
   );
 }
 
-export function CalendarEventForm({ orgSlug, divisions }: CalendarEventFormProps) {
+const CalendarEventForm = ({ orgSlug, divisions }: CalendarEventFormProps) => {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [globalError, setGlobalError] = useState<string | null>(null);
@@ -261,7 +261,8 @@ export function CalendarEventForm({ orgSlug, divisions }: CalendarEventFormProps
       </button>
     </form>
   );
-}
+};
+export { CalendarEventForm };
 
 function Field({
   label,

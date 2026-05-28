@@ -31,14 +31,14 @@ function toLocalDatetimeValue(date: Date): string {
   );
 }
 
-export function QuickAddEventModal({
+const QuickAddEventModal = ({
   isOpen,
   date,
   orgSlug,
   divisions = [],
   userRole = "member",
   onClose,
-}: QuickAddEventModalProps) {
+}: QuickAddEventModalProps) => {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -355,4 +355,5 @@ export function QuickAddEventModal({
       </div>
     </>
   );
-}
+};
+export { QuickAddEventModal };

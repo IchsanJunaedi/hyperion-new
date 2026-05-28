@@ -15,7 +15,7 @@ interface ConfirmDeleteDialogProps {
   onCancel: () => void;
 }
 
-export function ConfirmDeleteDialog({
+const ConfirmDeleteDialog = ({
   open,
   title,
   message,
@@ -24,7 +24,7 @@ export function ConfirmDeleteDialog({
   pending = false,
   onConfirm,
   onCancel,
-}: ConfirmDeleteDialogProps) {
+}: ConfirmDeleteDialogProps) => {
   const [typed, setTyped] = useState("");
 
   // Reset typed text when dialog closes/opens
@@ -89,4 +89,5 @@ export function ConfirmDeleteDialog({
       </div>
     </div>
   );
-}
+};
+export { ConfirmDeleteDialog };

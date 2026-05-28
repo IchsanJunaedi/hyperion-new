@@ -31,16 +31,18 @@ interface AnalyticsDashboardProps {
   playerStats: EnterprisePlayerStat[];
   draftData: DraftAnalyticsData;
   orgId: string;
+  slug: string;
 }
 
-export function AnalyticsDashboard({
+const AnalyticsDashboard = ({
   overviewStats,
   formatBreakdown,
   recentScrims,
   playerStats,
   draftData,
   orgId,
-}: AnalyticsDashboardProps) {
+  slug,
+}: AnalyticsDashboardProps) => {
   const [activeTab, setActiveTab] = useState<TabKey>("overview");
 
   return (
@@ -80,6 +82,7 @@ export function AnalyticsDashboard({
           stats={overviewStats}
           formatBreakdown={formatBreakdown}
           recentScrims={recentScrims}
+          slug={slug}
         />
       )}
       {activeTab === "statistics" && <StatisticsTab orgId={orgId} />}
@@ -87,4 +90,5 @@ export function AnalyticsDashboard({
       {activeTab === "players" && <PlayerStatsTab playerStats={playerStats} orgId={orgId} />}
     </div>
   );
-}
+};
+export { AnalyticsDashboard };

@@ -20,14 +20,14 @@ interface InviteAcceptCardProps {
   inviterName: string | null;
 }
 
-export function InviteAcceptCard({
+const InviteAcceptCard = ({
   token,
   orgName,
   orgSlug,
   divisionName,
   role,
   inviterName,
-}: InviteAcceptCardProps) {
+}: InviteAcceptCardProps) => {
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   const [confirmRejectOpen, setConfirmRejectOpen] = useState(false);
@@ -105,4 +105,5 @@ export function InviteAcceptCard({
       </div>
     </div>
   );
-}
+};
+export { InviteAcceptCard };

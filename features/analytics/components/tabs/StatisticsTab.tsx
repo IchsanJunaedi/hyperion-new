@@ -73,7 +73,7 @@ function WrChip({ wr }: { wr: number }) {
 const GRID =
   "grid-cols-[180px_repeat(5,52px)_repeat(2,52px)_repeat(2,52px)_repeat(2,52px)_64px]";
 
-export function StatisticsTab({ orgId }: { orgId: string }) {
+const StatisticsTab = ({ orgId }: { orgId: string }) => {
   const [rows, setRows] = useState<HeroStatRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [sortKey, setSortKey] = useState<SortKey>("pb_total");
@@ -253,4 +253,5 @@ export function StatisticsTab({ orgId }: { orgId: string }) {
       />
     </>
   );
-}
+};
+export { StatisticsTab };

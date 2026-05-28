@@ -20,7 +20,7 @@ interface LoginFormProps {
   next?: string;
 }
 
-export function LoginForm({ next = "/" }: LoginFormProps) {
+const LoginForm = ({ next = "/" }: LoginFormProps) => {
   const [serverError, setServerError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
@@ -111,4 +111,5 @@ export function LoginForm({ next = "/" }: LoginFormProps) {
       </p>
     </form>
   );
-}
+};
+export { LoginForm };

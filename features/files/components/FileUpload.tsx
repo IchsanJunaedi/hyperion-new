@@ -18,13 +18,13 @@ interface FileUploadProps {
   onUpload?: (path: string, url: string) => void;
 }
 
-export function FileUpload({
+const FileUpload = ({
   orgSlug,
   orgId,
   folder = "files",
   maxSize = 50 * 1024 * 1024,
   onUpload,
-}: FileUploadProps) {
+}: FileUploadProps) => {
   const [uploading, setUploading] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -132,4 +132,5 @@ export function FileUpload({
       </p>
     </div>
   );
-}
+};
+export { FileUpload };

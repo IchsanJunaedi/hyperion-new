@@ -14,11 +14,11 @@ interface AnnouncementActionsProps {
   isPinned: boolean;
 }
 
-export function AnnouncementActions({
+const AnnouncementActions = ({
   orgSlug,
   announcementId,
   isPinned,
-}: AnnouncementActionsProps) {
+}: AnnouncementActionsProps) => {
   const router = useRouter();
   const [pinPending, startPinTransition] = useTransition();
   const [deletePending, startDeleteTransition] = useTransition();
@@ -98,4 +98,5 @@ export function AnnouncementActions({
       </button>
     </div>
   );
-}
+};
+export { AnnouncementActions };

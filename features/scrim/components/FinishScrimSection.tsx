@@ -20,13 +20,13 @@ interface FinishScrimSectionProps {
   resultImageUrl: string | null;
 }
 
-export function FinishScrimSection({
+const FinishScrimSection = ({
   scrim,
   orgSlug,
   canManage,
   initialResult,
   resultImageUrl,
-}: FinishScrimSectionProps) {
+}: FinishScrimSectionProps) => {
   const [pastDue, setPastDue] = useState(
     () => Date.now() >= new Date(scrim.scheduled_at).getTime(),
   );
@@ -95,7 +95,8 @@ export function FinishScrimSection({
       onCancel={() => setShowForm(false)}
     />
   );
-}
+};
+export { FinishScrimSection };
 
 function ResultDisplay({
   result,

@@ -17,7 +17,7 @@ function stageResult(stage: TournamentStageWithMatches): "win" | "loss" | "draw"
   return "draw";
 }
 
-export function TournamentJourney({ stages, tournamentName }: TournamentJourneyProps) {
+const TournamentJourney = ({ stages, tournamentName }: TournamentJourneyProps) => {
   if (stages.length === 0) return null;
 
   const totalWins = stages.reduce((sum, s) => sum + s.matches.filter((m) => m.is_win === true).length, 0);
@@ -125,4 +125,5 @@ export function TournamentJourney({ stages, tournamentName }: TournamentJourneyP
       )}
     </div>
   );
-}
+};
+export { TournamentJourney };

@@ -5,7 +5,7 @@ import {
 } from "recharts";
 import type { TrendPoint } from "@/features/reports/queries";
 
-export function WinRateTrendChart({ data }: { data: TrendPoint[] }) {
+const WinRateTrendChart = ({ data }: { data: TrendPoint[] }) => {
   return (
     <ResponsiveContainer width="100%" height={160}>
       <BarChart data={data} margin={{ top: 4, right: 4, left: -24, bottom: 0 }}>
@@ -25,4 +25,5 @@ export function WinRateTrendChart({ data }: { data: TrendPoint[] }) {
       </BarChart>
     </ResponsiveContainer>
   );
-}
+};
+export { WinRateTrendChart };

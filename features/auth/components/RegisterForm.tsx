@@ -20,7 +20,7 @@ interface RegisterFormProps {
   next?: string;
 }
 
-export function RegisterForm({ next = "/onboarding/profile" }: RegisterFormProps) {
+const RegisterForm = ({ next = "/onboarding/profile" }: RegisterFormProps) => {
   const [serverError, setServerError] = useState<string | null>(null);
   const [needsConfirm, setNeedsConfirm] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -197,4 +197,5 @@ export function RegisterForm({ next = "/onboarding/profile" }: RegisterFormProps
       </p>
     </form>
   );
-}
+};
+export { RegisterForm };

@@ -17,7 +17,7 @@ interface OrgDetailModalProps {
   onClose: () => void;
 }
 
-export function OrgDetailModal({ org, onClose }: OrgDetailModalProps) {
+const OrgDetailModal = ({ org, onClose }: OrgDetailModalProps) => {
   useEffect(() => {
     if (!org) return;
     function handleEsc(e: KeyboardEvent) {
@@ -76,7 +76,8 @@ export function OrgDetailModal({ org, onClose }: OrgDetailModalProps) {
       </div>
     </div>
   );
-}
+};
+export { OrgDetailModal };
 
 function Row({ label, value }: { label: string; value: string }) {
   return (

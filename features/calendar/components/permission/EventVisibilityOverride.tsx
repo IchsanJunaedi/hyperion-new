@@ -216,7 +216,7 @@ function MemberSelector({
  * Event-level visibility override component.
  * Allows setting a different visibility for a specific event than its calendar default.
  */
-export function EventVisibilityOverride({
+const EventVisibilityOverride = ({
   eventId,
   eventTitle,
   calendarVisibility,
@@ -225,7 +225,7 @@ export function EventVisibilityOverride({
   teamMembers = [],
   onSave,
   isLoading = false,
-}: EventVisibilityOverrideProps) {
+}: EventVisibilityOverrideProps) => {
   const { success, error } = useNotify();
   const [visibility, setVisibility] = useState<CalendarVisibility>(
     currentOverride || calendarVisibility,
@@ -479,6 +479,6 @@ export function EventVisibilityOverride({
       )}
     </div>
   );
-}
-
+};
+export { EventVisibilityOverride };
 export type { EventVisibilityOverrideProps };

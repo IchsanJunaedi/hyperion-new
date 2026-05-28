@@ -29,7 +29,7 @@ interface FinanceTableProps {
   revalidatePaths: string[];
 }
 
-export function FinanceTable({ rows, orgId, canDelete, revalidatePaths }: FinanceTableProps) {
+const FinanceTable = ({ rows, orgId, canDelete, revalidatePaths }: FinanceTableProps) => {
   if (rows.length === 0) {
     return (
       <div className="rounded-xl border border-dashed border-[#2D2D2D] py-14 text-center">
@@ -105,4 +105,5 @@ export function FinanceTable({ rows, orgId, canDelete, revalidatePaths }: Financ
       </div>
     </div>
   );
-}
+};
+export { FinanceTable };

@@ -24,7 +24,7 @@ interface PreviewState {
   signedUrl: string;
 }
 
-export function FileList({ orgId, folder = "files" }: FileListProps) {
+const FileList = ({ orgId, folder = "files" }: FileListProps) => {
   const [files, setFiles] = useState<StorageFile[]>([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -188,7 +188,8 @@ export function FileList({ orgId, folder = "files" }: FileListProps) {
       </div>
     </>
   );
-}
+};
+export { FileList };
 
 function formatFileSize(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;

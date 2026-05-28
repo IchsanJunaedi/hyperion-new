@@ -10,7 +10,7 @@ interface NotificationListProps {
   onClose: () => void;
 }
 
-export function NotificationList({ userId, orgSlug, limit = 10, onClose }: NotificationListProps) {
+const NotificationList = ({ userId, orgSlug, limit = 10, onClose }: NotificationListProps) => {
   const { data, isLoading, isError } = useNotifications(userId, limit);
 
   if (isLoading) {
@@ -62,4 +62,5 @@ export function NotificationList({ userId, orgSlug, limit = 10, onClose }: Notif
       ))}
     </div>
   );
-}
+};
+export { NotificationList };

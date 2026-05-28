@@ -23,10 +23,10 @@ interface AdminFileManagerProps {
   organizations: Array<{ id: string; name: string }>;
 }
 
-export function AdminFileManager({
+const AdminFileManager = ({
   initialFiles,
   organizations,
-}: AdminFileManagerProps) {
+}: AdminFileManagerProps) => {
   const [files, setFiles] = useState<StorageFileRecord[]>(initialFiles);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedOrgId, setSelectedOrgId] = useState("");
@@ -276,4 +276,5 @@ export function AdminFileManager({
       />
     </div>
   );
-}
+};
+export { AdminFileManager };

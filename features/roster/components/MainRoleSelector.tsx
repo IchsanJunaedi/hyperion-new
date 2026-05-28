@@ -22,12 +22,12 @@ const ROLE_OPTIONS: Array<{ value: MainRole; label: string; shortLabel: string; 
   { value: "roamer",    label: "Roamer",      shortLabel: "ROAM",   color: "text-rose-400"    },
 ];
 
-export function MainRoleSelector({
+const MainRoleSelector = ({
   orgSlug,
   memberId,
   currentMainRole,
   direction = "down",
-}: MainRoleSelectorProps) {
+}: MainRoleSelectorProps) => {
   const [pending, startTransition] = useTransition();
   const [open, setOpen] = useState(false);
   const [hovered, setHovered] = useState(false);
@@ -141,10 +141,10 @@ export function MainRoleSelector({
       )}
     </div>
   );
-}
+};
 
 // Read-only badge for contexts where editing isn't allowed
-export function MainRoleBadge({ mainRole }: { mainRole: MainRole }) {
+const MainRoleBadge = ({ mainRole }: { mainRole: MainRole }) => {
   const opt = ROLE_OPTIONS.find((o) => o.value === mainRole);
   return (
     <div className="inline-flex h-8 w-28 items-center px-2.5">
@@ -153,4 +153,5 @@ export function MainRoleBadge({ mainRole }: { mainRole: MainRole }) {
       </span>
     </div>
   );
-}
+};
+export { MainRoleSelector, MainRoleBadge };

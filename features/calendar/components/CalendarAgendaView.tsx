@@ -28,7 +28,7 @@ interface CalendarAgendaViewProps {
   readOnly?: boolean;
 }
 
-export function CalendarAgendaView({ orgSlug, events, readOnly = false }: CalendarAgendaViewProps) {
+const CalendarAgendaView = ({ orgSlug, events, readOnly = false }: CalendarAgendaViewProps) => {
   const sorted = [...events].sort(
     (a, b) => new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime(),
   );
@@ -119,4 +119,5 @@ export function CalendarAgendaView({ orgSlug, events, readOnly = false }: Calend
       })}
     </div>
   );
-}
+};
+export { CalendarAgendaView };

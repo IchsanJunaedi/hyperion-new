@@ -49,7 +49,7 @@ interface CalendarWeeklyWarRoomProps {
   initialWeekOffset?: number;
 }
 
-export function CalendarWeeklyWarRoom({ orgSlug, events }: CalendarWeeklyWarRoomProps) {
+const CalendarWeeklyWarRoom = ({ orgSlug, events }: CalendarWeeklyWarRoomProps) => {
   const [weekOffset, setWeekOffset] = useState(0);
   const [copied, setCopied] = useState(false);
 
@@ -237,4 +237,5 @@ export function CalendarWeeklyWarRoom({ orgSlug, events }: CalendarWeeklyWarRoom
       </div>
     </div>
   );
-}
+};
+export { CalendarWeeklyWarRoom };

@@ -76,6 +76,7 @@ export default async function AnalyticsPage({ params, searchParams }: AnalyticsP
         playerStats={playerStats}
         draftData={draftData}
         orgId={organization.id}
+        slug={slug}
       />
     </div>
   );

@@ -23,7 +23,7 @@ interface UserDetailModalProps {
   onClose: () => void;
 }
 
-export function UserDetailModal({ user, onClose }: UserDetailModalProps) {
+const UserDetailModal = ({ user, onClose }: UserDetailModalProps) => {
   useEffect(() => {
     if (!user) return;
     function handleEsc(e: KeyboardEvent) {
@@ -105,7 +105,8 @@ export function UserDetailModal({ user, onClose }: UserDetailModalProps) {
       </div>
     </div>
   );
-}
+};
+export { UserDetailModal };
 
 function Row({ label, value }: { label: string; value: string | null }) {
   return (

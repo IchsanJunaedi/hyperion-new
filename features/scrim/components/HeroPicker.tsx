@@ -63,12 +63,12 @@ interface HeroPickerProps {
   excludedHeroes?: Set<string>;
 }
 
-export function HeroPicker({
+const HeroPicker = ({
   value,
   onChange,
   placeholder = "Pilih hero…",
   excludedHeroes,
-}: HeroPickerProps) {
+}: HeroPickerProps) => {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const containerRef = useRef<HTMLDivElement>(null);
@@ -187,4 +187,5 @@ export function HeroPicker({
       )}
     </div>
   );
-}
+};
+export { HeroPicker };

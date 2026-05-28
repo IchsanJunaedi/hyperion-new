@@ -14,7 +14,7 @@ interface DivisionListItemProps {
   isActive: boolean;
 }
 
-export function DivisionListItem({ id, name, isActive }: DivisionListItemProps) {
+const DivisionListItem = ({ id, name, isActive }: DivisionListItemProps) => {
   const router = useRouter();
   const [editing, setEditing] = useState(false);
   const [editName, setEditName] = useState(name);
@@ -121,4 +121,5 @@ export function DivisionListItem({ id, name, isActive }: DivisionListItemProps) 
       />
     </>
   );
-}
+};
+export { DivisionListItem };

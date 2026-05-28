@@ -8,7 +8,7 @@ interface UserActiveTableProps {
   users: UserDetail[];
 }
 
-export function UserActiveTable({ users }: UserActiveTableProps) {
+const UserActiveTable = ({ users }: UserActiveTableProps) => {
   const [selected, setSelected] = useState<UserDetail | null>(null);
 
   return (
@@ -58,4 +58,5 @@ export function UserActiveTable({ users }: UserActiveTableProps) {
       <UserDetailModal user={selected} onClose={() => setSelected(null)} />
     </>
   );
-}
+};
+export { UserActiveTable };

@@ -29,14 +29,14 @@ function triggerDownload(url: string, fileName: string) {
   document.body.removeChild(a);
 }
 
-export function FilePreviewModal({
+const FilePreviewModal = ({
   fileName,
   fileSize,
   fileDate,
   signedUrl,
   mimeType,
   onClose,
-}: FilePreviewModalProps) {
+}: FilePreviewModalProps) => {
   const category = getCategory(fileName, mimeType);
 
   return (
@@ -102,4 +102,5 @@ export function FilePreviewModal({
       </div>
     </div>
   );
-}
+};
+export { FilePreviewModal };

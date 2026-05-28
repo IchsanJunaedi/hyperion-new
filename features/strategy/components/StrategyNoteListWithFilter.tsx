@@ -15,10 +15,10 @@ interface StrategyNoteListWithFilterProps {
   orgSlug: string;
 }
 
-export function StrategyNoteListWithFilter({
+const StrategyNoteListWithFilter = ({
   notes,
   orgSlug,
-}: StrategyNoteListWithFilterProps) {
+}: StrategyNoteListWithFilterProps) => {
   const [activeTag, setActiveTag] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<"grid" | "playbook">("grid");
 
@@ -138,7 +138,8 @@ export function StrategyNoteListWithFilter({
       )}
     </div>
   );
-}
+};
+export { StrategyNoteListWithFilter };
 
 function ViewToggle({
   viewMode,

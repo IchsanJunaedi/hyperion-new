@@ -4,7 +4,7 @@ function rp(n: number) {
   return `Rp ${n.toLocaleString("id-ID")}`;
 }
 
-export function FinanceTab({ finances }: { finances: NonNullable<MonthlyReport["finances"]> }) {
+const FinanceTab = ({ finances }: { finances: NonNullable<MonthlyReport["finances"]> }) => {
   const usagePercent = finances.totalIncome > 0
     ? Math.min(Math.round((finances.totalExpense / finances.totalIncome) * 100), 100)
     : 0;
@@ -106,4 +106,5 @@ export function FinanceTab({ finances }: { finances: NonNullable<MonthlyReport["
       )}
     </div>
   );
-}
+};
+export { FinanceTab };

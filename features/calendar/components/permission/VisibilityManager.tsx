@@ -279,7 +279,7 @@ function MemberSelector({
 // Main Component
 // ============================================================================
 
-export function VisibilityManager({
+const VisibilityManager = ({
   calendarId,
   currentVisibility,
   selectedMembers: initialSelectedMembers = [],
@@ -287,7 +287,7 @@ export function VisibilityManager({
   onSave,
   isLoading = false,
   compact = false,
-}: VisibilityManagerProps) {
+}: VisibilityManagerProps) => {
   const { success, error } = useNotify();
   const [visibility, setVisibility] = useState<CalendarVisibility>(
     currentVisibility,
@@ -494,6 +494,6 @@ export function VisibilityManager({
       )}
     </div>
   );
-}
-
+};
+export { VisibilityManager };
 export type { VisibilityManagerProps };

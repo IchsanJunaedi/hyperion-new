@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { createDivisionAction } from "../actions";
 import { useNotify } from "./NotifyModal";
 
-export function CreateDivisionForm() {
+const CreateDivisionForm = () => {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [name, setName] = useState("");
@@ -58,4 +58,5 @@ export function CreateDivisionForm() {
       )}
     </form>
   );
-}
+};
+export { CreateDivisionForm };

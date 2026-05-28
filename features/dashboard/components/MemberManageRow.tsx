@@ -27,13 +27,13 @@ const ROLE_COLORS: Record<string, string> = {
   member: "text-white/60",
 };
 
-export function MemberManageRow({
+const MemberManageRow = ({
   memberId,
   name,
   orgName,
   role,
   isActive,
-}: MemberManageRowProps) {
+}: MemberManageRowProps) => {
   const [currentRole, setCurrentRole] = useState(role);
   const [rolePending, startRoleTransition] = useTransition();
   const [deletePending, startDeleteTransition] = useTransition();
@@ -125,4 +125,5 @@ export function MemberManageRow({
       </td>
     </tr>
   );
-}
+};
+export { MemberManageRow };

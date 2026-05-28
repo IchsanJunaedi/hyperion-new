@@ -465,7 +465,7 @@ interface MetaPageProps {
   canEdit: boolean;
 }
 
-export function MetaPage({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes = [], canEdit }: MetaPageProps) {
+const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes = [], canEdit }: MetaPageProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [activePatch, setActivePatch] = useState<PatchWithHeroes | null>(initialPatch);
@@ -1338,4 +1338,5 @@ export function MetaPage({ orgSlug, orgId, patches, initialPatch, previousPatchH
       )}
     </div>
   );
-}
+};
+export { MetaPage };

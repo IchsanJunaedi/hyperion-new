@@ -21,7 +21,7 @@ const FORMATS: Array<{ value: MatchFormat; label: string }> = [
   { value: "4match", label: "4 Match" },
 ];
 
-export function ScrimForm({ orgSlug, divisions }: ScrimFormProps) {
+const ScrimForm = ({ orgSlug, divisions }: ScrimFormProps) => {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [globalError, setGlobalError] = useState<string | null>(null);
@@ -222,7 +222,8 @@ export function ScrimForm({ orgSlug, divisions }: ScrimFormProps) {
       </div>
     </form>
   );
-}
+};
+export { ScrimForm };
 
 function Field({
   label,

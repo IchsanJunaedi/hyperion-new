@@ -84,7 +84,7 @@ interface RosterCardViewProps {
   members: RosterMember[];
 }
 
-export function RosterCardView({ members }: RosterCardViewProps) {
+const RosterCardView = ({ members }: RosterCardViewProps) => {
   const ROLE_ORDER: Record<string, number> = { owner: 0, manager: 1, coach: 2, captain: 3, member: 4 };
   const sorted = [...members].sort((a, b) => {
     const ro = (ROLE_ORDER[a.role] ?? 99) - (ROLE_ORDER[b.role] ?? 99);
@@ -99,4 +99,5 @@ export function RosterCardView({ members }: RosterCardViewProps) {
       ))}
     </div>
   );
-}
+};
+export { RosterCardView };

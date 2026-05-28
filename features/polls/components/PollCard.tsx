@@ -14,7 +14,7 @@ interface PollCardProps {
   userId: string;
 }
 
-export function PollCard({ poll, orgSlug, canManage, userId }: PollCardProps) {
+const PollCard = ({ poll, orgSlug, canManage, userId }: PollCardProps) => {
   const [pending, startTransition] = useTransition();
   const { success, error } = useNotify();
 
@@ -143,4 +143,5 @@ export function PollCard({ poll, orgSlug, canManage, userId }: PollCardProps) {
       </div>
     </div>
   );
-}
+};
+export { PollCard };

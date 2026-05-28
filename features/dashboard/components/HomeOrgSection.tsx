@@ -36,7 +36,7 @@ const roleColors: Record<string, string> = {
   member: "text-[#9B9A97]",
 };
 
-export function HomeOrgSection({ orgs }: HomeOrgSectionProps) {
+const HomeOrgSection = ({ orgs }: HomeOrgSectionProps) => {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [deleteTarget, setDeleteTarget] = useState<OrgRow | null>(null);
@@ -201,5 +201,5 @@ export function HomeOrgSection({ orgs }: HomeOrgSectionProps) {
       />
     </>
   );
-}
-
+};
+export { HomeOrgSection };

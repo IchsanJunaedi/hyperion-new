@@ -23,13 +23,13 @@ function formatRupiah(raw: string): string {
   return Number(digits).toLocaleString("id-ID");
 }
 
-export function TournamentCompleteModal({
+const TournamentCompleteModal = ({
   tournamentId,
   tournamentName,
   orgSlug,
   isPastStartDate,
   onClose,
-}: TournamentCompleteModalProps) {
+}: TournamentCompleteModalProps) => {
   const { success, error: notifyError } = useNotify();
   const [pending, startTransition] = useTransition();
 
@@ -273,4 +273,5 @@ export function TournamentCompleteModal({
       </div>
     </div>
   );
-}
+};
+export { TournamentCompleteModal };

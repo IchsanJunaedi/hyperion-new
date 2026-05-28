@@ -20,7 +20,7 @@ function StatCard({ label, value, sub, color = "default" }: {
   );
 }
 
-export function OverviewTab({ report }: { report: MonthlyReport }) {
+const OverviewTab = ({ report }: { report: MonthlyReport }) => {
   const { scrims, tournaments, attendance, finances, trend, activity } = report;
 
   return (
@@ -130,4 +130,5 @@ export function OverviewTab({ report }: { report: MonthlyReport }) {
       </div>
     </div>
   );
-}
+};
+export { OverviewTab };

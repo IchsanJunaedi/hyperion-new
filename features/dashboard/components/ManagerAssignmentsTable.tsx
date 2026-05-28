@@ -27,12 +27,12 @@ interface ManagerAssignmentsTableProps {
   allDivisions: Array<{ id: string; name: string; organization_id: string }>;
 }
 
-export function ManagerAssignmentsTable({
+const ManagerAssignmentsTable = ({
   members,
   profiles,
   orgs,
   allDivisions,
-}: ManagerAssignmentsTableProps) {
+}: ManagerAssignmentsTableProps) => {
   const [selectedOrg, setSelectedOrg] = useState<OrgDetail | null>(null);
 
   const managers = members.filter((m) => m.role === "manager" && m.is_active);
@@ -118,4 +118,5 @@ export function ManagerAssignmentsTable({
       />
     </>
   );
-}
+};
+export { ManagerAssignmentsTable };

@@ -198,7 +198,7 @@ interface SponsorListClientProps {
   detailBasePath: string;
 }
 
-export function SponsorListClient({ sponsors, orgId, orgName, detailBasePath }: SponsorListClientProps) {
+const SponsorListClient = ({ sponsors, orgId, orgName, detailBasePath }: SponsorListClientProps) => {
   const router = useRouter();
   const [modalOpen, setModalOpen] = useState(false);
   const [printMode, setPrintMode] = useState(false);
@@ -286,4 +286,5 @@ export function SponsorListClient({ sponsors, orgId, orgName, detailBasePath }: 
       />
     </div>
   );
-}
+};
+export { SponsorListClient };

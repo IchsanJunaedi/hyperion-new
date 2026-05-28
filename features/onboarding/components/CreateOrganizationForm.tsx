@@ -46,7 +46,7 @@ const TIER_OPTIONS = [
   },
 ] as const;
 
-export function CreateOrganizationForm() {
+const CreateOrganizationForm = () => {
   const [serverError, setServerError] = useState<string | null>(null);
   const [slugStatus, setSlugStatus] = useState<SlugStatus>({ kind: "idle" });
   const [pending, startTransition] = useTransition();
@@ -302,7 +302,8 @@ export function CreateOrganizationForm() {
       </div>
     </form>
   );
-}
+};
+export { CreateOrganizationForm };
 
 function SlugStatusBadge({ status }: { status: SlugStatus }) {
   if (status.kind === "idle") return null;

@@ -23,7 +23,7 @@ const config: Record<
   },
 };
 
-export function AvailabilityBadge({ availability }: AvailabilityBadgeProps) {
+const AvailabilityBadge = ({ availability }: AvailabilityBadgeProps) => {
   const { label, className } = config[availability];
 
   return (
@@ -33,4 +33,5 @@ export function AvailabilityBadge({ availability }: AvailabilityBadgeProps) {
       </span>
     </div>
   );
-}
+};
+export { AvailabilityBadge };

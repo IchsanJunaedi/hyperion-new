@@ -52,7 +52,7 @@ interface SalaryCardProps {
   onEdit: () => void;
 }
 
-export function SalaryCard({ contract, orgId, revalidatePaths, onEdit }: SalaryCardProps) {
+const SalaryCard = ({ contract, orgId, revalidatePaths, onEdit }: SalaryCardProps) => {
   const router = useRouter();
   const { success, error: notifyError } = useNotify();
   const [historyOpen, setHistoryOpen] = useState(false);
@@ -303,4 +303,5 @@ export function SalaryCard({ contract, orgId, revalidatePaths, onEdit }: SalaryC
       )}
     </div>
   );
-}
+};
+export { SalaryCard };

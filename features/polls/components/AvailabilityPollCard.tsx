@@ -27,12 +27,12 @@ function formatSlot(iso: string): string {
   });
 }
 
-export function AvailabilityPollCard({
+const AvailabilityPollCard = ({
   poll,
   orgSlug,
   canManage,
   userId,
-}: AvailabilityPollCardProps) {
+}: AvailabilityPollCardProps) => {
   const { success, error } = useNotify();
   const [pending, startTransition] = useTransition();
   const [closePending, startCloseTrans] = useTransition();
@@ -188,4 +188,5 @@ export function AvailabilityPollCard({
       </div>
     </div>
   );
-}
+};
+export { AvailabilityPollCard };

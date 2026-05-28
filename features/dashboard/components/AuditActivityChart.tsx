@@ -17,7 +17,7 @@ interface AuditActivityChartProps {
   data30: ActivityPoint[];
 }
 
-export function AuditActivityChart({ data7, data30 }: AuditActivityChartProps) {
+const AuditActivityChart = ({ data7, data30 }: AuditActivityChartProps) => {
   const [range, setRange] = useState<7 | 30>(7);
   const data = range === 7 ? data7 : data30;
 
@@ -82,4 +82,5 @@ export function AuditActivityChart({ data7, data30 }: AuditActivityChartProps) {
       </ResponsiveContainer>
     </div>
   );
-}
+};
+export { AuditActivityChart };

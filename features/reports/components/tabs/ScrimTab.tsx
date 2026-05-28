@@ -7,7 +7,7 @@ const FORMAT_LABELS: Record<string, string> = {
   bo1: "BO1", bo2: "BO2", bo3: "BO3", bo5: "BO5", bo7: "BO7", "4match": "4 Match",
 };
 
-export function ScrimTab({ report }: { report: MonthlyReport }) {
+const ScrimTab = ({ report }: { report: MonthlyReport }) => {
   const { scrims } = report;
 
   return (
@@ -117,4 +117,5 @@ export function ScrimTab({ report }: { report: MonthlyReport }) {
       )}
     </div>
   );
-}
+};
+export { ScrimTab };

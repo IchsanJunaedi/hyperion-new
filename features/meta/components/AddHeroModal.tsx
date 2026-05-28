@@ -117,7 +117,7 @@ function MultiHeroPicker({
   );
 }
 
-export function AddHeroModal({
+const AddHeroModal = ({
   open,
   onClose,
   orgSlug,
@@ -126,7 +126,7 @@ export function AddHeroModal({
   existingHeroes,
   editing,
   defaultTier = "B",
-}: AddHeroModalProps) {
+}: AddHeroModalProps) => {
   const [pending, startTransition] = useTransition();
   const [search, setSearch] = useState("");
   const [selectedHero, setSelectedHero] = useState<string>(editing?.hero_name ?? "");
@@ -380,4 +380,5 @@ export function AddHeroModal({
       </div>
     </div>
   );
-}
+};
+export { AddHeroModal };

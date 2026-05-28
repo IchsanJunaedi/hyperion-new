@@ -11,7 +11,7 @@ interface CancelScrimButtonProps {
   orgSlug: string;
 }
 
-export function CancelScrimButton({ scrimId, orgSlug }: CancelScrimButtonProps) {
+const CancelScrimButton = ({ scrimId, orgSlug }: CancelScrimButtonProps) => {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [showDialog, setShowDialog] = useState(false);
@@ -90,4 +90,5 @@ export function CancelScrimButton({ scrimId, orgSlug }: CancelScrimButtonProps) 
       )}
     </div>
   );
-}
+};
+export { CancelScrimButton };
