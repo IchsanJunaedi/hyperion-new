@@ -264,7 +264,7 @@ const TrialRegistrationForm = ({ trial }: { trial: TrialPublic }) => {
                 <input name="name" type="text" required className={inputCls} />
               </div>
               <div>
-                <label className="block text-xs text-[#9B9A97] mb-1">Username / IGN <span className="text-red-400">*</span></label>
+                <label className="block text-xs text-[#9B9A97] mb-1">Username <span className="text-red-400">*</span></label>
                 <input name="ign" type="text" required className={inputCls} />
               </div>
             </div>
