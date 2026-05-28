@@ -341,7 +341,7 @@ const TrialRegistrationForm = ({ trial }: { trial: TrialPublic }) => {
             {/* ID Game + Server + Cek Nick */}
             <div>
               <label className="block text-xs text-[#9B9A97] mb-1">
-                ID Game &amp; Server <span className="text-[#6B6A68]">(contoh: 12345678 / 1234)</span>
+                ID Game &amp; Server
               </label>
               <div className="flex gap-2">
                 <input
