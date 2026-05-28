@@ -31,7 +31,8 @@ export async function listCalendarEvents(
     .eq("organization_id", orgId)
     .gte("starts_at", from)
     .lte("starts_at", to)
-    .order("starts_at", { ascending: true });
+    .order("starts_at", { ascending: true })
+    .limit(200);
 
   if (error) return [];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -93,7 +94,7 @@ export async function getEventDetailWithRelations(
   // Get event
   const { data: event } = await supabase
     .from("calendar_events")
-    .select("*")
+    .select("id, title, event_type, starts_at, ends_at, is_all_day, visibility, location, description, created_by, organization_id, division_id, ref_id, ref_type, created_at, calendar_id")
     .eq("id", eventId)
     .maybeSingle();
 

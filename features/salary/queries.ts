@@ -36,7 +36,7 @@ export async function listContracts(orgId: string): Promise<ContractWithProfile[
 
   const { data: contracts } = await admin
     .from("player_contracts")
-    .select("*")
+    .select("id, user_id, organization_id, monthly_salary, bonus_percentage, status, start_date, end_date, notes, created_by, created_at, updated_at")
     .eq("organization_id", orgId)
     .order("status")
     .order("created_at", { ascending: false });
@@ -66,7 +66,7 @@ export async function listContracts(orgId: string): Promise<ContractWithProfile[
       .in("user_id", userIds),
     admin
       .from("salary_payments")
-      .select("*")
+      .select("id, contract_id, organization_id, pay_period, amount, status, paid_at, paid_by, notes, created_at")
       .in("contract_id", contractIds)
       .gte("pay_period", since)
       .order("pay_period", { ascending: false }),

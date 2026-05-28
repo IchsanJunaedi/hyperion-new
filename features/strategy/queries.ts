@@ -15,7 +15,7 @@ export async function listStrategyNotes(
   const supabase = await createClient();
   let q = supabase
     .from("strategy_notes")
-    .select("*")
+    .select("id, title, content, created_at, created_by, division_id, is_pinned, organization_id, tags, updated_at, visibility")
     .eq("organization_id", orgId)
     .order("updated_at", { ascending: false })
     .limit(50);
@@ -38,7 +38,7 @@ export async function getStrategyNote(
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("strategy_notes")
-    .select("*")
+    .select("id, title, content, created_at, created_by, division_id, is_pinned, organization_id, tags, updated_at, visibility")
     .eq("id", noteId)
     .maybeSingle();
   if (error || !data) return null;
@@ -64,7 +64,7 @@ export async function listStrategyComments(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: comments } = await (supabase as any)
     .from("strategy_comments")
-    .select("*")
+    .select("id, note_id, user_id, content, created_at")
     .eq("note_id", noteId)
     .order("created_at", { ascending: true });
 

@@ -18,10 +18,11 @@ export async function listPlayerTargets(orgId: string): Promise<PlayerTargetWith
   const supabase = await createClient();
   const { data: targets } = await supabase
     .from("player_targets")
-    .select("*")
+    .select("id, organization_id, user_id, skill_name, current_level, target_level, notes, created_at, updated_at, created_by")
     .eq("organization_id", orgId)
     .order("user_id")
-    .order("skill_name");
+    .order("skill_name")
+    .limit(100);
 
   if (!targets || targets.length === 0) return [];
 
@@ -29,10 +30,10 @@ export async function listPlayerTargets(orgId: string): Promise<PlayerTargetWith
   const targetIds = targets.map((t) => t.id);
   const { data: history } = await supabase
     .from("player_target_history")
-    .select("*")
+    .select("id, target_id, level, recorded_at")
     .in("target_id", targetIds)
     .order("recorded_at", { ascending: true })
-    .limit(30);
+    .limit(200);
 
   // Get player names
   const userIds = [...new Set(targets.map((t) => t.user_id))];
@@ -66,7 +67,7 @@ export async function getPlayerTargets(
   const supabase = await createClient();
   const { data: targets } = await supabase
     .from("player_targets")
-    .select("*")
+    .select("id, organization_id, user_id, skill_name, current_level, target_level, notes, created_at, updated_at, created_by")
     .eq("organization_id", orgId)
     .eq("user_id", userId)
     .order("skill_name");
@@ -76,10 +77,10 @@ export async function getPlayerTargets(
   const targetIds = targets.map((t) => t.id);
   const { data: history } = await supabase
     .from("player_target_history")
-    .select("*")
+    .select("id, target_id, level, recorded_at")
     .in("target_id", targetIds)
     .order("recorded_at", { ascending: true })
-    .limit(30);
+    .limit(200);
 
   const { data: profile } = await supabase
     .from("profiles")
