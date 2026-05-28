@@ -39,10 +39,22 @@ function esc(s?: string): string {
     .replace(/>/g, "&gt;");
 }
 
-function buildPrintHtml(profile: OpponentProfile, data: ProfileData): string {
+function buildPrintHtml(profile: OpponentProfile, data: ProfileData, baseUrl: string): string {
   const rolesHtml = ROLE_CONFIG.map(({ key, label }) => {
     const role = data.roster?.[key];
-    const heroes = (role?.heroPool ?? []).map(esc).join(", ") || "—";
+    const heroChips = (role?.heroPool ?? []).map((hero) => {
+      const imgUrl = `${baseUrl}${getHeroImageUrl(hero)}`;
+      return `<span style="display:inline-flex;align-items:center;gap:5px;
+                            border:1px solid #ddd;border-radius:999px;
+                            padding:3px 8px 3px 3px;font-size:12px;color:#222;
+                            background:#fafafa;margin:2px;">
+        <img src="${imgUrl}" alt="${esc(hero)}"
+             style="width:20px;height:20px;border-radius:50%;object-fit:cover;
+                    border:1px solid #e0e0e0;flex-shrink:0;" />
+        ${esc(hero)}
+      </span>`;
+    }).join("") || "<span style='color:#999;font-size:13px;'>—</span>";
+
     return `
       <div style="margin-bottom:16px;padding-top:12px;border-top:1px solid #e0e0e0;">
         <p style="margin:0 0 8px;font-size:11px;font-weight:700;text-transform:uppercase;
@@ -50,11 +62,12 @@ function buildPrintHtml(profile: OpponentProfile, data: ProfileData): string {
         <p style="margin:3px 0;font-size:13px;">
           <span style="color:#777;">Nickname:</span> ${esc(role?.nickname)}
         </p>
-        <p style="margin:3px 0;font-size:13px;">
-          <span style="color:#777;">Hero Pool:</span> ${heroes}
-        </p>
+        <div style="margin:6px 0 3px;">
+          <span style="color:#777;font-size:13px;">Hero Pool:</span>
+          <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">${heroChips}</div>
+        </div>
         ${role?.habit
-          ? `<p style="margin:3px 0;font-size:13px;"><span style="color:#777;">Habit:</span> ${esc(role.habit)}</p>`
+          ? `<p style="margin:6px 0 3px;font-size:13px;"><span style="color:#777;">Habit:</span> ${esc(role.habit)}</p>`
           : ""}
       </div>`;
   }).join("");
@@ -71,7 +84,7 @@ function buildPrintHtml(profile: OpponentProfile, data: ProfileData): string {
                    border-radius: 6px; padding: 10px 14px; margin-bottom: 20px; }
       h2 { font-size: 13px; font-weight: 700; text-transform: uppercase;
            letter-spacing: .07em; color: #333; margin: 20px 0 0; }
-      @media print { @page { margin: 16mm; } }
+      @media print { @page { margin: 16mm; } img { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
     </style>
   </head><body>
     <h1>${esc(profile.opponent_name)}</h1>
@@ -103,7 +116,8 @@ const ScoutingDetailModal = ({ profile, onClose }: ScoutingDetailModalProps) => 
   function handleExport() {
     const w = window.open("", "_blank");
     if (!w) return;
-    w.document.write(buildPrintHtml(profile, data));
+    const base = `${window.location.protocol}//${window.location.host}`;
+    w.document.write(buildPrintHtml(profile, data, base));
     w.document.close();
   }
 
