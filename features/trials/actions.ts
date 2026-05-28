@@ -189,6 +189,7 @@ export async function registerApplicantAction(raw: {
   hero_pool: unknown;
   competitive_exp: unknown;
   screenshot_url: unknown;
+  cv_url: unknown;
 }): Promise<ActionResult> {
   const trialId = String(raw.trial_id ?? "").trim();
   const name = String(raw.name ?? "").trim();
@@ -212,6 +213,7 @@ export async function registerApplicantAction(raw: {
     : [];
   const competitiveExp = String(raw.competitive_exp ?? "").trim() || null;
   const screenshotUrl = String(raw.screenshot_url ?? "").trim() || null;
+  const cvUrl = String(raw.cv_url ?? "").trim() || null;
 
   if (
     !trialId || !name || !ign || !phone || !email ||
@@ -267,6 +269,7 @@ export async function registerApplicantAction(raw: {
     hero_pool: heroPool.length > 0 ? heroPool : null,
     competitive_exp: competitiveExp,
     screenshot_url: screenshotUrl,
+    cv_url: cvUrl,
   });
 
   if (error) return { ok: false, message: error.message };

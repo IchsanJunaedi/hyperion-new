@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, CheckCircle2, ChevronDown, ImageUp, Loader2, X } from "lucide-react";
+import { Check, CheckCircle2, ChevronDown, FileUp, ImageUp, Loader2, X } from "lucide-react";
 import { useEffect, useRef, useState, useTransition } from "react";
 
 import { registerApplicantAction } from "@/features/trials/actions";
@@ -143,6 +143,13 @@ const TrialRegistrationForm = ({ trial }: { trial: TrialPublic }) => {
   const [uploadErr, setUploadErr] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // CV upload
+  const [cvFile, setCvFile] = useState<File | null>(null);
+  const [cvUrl, setCvUrl] = useState<string | null>(null);
+  const [uploadingCv, setUploadingCv] = useState(false);
+  const [uploadCvErr, setUploadCvErr] = useState<string | null>(null);
+  const cvInputRef = useRef<HTMLInputElement>(null);
+
   async function handleNickCheck() {
     if (!gameUserId || !gameZoneId) return;
     setCheckingNick(true);
@@ -184,6 +191,32 @@ const TrialRegistrationForm = ({ trial }: { trial: TrialPublic }) => {
     }
   }
 
+  async function handleCvChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setCvFile(file);
+    setUploadCvErr(null);
+    setUploadingCv(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      fd.append("trialId", trial.id);
+      const res = await fetch("/api/trials/upload-cv", { method: "POST", body: fd });
+      const json = await res.json() as { url?: string; error?: string };
+      if (json.url) {
+        setCvUrl(json.url);
+      } else {
+        setUploadCvErr(json.error ?? "Upload gagal");
+        setCvFile(null);
+      }
+    } catch {
+      setUploadCvErr("Upload gagal, coba lagi");
+      setCvFile(null);
+    } finally {
+      setUploadingCv(false);
+    }
+  }
+
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (trial.positions.length > 0 && !roleApplied) {
@@ -218,6 +251,7 @@ const TrialRegistrationForm = ({ trial }: { trial: TrialPublic }) => {
         hero_pool: heroPool,
         competitive_exp: fd.get("competitive_exp"),
         screenshot_url: screenshotUrl,
+        cv_url: cvUrl,
       });
       if (res.ok) setDone(true);
       else setErr(res.message);
@@ -477,6 +511,58 @@ const TrialRegistrationForm = ({ trial }: { trial: TrialPublic }) => {
             )}
             {uploadErr && (
               <p className="mt-1.5 text-xs text-red-400">{uploadErr}</p>
+            )}
+          </div>
+
+          {/* CV Upload */}
+          <div>
+            <label className="block text-xs text-[#9B9A97] mb-1">
+              CV / Pengalaman Turnamen
+              <span className="text-[#6B6A68] ml-1">(PDF, DOC, atau gambar, maks 10 MB)</span>
+            </label>
+            <input
+              ref={cvInputRef}
+              type="file"
+              accept=".pdf,.doc,.docx,image/png,image/jpeg,image/jpg,image/webp"
+              className="hidden"
+              onChange={handleCvChange}
+            />
+            {!cvUrl ? (
+              <button
+                type="button"
+                onClick={() => cvInputRef.current?.click()}
+                disabled={uploadingCv}
+                className="flex h-20 w-full flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-[#2D2D2D] bg-[#191919] text-[#6B6A68] hover:border-[#9B9A97] hover:text-[#9B9A97] transition-colors cursor-pointer disabled:opacity-50"
+              >
+                {uploadingCv ? (
+                  <>
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                    <span className="text-xs">Mengupload...</span>
+                  </>
+                ) : (
+                  <>
+                    <FileUp className="h-5 w-5" />
+                    <span className="text-xs">Klik untuk upload CV / dokumen pengalaman</span>
+                  </>
+                )}
+              </button>
+            ) : (
+              <div className="flex items-center justify-between rounded-lg border border-[#2D2D2D] bg-[#191919] px-4 py-3">
+                <div className="flex items-center gap-2 min-w-0">
+                  <FileUp className="h-4 w-4 shrink-0 text-green-400" />
+                  <span className="text-xs text-[#D4D4D4] truncate">{cvFile?.name}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => { setCvUrl(null); setCvFile(null); if (cvInputRef.current) cvInputRef.current.value = ""; }}
+                  className="ml-3 shrink-0 text-[#6B6A68] hover:text-red-400 cursor-pointer"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            )}
+            {uploadCvErr && (
+              <p className="mt-1.5 text-xs text-red-400">{uploadCvErr}</p>
             )}
           </div>
         </div>

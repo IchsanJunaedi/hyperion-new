@@ -2504,6 +2504,7 @@ export type Database = {
           city: string | null
           competitive_exp: string | null
           created_at: string
+          cv_url: string | null
           email: string
           game_id: string | null
           game_nickname: string | null
@@ -2530,6 +2531,7 @@ export type Database = {
           city?: string | null
           competitive_exp?: string | null
           created_at?: string
+          cv_url?: string | null
           email: string
           game_id?: string | null
           game_nickname?: string | null
@@ -2556,6 +2558,7 @@ export type Database = {
           city?: string | null
           competitive_exp?: string | null
           created_at?: string
+          cv_url?: string | null
           email?: string
           game_id?: string | null
           game_nickname?: string | null

@@ -1,6 +1,6 @@
 "use client";
 
-import { ExternalLink, X } from "lucide-react";
+import { ExternalLink, FileText, X } from "lucide-react";
 import { useEffect } from "react";
 
 import type { ApplicantRow } from "@/features/trials/queries";
@@ -137,6 +137,38 @@ const ApplicantDetailModal = ({ applicant, onClose }: ApplicantDetailModalProps)
                 alt={`Screenshot profil ${applicant.name}`}
                 className="w-full rounded-lg border border-[#2D2D2D] object-contain bg-[#141414] max-h-80"
               />
+            </section>
+          )}
+
+          {/* CV */}
+          {applicant.cv_url && (
+            <section className="px-6 py-4 space-y-2">
+              <p className="text-xs font-semibold uppercase tracking-wider text-[#6B6A68]">CV / Pengalaman Turnamen</p>
+              {/\.(png|jpe?g|webp)$/i.test(applicant.cv_url) ? (
+                <div className="space-y-2">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={applicant.cv_url}
+                    alt="CV"
+                    className="w-full rounded-lg border border-[#2D2D2D] object-contain bg-[#141414] max-h-80"
+                  />
+                  <a href={applicant.cv_url} target="_blank" rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-xs text-[#9B9A97] hover:text-[#E5E2E1]">
+                    <ExternalLink className="h-3 w-3" /> Buka asli
+                  </a>
+                </div>
+              ) : (
+                <a
+                  href={applicant.cv_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-lg border border-[#2D2D2D] bg-[#191919] px-4 py-3 text-sm text-[#9B9A97] hover:bg-[#2C2C2C] hover:text-[#E5E2E1] transition-colors"
+                >
+                  <FileText className="h-4 w-4 shrink-0 text-orange-400" />
+                  <span className="truncate">Buka CV / Dokumen</span>
+                  <ExternalLink className="h-3 w-3 shrink-0 ml-auto" />
+                </a>
+              )}
             </section>
           )}
 

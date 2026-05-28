@@ -37,6 +37,7 @@ export interface ApplicantRow {
   hero_pool: string[] | null;
   competitive_exp: string | null;
   screenshot_url: string | null;
+  cv_url: string | null;
   status: "pending" | "accepted" | "rejected" | "waitlisted";
   notes: string | null;
   created_at: string;
