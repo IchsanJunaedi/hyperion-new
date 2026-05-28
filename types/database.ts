@@ -2501,8 +2501,13 @@ export type Database = {
       trial_applicants: {
         Row: {
           age: number
+          city: string | null
+          competitive_exp: string | null
           created_at: string
           email: string
+          game_id: string | null
+          game_nickname: string | null
+          hero_pool: string[] | null
           id: string
           ign: string
           is_free_agent: boolean
@@ -2512,16 +2517,23 @@ export type Database = {
           phone: string
           rank: string
           role_applied: string
+          screenshot_url: string | null
           secondary_game: string | null
           server: string
           social_media: string | null
           status: string
           trial_id: string
+          win_rate: string | null
         }
         Insert: {
           age: number
+          city?: string | null
+          competitive_exp?: string | null
           created_at?: string
           email: string
+          game_id?: string | null
+          game_nickname?: string | null
+          hero_pool?: string[] | null
           id?: string
           ign: string
           is_free_agent?: boolean
@@ -2531,16 +2543,23 @@ export type Database = {
           phone: string
           rank: string
           role_applied: string
+          screenshot_url?: string | null
           secondary_game?: string | null
           server: string
           social_media?: string | null
           status?: string
           trial_id: string
+          win_rate?: string | null
         }
         Update: {
           age?: number
+          city?: string | null
+          competitive_exp?: string | null
           created_at?: string
           email?: string
+          game_id?: string | null
+          game_nickname?: string | null
+          hero_pool?: string[] | null
           id?: string
           ign?: string
           is_free_agent?: boolean
@@ -2550,11 +2569,13 @@ export type Database = {
           phone?: string
           rank?: string
           role_applied?: string
+          screenshot_url?: string | null
           secondary_game?: string | null
           server?: string
           social_media?: string | null
           status?: string
           trial_id?: string
+          win_rate?: string | null
         }
         Relationships: [
           {

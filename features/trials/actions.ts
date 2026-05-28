@@ -182,39 +182,47 @@ export async function registerApplicantAction(raw: {
   is_free_agent: unknown;
   age: unknown;
   social_media: unknown;
+  city: unknown;
+  game_id: unknown;
+  game_nickname: unknown;
+  win_rate: unknown;
+  hero_pool: unknown;
+  competitive_exp: unknown;
+  screenshot_url: unknown;
 }): Promise<ActionResult> {
   const trialId = String(raw.trial_id ?? "").trim();
   const name = String(raw.name ?? "").trim();
   const ign = String(raw.ign ?? "").trim();
-  const phone = String(raw.phone ?? "")
-    .trim()
-    .replace(/\D/g, "");
+  const phone = String(raw.phone ?? "").trim().replace(/\D/g, "");
   const email = String(raw.email ?? "").trim();
   const roleApplied = String(raw.role_applied ?? "").trim();
   const rank = String(raw.rank ?? "").trim();
   const server = String(raw.server ?? "").trim() || "ID";
   const mainGame = String(raw.main_game ?? "").trim();
   const secondaryGame = String(raw.secondary_game ?? "").trim() || null;
-  const isFreeAgent =
-    raw.is_free_agent === true || raw.is_free_agent === "true";
+  const isFreeAgent = raw.is_free_agent === true || raw.is_free_agent === "true";
   const age = parseInt(String(raw.age ?? "0"), 10);
   const socialMedia = String(raw.social_media ?? "").trim() || null;
+  const city = String(raw.city ?? "").trim() || null;
+  const gameId = String(raw.game_id ?? "").trim() || null;
+  const gameNickname = String(raw.game_nickname ?? "").trim() || null;
+  const winRate = String(raw.win_rate ?? "").trim() || null;
+  const heroPool = Array.isArray(raw.hero_pool)
+    ? (raw.hero_pool as string[]).filter(Boolean)
+    : [];
+  const competitiveExp = String(raw.competitive_exp ?? "").trim() || null;
+  const screenshotUrl = String(raw.screenshot_url ?? "").trim() || null;
 
   if (
-    !trialId ||
-    !name ||
-    !ign ||
-    !phone ||
-    !email ||
-    !roleApplied ||
-    !rank ||
-    !mainGame ||
-    !socialMedia ||
-    isNaN(age) ||
-    age < 10 ||
-    age > 99
+    !trialId || !name || !ign || !phone || !email ||
+    !roleApplied || !rank || !mainGame || !socialMedia ||
+    isNaN(age) || age < 10 || age > 99
   ) {
     return { ok: false, message: "Semua field wajib diisi" };
+  }
+
+  if (!screenshotUrl) {
+    return { ok: false, message: "Screenshot profil wajib diupload" };
   }
 
   const admin = createAdminClient();
@@ -236,10 +244,7 @@ export async function registerApplicantAction(raw: {
     .eq("phone", phone)
     .maybeSingle();
   if (existing)
-    return {
-      ok: false,
-      message: "Nomor WhatsApp sudah terdaftar di trial ini",
-    };
+    return { ok: false, message: "Nomor WhatsApp sudah terdaftar di trial ini" };
 
   const { error } = await admin.from("trial_applicants").insert({
     trial_id: trialId,
@@ -255,13 +260,20 @@ export async function registerApplicantAction(raw: {
     is_free_agent: isFreeAgent,
     age,
     social_media: socialMedia,
+    city,
+    game_id: gameId,
+    game_nickname: gameNickname,
+    win_rate: winRate,
+    hero_pool: heroPool.length > 0 ? heroPool : null,
+    competitive_exp: competitiveExp,
+    screenshot_url: screenshotUrl,
   });
 
   if (error) return { ok: false, message: error.message };
 
   await sendWaMessage(
     phone,
-    `Halo ${name}! Pendaftaran trial *${trial.title}* berhasil diterima.\n\nData kamu:\n- IGN: ${ign}\n- Role: ${roleApplied}\n- Rank: ${rank} (${server})\n\nTim akan menghubungi kamu setelah proses seleksi selesai. Semangat!`
+    `Halo ${name}! Pendaftaran trial *${trial.title}* berhasil diterima.\n\nData kamu:\n- IGN: ${ign}\n- Role: ${roleApplied}\n- Rank: ${rank}\n\nTim akan menghubungi kamu setelah proses seleksi selesai. Semangat!`
   );
 
   return { ok: true };

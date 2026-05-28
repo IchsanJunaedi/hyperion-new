@@ -30,6 +30,13 @@ export interface ApplicantRow {
   is_free_agent: boolean;
   age: number;
   social_media: string | null;
+  city: string | null;
+  game_id: string | null;
+  game_nickname: string | null;
+  win_rate: string | null;
+  hero_pool: string[] | null;
+  competitive_exp: string | null;
+  screenshot_url: string | null;
   status: "pending" | "accepted" | "rejected" | "waitlisted";
   notes: string | null;
   created_at: string;
