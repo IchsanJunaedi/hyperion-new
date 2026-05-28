@@ -4,7 +4,7 @@ import { Coins, Leaf, Loader2, Search, Shield, Sword, X, Zap } from "lucide-reac
 import type { LucideIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
-import { toast } from "sonner";
+import { notify } from "@/features/dashboard/components/NotifyModal";
 
 import {
   createOpponentProfileAction,
@@ -275,7 +275,7 @@ const ScoutingFormModal = ({ orgSlug, profile, onClose }: ScoutingFormModalProps
         : await createOpponentProfileAction(orgSlug, payload);
 
       if (res.ok) {
-        toast.success(isEdit ? "Profil lawan diperbarui" : "Profil lawan disimpan");
+        notify.success(isEdit ? "Profil lawan diperbarui" : "Profil lawan disimpan");
         onClose();
         router.refresh();
       } else {
