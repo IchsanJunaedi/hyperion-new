@@ -44,21 +44,19 @@ export default async function DashboardPage() {
     { data: members },
     { data: allDivisions },
     { data: profiles },
-    { data: authUsers },
   ] = await Promise.all([
     admin.from("profiles").select("id", { count: "exact", head: true }),
     admin.from("organizations").select("id, name, slug").order("created_at", { ascending: false }),
     admin.from("team_members").select("id, user_id, organization_id, division_id, role, is_active").eq("is_active", true),
     admin.from("divisions").select("id, name, organization_id"),
-    admin.from("profiles").select("id, full_name, username, display_name, phone_wa, avatar_url, date_of_birth, bio, social_links, game_ids").order("created_at", { ascending: false }),
-    admin.auth.admin.listUsers({ perPage: 100 }),
+    admin.from("profiles").select("id, full_name, username, display_name, phone_wa, avatar_url, date_of_birth, bio, social_links, game_ids, email").order("created_at", { ascending: false }),
   ]);
 
   const workspaceName = profiles?.find(p => p.id === user.id)?.full_name ?? "Hyperion Team";
 
   // Email map
   const emailMap = new Map<string, string>();
-  for (const u of authUsers?.users ?? []) { if (u.email) emailMap.set(u.id, u.email); }
+  for (const p of profiles ?? []) { if (p.email) emailMap.set(p.id, p.email); }
 
   // Role map
   const roleMap = new Map<string, string>();
