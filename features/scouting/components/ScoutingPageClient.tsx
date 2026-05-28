@@ -1,6 +1,6 @@
 "use client";
 
-import { Plus, Radar } from "lucide-react";
+import { Plus, Radar, Search } from "lucide-react";
 import { useState } from "react";
 
 import { ScoutingCard } from "@/features/scouting/components/ScoutingCard";
@@ -17,6 +17,13 @@ const ScoutingPageClient = ({ orgSlug, profiles }: ScoutingPageClientProps) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<OpponentProfile | undefined>(undefined);
   const [viewTarget, setViewTarget] = useState<OpponentProfile | null>(null);
+  const [search, setSearch] = useState("");
+
+  const filtered = search.trim()
+    ? profiles.filter((p) =>
+        p.opponent_name.toLowerCase().includes(search.toLowerCase()),
+      )
+    : profiles;
 
   function openCreate() {
     setEditTarget(undefined);
@@ -34,21 +41,33 @@ const ScoutingPageClient = ({ orgSlug, profiles }: ScoutingPageClientProps) => {
 
   return (
     <>
-      <header className="flex items-center justify-between gap-4">
+      <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-white sm:text-3xl">Scouting Lawan</h1>
           <p className="mt-1 text-sm text-[#9B9A97]">
             Database profil tim lawan — rank, hero pool, playstyle, dan kelemahan.
           </p>
         </div>
-        <button
-          type="button"
-          onClick={openCreate}
-          className="inline-flex h-10 items-center gap-2 rounded-md bg-yellow-400 px-4 text-sm font-semibold text-black transition hover:bg-yellow-300 cursor-pointer"
-        >
-          <Plus className="h-4 w-4" />
-          Tambah Profil
-        </button>
+        <div className="flex items-center gap-2 shrink-0">
+          <div className="relative">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[#6B6A68]" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Cari tim lawan..."
+              className="h-10 w-44 rounded-md border border-[#2D2D2D] bg-[#191919] pl-9 pr-3 text-sm text-[#E5E2E1] placeholder:text-[#6B6A68] focus:border-[#9B9A97] focus:outline-none focus:w-56 transition-all"
+            />
+          </div>
+          <button
+            type="button"
+            onClick={openCreate}
+            className="inline-flex h-10 items-center gap-2 rounded-md bg-yellow-400 px-4 text-sm font-semibold text-black transition hover:bg-yellow-300 cursor-pointer shrink-0"
+          >
+            <Plus className="h-4 w-4" />
+            Tambah Profil
+          </button>
+        </div>
       </header>
 
       {profiles.length === 0 ? (
@@ -63,9 +82,16 @@ const ScoutingPageClient = ({ orgSlug, profiles }: ScoutingPageClientProps) => {
             Tambah profil pertama
           </button>
         </div>
+      ) : filtered.length === 0 ? (
+        <div className="rounded-xl border border-dashed border-[#2D2D2D] bg-[#202020]/40 p-10 text-center">
+          <Search className="mx-auto h-7 w-7 text-[#6B6A68]" />
+          <p className="mt-3 text-sm text-[#9B9A97]">
+            Tidak ada tim lawan yang cocok dengan &ldquo;{search}&rdquo;.
+          </p>
+        </div>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-          {profiles.map((p) => (
+          {filtered.map((p) => (
             <ScoutingCard
               key={p.id}
               orgSlug={orgSlug}
