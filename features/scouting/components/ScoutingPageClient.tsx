@@ -4,6 +4,7 @@ import { Plus, Radar } from "lucide-react";
 import { useState } from "react";
 
 import { ScoutingCard } from "@/features/scouting/components/ScoutingCard";
+import { ScoutingDetailModal } from "@/features/scouting/components/ScoutingDetailModal";
 import { ScoutingFormModal } from "@/features/scouting/components/ScoutingFormModal";
 import type { OpponentProfile } from "@/features/scouting/queries";
 
@@ -12,9 +13,10 @@ interface ScoutingPageClientProps {
   profiles: OpponentProfile[];
 }
 
-export function ScoutingPageClient({ orgSlug, profiles }: ScoutingPageClientProps) {
+const ScoutingPageClient = ({ orgSlug, profiles }: ScoutingPageClientProps) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<OpponentProfile | undefined>(undefined);
+  const [viewTarget, setViewTarget] = useState<OpponentProfile | null>(null);
 
   function openCreate() {
     setEditTarget(undefined);
@@ -24,6 +26,10 @@ export function ScoutingPageClient({ orgSlug, profiles }: ScoutingPageClientProp
   function openEdit(profile: OpponentProfile) {
     setEditTarget(profile);
     setModalOpen(true);
+  }
+
+  function openView(profile: OpponentProfile) {
+    setViewTarget(profile);
   }
 
   return (
@@ -60,7 +66,13 @@ export function ScoutingPageClient({ orgSlug, profiles }: ScoutingPageClientProp
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
           {profiles.map((p) => (
-            <ScoutingCard key={p.id} profile={p} onEdit={() => openEdit(p)} />
+            <ScoutingCard
+              key={p.id}
+              orgSlug={orgSlug}
+              profile={p}
+              onEdit={() => openEdit(p)}
+              onView={() => openView(p)}
+            />
           ))}
         </div>
       )}
@@ -72,6 +84,15 @@ export function ScoutingPageClient({ orgSlug, profiles }: ScoutingPageClientProp
           onClose={() => setModalOpen(false)}
         />
       )}
+
+      {viewTarget && (
+        <ScoutingDetailModal
+          profile={viewTarget}
+          onClose={() => setViewTarget(null)}
+        />
+      )}
     </>
   );
-}
+};
+
+export { ScoutingPageClient };
