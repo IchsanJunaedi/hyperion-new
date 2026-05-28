@@ -189,7 +189,6 @@ const RoleSection = ({ config, data, onUpdate }: RoleSectionProps) => {
           required
           value={data.nickname}
           onChange={(e) => onUpdate({ nickname: e.target.value })}
-          placeholder={`Nickname ${label}`}
           className="h-9 w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-sm text-[#E5E2E1] placeholder:text-[#6B6A68] focus:border-[#9B9A97] focus:outline-none"
         />
       </div>
@@ -210,7 +209,6 @@ const RoleSection = ({ config, data, onUpdate }: RoleSectionProps) => {
           rows={2}
           value={data.habit}
           onChange={(e) => onUpdate({ habit: e.target.value })}
-          placeholder="Kebiasaan mikro/makro pemain..."
           className="w-full resize-none rounded-md border border-[#2D2D2D] bg-[#191919] px-3 py-2 text-sm text-[#E5E2E1] placeholder:text-[#6B6A68] focus:border-[#9B9A97] focus:outline-none"
         />
       </div>
@@ -327,7 +325,6 @@ const ScoutingFormModal = ({ orgSlug, profile, onClose }: ScoutingFormModalProps
                   required
                   value={teamName}
                   onChange={(e) => setTeamName(e.target.value)}
-                  placeholder="Team Alpha"
                   className="h-10 w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-sm text-[#E5E2E1] placeholder:text-[#6B6A68] focus:border-[#9B9A97] focus:outline-none"
                 />
               </div>
@@ -338,7 +335,6 @@ const ScoutingFormModal = ({ orgSlug, profile, onClose }: ScoutingFormModalProps
                   rows={2}
                   value={playstyle}
                   onChange={(e) => setPlaystyle(e.target.value)}
-                  placeholder="Agresif early game, suka invade jungle..."
                   className="w-full resize-none rounded-md border border-[#2D2D2D] bg-[#191919] px-3 py-2 text-sm text-[#E5E2E1] placeholder:text-[#6B6A68] focus:border-[#9B9A97] focus:outline-none"
                 />
               </div>
