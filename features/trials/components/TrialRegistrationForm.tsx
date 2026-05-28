@@ -417,7 +417,7 @@ const TrialRegistrationForm = ({ trial }: { trial: TrialPublic }) => {
                 </div>
               </div>
               <div>
-                <label className="block text-xs text-[#9B9A97] mb-1">Sosial Media <span className="text-red-400">*</span></label>
+                <label className="block text-xs text-[#9B9A97] mb-1">Sosial Media <span className="text-[#6B6A68]">(Instagram / TikTok)</span> <span className="text-red-400">*</span></label>
                 <input name="social_media" type="text" required className={inputCls} placeholder="@username" />
               </div>
             </div>
