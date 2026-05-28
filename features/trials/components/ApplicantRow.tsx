@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, ChevronDown, Eye, MessageSquare, Trash2 } from "lucide-react";
+import { Check, ChevronDown, MessageSquare, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
 
@@ -84,7 +84,13 @@ const ApplicantRow = ({ applicant, trialId, canManage, revalidatePaths }: Applic
   return (
     <>
       <div className="border-b border-[#2D2D2D] last:border-0">
-        <div className="grid grid-cols-[1fr_1fr_1fr_auto] gap-4 items-start px-4 py-3 text-sm hover:bg-[#202020]/50">
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={() => setDetailOpen(true)}
+          onKeyDown={(e) => e.key === "Enter" && setDetailOpen(true)}
+          className="grid grid-cols-[1fr_1fr_1fr_auto] gap-4 items-start px-4 py-3 text-sm cursor-pointer hover:bg-[#2C2C2C] transition-colors"
+        >
 
           {/* Identitas */}
           <div className="space-y-0.5">
@@ -128,7 +134,7 @@ const ApplicantRow = ({ applicant, trialId, canManage, revalidatePaths }: Applic
           </div>
 
           {/* Actions */}
-          <div className="flex items-center gap-1.5 pt-0.5">
+          <div className="flex items-center gap-1.5 pt-0.5" onClick={(e) => e.stopPropagation()}>
             {canManage ? (
               <div ref={dropRef} className="relative">
                 <button
@@ -161,16 +167,6 @@ const ApplicantRow = ({ applicant, trialId, canManage, revalidatePaths }: Applic
                 {currentStatus.label}
               </span>
             )}
-
-            {/* View detail */}
-            <button
-              type="button"
-              onClick={() => setDetailOpen(true)}
-              title="Lihat detail"
-              className="text-[#6B6A68] hover:text-[#9B9A97] cursor-pointer"
-            >
-              <Eye className="h-3.5 w-3.5" />
-            </button>
 
             {canManage && (
               <>
