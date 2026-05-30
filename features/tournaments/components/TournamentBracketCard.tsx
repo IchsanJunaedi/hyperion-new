@@ -97,8 +97,8 @@ const TournamentBracketCard = ({
             return;
           }
           finalFilePath = uploadedPath;
-        } catch (err: any) {
-          toast.error(`Gagal upload file: ${err.message}`);
+        } catch (err) {
+          toast.error(`Gagal upload file: ${err instanceof Error ? err.message : String(err)}`);
           setUploading(false);
           return;
         }

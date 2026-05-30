@@ -122,7 +122,7 @@ export async function getAcknowledgementDetails(
     .eq("organization_id", organizationId)
     .eq("is_active", true);
 
-  const allMembers = (members ?? []) as Array<{
+  const allMembers = (members ?? []) as unknown as Array<{
     user_id: string;
     profiles: { display_name: string | null; username: string | null } | null;
   }>;

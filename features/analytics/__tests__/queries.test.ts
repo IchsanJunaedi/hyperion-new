@@ -301,6 +301,8 @@ describe("getDraftAnalytics", () => {
       select: vi.fn().mockReturnThis(),
       eq: vi.fn().mockReturnThis(),
       in: vi.fn().mockReturnThis(),
+      order: vi.fn().mockReturnThis(),
+      limit: vi.fn().mockReturnThis(),
     };
     mockSupabase = {
       from: vi.fn().mockReturnValue(mockQuery),
@@ -309,20 +311,14 @@ describe("getDraftAnalytics", () => {
   });
 
   it("returns empty draft analytics when no completed scrims", async () => {
-    mockQuery.eq = vi.fn().mockImplementation(() => ({
-      ...mockQuery,
-      then: (resolve: any) => resolve({ data: [], error: null }),
-    }));
+    mockQuery.limit = vi.fn().mockResolvedValue({ data: [], error: null });
 
     const result = await getDraftAnalytics("org-1");
     expect(result).toEqual({ byRole: {}, topOverall: [] });
   });
 
   it("returns empty draft analytics when scrim data is null", async () => {
-    mockQuery.eq = vi.fn().mockImplementation(() => ({
-      ...mockQuery,
-      then: (resolve: any) => resolve({ data: null, error: null }),
-    }));
+    mockQuery.limit = vi.fn().mockResolvedValue({ data: null, error: null });
 
     const result = await getDraftAnalytics("org-1");
     expect(result).toEqual({ byRole: {}, topOverall: [] });
@@ -333,21 +329,12 @@ describe("getDraftAnalytics", () => {
 
     mockSupabase.from = vi.fn().mockImplementation((table: string) => {
       if (table === "scrims") {
-        const q: any = {
+        return {
           select: vi.fn().mockReturnThis(),
           eq: vi.fn().mockReturnThis(),
+          order: vi.fn().mockReturnThis(),
+          limit: vi.fn().mockResolvedValue({ data: scrims, error: null }),
         };
-        q.eq = vi.fn().mockImplementation(() => {
-          // return a thenable that resolves to data after second .eq()
-          const inner: any = {
-            eq: vi.fn().mockReturnValue({
-              then: (resolve: any) => resolve({ data: scrims, error: null }),
-            }),
-            then: (resolve: any) => resolve({ data: scrims, error: null }),
-          };
-          return inner;
-        });
-        return q;
       }
       return {
         select: vi.fn().mockReturnThis(),
@@ -428,7 +415,7 @@ describe("getDraftAnalytics — with picks data", () => {
 
   const makeThenable = (data: any) => {
     const q: any = {};
-    for (const m of ["select", "eq", "in", "not"]) {
+    for (const m of ["select", "eq", "in", "not", "order", "limit"]) {
       q[m] = vi.fn().mockReturnValue(q);
     }
     q.then = (resolve: any) => resolve({ data, error: null });

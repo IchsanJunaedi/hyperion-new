@@ -89,7 +89,7 @@ describe("getScrimWinLossRecord", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockSingle = {
-      single: vi.fn(),
+      maybeSingle: vi.fn(),
     };
     mockSupabase = {
       rpc: vi.fn().mockReturnValue(mockSingle),
@@ -98,21 +98,21 @@ describe("getScrimWinLossRecord", () => {
   });
 
   it("returns all zeros when no scrims are found", async () => {
-    mockSingle.single.mockResolvedValue({ data: null, error: null });
+    mockSingle.maybeSingle.mockResolvedValue({ data: null, error: null });
 
     const record = await getScrimWinLossRecord("org-123");
     expect(record).toEqual({ wins: 0, losses: 0, draws: 0, total: 0 });
   });
 
   it("returns all zeros when database error occurs", async () => {
-    mockSingle.single.mockResolvedValue({ data: null, error: { message: "Error" } });
+    mockSingle.maybeSingle.mockResolvedValue({ data: null, error: { message: "Error" } });
 
     const record = await getScrimWinLossRecord("org-123");
     expect(record).toEqual({ wins: 0, losses: 0, draws: 0, total: 0 });
   });
 
   it("counts wins correctly when all are wins", async () => {
-    mockSingle.single.mockResolvedValue({
+    mockSingle.maybeSingle.mockResolvedValue({
       data: { wins: 2, losses: 0, draws: 0, total: 2 },
       error: null,
     });
@@ -122,7 +122,7 @@ describe("getScrimWinLossRecord", () => {
   });
 
   it("counts losses correctly when all are losses", async () => {
-    mockSingle.single.mockResolvedValue({
+    mockSingle.maybeSingle.mockResolvedValue({
       data: { wins: 0, losses: 1, draws: 0, total: 1 },
       error: null,
     });
@@ -132,7 +132,7 @@ describe("getScrimWinLossRecord", () => {
   });
 
   it("counts draws correctly when all are draws", async () => {
-    mockSingle.single.mockResolvedValue({
+    mockSingle.maybeSingle.mockResolvedValue({
       data: { wins: 0, losses: 0, draws: 2, total: 2 },
       error: null,
     });
@@ -142,7 +142,7 @@ describe("getScrimWinLossRecord", () => {
   });
 
   it("counts mixed wins, losses, and draws correctly", async () => {
-    mockSingle.single.mockResolvedValue({
+    mockSingle.maybeSingle.mockResolvedValue({
       data: { wins: 1, losses: 1, draws: 2, total: 4 },
       error: null,
     });
@@ -152,7 +152,7 @@ describe("getScrimWinLossRecord", () => {
   });
 
   it("handles scrim_results as a single object (non-array fallback)", async () => {
-    mockSingle.single.mockResolvedValue({
+    mockSingle.maybeSingle.mockResolvedValue({
       data: { wins: 1, losses: 1, draws: 0, total: 2 },
       error: null,
     });
@@ -162,7 +162,7 @@ describe("getScrimWinLossRecord", () => {
   });
 
   it("correctly triggers query with expected filters", async () => {
-    mockSingle.single.mockResolvedValue({ data: null, error: null });
+    mockSingle.maybeSingle.mockResolvedValue({ data: null, error: null });
 
     await getScrimWinLossRecord("org-xyz");
 

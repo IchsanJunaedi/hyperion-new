@@ -57,7 +57,7 @@ const HeroSection = () => {
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={SLIDES[current].image}
+            src={SLIDES[current]!.image}
             alt=""
             aria-hidden="true"
             className="h-full w-full object-cover"
@@ -83,7 +83,7 @@ const HeroSection = () => {
           >
             HYPERION
             <br />
-            <span className="text-[#F5C400]">// TEAM</span>
+            <span className="text-[#F5C400]">{'// TEAM'}</span>
           </h1>
 
           <div className="mt-8 flex flex-wrap items-center gap-6 sm:mt-10">
@@ -130,7 +130,7 @@ const HeroSection = () => {
                   transition={{ duration: 0.25, ease: "easeOut" }}
                   className="absolute text-[10px] font-bold uppercase tracking-widest text-white/28"
                 >
-                  {SLIDES[current].achievement}
+                  {SLIDES[current]!.achievement}
                 </motion.span>
               </AnimatePresence>
             </div>
@@ -146,7 +146,7 @@ const HeroSection = () => {
                   transition={{ duration: 0.25, ease: "easeOut", delay: 0.04 }}
                   className="text-[10px] font-bold uppercase tracking-widest text-white/28"
                 >
-                  {SLIDES[current].rank}
+                  {SLIDES[current]!.rank}
                 </motion.span>
               </AnimatePresence>
             </div>
