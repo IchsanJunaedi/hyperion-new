@@ -210,6 +210,15 @@ FONNTE_WEBHOOK_SECRET=
 - Batch related files in one commit, don't commit file-by-file
 - Keep commit messages short and descriptive (max 72 chars)
 
+### Pre-Commit CI Gate (WAJIB sebelum setiap commit/push)
+Sebelum `git commit`, SELALU jalankan ketiga perintah ini dan pastikan semua lulus:
+```bash
+npm run lint        # ← tidak boleh ada "error" (warning OK)
+npm run typecheck   # ← harus exit 0
+npm run test:unit   # ← semua tests harus pass
+```
+Jika ada yang gagal, **perbaiki dulu sebelum commit**. Jangan commit kode yang bakal merahkan CI.
+
 ### Code Quality
 - Run `getDiagnostics` after every file change to verify no errors
 - Never leave broken imports or unused variables
