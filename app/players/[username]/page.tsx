@@ -29,6 +29,21 @@ interface Props {
 
 export const dynamic = "force-dynamic";
 
+export async function generateMetadata({ params }: Props) {
+  const { username } = await params;
+  const admin = createAdminClient();
+  const { data } = await admin
+    .from("profiles")
+    .select("display_name, username")
+    .eq("username", username)
+    .maybeSingle();
+  const name = data?.display_name ?? data?.username ?? username;
+  return {
+    title: `${name} — Hyperion Team`,
+    description: `Profil publik ${name} di Hyperion Team.`,
+  };
+}
+
 export default async function PlayerProfilePage({ params }: Props) {
   const { username } = await params;
   const admin = createAdminClient();

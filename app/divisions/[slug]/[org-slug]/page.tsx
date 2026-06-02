@@ -32,6 +32,21 @@ interface Props {
 
 export const dynamic = "force-dynamic";
 
+export async function generateMetadata({ params }: Props) {
+  const { "org-slug": orgSlug } = await params;
+  const admin = createAdminClient();
+  const { data } = await admin
+    .from("organizations")
+    .select("name")
+    .eq("slug", orgSlug)
+    .maybeSingle();
+  const name = data?.name ?? orgSlug;
+  return {
+    title: `${name} — Hyperion Team`,
+    description: `Roster dan prestasi tim ${name}.`,
+  };
+}
+
 export default async function TeamDetailPage({ params }: Props) {
   const { slug: divisionSlug, "org-slug": orgSlug } = await params;
   const admin = createAdminClient();
