@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { createAchievement, updateAchievement, deleteAchievement } from "@/features/admin/actions";
+import { createAchievement, deleteAchievement } from "@/features/admin/actions";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
