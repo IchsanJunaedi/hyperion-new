@@ -243,3 +243,59 @@ export async function upsertSiteSettings(settings: Record<string, string>): Prom
   revalidatePath("/admin");
   return { ok: true };
 }
+
+// ── Achievements ─────────────────────────────────────────────────────────────
+
+export async function createAchievement(data: {
+  title: string;
+  description?: string | null;
+  placement?: number | null;
+  achieved_at: string;
+  image_url?: string | null;
+  division_id?: string | null;
+  organization_id?: string | null;
+  tournament_id?: string | null;
+}): Promise<ActionResult> {
+  const auth = await verifyAdminAccess();
+  if (!auth.ok) return auth;
+  const admin = createAdminClient();
+  const { error } = await admin.from("achievements").insert({
+    ...data,
+    organization_id: data.organization_id ?? "",
+  });
+  if (error) return { ok: false, message: error.message };
+  revalidatePath("/");
+  revalidatePath("/admin/achievements");
+  return { ok: true };
+}
+
+export async function updateAchievement(
+  id: string,
+  data: {
+    title?: string;
+    description?: string | null;
+    placement?: number | null;
+    achieved_at?: string;
+    image_url?: string | null;
+  },
+): Promise<ActionResult> {
+  const auth = await verifyAdminAccess();
+  if (!auth.ok) return auth;
+  const admin = createAdminClient();
+  const { error } = await admin.from("achievements").update(data).eq("id", id);
+  if (error) return { ok: false, message: error.message };
+  revalidatePath("/");
+  revalidatePath("/admin/achievements");
+  return { ok: true };
+}
+
+export async function deleteAchievement(id: string): Promise<ActionResult> {
+  const auth = await verifyAdminAccess();
+  if (!auth.ok) return auth;
+  const admin = createAdminClient();
+  const { error } = await admin.from("achievements").delete().eq("id", id);
+  if (error) return { ok: false, message: error.message };
+  revalidatePath("/");
+  revalidatePath("/admin/achievements");
+  return { ok: true };
+}
