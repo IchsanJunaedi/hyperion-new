@@ -6,6 +6,7 @@ export type Partner = Database["public"]["Tables"]["partners"]["Row"];
 export type Testimonial = Database["public"]["Tables"]["testimonials"]["Row"];
 export type DivisionPublic = Database["public"]["Tables"]["divisions_public"]["Row"];
 export type SiteSetting = Database["public"]["Tables"]["site_settings"]["Row"];
+export type Achievement = Database["public"]["Tables"]["achievements"]["Row"];
 
 export async function getGalleryEntries(): Promise<GalleryEntry[]> {
   const admin = createAdminClient();
@@ -110,4 +111,26 @@ export async function getSiteSettings(): Promise<Record<string, string>> {
     map[row.key] = row.value;
   }
   return map;
+}
+
+export async function getAchievements(): Promise<Achievement[]> {
+  const admin = createAdminClient();
+  const { data, error } = await admin
+    .from("achievements")
+    .select("id, title, description, placement, achieved_at, image_url, organization_id, division_id, tournament_id, created_at")
+    .order("achieved_at", { ascending: false })
+    .limit(50);
+  if (error) console.error("getAchievements:", error);
+  return data ?? [];
+}
+
+export async function getPublicAchievements(): Promise<Achievement[]> {
+  const admin = createAdminClient();
+  const { data, error } = await admin
+    .from("achievements")
+    .select("id, title, description, placement, achieved_at, image_url, organization_id, division_id, tournament_id, created_at")
+    .order("achieved_at", { ascending: false })
+    .limit(50);
+  if (error) console.error("getPublicAchievements:", error);
+  return data ?? [];
 }
