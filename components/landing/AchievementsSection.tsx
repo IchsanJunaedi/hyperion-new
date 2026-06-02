@@ -64,7 +64,7 @@ const AchievementRow = ({ item, index }: RowProps) => {
               </span>
             )}
             <span className="text-[10px] font-bold uppercase tracking-widest text-white/28">
-              {item.achieved_at?.slice(0, 4)}
+              {item.achieved_at.slice(0, 4)}
             </span>
           </div>
         </div>
