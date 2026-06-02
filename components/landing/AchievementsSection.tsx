@@ -1,12 +1,13 @@
 "use client";
 
-import Link from "next/link";
 import { useRef } from "react";
 import { motion, useInView } from "motion/react";
-import type { GalleryEntry } from "@/features/admin/queries";
+import type { Achievement } from "@/features/admin/queries";
+
+const PLACEMENT_LABEL: Record<number, string> = { 1: "Juara 1", 2: "Juara 2", 3: "Juara 3" };
 
 interface RowProps {
-  item: GalleryEntry;
+  item: Achievement;
   index: number;
 }
 
@@ -21,22 +22,21 @@ const AchievementRow = ({ item, index }: RowProps) => {
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.5, delay: index * 0.08, ease: "easeOut" }}
     >
-      <Link
-        href={`/gallery/${item.slug}`}
-        className="group relative block overflow-hidden border-b border-white/8 cursor-pointer"
-      >
+      <div className="group relative block overflow-hidden border-b border-white/8">
         {/* Hover-reveal photo */}
-        <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={item.preview_images[0] ?? ""}
-            alt=""
-            aria-hidden="true"
-            loading="lazy"
-            className="h-full w-full object-cover"
-            style={{ filter: "brightness(0.12) grayscale(60%)" }}
-          />
-        </div>
+        {item.image_url && (
+          <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={item.image_url}
+              alt=""
+              aria-hidden="true"
+              loading="lazy"
+              className="h-full w-full object-cover"
+              style={{ filter: "brightness(0.12) grayscale(60%)" }}
+            />
+          </div>
+        )}
 
         <div className="relative grid grid-cols-[3rem_1fr] items-center gap-4 py-7 sm:grid-cols-[4rem_1fr_auto] sm:gap-8 sm:py-8">
           {/* Number */}
@@ -46,34 +46,35 @@ const AchievementRow = ({ item, index }: RowProps) => {
 
           {/* Title + description */}
           <div className="min-w-0">
-            <h3 className="text-base font-black uppercase leading-tight tracking-tight text-white transition-colors duration-300 group-hover:text-[#F5C400] sm:text-xl lg:text-2xl">
+            <h3 className="text-base font-black uppercase leading-tight tracking-tight text-white sm:text-xl lg:text-2xl">
               {item.title}
             </h3>
-            <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-white/32 sm:text-sm">
-              {item.description}
-            </p>
+            {item.description && (
+              <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-white/32 sm:text-sm">
+                {item.description}
+              </p>
+            )}
           </div>
 
-          {/* Right meta — hidden on mobile, shown sm+ */}
+          {/* Right meta — hidden on mobile */}
           <div className="hidden flex-col items-end gap-2 sm:flex">
-            <span className="text-[11px] font-black uppercase tracking-widest text-[#F5C400]">
-              {item.position}
-            </span>
+            {item.placement != null && (
+              <span className="text-[11px] font-black uppercase tracking-widest text-[#F5C400]">
+                {PLACEMENT_LABEL[item.placement] ?? `Juara ${item.placement}`}
+              </span>
+            )}
             <span className="text-[10px] font-bold uppercase tracking-widest text-white/28">
-              {item.tournament_date}
-            </span>
-            <span className="text-[10px] font-bold uppercase tracking-widest text-white/20 transition-colors duration-300 group-hover:text-white/50">
-              View →
+              {item.achieved_at?.slice(0, 4)}
             </span>
           </div>
         </div>
-      </Link>
+      </div>
     </motion.div>
   );
 };
 
 interface AchievementsSectionProps {
-  entries: GalleryEntry[];
+  entries: Achievement[];
 }
 
 const AchievementsSection = ({ entries }: AchievementsSectionProps) => {
@@ -83,12 +84,8 @@ const AchievementsSection = ({ entries }: AchievementsSectionProps) => {
   if (entries.length === 0) return null;
 
   return (
-    <section
-      id="achievements"
-      className="scroll-mt-14 bg-black px-5 py-20 sm:px-8 lg:px-10"
-    >
+    <section id="achievements" className="scroll-mt-14 bg-black px-5 py-20 sm:px-8 lg:px-10">
       <div className="mx-auto max-w-7xl">
-        {/* Header row */}
         <motion.div
           ref={headerRef}
           initial={{ opacity: 0, y: 16 }}
@@ -105,16 +102,9 @@ const AchievementsSection = ({ entries }: AchievementsSectionProps) => {
                 Our Achievement
               </h2>
             </div>
-            <Link
-              href="/gallery"
-              className="shrink-0 text-[11px] font-bold uppercase tracking-widest text-white/35 transition hover:text-white"
-            >
-              All in Gallery →
-            </Link>
           </div>
         </motion.div>
 
-        {/* Achievement rows */}
         <div>
           {entries.map((item, i) => (
             <AchievementRow key={item.id} item={item} index={i} />

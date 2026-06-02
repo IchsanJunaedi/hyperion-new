@@ -14,6 +14,7 @@ import {
   getActivePartners,
   getActiveTestimonials,
   getSiteSettings,
+  getPublicAchievements,
 } from "@/features/admin/queries";
 import type { HeroSlide, HeroSettings } from "@/components/landing/HeroSection";
 
@@ -73,8 +74,9 @@ export default async function HomePage() {
     }
   }
 
-  const [galleryEntries, partners, testimonials, settings] = await Promise.all([
+  const [galleryEntries, achievements, partners, testimonials, settings] = await Promise.all([
     getGalleryEntries(),
+    getPublicAchievements(),
     getActivePartners(),
     getActiveTestimonials(),
     getSiteSettings(),
@@ -120,7 +122,7 @@ export default async function HomePage() {
       <main className="flex-1">
         <HeroSection slides={heroSlides} settings={heroSettings} />
         <DivisionsSection />
-        <AchievementsSection entries={galleryEntries} />
+        <AchievementsSection entries={achievements} />
         <TestimonialsSection testimonials={testimonials} />
         <PartnersSection partners={partners} />
         <JoinUsSection settings={joinSettings} />
