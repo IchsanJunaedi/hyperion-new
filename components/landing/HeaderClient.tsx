@@ -21,6 +21,7 @@ const NAV_LINKS = [
   { href: "/about", label: "About" },
   { href: "/gallery", label: "Gallery" },
   { href: "/divisions", label: "Division" },
+  { href: "/rekrutmen", label: "Rekrutmen" },
 ] as const;
 
 const HeaderClient = ({ authed }: HeaderProps) => {
