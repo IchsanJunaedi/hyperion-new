@@ -121,7 +121,7 @@ export async function getActivePublicTrials(): Promise<PublicTrial[]> {
   if (error) console.error("getActivePublicTrials:", error);
   if (!data) return [];
   return data.map((row) => {
-    const org = (row as any).organizations as { name: string; slug: string; logo_url: string | null } | null;
+    const org = (row as unknown as { organizations: { name: string; slug: string; logo_url: string | null } | null }).organizations;
     return {
       ...(row as unknown as TrialRow),
       org_name: org?.name ?? "Tim",
