@@ -25,7 +25,7 @@ export default async function RekrutmenPage() {
         {/* Hero */}
         <section className="relative overflow-hidden border-b border-white/5 px-6 py-20 sm:px-10 lg:px-16">
           <div
-            className="pointer-events-none absolute inset-0 opacity-10"
+            className="pointer-events-none absolute inset-0 opacity-15"
             style={{
               backgroundImage: "radial-gradient(circle, rgba(245,196,0,0.2) 1px, transparent 1px)",
               backgroundSize: "28px 28px",
@@ -115,7 +115,7 @@ export default async function RekrutmenPage() {
                 ))}
               </div>
             ) : (
-              <div className="border border-white/5 bg-[#0D0D0D] py-24 text-center">
+              <div className="border border-white/5 bg-[#0D0D0D] py-20 text-center">
                 <Gamepad2 className="mx-auto mb-4 h-8 w-8 text-white/10" />
                 <p className="text-sm font-semibold text-white/30">
                   Tidak ada rekrutmen terbuka saat ini.
