@@ -11,6 +11,7 @@ import {
   UserCircle,
   Heart,
   LayoutTemplate,
+  Trophy,
 } from "lucide-react";
 
 const NAV_GROUPS = [
@@ -18,6 +19,7 @@ const NAV_GROUPS = [
     label: "KONTEN LIST",
     items: [
       { href: "/admin/gallery", Icon: Image, label: "Gallery & Achievement" },
+      { href: "/admin/achievements", Icon: Trophy, label: "Achievements" },
       { href: "/admin/partners", Icon: Layers, label: "Partners" },
       { href: "/admin/testimonials", Icon: MessageSquare, label: "Testimonials" },
       { href: "/admin/divisions", Icon: Grid3x3, label: "Divisions" },
