@@ -13,6 +13,7 @@ import {
   updateTournamentSchema,
   createTournamentStageSchema,
 } from "@/lib/validations/tournament";
+import { shouldAutoCreateAchievement, buildAchievementTitle } from "./achievement-helpers";
 
 export interface ActionError {
   ok: false;
@@ -575,6 +576,29 @@ export async function completeTournamentAction(
           .from("tournament_bonus_distributions")
           .upsert(distributions, { onConflict: "tournament_id,contract_id" });
       }
+    }
+  }
+
+  // Auto-create achievement for podium placements
+  if (org && shouldAutoCreateAchievement(data.placement)) {
+    const { data: tournamentRow, error: tErr } = await admin
+      .from("tournaments")
+      .select("name, division_id, end_date")
+      .eq("id", tournamentId)
+      .maybeSingle();
+    if (tErr) console.error("completeTournamentAction: fetch tournament for achievement:", tErr);
+    if (tournamentRow) {
+      const { error: achErr } = await admin.from("achievements").insert({
+        title: buildAchievementTitle(data.placement!, tournamentRow.name),
+        organization_id: org.id,
+        division_id: tournamentRow.division_id,
+        tournament_id: tournamentId,
+        placement: data.placement!,
+        achieved_at: tournamentRow.end_date ?? new Date().toISOString().slice(0, 10),
+        image_url: null,
+      });
+      if (achErr) console.error("completeTournamentAction: achievement insert:", achErr);
+      else revalidatePath("/");
     }
   }
 
