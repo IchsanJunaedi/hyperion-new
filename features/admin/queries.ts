@@ -124,13 +124,4 @@ export async function getAchievements(): Promise<Achievement[]> {
   return data ?? [];
 }
 
-export async function getPublicAchievements(): Promise<Achievement[]> {
-  const admin = createAdminClient();
-  const { data, error } = await admin
-    .from("achievements")
-    .select("id, title, description, placement, achieved_at, image_url, organization_id, division_id, tournament_id, created_at")
-    .order("achieved_at", { ascending: false })
-    .limit(50);
-  if (error) console.error("getPublicAchievements:", error);
-  return data ?? [];
-}
+export const getPublicAchievements = getAchievements;
