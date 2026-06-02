@@ -2,11 +2,26 @@ import Link from "next/link";
 
 import { Footer } from "@/components/landing/Footer";
 import { Header } from "@/components/landing/Header";
-import { GALLERIES } from "@/lib/data/gallery";
+import { getGalleryEntries, getSiteSettings } from "@/features/admin/queries";
 
 export const dynamic = "force-dynamic";
 
-export default function GalleryPage() {
+export default async function GalleryPage() {
+  const [galleries, settings] = await Promise.all([
+    getGalleryEntries(),
+    getSiteSettings(),
+  ]);
+
+  const footerSettings = {
+    footer_tagline:
+      settings.footer_tagline ??
+      "Empowering Young Talents to Rise and Rule. Est. 2020 — Palembang, Indonesia.",
+    footer_instagram_handle: settings.footer_instagram_handle ?? "@hyperionteam.id",
+    footer_instagram_url:
+      settings.footer_instagram_url ?? "https://www.instagram.com/hyperionteam.id/",
+    footer_hashtag: settings.footer_hashtag ?? "#HypeWin",
+  };
+
   return (
     <>
       <Header />
@@ -41,7 +56,7 @@ export default function GalleryPage() {
         <section className="px-6 py-16 sm:px-10 lg:px-16">
           <div className="mx-auto max-w-7xl">
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {GALLERIES.map((gallery) => (
+              {galleries.map((gallery) => (
                 <div
                   key={gallery.slug}
                   className="relative flex flex-col border border-white/5 bg-[#0D0D0D] p-5"
@@ -51,10 +66,10 @@ export default function GalleryPage() {
                     <h3 className="flex-1 text-sm font-bold leading-snug text-white">
                       {gallery.title}
                     </h3>
-                    {gallery.logo && (
+                    {gallery.logo_url && (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
-                        src={gallery.logo}
+                        src={gallery.logo_url}
                         alt="Logo"
                         className="h-12 w-12 shrink-0 object-contain"
                       />
@@ -102,7 +117,7 @@ export default function GalleryPage() {
           </div>
         </section>
       </main>
-      <Footer />
+      <Footer settings={footerSettings} />
     </>
   );
 }

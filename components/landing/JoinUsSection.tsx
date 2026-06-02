@@ -4,7 +4,19 @@ import { useRef } from "react";
 import { motion, useInView } from "motion/react";
 import { JoinModal } from "./JoinModal";
 
-const JoinUsSection = () => {
+interface JoinSettings {
+  join_eyebrow: string;
+  join_title_line1: string;
+  join_title_line2: string;
+  join_description: string;
+  join_fine_print: string;
+}
+
+interface JoinUsSectionProps {
+  settings: JoinSettings;
+}
+
+const JoinUsSection = ({ settings }: JoinUsSectionProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
 
@@ -20,15 +32,15 @@ const JoinUsSection = () => {
               transition={{ duration: 0.55 }}
             >
               <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.4em] text-white/28">
-                #HypeWin
+                {settings.join_eyebrow}
               </p>
               <h2 className="text-4xl font-black uppercase leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl">
-                Ready To
+                {settings.join_title_line1}
                 <br />
-                <span className="text-[#F5C400]">Join The Team?</span>
+                <span className="text-[#F5C400]">{settings.join_title_line2}</span>
               </h2>
               <p className="mt-5 max-w-lg text-sm leading-relaxed text-white/35 sm:text-[15px]">
-                Unleash your potential. Kembangkan skill, bangun karir esports, dan jadilah bagian dari keluarga Hyperion Team.
+                {settings.join_description}
               </p>
             </motion.div>
 
@@ -41,7 +53,7 @@ const JoinUsSection = () => {
             >
               <JoinModal />
               <p className="text-xs text-white/22">
-                Gratis · Tanpa syarat umur minimum
+                {settings.join_fine_print}
               </p>
             </motion.div>
           </div>

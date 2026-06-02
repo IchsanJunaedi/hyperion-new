@@ -4,7 +4,7 @@ import { ArrowLeft } from "lucide-react";
 
 import { Footer } from "@/components/landing/Footer";
 import { Header } from "@/components/landing/Header";
-import { GALLERIES } from "@/lib/data/gallery";
+import { getGalleryEntryBySlug, getGalleryEntries, getSiteSettings } from "@/features/admin/queries";
 
 export const dynamic = "force-dynamic";
 
@@ -13,14 +13,29 @@ interface Props {
 }
 
 export async function generateStaticParams() {
-  return GALLERIES.map((g) => ({ slug: g.slug }));
+  const entries = await getGalleryEntries();
+  return entries.map((g) => ({ slug: g.slug }));
 }
 
 export default async function GalleryShowPage({ params }: Props) {
   const { slug } = await params;
-  const gallery = GALLERIES.find((g) => g.slug === slug);
+
+  const [gallery, settings] = await Promise.all([
+    getGalleryEntryBySlug(slug),
+    getSiteSettings(),
+  ]);
 
   if (!gallery) notFound();
+
+  const footerSettings = {
+    footer_tagline:
+      settings.footer_tagline ??
+      "Empowering Young Talents to Rise and Rule. Est. 2020 — Palembang, Indonesia.",
+    footer_instagram_handle: settings.footer_instagram_handle ?? "@hyperionteam.id",
+    footer_instagram_url:
+      settings.footer_instagram_url ?? "https://www.instagram.com/hyperionteam.id/",
+    footer_hashtag: settings.footer_hashtag ?? "#HypeWin",
+  };
 
   return (
     <>
@@ -77,7 +92,7 @@ export default async function GalleryShowPage({ params }: Props) {
           </p>
         </section>
       </main>
-      <Footer />
+      <Footer settings={footerSettings} />
     </>
   );
 }

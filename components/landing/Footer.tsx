@@ -15,7 +15,25 @@ const LINKS = {
   ],
 };
 
-const Footer = () => {
+interface FooterSettings {
+  footer_tagline: string;
+  footer_instagram_handle: string;
+  footer_instagram_url: string;
+  footer_hashtag: string;
+}
+
+const DEFAULT_FOOTER_SETTINGS: FooterSettings = {
+  footer_tagline: "Empowering Young Talents to Rise and Rule. Est. 2020 — Palembang, Indonesia.",
+  footer_instagram_handle: "@hyperionteam.id",
+  footer_instagram_url: "https://www.instagram.com/hyperionteam.id/",
+  footer_hashtag: "#HypeWin",
+};
+
+interface FooterProps {
+  settings?: FooterSettings;
+}
+
+const Footer = ({ settings = DEFAULT_FOOTER_SETTINGS }: FooterProps) => {
   return (
     <footer className="border-t border-white/8 bg-black px-5 pb-10 pt-16 sm:px-8 lg:px-10">
       <div className="mx-auto max-w-7xl">
@@ -35,18 +53,17 @@ const Footer = () => {
               </span>
             </Link>
             <p className="mt-4 max-w-xs text-xs leading-relaxed text-white/28">
-              Empowering Young Talents to Rise and Rule. Est. 2020 — Palembang,
-              Indonesia.
+              {settings.footer_tagline}
             </p>
             <Link
-              href="https://www.instagram.com/hyperionteam.id/"
+              href={settings.footer_instagram_url}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Instagram"
               className="mt-5 inline-flex items-center gap-2 text-xs text-white/28 transition hover:text-white"
             >
               <Instagram className="h-3.5 w-3.5" />
-              @hyperionteam.id
+              {settings.footer_instagram_handle}
             </Link>
           </div>
 
@@ -81,7 +98,7 @@ const Footer = () => {
             © {new Date().getFullYear()} Hyperion Team. All rights reserved.
           </p>
           <p className="text-[10px] font-bold uppercase tracking-widest text-[#F5C400]/30">
-            #HypeWin
+            {settings.footer_hashtag}
           </p>
         </div>
       </div>

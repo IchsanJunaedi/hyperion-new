@@ -3,44 +3,15 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useInView } from "motion/react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import type { Testimonial } from "@/features/admin/queries";
 
-interface Testimonial {
-  name: string;
-  position: string;
-  description: string;
-  image: string;
+interface TestimonialsSectionProps {
+  testimonials: Testimonial[];
 }
 
-const TESTIMONIALS: Testimonial[] = [
-  {
-    name: "RRQ Kaeya",
-    position: "Player of Team RRQ",
-    description:
-      "Awalnya gue kira bakal biasa aja kayak komunitas lain, tapi ternyata banyak ilmu yang gue dapet dari awal trial sampai akhir. Di Hyperion, gue ketemu banyak orang yang semangat kompetisinya sama, jadi lebih enak buat berkembang. Sering scrim dan ada evaluasi via Discord yang bikin gameplay makin bagus.",
-    image:
-      "https://hyperionteam.id/storage/testimonials/01K2SMTH386QV9Q3R8PTF7913YR.png",
-  },
-  {
-    name: "Evos Rendyy",
-    position: "Team of Evos Esports",
-    description:
-      "Gue mulai bareng Hyperion BLCK di awal 2023 dan berhasil juara di banyak turnamen nasional pelajar. Setelah itu gue lanjut bareng Hyperion Palembang di DGWIB 2024 bersama Fenzu. Buat gue, Hyperion adalah titik awal perjalanan gue di scene profesional.",
-    image:
-      "https://hyperionteam.id/storage/testimonials/01K2RYQS6A36J458VGK7DE8AS9.png",
-  },
-  {
-    name: "Pajajaran Firlyboy",
-    position: "Player of Team Pajajaran",
-    description:
-      "Hyperion jadi titik awal penting buat perjalanan gue di esports. Di sini gue nggak cuma belajar mekanik, tapi juga disiplin, mindset, dan cara bersaing sehat. Semua itu ngebantu banget waktu gue masuk ke Seleknas Pajajaran 2024.",
-    image:
-      "https://hyperionteam.id/storage/testimonials/01K2RYVPWSFF8GGREVCD4VKRRH.png",
-  },
-];
-
-const TestimonialsSection = () => {
+const TestimonialsSection = ({ testimonials }: TestimonialsSectionProps) => {
   const [active, setActive] = useState(0);
-  const total = TESTIMONIALS.length;
+  const total = testimonials.length;
   const sectionRef = useRef<HTMLDivElement>(null);
   const inView = useInView(sectionRef, { once: true, margin: "-80px" });
 
@@ -48,10 +19,13 @@ const TestimonialsSection = () => {
   const handlePrev = () => setActive((p) => (p - 1 + total) % total);
 
   useEffect(() => {
+    if (total === 0) return;
     const id = setInterval(handleNext, 5500);
     return () => clearInterval(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [total]);
+
+  if (testimonials.length === 0) return null;
 
   return (
     <section
@@ -94,8 +68,8 @@ const TestimonialsSection = () => {
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={TESTIMONIALS[active]!.image}
-                    alt={TESTIMONIALS[active]!.name}
+                    src={testimonials[active]?.avatar_url ?? ""}
+                    alt={testimonials[active]?.author_name ?? ""}
                     draggable={false}
                     loading="lazy"
                     className="h-full w-full object-cover object-top"
@@ -127,14 +101,14 @@ const TestimonialsSection = () => {
                 transition={{ duration: 0.28, ease: "easeOut" }}
               >
                 <p className="text-sm leading-relaxed text-white/55 sm:text-base">
-                  {TESTIMONIALS[active]!.description}
+                  {testimonials[active]?.content ?? ""}
                 </p>
                 <div className="mt-6 border-l-2 border-[#F5C400] pl-4">
                   <p className="font-black uppercase tracking-tight text-white">
-                    {TESTIMONIALS[active]!.name}
+                    {testimonials[active]?.author_name ?? ""}
                   </p>
                   <p className="mt-0.5 text-xs font-bold uppercase tracking-wider text-white/35">
-                    {TESTIMONIALS[active]!.position}
+                    {testimonials[active]?.author_role ?? ""}
                   </p>
                 </div>
               </motion.div>
@@ -159,7 +133,7 @@ const TestimonialsSection = () => {
                 <ArrowRight className="h-4 w-4" />
               </button>
               <div className="ml-2 flex items-center gap-2">
-                {TESTIMONIALS.map((_, i) => (
+                {testimonials.map((_, i) => (
                   <button
                     key={i}
                     type="button"

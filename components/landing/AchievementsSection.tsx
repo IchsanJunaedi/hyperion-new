@@ -3,42 +3,10 @@
 import Link from "next/link";
 import { useRef } from "react";
 import { motion, useInView } from "motion/react";
-
-const ACHIEVEMENTS = [
-  {
-    num: "01",
-    year: "2024",
-    rank: "#1 National",
-    title: "Liga Esport Nasional Pelajar 2024",
-    description:
-      "SANG JUARA LIGA ESPORTS NASIONAL PELAJAR 2024 — MOBILE LEGENDS. Perjuangan keras tidak mengkhianati hasil dari kerjasama tim yang solid.",
-    image:
-      "https://hyperionteam.id/storage/timelines/01JZN7JDHN76Z29F9R2NW4VX8K.jpeg",
-  },
-  {
-    num: "02",
-    year: "2024",
-    rank: "Champion",
-    title: "RRQ MABAR Esports Tournament Season 4",
-    description:
-      "Back to back champion setelah menang 3-1 di Grand Final. SMAS Xaverius 1 Palembang raih gelar berganda melawan SMAK Yos Sudarso Batam.",
-    image:
-      "https://hyperionteam.id/storage/timelines/01JZPD3B2P75DVSJT6N1609AM3.jpeg",
-  },
-  {
-    num: "03",
-    year: "2023",
-    rank: "Champion",
-    title: "H3RO Rookie Tournament 4.0",
-    description:
-      "H3RO Esports 4.0 — the 4th edition organized by H3RO. Champion qualifies directly to Seleknas IESF 2023.",
-    image:
-      "https://hyperionteam.id/storage/timelines/01JZPD3RM26KW2BNB68WFYTT6X.jpeg",
-  },
-] as const;
+import type { GalleryEntry } from "@/features/admin/queries";
 
 interface RowProps {
-  item: (typeof ACHIEVEMENTS)[number];
+  item: GalleryEntry;
   index: number;
 }
 
@@ -52,54 +20,67 @@ const AchievementRow = ({ item, index }: RowProps) => {
       initial={{ opacity: 0, y: 16 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.5, delay: index * 0.08, ease: "easeOut" }}
-      className="group relative overflow-hidden border-b border-white/8"
     >
-      {/* Hover-reveal photo */}
-      <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={item.image}
-          alt=""
-          aria-hidden="true"
-          loading="lazy"
-          className="h-full w-full object-cover"
-          style={{ filter: "brightness(0.12) grayscale(60%)" }}
-        />
-      </div>
-
-      <div className="relative grid grid-cols-[3rem_1fr] items-center gap-4 py-7 sm:grid-cols-[4rem_1fr_auto] sm:gap-8 sm:py-8">
-        {/* Number */}
-        <span className="text-3xl font-black tabular-nums text-white/12 sm:text-4xl">
-          {item.num}
-        </span>
-
-        {/* Title + description */}
-        <div className="min-w-0">
-          <h3 className="text-base font-black uppercase leading-tight tracking-tight text-white transition-colors duration-300 group-hover:text-[#F5C400] sm:text-xl lg:text-2xl">
-            {item.title}
-          </h3>
-          <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-white/32 sm:text-sm">
-            {item.description}
-          </p>
+      <Link
+        href={`/gallery/${item.slug}`}
+        className="group relative block overflow-hidden border-b border-white/8 cursor-pointer"
+      >
+        {/* Hover-reveal photo */}
+        <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={item.preview_images[0] ?? ""}
+            alt=""
+            aria-hidden="true"
+            loading="lazy"
+            className="h-full w-full object-cover"
+            style={{ filter: "brightness(0.12) grayscale(60%)" }}
+          />
         </div>
 
-        {/* Right meta — hidden on mobile, shown sm+ */}
-        <div className="hidden flex-col items-end gap-1 sm:flex">
-          <span className="text-[11px] font-black uppercase tracking-widest text-[#F5C400]">
-            {item.rank}
+        <div className="relative grid grid-cols-[3rem_1fr] items-center gap-4 py-7 sm:grid-cols-[4rem_1fr_auto] sm:gap-8 sm:py-8">
+          {/* Number */}
+          <span className="text-3xl font-black tabular-nums text-white/12 sm:text-4xl">
+            {String(index + 1).padStart(2, "0")}
           </span>
-          <span className="text-[10px] font-bold uppercase tracking-widest text-white/28">
-            {item.year}
-          </span>
+
+          {/* Title + description */}
+          <div className="min-w-0">
+            <h3 className="text-base font-black uppercase leading-tight tracking-tight text-white transition-colors duration-300 group-hover:text-[#F5C400] sm:text-xl lg:text-2xl">
+              {item.title}
+            </h3>
+            <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-white/32 sm:text-sm">
+              {item.description}
+            </p>
+          </div>
+
+          {/* Right meta — hidden on mobile, shown sm+ */}
+          <div className="hidden flex-col items-end gap-2 sm:flex">
+            <span className="text-[11px] font-black uppercase tracking-widest text-[#F5C400]">
+              {item.position}
+            </span>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-white/28">
+              {item.tournament_date}
+            </span>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-white/20 transition-colors duration-300 group-hover:text-white/50">
+              View →
+            </span>
+          </div>
         </div>
-      </div>
+      </Link>
     </motion.div>
   );
 };
 
-const AchievementsSection = () => {
+interface AchievementsSectionProps {
+  entries: GalleryEntry[];
+}
+
+const AchievementsSection = ({ entries }: AchievementsSectionProps) => {
   const headerRef = useRef<HTMLDivElement>(null);
   const headerInView = useInView(headerRef, { once: true });
+
+  if (entries.length === 0) return null;
 
   return (
     <section
@@ -135,8 +116,8 @@ const AchievementsSection = () => {
 
         {/* Achievement rows */}
         <div>
-          {ACHIEVEMENTS.map((item, i) => (
-            <AchievementRow key={item.num} item={item} index={i} />
+          {entries.map((item, i) => (
+            <AchievementRow key={item.id} item={item} index={i} />
           ))}
         </div>
       </div>

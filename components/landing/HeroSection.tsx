@@ -4,32 +4,30 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 
-const SLIDES = [
-  {
-    image: "https://hyperionteam.id/storage/timelines/01JZN7JDHN76Z29F9R2NW4VX8K.jpeg",
-    achievement: "Liga Esport Nasional Pelajar",
-    rank: "#1 National",
-    year: "2024",
-  },
-  {
-    image: "https://hyperionteam.id/storage/timelines/01JZPD3B2P75DVSJT6N1609AM3.jpeg",
-    achievement: "RRQ MABAR Season 4",
-    rank: "Champion",
-    year: "2024",
-  },
-  {
-    image: "https://hyperionteam.id/storage/timelines/01JZPD3RM26KW2BNB68WFYTT6X.jpeg",
-    achievement: "H3RO Rookie Tournament 4.0",
-    rank: "Champion",
-    year: "2023",
-  },
-] as const;
+export interface HeroSlide {
+  image: string;
+  achievement: string;
+  rank: string;
+  year: string;
+}
 
-const HeroSection = () => {
+export interface HeroSettings {
+  hero_eyebrow: string;
+  hero_tagline: string;
+  hero_cta_label: string;
+  hero_cta_href: string;
+}
+
+interface HeroSectionProps {
+  slides: HeroSlide[];
+  settings: HeroSettings;
+}
+
+const HeroSection = ({ slides, settings }: HeroSectionProps) => {
   const [current, setCurrent] = useState(0);
   const [paused, setPaused] = useState(false);
 
-  const next = useCallback(() => setCurrent((c) => (c + 1) % SLIDES.length), []);
+  const next = useCallback(() => setCurrent((c) => (c + 1) % slides.length), [slides.length]);
 
   useEffect(() => {
     if (paused) return;
@@ -42,6 +40,8 @@ const HeroSection = () => {
     setPaused(true);
     setTimeout(() => setPaused(false), 8000);
   };
+
+  if (slides.length === 0) return null;
 
   return (
     <section className="relative flex min-h-screen flex-col overflow-hidden bg-black">
@@ -57,7 +57,7 @@ const HeroSection = () => {
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={SLIDES[current]!.image}
+            src={slides[current]?.image ?? ""}
             alt=""
             aria-hidden="true"
             className="h-full w-full object-cover"
@@ -73,7 +73,7 @@ const HeroSection = () => {
       <div className="flex flex-1 items-end px-5 pb-8 sm:px-8 lg:px-10">
         <div className="max-w-5xl">
           <p className="mb-4 text-[11px] font-bold uppercase tracking-[0.5em] text-white/28">
-            Est. 2020 — Palembang, Indonesia
+            {settings.hero_eyebrow}
           </p>
 
           {/* Massive wordmark */}
@@ -88,14 +88,14 @@ const HeroSection = () => {
 
           <div className="mt-8 flex flex-wrap items-center gap-6 sm:mt-10">
             <p className="text-sm text-white/35">
-              Empowering Young Talents to Rise and Rule.
+              {settings.hero_tagline}
             </p>
             <div className="flex items-center gap-5">
               <Link
-                href="/register"
+                href={settings.hero_cta_href}
                 className="inline-flex h-10 items-center border border-[#F5C400] px-6 text-[11px] font-black uppercase tracking-widest text-[#F5C400] transition duration-200 hover:bg-[#F5C400] hover:text-black"
               >
-                Join Us
+                {settings.hero_cta_label}
               </Link>
               <Link
                 href="#achievements"
@@ -130,7 +130,7 @@ const HeroSection = () => {
                   transition={{ duration: 0.25, ease: "easeOut" }}
                   className="absolute text-[10px] font-bold uppercase tracking-widest text-white/28"
                 >
-                  {SLIDES[current]!.achievement}
+                  {slides[current]?.achievement ?? ""}
                 </motion.span>
               </AnimatePresence>
             </div>
@@ -146,7 +146,7 @@ const HeroSection = () => {
                   transition={{ duration: 0.25, ease: "easeOut", delay: 0.04 }}
                   className="text-[10px] font-bold uppercase tracking-widest text-white/28"
                 >
-                  {SLIDES[current]!.rank}
+                  {slides[current]?.rank ?? ""}
                 </motion.span>
               </AnimatePresence>
             </div>
@@ -154,7 +154,7 @@ const HeroSection = () => {
             {/* Counter + dot indicators */}
             <div className="flex h-12 items-center justify-end gap-4 pl-4">
               <div className="flex items-center gap-1.5">
-                {SLIDES.map((_, i) => (
+                {slides.map((_, i) => (
                   <button
                     key={i}
                     type="button"
@@ -179,7 +179,7 @@ const HeroSection = () => {
               <span className="text-[10px] tabular-nums text-white/28">
                 <span className="text-white/70">{String(current + 1).padStart(2, "0")}</span>
                 {" / "}
-                {String(SLIDES.length).padStart(2, "0")}
+                {String(slides.length).padStart(2, "0")}
               </span>
             </div>
           </div>

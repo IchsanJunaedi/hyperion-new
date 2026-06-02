@@ -621,6 +621,33 @@ export type Database = {
           },
         ]
       }
+      divisions_public: {
+        Row: {
+          description: string | null
+          icon_url: string | null
+          id: string
+          is_active: boolean
+          name: string
+          sort_order: number
+        }
+        Insert: {
+          description?: string | null
+          icon_url?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          sort_order?: number
+        }
+        Update: {
+          description?: string | null
+          icon_url?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
       event_visibility: {
         Row: {
           allowed_member_ids: string[]
@@ -788,6 +815,54 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      gallery_entries: {
+        Row: {
+          created_at: string
+          description: string
+          division: string
+          id: string
+          logo_url: string | null
+          position: string
+          preview_images: string[]
+          slug: string
+          sort_order: number
+          status: string
+          title: string
+          tournament_date: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          division: string
+          id?: string
+          logo_url?: string | null
+          position: string
+          preview_images?: string[]
+          slug: string
+          sort_order?: number
+          status?: string
+          title: string
+          tournament_date: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          division?: string
+          id?: string
+          logo_url?: string | null
+          position?: string
+          preview_images?: string[]
+          slug?: string
+          sort_order?: number
+          status?: string
+          title?: string
+          tournament_date?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       login_rate_limits: {
         Row: {
@@ -1060,6 +1135,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      partners: {
+        Row: {
+          id: string
+          is_active: boolean
+          logo_url: string | null
+          name: string
+          sort_order: number
+          website_url: string | null
+        }
+        Insert: {
+          id?: string
+          is_active?: boolean
+          logo_url?: string | null
+          name: string
+          sort_order?: number
+          website_url?: string | null
+        }
+        Update: {
+          id?: string
+          is_active?: boolean
+          logo_url?: string | null
+          name?: string
+          sort_order?: number
+          website_url?: string | null
+        }
+        Relationships: []
       }
       opponent_profiles: {
         Row: {
@@ -1990,6 +2092,24 @@ export type Database = {
           },
         ]
       }
+      site_settings: {
+        Row: {
+          key: string
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          value?: string
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          value?: string
+        }
+        Relationships: []
+      }
       sponsor_deliverables: {
         Row: {
           category: string
@@ -2279,6 +2399,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      testimonials: {
+        Row: {
+          author_name: string
+          author_role: string
+          avatar_url: string | null
+          content: string
+          id: string
+          is_active: boolean
+          sort_order: number
+        }
+        Insert: {
+          author_name: string
+          author_role: string
+          avatar_url?: string | null
+          content: string
+          id?: string
+          is_active?: boolean
+          sort_order?: number
+        }
+        Update: {
+          author_name?: string
+          author_role?: string
+          avatar_url?: string | null
+          content?: string
+          id?: string
+          is_active?: boolean
+          sort_order?: number
+        }
+        Relationships: []
       }
       tournament_bonus_distributions: {
         Row: {

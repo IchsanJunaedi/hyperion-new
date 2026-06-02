@@ -9,6 +9,13 @@ import { JoinUsSection } from "@/components/landing/JoinUsSection";
 import { PartnersSection } from "@/components/landing/PartnersSection";
 import { TestimonialsSection } from "@/components/landing/TestimonialsSection";
 import { createClient } from "@/lib/supabase/server";
+import {
+  getGalleryEntries,
+  getActivePartners,
+  getActiveTestimonials,
+  getSiteSettings,
+} from "@/features/admin/queries";
+import type { HeroSlide, HeroSettings } from "@/components/landing/HeroSection";
 
 export const dynamic = "force-dynamic";
 
@@ -66,18 +73,59 @@ export default async function HomePage() {
     }
   }
 
+  const [galleryEntries, partners, testimonials, settings] = await Promise.all([
+    getGalleryEntries(),
+    getActivePartners(),
+    getActiveTestimonials(),
+    getSiteSettings(),
+  ]);
+
+  const heroSlides: HeroSlide[] = galleryEntries.slice(0, 3).map((e) => ({
+    image: e.preview_images[0] ?? "",
+    achievement: e.title,
+    rank: e.position,
+    year: e.tournament_date,
+  }));
+
+  const heroSettings: HeroSettings = {
+    hero_eyebrow: settings.hero_eyebrow ?? "Est. 2020 — Palembang, Indonesia",
+    hero_tagline: settings.hero_tagline ?? "Empowering Young Talents to Rise and Rule.",
+    hero_cta_label: settings.hero_cta_label ?? "Join Us",
+    hero_cta_href: settings.hero_cta_href ?? "/register",
+  };
+
+  const footerSettings = {
+    footer_tagline:
+      settings.footer_tagline ??
+      "Empowering Young Talents to Rise and Rule. Est. 2020 — Palembang, Indonesia.",
+    footer_instagram_handle: settings.footer_instagram_handle ?? "@hyperionteam.id",
+    footer_instagram_url:
+      settings.footer_instagram_url ?? "https://www.instagram.com/hyperionteam.id/",
+    footer_hashtag: settings.footer_hashtag ?? "#HypeWin",
+  };
+
+  const joinSettings = {
+    join_eyebrow: settings.join_eyebrow ?? "#HypeWin",
+    join_title_line1: settings.join_title_line1 ?? "Ready To",
+    join_title_line2: settings.join_title_line2 ?? "Join The Team?",
+    join_description:
+      settings.join_description ??
+      "Unleash your potential. Kembangkan skill, bangun karir esports, dan jadilah bagian dari keluarga Hyperion Team.",
+    join_fine_print: settings.join_fine_print ?? "Gratis · Tanpa syarat umur minimum",
+  };
+
   return (
     <>
       <Header />
       <main className="flex-1">
-        <HeroSection />
+        <HeroSection slides={heroSlides} settings={heroSettings} />
         <DivisionsSection />
-        <AchievementsSection />
-        <TestimonialsSection />
-        <PartnersSection />
-        <JoinUsSection />
+        <AchievementsSection entries={galleryEntries} />
+        <TestimonialsSection testimonials={testimonials} />
+        <PartnersSection partners={partners} />
+        <JoinUsSection settings={joinSettings} />
       </main>
-      <Footer />
+      <Footer settings={footerSettings} />
     </>
   );
 }

@@ -23,6 +23,7 @@ const RESERVED_ROOT_SEGMENTS = new Set([
   "onboarding",
   "dashboard",
   "manage",
+  "admin",
   // Static / infrastructure
   "_next",
   "api",
@@ -189,6 +190,28 @@ export async function middleware(request: NextRequest) {
           );
         }
         if (!ownerEmail || user.email !== ownerEmail) {
+          return redirectWithCookies(new URL("/", request.url), response);
+        }
+      }
+      return response;
+    }
+
+    // Special guard for /admin
+    if (firstSegment === "admin") {
+      const adminEmail = process.env.ADMIN_EMAIL;
+      const ownerEmail = process.env.OWNER_EMAIL || process.env.E2E_OWNER_EMAIL;
+      if (!user) {
+        if (section !== "login") {
+          return redirectWithCookies(new URL("/admin/login", request.url), response);
+        }
+      } else {
+        if (section === "login") {
+          return redirectWithCookies(new URL("/admin", request.url), response);
+        }
+        if (
+          (!adminEmail || user.email !== adminEmail) &&
+          (!ownerEmail || user.email !== ownerEmail)
+        ) {
           return redirectWithCookies(new URL("/", request.url), response);
         }
       }
