@@ -103,3 +103,30 @@ export async function listApplicants(trialId: string): Promise<ApplicantRow[]> {
     .order("created_at", { ascending: false });
   return (data as ApplicantRow[]) ?? [];
 }
+
+export interface PublicTrial extends TrialRow {
+  org_name: string;
+  org_slug: string;
+  org_logo_url: string | null;
+}
+
+export async function getActivePublicTrials(): Promise<PublicTrial[]> {
+  const admin = createAdminClient();
+  const { data, error } = await admin
+    .from("open_trials")
+    .select("*, organizations(name, slug, logo_url)")
+    .eq("status", "active")
+    .order("created_at", { ascending: false })
+    .limit(50);
+  if (error) console.error("getActivePublicTrials:", error);
+  if (!data) return [];
+  return data.map((row) => {
+    const org = (row as any).organizations as { name: string; slug: string; logo_url: string | null } | null;
+    return {
+      ...(row as unknown as TrialRow),
+      org_name: org?.name ?? "Tim",
+      org_slug: org?.slug ?? "",
+      org_logo_url: org?.logo_url ?? null,
+    };
+  });
+}
