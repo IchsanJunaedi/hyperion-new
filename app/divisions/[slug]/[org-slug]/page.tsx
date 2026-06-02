@@ -107,10 +107,10 @@ export default async function TeamDetailPage({ params }: Props) {
                   alt={org.name}
                   width={72}
                   height={72}
-                  className="h-16 w-16 rounded-lg object-cover"
+                  className="h-18 w-18 rounded-lg object-cover"
                 />
               ) : (
-                <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-[#1E1E1E] text-xl font-black text-white/20">
+                <div className="flex h-18 w-18 items-center justify-center rounded-lg bg-[#1E1E1E] text-xl font-black text-white/20">
                   {org.name.slice(0, 2).toUpperCase()}
                 </div>
               )}
