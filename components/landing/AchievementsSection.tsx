@@ -19,7 +19,7 @@ const AchievementRow = ({ item, index }: RowProps) => {
   const inView = useInView(ref, { once: true, margin: "-40px" });
 
   const inner = (
-    <div className="group relative block overflow-hidden border-b border-white/8">
+    <div className={`group relative block overflow-hidden border-b border-white/8 transition-colors${item.href ? " cursor-pointer hover:bg-white/[0.02]" : ""}`}>
         {/* Hover-reveal photo */}
         {item.image_url && (
           <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100">
