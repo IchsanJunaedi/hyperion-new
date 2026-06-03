@@ -1,22 +1,32 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Gamepad2 } from "lucide-react";
+import type { Metadata } from "next";
 
 import { Header } from "@/components/landing/Header";
 import { Footer } from "@/components/landing/Footer";
 import { getActivePublicTrials } from "@/features/trials/queries";
+import { getSiteSettings } from "@/features/admin/queries";
 
 export const dynamic = "force-dynamic";
 
-export async function generateMetadata() {
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings();
   return {
-    title: "Rekrutmen Terbuka — Hyperion Team",
-    description: "Lihat posisi yang sedang dibuka dan daftar jadi bagian dari Hyperion Team.",
+    title: settings.seo_rekrutmen_title || "Rekrutmen Terbuka — Hyperion Team",
+    description: settings.seo_rekrutmen_description || "Lihat posisi yang sedang dibuka dan daftar jadi bagian dari Hyperion Team.",
   };
 }
 
 export default async function RekrutmenPage() {
-  const trials = await getActivePublicTrials();
+  const [trials, settings] = await Promise.all([
+    getActivePublicTrials(),
+    getSiteSettings(),
+  ]);
+
+  const eyebrow = settings.rekrutmen_eyebrow || "Open Recruitment";
+  const title = settings.rekrutmen_title || "REKRUTMEN";
+  const description = settings.rekrutmen_description || "Posisi yang sedang dibuka oleh Hyperion Team. Daftar sekarang dan tunjukkan kemampuanmu.";
 
   return (
     <>
@@ -35,14 +45,14 @@ export default async function RekrutmenPage() {
             <div className="mb-4 flex items-center gap-3">
               <div className="h-px w-8 bg-[#F5C400]" />
               <span className="text-[11px] font-bold uppercase tracking-[0.3em] text-[#F5C400]">
-                Open Recruitment
+                {eyebrow}
               </span>
             </div>
             <h1 className="text-4xl font-black uppercase tracking-tight text-white sm:text-5xl lg:text-6xl">
-              REKRUTMEN
+              {title}
             </h1>
             <p className="mt-4 max-w-lg text-sm leading-relaxed text-white/40 sm:text-base">
-              Posisi yang sedang dibuka oleh Hyperion Team. Daftar sekarang dan tunjukkan kemampuanmu.
+              {description}
             </p>
           </div>
         </section>

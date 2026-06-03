@@ -1,6 +1,15 @@
 import { createClient } from "@/lib/supabase/server";
 import type { AppMetadataWithOrgs } from "@/types/jwt";
 import { HeaderClient } from "./HeaderClient";
+import { getSiteSettings } from "@/features/admin/queries";
+
+const DEFAULT_NAV = [
+  { label: "Home", href: "/" },
+  { label: "About", href: "/about" },
+  { label: "Achievement", href: "/gallery" },
+  { label: "Division", href: "/divisions" },
+  { label: "Rekrutmen", href: "/rekrutmen" },
+];
 
 export async function Header() {
   const supabase = await createClient();
@@ -22,5 +31,13 @@ export async function Header() {
     };
   }
 
-  return <HeaderClient authed={authed} />;
+  const settings = await getSiteSettings();
+  const instagramUrl = settings.contact_instagram_url || "https://www.instagram.com/hyperionteam.id/";
+
+  let navLinks = DEFAULT_NAV;
+  if (settings.nav_links_json) {
+    try { navLinks = JSON.parse(settings.nav_links_json); } catch { /* keep default */ }
+  }
+
+  return <HeaderClient authed={authed} instagramUrl={instagramUrl} navLinks={navLinks} />;
 }

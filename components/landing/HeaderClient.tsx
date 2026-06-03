@@ -14,17 +14,21 @@ interface HeaderProps {
     displayName: string;
     workspaceHref: string | null;
   };
+  instagramUrl?: string;
+  navLinks?: { label: string; href: string }[];
 }
 
-const NAV_LINKS = [
-  { href: "/", label: "Home" },
-  { href: "/about", label: "About" },
-  { href: "/gallery", label: "Achievement" },
-  { href: "/divisions", label: "Division" },
-  { href: "/rekrutmen", label: "Rekrutmen" },
-] as const;
-
-const HeaderClient = ({ authed }: HeaderProps) => {
+const HeaderClient = ({
+  authed,
+  instagramUrl = "https://www.instagram.com/hyperionteam.id/",
+  navLinks = [
+    { label: "Home", href: "/" },
+    { label: "About", href: "/about" },
+    { label: "Achievement", href: "/gallery" },
+    { label: "Division", href: "/divisions" },
+    { label: "Rekrutmen", href: "/rekrutmen" },
+  ],
+}: HeaderProps) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
 
@@ -64,7 +68,7 @@ const HeaderClient = ({ authed }: HeaderProps) => {
             className="absolute left-1/2 hidden -translate-x-1/2 md:block"
           >
             <ul className="flex items-center gap-8 text-[11px] font-bold uppercase tracking-widest">
-              {NAV_LINKS.map((link) => {
+              {navLinks.map((link) => {
                 const active = pathname === link.href;
                 return (
                   <li key={link.href} className="relative py-1">
@@ -91,7 +95,7 @@ const HeaderClient = ({ authed }: HeaderProps) => {
           {/* Right */}
           <div className="hidden items-center gap-4 md:flex">
             <Link
-              href="https://www.instagram.com/hyperionteam.id/"
+              href={instagramUrl}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Instagram"
@@ -164,7 +168,7 @@ const HeaderClient = ({ authed }: HeaderProps) => {
 
             <nav className="flex-1 overflow-y-auto px-5 py-6">
               <ul className="space-y-0">
-                {NAV_LINKS.map((link) => {
+                {navLinks.map((link) => {
                   const active = pathname === link.href;
                   return (
                     <li key={link.href} className="border-b border-white/6">
@@ -222,7 +226,7 @@ const HeaderClient = ({ authed }: HeaderProps) => {
 
             <div className="border-t border-white/8 px-5 py-4">
               <Link
-                href="https://www.instagram.com/hyperionteam.id/"
+                href={instagramUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-xs text-white/30 transition hover:text-white"

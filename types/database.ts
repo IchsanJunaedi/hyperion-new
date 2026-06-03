@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      about_alumni: {
+        Row: {
+          id: string
+          name: string
+          role: string
+          image_url: string | null
+          sort_order: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          role?: string
+          image_url?: string | null
+          sort_order?: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          role?: string
+          image_url?: string | null
+          sort_order?: number
+          created_at?: string
+        }
+        Relationships: []
+      }
       achievements: {
         Row: {
           achieved_at: string

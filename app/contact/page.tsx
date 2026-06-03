@@ -1,12 +1,28 @@
-import { Instagram, Mail } from "lucide-react";
+import { Instagram, Mail, Phone } from "lucide-react";
 import Link from "next/link";
+import type { Metadata } from "next";
 
 import { Footer } from "@/components/landing/Footer";
 import { Header } from "@/components/landing/Header";
+import { getSiteSettings } from "@/features/admin/queries";
 
 export const dynamic = "force-dynamic";
 
-export default function ContactPage() {
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings();
+  return {
+    title: settings.seo_contact_title || "Kontak — Hyperion Team",
+    description: settings.seo_contact_description || "Hubungi Hyperion Team untuk pertanyaan, kerjasama, atau bergabung bersama kami.",
+  };
+}
+
+export default async function ContactPage() {
+  const settings = await getSiteSettings();
+  const igUrl = settings.contact_instagram_url || "https://www.instagram.com/hyperionteam.id/";
+  const igHandle = settings.contact_instagram_handle || "@hyperionteam.id";
+  const email = settings.contact_email || "hyperionteam.id@gmail.com";
+  const whatsapp = settings.contact_whatsapp || "";
+  const location = settings.contact_location || "Palembang, Sumatera Selatan";
   return (
     <>
       <Header />
@@ -57,12 +73,12 @@ export default function ContactPage() {
                         Instagram
                       </p>
                       <Link
-                        href="https://www.instagram.com/hyperionteam.id/"
+                        href={igUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="mt-1 text-sm font-semibold text-white transition hover:text-[#F5C400]"
                       >
-                        @hyperionteam.id
+                        {igHandle}
                       </Link>
                       <p className="mt-1 text-xs text-white/30">
                         DM kami untuk pertanyaan dan kerjasama
@@ -80,13 +96,34 @@ export default function ContactPage() {
                         Email
                       </p>
                       <p className="mt-1 text-sm font-semibold text-white">
-                        hyperionteam.id@gmail.com
+                        {email}
                       </p>
                       <p className="mt-1 text-xs text-white/30">
                         Respon dalam 1–2 hari kerja
                       </p>
                     </div>
                   </div>
+
+                  {whatsapp && (
+                    <div className="flex items-start gap-4 border border-white/5 bg-[#0D0D0D] p-5">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center bg-[#F5C400]/10">
+                        <Phone className="h-5 w-5 text-[#F5C400]" />
+                      </div>
+                      <div>
+                        <p className="text-xs font-bold uppercase tracking-widest text-white/40">
+                          WhatsApp
+                        </p>
+                        <Link
+                          href={`https://wa.me/${whatsapp.replace(/\D/g, "")}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mt-1 text-sm font-semibold text-white transition hover:text-[#F5C400]"
+                        >
+                          {whatsapp}
+                        </Link>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Location */}
                   <div className="flex items-start gap-4 border border-white/5 bg-[#0D0D0D] p-5">
@@ -98,7 +135,7 @@ export default function ContactPage() {
                         Lokasi
                       </p>
                       <p className="mt-1 text-sm font-semibold text-white">
-                        Palembang, Sumatera Selatan
+                        {location}
                       </p>
                       <p className="mt-1 text-xs text-white/30">Indonesia</p>
                     </div>

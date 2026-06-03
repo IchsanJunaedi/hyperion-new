@@ -13,6 +13,11 @@ import {
   LayoutTemplate,
   Trophy,
   CalendarRange,
+  Mail,
+  FileText,
+  Search,
+  UserPlus,
+  Menu,
 } from "lucide-react";
 
 const NAV_GROUPS = [
@@ -33,6 +38,16 @@ const NAV_GROUPS = [
       { href: "/admin/hero", Icon: LayoutTemplate, label: "Hero" },
       { href: "/admin/join", Icon: Heart, label: "Join Section" },
       { href: "/admin/footer", Icon: UserCircle, label: "Footer" },
+      { href: "/admin/about", Icon: FileText, label: "About" },
+      { href: "/admin/contact", Icon: Mail, label: "Contact" },
+      { href: "/admin/rekrutmen", Icon: UserPlus, label: "Rekrutmen" },
+    ],
+  },
+  {
+    label: "WEBSITE SETTINGS",
+    items: [
+      { href: "/admin/seo", Icon: Search, label: "SEO" },
+      { href: "/admin/navigation", Icon: Menu, label: "Navigation" },
     ],
   },
 ];

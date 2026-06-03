@@ -350,3 +350,46 @@ export async function toggleHeroTournamentAction(
   revalidatePath("/admin/tournaments");
   return { ok: true };
 }
+
+// ── About Alumni ─────────────────────────────────────────────────────────────
+
+export async function createAboutAlumnusAction(data: {
+  name: string;
+  role: string;
+  image_url: string | null;
+  sort_order: number;
+}): Promise<ActionResult> {
+  const auth = await verifyAdminAccess();
+  if (!auth.ok) return auth;
+  const admin = createAdminClient();
+  const { error } = await admin.from("about_alumni").insert(data);
+  if (error) return { ok: false, message: error.message };
+  revalidatePath("/about");
+  revalidatePath("/admin/about");
+  return { ok: true };
+}
+
+export async function updateAboutAlumnusAction(
+  id: string,
+  data: { name?: string; role?: string; image_url?: string | null; sort_order?: number }
+): Promise<ActionResult> {
+  const auth = await verifyAdminAccess();
+  if (!auth.ok) return auth;
+  const admin = createAdminClient();
+  const { error } = await admin.from("about_alumni").update(data).eq("id", id);
+  if (error) return { ok: false, message: error.message };
+  revalidatePath("/about");
+  revalidatePath("/admin/about");
+  return { ok: true };
+}
+
+export async function deleteAboutAlumnusAction(id: string): Promise<ActionResult> {
+  const auth = await verifyAdminAccess();
+  if (!auth.ok) return auth;
+  const admin = createAdminClient();
+  const { error } = await admin.from("about_alumni").delete().eq("id", id);
+  if (error) return { ok: false, message: error.message };
+  revalidatePath("/about");
+  revalidatePath("/admin/about");
+  return { ok: true };
+}

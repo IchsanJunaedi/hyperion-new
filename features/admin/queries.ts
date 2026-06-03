@@ -203,6 +203,26 @@ export async function getAchievements(): Promise<Achievement[]> {
 
 export const getPublicAchievements = getAchievements;
 
+export type AboutAlumnus = {
+  id: string;
+  name: string;
+  role: string;
+  image_url: string | null;
+  sort_order: number;
+  created_at: string;
+};
+
+export async function getAboutAlumni(): Promise<AboutAlumnus[]> {
+  const admin = createAdminClient();
+  const { data, error } = await admin
+    .from("about_alumni")
+    .select("id, name, role, image_url, sort_order, created_at")
+    .order("sort_order", { ascending: true })
+    .limit(30);
+  if (error) console.error("getAboutAlumni:", error);
+  return (data ?? []) as AboutAlumnus[];
+}
+
 export type AdminTournament = {
   id: string;
   name: string;

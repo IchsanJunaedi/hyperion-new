@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import type { Metadata } from "next";
 
 import { AchievementsSection } from "@/components/landing/AchievementsSection";
 import { DivisionsSection } from "@/components/landing/DivisionsSection";
@@ -20,6 +21,15 @@ import {
 import type { HeroSlide, HeroSettings } from "@/components/landing/HeroSection";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings();
+  return {
+    title: settings.seo_home_title || "Hyperion Team — Organisasi Esports Indonesia",
+    description: settings.seo_home_description || "Platform manajemen tim esports profesional untuk Hyperion Team.",
+    openGraph: settings.seo_og_image ? { images: [settings.seo_og_image] } : undefined,
+  };
+}
 
 export default async function HomePage() {
   const supabase = await createClient();
