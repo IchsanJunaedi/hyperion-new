@@ -1,14 +1,16 @@
 import Link from "next/link";
 
+import { AchievementsSection } from "@/components/landing/AchievementsSection";
 import { Footer } from "@/components/landing/Footer";
 import { Header } from "@/components/landing/Header";
-import { getGalleryEntries, getSiteSettings } from "@/features/admin/queries";
+import { getGalleryEntries, getPublicAchievements, getSiteSettings } from "@/features/admin/queries";
 
 export const dynamic = "force-dynamic";
 
 export default async function GalleryPage() {
-  const [galleries, settings] = await Promise.all([
+  const [galleries, achievements, settings] = await Promise.all([
     getGalleryEntries(),
+    getPublicAchievements(),
     getSiteSettings(),
   ]);
 
@@ -116,6 +118,7 @@ export default async function GalleryPage() {
             </div>
           </div>
         </section>
+        <AchievementsSection entries={achievements} />
       </main>
       <Footer settings={footerSettings} />
     </>

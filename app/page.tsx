@@ -11,6 +11,7 @@ import { TestimonialsSection } from "@/components/landing/TestimonialsSection";
 import { createClient } from "@/lib/supabase/server";
 import {
   getGalleryEntries,
+  getPublicAchievements,
   getActivePartners,
   getActiveTestimonials,
   getSiteSettings,
@@ -73,8 +74,9 @@ export default async function HomePage() {
     }
   }
 
-  const [galleryEntries, partners, testimonials, settings] = await Promise.all([
+  const [galleryEntries, manualAchievements, partners, testimonials, settings] = await Promise.all([
     getGalleryEntries(),
+    getPublicAchievements(),
     getActivePartners(),
     getActiveTestimonials(),
     getSiteSettings(),
@@ -87,15 +89,15 @@ export default async function HomePage() {
     year: e.tournament_date,
   }));
 
-  // Map gallery entries to Achievement shape for the home achievements section.
-  // gallery_entries are tournament results — they serve as the public achievement list.
+  // Manual achievements (from /admin/achievements) take priority.
+  // Fall back to gallery_entries mapped to Achievement shape if no manual entries exist.
   function parsePlacement(position: string): number | null {
     if (/#?1\b/i.test(position) || /champion/i.test(position)) return 1;
     if (/#?2\b/i.test(position)) return 2;
     if (/#?3\b/i.test(position)) return 3;
     return null;
   }
-  const achievementsFromGallery = galleryEntries.map((e) => ({
+  const galleryAsAchievements = galleryEntries.map((e) => ({
     id: e.id,
     title: e.title,
     description: e.description ?? null,
@@ -107,6 +109,12 @@ export default async function HomePage() {
     tournament_id: null,
     created_at: "",
   }));
+  // Merge: manual achievements first, then gallery entries not already covered by title
+  const manualTitles = new Set(manualAchievements.map((a) => a.title));
+  const mergedAchievements = [
+    ...manualAchievements,
+    ...galleryAsAchievements.filter((a) => !manualTitles.has(a.title)),
+  ].sort((a, b) => b.achieved_at.localeCompare(a.achieved_at));
 
   const heroSettings: HeroSettings = {
     hero_eyebrow: settings.hero_eyebrow ?? "Est. 2020 — Palembang, Indonesia",
@@ -141,7 +149,7 @@ export default async function HomePage() {
       <main className="flex-1">
         <HeroSection slides={heroSlides} settings={heroSettings} />
         <DivisionsSection />
-        <AchievementsSection entries={achievementsFromGallery} />
+        <AchievementsSection entries={mergedAchievements} />
         <TestimonialsSection testimonials={testimonials} />
         <PartnersSection partners={partners} />
         <JoinUsSection settings={joinSettings} />
