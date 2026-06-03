@@ -202,3 +202,43 @@ export async function getAchievements(): Promise<Achievement[]> {
 }
 
 export const getPublicAchievements = getAchievements;
+
+export type AdminTournament = {
+  id: string;
+  name: string;
+  start_date: string;
+  start_time: string | null;
+  show_in_hero: boolean;
+  status: string;
+  division_id: string;
+};
+
+export type FeaturedTournament = {
+  id: string;
+  name: string;
+  start_date: string;
+  start_time: string | null;
+};
+
+export async function getTournamentsForAdmin(): Promise<AdminTournament[]> {
+  const admin = createAdminClient();
+  const { data, error } = await admin
+    .from("tournaments")
+    .select("id, name, start_date, start_time, show_in_hero, status, division_id")
+    .eq("is_registered", true)
+    .order("start_date", { ascending: false })
+    .limit(50);
+  if (error) console.error("getTournamentsForAdmin:", error);
+  return (data ?? []) as AdminTournament[];
+}
+
+export async function getFeaturedTournament(): Promise<FeaturedTournament | null> {
+  const admin = createAdminClient();
+  const { data, error } = await admin
+    .from("tournaments")
+    .select("id, name, start_date, start_time")
+    .eq("show_in_hero", true)
+    .maybeSingle();
+  if (error) console.error("getFeaturedTournament:", error);
+  return data as FeaturedTournament | null;
+}
