@@ -15,6 +15,7 @@ import {
   getActivePartners,
   getActiveTestimonials,
   getSiteSettings,
+  getFeaturedTournament,
 } from "@/features/admin/queries";
 import type { HeroSlide, HeroSettings } from "@/components/landing/HeroSection";
 
@@ -74,13 +75,15 @@ export default async function HomePage() {
     }
   }
 
-  const [galleryEntries, manualAchievements, partners, testimonials, settings] = await Promise.all([
-    getGalleryEntries(),
-    getPublicAchievements(),
-    getActivePartners(),
-    getActiveTestimonials(),
-    getSiteSettings(),
-  ]);
+  const [galleryEntries, manualAchievements, partners, testimonials, settings, featuredTournament] =
+    await Promise.all([
+      getGalleryEntries(),
+      getPublicAchievements(),
+      getActivePartners(),
+      getActiveTestimonials(),
+      getSiteSettings(),
+      getFeaturedTournament(),
+    ]);
 
   const heroSlides: HeroSlide[] = galleryEntries.slice(0, 3).map((e) => ({
     image: e.preview_images[0] ?? "",
@@ -148,7 +151,7 @@ export default async function HomePage() {
     <>
       <Header />
       <main className="flex-1">
-        <HeroSection slides={heroSlides} settings={heroSettings} />
+        <HeroSection slides={heroSlides} settings={heroSettings} featuredTournament={featuredTournament} />
         <DivisionsSection />
         <AchievementsSection entries={mergedAchievements} />
         <TestimonialsSection testimonials={testimonials} />

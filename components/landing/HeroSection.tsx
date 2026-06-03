@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
+import { HeroCountdown } from "@/components/landing/HeroCountdown";
+import type { FeaturedTournament } from "@/features/admin/queries";
 
 export interface HeroSlide {
   image: string;
@@ -21,9 +23,10 @@ export interface HeroSettings {
 interface HeroSectionProps {
   slides: HeroSlide[];
   settings: HeroSettings;
+  featuredTournament?: FeaturedTournament | null;
 }
 
-const HeroSection = ({ slides, settings }: HeroSectionProps) => {
+const HeroSection = ({ slides, settings, featuredTournament }: HeroSectionProps) => {
   const [current, setCurrent] = useState(0);
   const [paused, setPaused] = useState(false);
 
@@ -68,6 +71,13 @@ const HeroSection = ({ slides, settings }: HeroSectionProps) => {
 
       {/* Header spacer */}
       <div className="h-14 shrink-0" />
+
+      {/* Tournament countdown — absolute center of hero */}
+      {featuredTournament && (
+        <div className="absolute inset-x-0 z-10" style={{ top: "35%", transform: "translateY(-50%)" }}>
+          <HeroCountdown tournament={featuredTournament} />
+        </div>
+      )}
 
       {/* Main content — bottom-left aligned like CHEW */}
       <div className="flex flex-1 items-end px-5 pb-8 sm:px-8 lg:px-10">
