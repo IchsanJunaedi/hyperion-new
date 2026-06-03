@@ -80,7 +80,7 @@ export async function retryFailedWa(
     .select("retry_count, status, organization_id")
     .eq("id", notificationId)
     .eq("organization_id", orgId)
-    .single();
+    .maybeSingle();
 
   if (!notif) return { ok: false, message: "Notifikasi tidak ditemukan" };
   if (notif.status !== "failed")

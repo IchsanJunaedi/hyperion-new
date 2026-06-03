@@ -45,6 +45,9 @@ describe("Calendar Access Permissions", () => {
       single: vi.fn(),
       maybeSingle: vi.fn(),
     };
+    // Production code uses .maybeSingle(); tests configure .single() for
+    // historical reasons. Alias them so one mock setup drives both.
+    mockQuery.maybeSingle = mockQuery.single;
 
     mockClient = {
       auth: {

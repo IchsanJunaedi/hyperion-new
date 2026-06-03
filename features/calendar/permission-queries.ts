@@ -63,7 +63,7 @@ export async function getAccessibleCalendarsAction(
     .from("organizations")
     .select("id")
     .eq("slug", orgSlug)
-    .single();
+    .maybeSingle();
 
   if (!org) {
     return { ok: false, message: "Organisasi tidak ditemukan" };
@@ -129,7 +129,7 @@ export async function getCalendarDetailAction(
     .from("organizations")
     .select("id")
     .eq("slug", orgSlug)
-    .single();
+    .maybeSingle();
 
   if (!org) {
     return { ok: false, message: "Organisasi tidak ditemukan" };
@@ -142,7 +142,7 @@ export async function getCalendarDetailAction(
     .eq("id", calendarId)
     .eq("organization_id", org.id)
     .is("deleted_at", null)
-    .single();
+    .maybeSingle();
 
   if (!calendar) {
     return { ok: false, message: "Kalender tidak ditemukan" };
@@ -196,7 +196,7 @@ export async function listCalendarEventsWithPermissionsAction(
     .from("organizations")
     .select("id")
     .eq("slug", orgSlug)
-    .single();
+    .maybeSingle();
 
   if (!org) {
     return { ok: false, message: "Organisasi tidak ditemukan" };
@@ -209,7 +209,7 @@ export async function listCalendarEventsWithPermissionsAction(
     .eq("id", calendarId)
     .eq("organization_id", org.id)
     .is("deleted_at", null)
-    .single();
+    .maybeSingle();
 
   if (!calendar) {
     return { ok: false, message: "Kalender tidak ditemukan" };
@@ -294,7 +294,7 @@ export async function getUserAccessibleEventsAction(
     .from("organizations")
     .select("id")
     .eq("slug", orgSlug)
-    .single();
+    .maybeSingle();
 
   if (!org) {
     return { ok: false, message: "Organisasi tidak ditemukan" };
@@ -384,7 +384,7 @@ export async function getCalendarAuditLogsAction(
     .from("organizations")
     .select("id")
     .eq("slug", orgSlug)
-    .single();
+    .maybeSingle();
 
   if (!org) {
     return { ok: false, message: "Organisasi tidak ditemukan" };
@@ -396,7 +396,7 @@ export async function getCalendarAuditLogsAction(
     .select("role")
     .eq("user_id", user.id)
     .eq("organization_id", org.id)
-    .single();
+    .maybeSingle();
 
   const ownerEmail = process.env.OWNER_EMAIL;
   const isOwner = user.email === ownerEmail;

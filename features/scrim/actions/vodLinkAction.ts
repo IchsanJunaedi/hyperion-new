@@ -19,7 +19,7 @@ export async function updateScrimVodLinkAction(
     .from("scrims")
     .select("organization_id")
     .eq("id", scrimId)
-    .single();
+    .maybeSingle();
 
   if (!scrim) {
     return { ok: false, message: "Scrim not found" };
@@ -31,7 +31,7 @@ export async function updateScrimVodLinkAction(
     .eq("organization_id", scrim.organization_id)
     .eq("user_id", user.id)
     .eq("is_active", true)
-    .single();
+    .maybeSingle();
 
   if (!membership || !["captain", "manager", "coach", "owner"].includes(membership.role)) {
     return { ok: false, message: "Hanya coach, captain, atau manager yang bisa mengatur link VOD." };
