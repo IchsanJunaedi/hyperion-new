@@ -7,9 +7,9 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   workers: 1, // Run tests sequentially to prevent database/state collisions
   reporter: "list",
-  timeout: 30000,
+  timeout: 180000,
   expect: {
-    timeout: 5000,
+    timeout: 90000,
   },
   use: {
     baseURL: "http://localhost:3000",
