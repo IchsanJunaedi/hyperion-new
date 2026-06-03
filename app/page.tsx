@@ -151,7 +151,12 @@ export default async function HomePage() {
     <>
       <Header />
       <main className="flex-1">
-        <HeroSection slides={heroSlides} settings={heroSettings} featuredTournaments={featuredTournaments} />
+        <HeroSection
+          slides={heroSlides}
+          settings={heroSettings}
+          featuredTournaments={featuredTournaments}
+          heroBackground={settings.hero_background_url || null}
+        />
         <DivisionsSection />
         <AchievementsSection entries={mergedAchievements} />
         <TestimonialsSection testimonials={testimonials} />

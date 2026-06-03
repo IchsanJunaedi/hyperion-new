@@ -29,9 +29,10 @@ interface HeroSectionProps {
   slides: HeroSlide[];
   settings: HeroSettings;
   featuredTournaments?: FeaturedTournament[];
+  heroBackground?: string | null;
 }
 
-const HeroSection = ({ slides, settings, featuredTournaments = [] }: HeroSectionProps) => {
+const HeroSection = ({ slides, settings, featuredTournaments = [], heroBackground }: HeroSectionProps) => {
   const hasTournament = featuredTournaments.length > 0;
   const [current, setCurrent] = useState(0);
   const [paused, setPaused] = useState(false);
@@ -54,29 +55,46 @@ const HeroSection = ({ slides, settings, featuredTournaments = [] }: HeroSection
 
   return (
     <section className="relative flex min-h-screen flex-col overflow-hidden bg-black">
-      {/* Background — barely visible texture (7% opacity, grayscale) */}
-      <AnimatePresence mode="sync">
-        <motion.div
-          key={current}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 1.6, ease: "easeInOut" }}
-          className="absolute inset-0"
-        >
+      {/* Background */}
+      {heroBackground ? (
+        /* Custom uploaded background — full color, higher opacity */
+        <div className="absolute inset-0">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={slides[current]?.image ?? ""}
+            src={heroBackground}
             alt=""
             aria-hidden="true"
             className="h-full w-full object-cover"
-            style={{
-              opacity: hasTournament ? 0.22 : 0.07,
-              filter: "grayscale(100%)",
-            }}
+            style={{ opacity: hasTournament ? 0.45 : 0.18 }}
           />
-        </motion.div>
-      </AnimatePresence>
+          {/* Dark gradient overlay for text readability */}
+          <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.5) 100%)" }} />
+        </div>
+      ) : (
+        /* Fallback — gallery slides, grayscale, barely visible */
+        <AnimatePresence mode="sync">
+          <motion.div
+            key={current}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.6, ease: "easeInOut" }}
+            className="absolute inset-0"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={slides[current]?.image ?? ""}
+              alt=""
+              aria-hidden="true"
+              className="h-full w-full object-cover"
+              style={{
+                opacity: hasTournament ? 0.22 : 0.07,
+                filter: "grayscale(100%)",
+              }}
+            />
+          </motion.div>
+        </AnimatePresence>
+      )}
 
       {/* Header spacer */}
       <div className="h-14 shrink-0" />

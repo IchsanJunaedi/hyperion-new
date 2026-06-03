@@ -1,14 +1,7 @@
 import { getSiteSettings } from "@/features/admin/queries";
-import { SettingsForm, type SettingsField } from "@/features/admin/components/SettingsForm";
+import { HeroAdminClient } from "@/features/admin/components/HeroAdminClient";
 
 export const dynamic = "force-dynamic";
-
-const HERO_FIELDS: SettingsField[] = [
-  { key: "hero_eyebrow", label: "Eyebrow Text (kecil di atas judul)", placeholder: "Est. 2020 — Palembang, Indonesia" },
-  { key: "hero_tagline", label: "Tagline (teks kecil bawah judul)", placeholder: "Empowering Young Talents to Rise and Rule." },
-  { key: "hero_cta_label", label: "Label Tombol CTA", placeholder: "Join Us" },
-  { key: "hero_cta_href", label: "URL Tombol CTA", placeholder: "/register" },
-];
 
 export default async function AdminHeroPage() {
   const settings = await getSiteSettings();
@@ -21,7 +14,7 @@ export default async function AdminHeroPage() {
         </div>
       </header>
       <main className="mx-auto w-full max-w-2xl flex-1 px-8 py-10">
-        <SettingsForm fields={HERO_FIELDS} initialValues={settings} title="Hero Section" />
+        <HeroAdminClient initialValues={settings} />
       </main>
     </>
   );
