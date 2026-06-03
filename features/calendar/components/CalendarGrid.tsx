@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import type { Database } from "@/types/database";
+import type { RsvpCountMap } from "@/features/calendar/queries";
 
 type CalendarEvent = Database["public"]["Tables"]["calendar_events"]["Row"];
 
@@ -21,6 +22,7 @@ interface CalendarGridProps {
   canCreate?: boolean;
   /** Called when user clicks a day cell (when canCreate=true) */
   onDayClick?: (date: Date) => void;
+  rsvpCounts?: RsvpCountMap;
 }
 
 const DAY_NAMES = ["Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"];
@@ -42,6 +44,7 @@ const CalendarGrid = ({
   navBasePath,
   canCreate = false,
   onDayClick,
+  rsvpCounts,
 }: CalendarGridProps) => {
   const router = useRouter();
   const [expandedDay, setExpandedDay] = useState<number | null>(null);
@@ -183,12 +186,23 @@ const CalendarGrid = ({
               {/* Events */}
               <div className="mt-0.5 space-y-0.5">
                 {dayEvents.slice(0, 3).map((ev) => {
+                  const rsvp = rsvpCounts?.[ev.id];
+                  const hadirCount = rsvp?.hadir ?? 0;
+                  const tentativeCount = rsvp?.tentative ?? 0;
+
                   const eventContent = (
                     <>
-                      <span
-                        className={`mr-1 inline-block h-1.5 w-1.5 rounded-full ${EVENT_TYPE_COLORS[ev.event_type] ?? "bg-white/40"}`}
-                      />
-                      {ev.title}
+                      <span className="flex min-w-0 items-center">
+                        <span
+                          className={`mr-1 inline-block h-1.5 w-1.5 shrink-0 rounded-full ${EVENT_TYPE_COLORS[ev.event_type] ?? "bg-white/40"}`}
+                        />
+                        <span className="truncate">{ev.title}</span>
+                      </span>
+                      {hadirCount > 0 && (
+                        <span className="mt-0.5 block text-[9px] leading-none text-green-400/70">
+                          {hadirCount} hadir{tentativeCount > 0 ? ` · ${tentativeCount}?` : ""}
+                        </span>
+                      )}
                     </>
                   );
 
@@ -196,7 +210,7 @@ const CalendarGrid = ({
                     return (
                       <div
                         key={ev.id}
-                        className="block truncate rounded px-1 py-0.5 text-[10px] leading-tight text-white/80"
+                        className="block rounded px-1 py-0.5 text-[10px] leading-tight text-white/80"
                       >
                         {eventContent}
                       </div>
@@ -220,7 +234,7 @@ const CalendarGrid = ({
                       key={ev.id}
                       href={eventHref}
                       onClick={(e) => e.stopPropagation()}
-                      className="block truncate rounded px-1 py-0.5 text-[10px] leading-tight text-white/80 transition hover:bg-white/10"
+                      className="block rounded px-1 py-0.5 text-[10px] leading-tight text-white/80 transition hover:bg-white/10"
                     >
                       {eventContent}
                     </Link>

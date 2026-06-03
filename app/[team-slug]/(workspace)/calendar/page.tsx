@@ -8,6 +8,7 @@ import { CalendarAgendaView } from "@/features/calendar/components/CalendarAgend
 import { CalendarViewToggle } from "@/features/calendar/components/CalendarViewToggle";
 import { CalendarWeeklyWarRoom } from "@/features/calendar/components/CalendarWeeklyWarRoom";
 import { listUnifiedCalendarEvents } from "@/features/calendar/unified";
+import { getRsvpCountsForEvents } from "@/features/calendar/queries";
 import { getOrgBySlug } from "@/features/teams/queries";
 import { createClient } from "@/lib/supabase/server";
 
@@ -72,13 +73,21 @@ export default async function CalendarPage({
 
   const events = await listUnifiedCalendarEvents(organization.id, from, to, isOwner ? "owner" : role);
 
-  // Get divisions for the quick-add modal dropdown
-  const { data: divisions } = await supabase
-    .from("divisions")
-    .select("id, name")
-    .eq("organization_id", organization.id)
-    .eq("is_active", true)
-    .order("name");
+  // Only real calendar events have RSVP rows (not synthetic scrim/tournament entries)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const calendarEventIds = events.filter((e) => !(e as any).ref_type).map((e) => e.id);
+
+  // Get divisions for the quick-add modal dropdown + RSVP counts in parallel
+  const [divisionsResult, rsvpCounts] = await Promise.all([
+    supabase
+      .from("divisions")
+      .select("id, name")
+      .eq("organization_id", organization.id)
+      .eq("is_active", true)
+      .order("name"),
+    getRsvpCountsForEvents(calendarEventIds),
+  ]);
+  const divisions = divisionsResult.data;
 
   return (
     <div className="space-y-6 px-4 py-6 sm:px-8">
@@ -118,6 +127,7 @@ export default async function CalendarPage({
             divisions={divisions ?? []}
             canCreate={canCreate}
             userRole={isOwner ? "owner" : (role ?? "member")}
+            rsvpCounts={rsvpCounts}
           />
         )}
       </div>

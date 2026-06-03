@@ -160,6 +160,37 @@ export async function getMyRsvp(
   return data?.status ?? null;
 }
 
+export type RsvpCountMap = Record<string, { hadir: number; tentative: number; tidak_hadir: number }>;
+
+/**
+ * Batch-fetch RSVP counts for multiple events in one query.
+ * Used by the calendar grid to avoid N+1 queries.
+ */
+export async function getRsvpCountsForEvents(eventIds: string[]): Promise<RsvpCountMap> {
+  if (eventIds.length === 0) return {};
+  const supabase = await createClient();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = await (supabase as any)
+    .from("calendar_event_rsvps")
+    .select("event_id, status")
+    .in("event_id", eventIds)
+    .limit(10000);
+  if (error) console.error("getRsvpCountsForEvents:", error);
+
+  const counts: RsvpCountMap = {};
+  for (const row of (data ?? []) as Array<{ event_id: string; status: string }>) {
+    let entry = counts[row.event_id];
+    if (!entry) {
+      entry = { hadir: 0, tentative: 0, tidak_hadir: 0 };
+      counts[row.event_id] = entry;
+    }
+    if (row.status === "hadir") entry.hadir++;
+    else if (row.status === "tentative") entry.tentative++;
+    else if (row.status === "tidak_hadir") entry.tidak_hadir++;
+  }
+  return counts;
+}
+
 /**
  * Get RSVP status counts for a calendar event.
  */
