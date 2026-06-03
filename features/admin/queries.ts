@@ -63,22 +63,26 @@ export async function getDivisionsWithMembers(): Promise<DivisionWithMembers[]> 
     profileMap = new Map((profiles ?? []).map((p) => [p.id, p]));
   }
 
-  return divisions.map((div) => {
-    const divMembers = (members ?? [])
-      .filter((m) => m.division_id === div.id)
-      .map((m) => {
-        const profile = profileMap.get(m.user_id);
-        return {
-          user_id: m.user_id,
-          role: m.role,
-          position: m.position,
-          jersey_number: m.jersey_number,
-          display_name: profile?.display_name ?? null,
-          avatar_url: profile?.avatar_url ?? null,
-        };
-      });
-    return { ...div, members: divMembers };
-  });
+  return divisions
+    .map((div) => {
+      const divMembers = (members ?? [])
+        .filter((m) => m.division_id === div.id)
+        .map((m) => {
+          const profile = profileMap.get(m.user_id);
+          return {
+            user_id: m.user_id,
+            role: m.role,
+            position: m.position,
+            jersey_number: m.jersey_number,
+            display_name: profile?.display_name ?? null,
+            avatar_url: profile?.avatar_url ?? null,
+          };
+        });
+      return { ...div, members: divMembers };
+    })
+    // Only surface divisions that actually have a roster — empty/orphan
+    // divisions (standalone categories, test orgs) stay out of the admin list.
+    .filter((div) => div.members.length > 0);
 }
 
 export async function getGalleryEntries(): Promise<GalleryEntry[]> {
