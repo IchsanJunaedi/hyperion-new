@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { AboutImageMarquee } from "@/components/landing/AboutImageMarquee";
 import { Footer } from "@/components/landing/Footer";
 import { Header } from "@/components/landing/Header";
 
@@ -42,13 +43,6 @@ const TEAM_MEMBERS = [
   },
 ];
 
-const PARALLAX_IMAGES = [
-  "https://hyperionteam.id/storage/timelines/01JZN7JDHN76Z29F9R2NW4VX8K.jpeg",
-  "https://hyperionteam.id/storage/timelines/01JZPD3B2P75DVSJT6N1609AM3.jpeg",
-  "https://hyperionteam.id/storage/timelines/01JZPD3RM26KW2BNB68WFYTT6X.jpeg",
-  "https://hyperionteam.id/storage/timelines/01JZN7JDHN76Z29F9R2NW4VX8K.jpeg",
-  "https://hyperionteam.id/storage/timelines/01JZPD3B2P75DVSJT6N1609AM3.jpeg",
-];
 
 export default function AboutPage() {
   return (
@@ -97,21 +91,7 @@ export default function AboutPage() {
           </p>
         </section>
 
-        {/* Image rows (static scroll gallery) */}
-        <section className="overflow-hidden py-8 md:py-12">
-          <div className="flex gap-4 overflow-x-auto pb-4 pl-6 sm:pl-10 lg:pl-16 [scrollbar-width:none]">
-            {PARALLAX_IMAGES.map((src, i) => (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                key={i}
-                src={src}
-                alt={`Hyperion moment ${i + 1}`}
-                loading="lazy"
-                className="h-44 w-72 shrink-0 rounded-xl object-cover shadow-md sm:h-52 sm:w-80"
-              />
-            ))}
-          </div>
-        </section>
+        <AboutImageMarquee />
 
         {/* Second description */}
         <section className="mx-auto max-w-4xl px-6 py-16 md:py-24">
