@@ -34,7 +34,9 @@ export async function listTournaments(orgId: string): Promise<Tournament[]> {
   const supabase = await createClient();
   const { data } = await supabase
     .from("tournaments")
-    .select("*")
+    .select(
+      "id, organization_id, division_id, name, status, start_date, start_time, end_date, link, organizer, prize_pool, registration_deadline, registration_fee, registration_url, is_registered, bracket_link, bracket_file_path, notes, created_by, created_at, day_reminder_sent_at, h1_reminder_sent_at, h30_reminder_sent_at",
+    )
     .eq("organization_id", orgId)
     .order("start_date", { ascending: false })
     .limit(100);

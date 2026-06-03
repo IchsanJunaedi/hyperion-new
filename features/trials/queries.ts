@@ -47,11 +47,17 @@ export interface TrialWithCount extends TrialRow {
   applicant_count: number;
 }
 
+const OPEN_TRIAL_COLS =
+  "id, org_id, title, game, division_id, positions, status, public_token, created_by, created_at, updated_at";
+
+const TRIAL_APPLICANT_COLS =
+  "id, trial_id, name, ign, phone, email, role_applied, rank, server, main_game, secondary_game, is_free_agent, age, social_media, city, game_id, game_nickname, win_rate, hero_pool, competitive_exp, screenshot_url, cv_url, status, notes, created_at";
+
 export async function listTrials(orgId: string): Promise<TrialWithCount[]> {
   const admin = createAdminClient();
   const { data, error } = await admin
     .from("open_trials")
-    .select("*, divisions(name), trial_applicants(count)")
+    .select(`${OPEN_TRIAL_COLS}, divisions(name), trial_applicants(count)`)
     .eq("org_id", orgId)
     .order("created_at", { ascending: false })
     .limit(50);
@@ -73,7 +79,7 @@ export async function getTrialById(id: string): Promise<TrialRow | null> {
   const admin = createAdminClient();
   const { data } = await admin
     .from("open_trials")
-    .select("*, divisions(name)")
+    .select(`${OPEN_TRIAL_COLS}, divisions(name)`)
     .eq("id", id)
     .maybeSingle();
   if (!data) return null;
@@ -85,7 +91,7 @@ export async function getTrialByToken(token: string): Promise<(TrialRow & { org_
   const admin = createAdminClient();
   const { data } = await admin
     .from("open_trials")
-    .select("*, organizations(name)")
+    .select(`${OPEN_TRIAL_COLS}, organizations(name)`)
     .eq("public_token", token)
     .maybeSingle();
 
@@ -96,11 +102,13 @@ export async function getTrialByToken(token: string): Promise<(TrialRow & { org_
 
 export async function listApplicants(trialId: string): Promise<ApplicantRow[]> {
   const admin = createAdminClient();
-  const { data } = await admin
+  const { data, error } = await admin
     .from("trial_applicants")
-    .select("*")
+    .select(TRIAL_APPLICANT_COLS)
     .eq("trial_id", trialId)
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .limit(200);
+  if (error) console.error("listApplicants:", error);
   return (data as ApplicantRow[]) ?? [];
 }
 
@@ -114,7 +122,7 @@ export async function getActivePublicTrials(): Promise<PublicTrial[]> {
   const admin = createAdminClient();
   const { data, error } = await admin
     .from("open_trials")
-    .select("*, organizations(name, slug, logo_url)")
+    .select(`${OPEN_TRIAL_COLS}, organizations(name, slug, logo_url)`)
     .eq("status", "active")
     .order("created_at", { ascending: false })
     .limit(50);

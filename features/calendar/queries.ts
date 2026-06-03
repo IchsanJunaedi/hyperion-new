@@ -120,14 +120,16 @@ export async function getEventDetailWithRelations(
     .from("calendar_event_comments")
     .select("*")
     .eq("event_id", eventId)
-    .order("created_at", { ascending: true });
+    .order("created_at", { ascending: true })
+    .limit(200);
 
   // Get relations (table may not exist yet — returns empty on error)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: relations } = await (supabase as any)
     .from("calendar_event_relations")
     .select("*")
-    .eq("event_id", eventId);
+    .eq("event_id", eventId)
+    .limit(50);
 
   return {
     ...event,
@@ -200,10 +202,12 @@ export async function getRsvpCounts(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const supabase = await createClient();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data } = await (supabase as any)
+  const { data, error } = await (supabase as any)
     .from("calendar_event_rsvps")
     .select("status")
-    .eq("event_id", eventId);
+    .eq("event_id", eventId)
+    .limit(500);
+  if (error) console.error("getRsvpCounts:", error);
 
   const counts = { hadir: 0, tentative: 0, tidak_hadir: 0 };
   for (const row of (data ?? []) as Array<{ status: string }>) {
@@ -226,10 +230,12 @@ export interface RsvpAttendee {
 export async function getRsvpAttendees(eventId: string): Promise<RsvpAttendee[]> {
   const supabase = await createClient();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data } = await (supabase as any)
+  const { data, error } = await (supabase as any)
     .from("calendar_event_rsvps")
     .select("user_id, status, profiles(full_name, display_name)")
-    .eq("event_id", eventId);
+    .eq("event_id", eventId)
+    .limit(500);
+  if (error) console.error("getRsvpAttendees:", error);
 
   return ((data ?? []) as Array<{ user_id: string; status: string; profiles: { full_name: string | null; display_name: string | null } | null }>).map((r) => ({
     user_id: r.user_id,
@@ -247,11 +253,13 @@ export async function getEventComments(
 ): Promise<any[]> {
   const supabase = await createClient();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data } = await (supabase as any)
+  const { data, error } = await (supabase as any)
     .from("calendar_event_comments")
     .select("*")
     .eq("event_id", eventId)
-    .order("created_at", { ascending: true });
+    .order("created_at", { ascending: true })
+    .limit(200);
+  if (error) console.error("getEventComments:", error);
 
   return data ?? [];
 }

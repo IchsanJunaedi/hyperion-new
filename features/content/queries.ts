@@ -11,7 +11,9 @@ export async function listContent(
   const admin = createAdminClient();
   let q = admin
     .from("content_calendar")
-    .select("*")
+    .select(
+      "id, organization_id, title, description, platform, status, scheduled_at, approved_at, approved_by, created_by, created_at",
+    )
     .eq("organization_id", orgId)
     .order("scheduled_at", { ascending: true });
 
@@ -41,7 +43,9 @@ export async function listPendingApproval(
   const admin = createAdminClient();
   const { data } = await admin
     .from("content_calendar")
-    .select("*")
+    .select(
+      "id, organization_id, title, description, platform, status, scheduled_at, approved_at, approved_by, created_by, created_at",
+    )
     .eq("organization_id", orgId)
     .eq("status", "scheduled")
     .order("created_at", { ascending: true });

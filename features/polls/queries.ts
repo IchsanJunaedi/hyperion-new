@@ -21,7 +21,9 @@ export async function listPolls(orgId: string): Promise<PollWithVotes[]> {
 
   const { data: polls } = await supabase
     .from("polls")
-    .select("*")
+    .select(
+      "id, organization_id, question, type, options, availability_slots, is_closed, expires_at, created_by, created_at",
+    )
     .eq("organization_id", orgId)
     .order("created_at", { ascending: false })
     .limit(50);
@@ -31,8 +33,16 @@ export async function listPolls(orgId: string): Promise<PollWithVotes[]> {
   const pollIds = polls.map((p) => p.id);
 
   const [votesRes, availVotesRes] = await Promise.all([
-    supabase.from("poll_votes").select("*").in("poll_id", pollIds),
-    supabase.from("poll_availability_votes").select("*").in("poll_id", pollIds),
+    supabase
+      .from("poll_votes")
+      .select("id, poll_id, user_id, option_index, created_at")
+      .in("poll_id", pollIds)
+      .limit(2000),
+    supabase
+      .from("poll_availability_votes")
+      .select("id, poll_id, user_id, slot_index, created_at")
+      .in("poll_id", pollIds)
+      .limit(5000),
   ]);
 
   const allVotes = votesRes.data ?? [];

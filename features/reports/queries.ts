@@ -147,40 +147,142 @@ export async function generateMonthlyReport(
   const endDate = new Date(year, month, 0, 23, 59, 59).toISOString();
   const monthPad = String(month).padStart(2, "0");
 
-  // ── 1. Scrims for this month ───────────────────────────────────────────────
-  const { data: scrims } = await admin
-    .from("scrims")
-    .select("id, status, opponent_name, format, division_id, scheduled_at")
-    .eq("organization_id", orgId)
-    .gte("scheduled_at", startDate)
-    .lte("scheduled_at", endDate);
+  const trendMonths = last6Months(year, month);
+  // last6Months always returns exactly 6 elements
+  const firstTrendMonth = trendMonths[0] as { year: number; month: number };
+  const trendStart = new Date(firstTrendMonth.year, firstTrendMonth.month - 1, 1).toISOString();
+  const trendEnd = new Date(year, month, 0, 23, 59, 59).toISOString();
+  const trendFinStart = `${firstTrendMonth.year}-${String(firstTrendMonth.month).padStart(2, "0")}-01`;
+  const trendFinEnd = `${year}-${monthPad}-31`;
+
+  // ── Phase A: all independent top-level queries run in parallel ──────────────
+  const [
+    scrimsRes,
+    memberCountRes,
+    tournamentsRes,
+    finDataRes,
+    sponsorDataRes,
+    trendScrimsRes,
+    trendFinRes,
+  ] = await Promise.all([
+    admin
+      .from("scrims")
+      .select("id, status, opponent_name, format, division_id, scheduled_at")
+      .eq("organization_id", orgId)
+      .gte("scheduled_at", startDate)
+      .lte("scheduled_at", endDate),
+    admin
+      .from("team_members")
+      .select("*", { count: "exact", head: true })
+      .eq("organization_id", orgId)
+      .eq("is_active", true),
+    admin
+      .from("tournaments")
+      .select("id, name, status, start_date, division_id")
+      .eq("organization_id", orgId)
+      .gte("start_date", `${year}-${monthPad}-01`)
+      .lte("start_date", `${year}-${monthPad}-31`),
+    role === "owner"
+      ? admin
+          .from("finances")
+          .select("type, amount, description, category, date")
+          .eq("organization_id", orgId)
+          .gte("date", `${year}-${monthPad}-01`)
+          .lte("date", `${year}-${monthPad}-31`)
+          .order("date", { ascending: false })
+      : Promise.resolve({
+          data: [] as Array<{ type: string; amount: number; description: string | null; category: string; date: string }>,
+        }),
+    role === "owner"
+      ? admin
+          .from("sponsors")
+          .select("id, name, status, start_date, deal_value, currency, notes")
+          .eq("organization_id", orgId)
+          .order("status")
+          .order("name")
+      : Promise.resolve({
+          data: [] as Array<{ id: string; name: string; status: string; start_date: string | null; deal_value: number | null; currency: string; notes: string | null }>,
+        }),
+    admin
+      .from("scrims")
+      .select("id, scheduled_at, status")
+      .eq("organization_id", orgId)
+      .gte("scheduled_at", trendStart)
+      .lte("scheduled_at", trendEnd),
+    role === "owner"
+      ? admin
+          .from("finances")
+          .select("type, amount, date")
+          .eq("organization_id", orgId)
+          .gte("date", trendFinStart)
+          .lte("date", trendFinEnd)
+      : Promise.resolve({ data: [] as Array<{ type: string; amount: number; date: string }> }),
+  ]);
+
+  const scrims = scrimsRes.data;
+  const memberCount = memberCountRes.count;
+  const tournamentsRaw = tournamentsRes.data;
+  const trendScrims = trendScrimsRes.data;
 
   const completedScrims = (scrims ?? []).filter((s) => s.status === "completed");
   const completedIds = completedScrims.map((s) => s.id);
   const allScrimIds = (scrims ?? []).map((s) => s.id);
 
-  // ── 2. Scrim results ──────────────────────────────────────────────────────
-  const resultMap = new Map<string, boolean | null>();
-  if (completedIds.length > 0) {
-    const { data: results } = await admin
-      .from("scrim_results")
-      .select("scrim_id, is_win")
-      .in("scrim_id", completedIds);
-    for (const r of results ?? []) resultMap.set(r.scrim_id, r.is_win);
-  }
-
-  // ── 3. Divisions ──────────────────────────────────────────────────────────
   const divisionIds = [...new Set((scrims ?? []).map((s) => s.division_id).filter(Boolean))] as string[];
-  const divisionNameMap = new Map<string, string>();
-  if (divisionIds.length > 0) {
-    const { data: divs } = await admin
-      .from("divisions")
-      .select("id, name")
-      .in("id", divisionIds);
-    for (const d of divs ?? []) divisionNameMap.set(d.id, d.name);
-  }
+  const tournamentDivIds = [...new Set((tournamentsRaw ?? []).map((t) => t.division_id).filter(Boolean))] as string[];
+  const tournamentIds = (tournamentsRaw ?? []).map((t) => t.id);
 
-  // ── 4. Scrim aggregation ──────────────────────────────────────────────────
+  const trendScrimIds = (trendScrims ?? []).map((s) => s.id);
+  const completedTrendScrimIds = (trendScrims ?? [])
+    .filter((s) => s.status === "completed")
+    .map((s) => s.id);
+
+  // ── Phase B: queries that depend on Phase A id sets, run in parallel ────────
+  const [
+    resultsRes,
+    divsRes,
+    attendancesRes,
+    tDivsRes,
+    stagesRes,
+    trendResultsRes,
+    trendAttRes,
+  ] = await Promise.all([
+    completedIds.length > 0
+      ? admin.from("scrim_results").select("scrim_id, is_win").in("scrim_id", completedIds)
+      : Promise.resolve({ data: [] as Array<{ scrim_id: string; is_win: boolean | null }> }),
+    divisionIds.length > 0
+      ? admin.from("divisions").select("id, name").in("id", divisionIds)
+      : Promise.resolve({ data: [] as Array<{ id: string; name: string }> }),
+    allScrimIds.length > 0
+      ? admin.from("scrim_attendances").select("status").in("scrim_id", allScrimIds)
+      : Promise.resolve({ data: [] as Array<{ status: string }> }),
+    tournamentDivIds.length > 0
+      ? admin.from("divisions").select("id, name").in("id", tournamentDivIds)
+      : Promise.resolve({ data: [] as Array<{ id: string; name: string }> }),
+    tournamentIds.length > 0
+      ? admin
+          .from("tournament_stages")
+          .select("id, tournament_id, stage_name, is_completed")
+          .in("tournament_id", tournamentIds)
+      : Promise.resolve({
+          data: [] as Array<{ id: string; tournament_id: string; stage_name: string; is_completed: boolean }>,
+        }),
+    completedTrendScrimIds.length > 0
+      ? admin.from("scrim_results").select("scrim_id, is_win").in("scrim_id", completedTrendScrimIds)
+      : Promise.resolve({ data: [] as Array<{ scrim_id: string; is_win: boolean | null }> }),
+    trendScrimIds.length > 0
+      ? admin.from("scrim_attendances").select("scrim_id, status").in("scrim_id", trendScrimIds)
+      : Promise.resolve({ data: [] as Array<{ scrim_id: string; status: string }> }),
+  ]);
+
+  // ── Scrim results + division names ──────────────────────────────────────────
+  const resultMap = new Map<string, boolean | null>();
+  for (const r of resultsRes.data ?? []) resultMap.set(r.scrim_id, r.is_win);
+
+  const divisionNameMap = new Map<string, string>();
+  for (const d of divsRes.data ?? []) divisionNameMap.set(d.id, d.name);
+
+  // ── Scrim aggregation ───────────────────────────────────────────────────────
   let wins = 0, losses = 0, draws = 0;
   const divMap = new Map<string, {
     divisionId: string | null; divisionName: string;
@@ -221,68 +323,38 @@ export async function generateMonthlyReport(
     }))
     .sort((a, b) => new Date(b.scheduledAt).getTime() - new Date(a.scheduledAt).getTime());
 
-  // ── 5. Attendance ─────────────────────────────────────────────────────────
-  let avgAttendanceRate = 0;
-  if (allScrimIds.length > 0) {
-    const { data: attendances } = await admin
-      .from("scrim_attendances")
-      .select("status")
-      .in("scrim_id", allScrimIds);
-    const attTotal = (attendances ?? []).length;
-    const confirmed = (attendances ?? []).filter((a) => a.status === "confirmed").length;
-    avgAttendanceRate = attTotal > 0 ? Math.round((confirmed / attTotal) * 100) : 0;
-  }
+  // ── Attendance (this month) ─────────────────────────────────────────────────
+  const monthAttendances = attendancesRes.data ?? [];
+  const attTotal = monthAttendances.length;
+  const attConfirmed = monthAttendances.filter((a) => a.status === "confirmed").length;
+  const avgAttendanceRate = attTotal > 0 ? Math.round((attConfirmed / attTotal) * 100) : 0;
 
-  const { count: memberCount } = await admin
-    .from("team_members")
-    .select("*", { count: "exact", head: true })
-    .eq("organization_id", orgId)
-    .eq("is_active", true);
-
-  // ── 6. Tournaments this month ─────────────────────────────────────────────
-  const { data: tournamentsRaw } = await admin
-    .from("tournaments")
-    .select("id, name, status, start_date, division_id")
-    .eq("organization_id", orgId)
-    .gte("start_date", `${year}-${monthPad}-01`)
-    .lte("start_date", `${year}-${monthPad}-31`);
-
-  const tournamentDivIds = [...new Set((tournamentsRaw ?? []).map((t) => t.division_id).filter(Boolean))] as string[];
+  // ── Tournaments ─────────────────────────────────────────────────────────────
   const tournamentDivMap = new Map<string, string>();
-  if (tournamentDivIds.length > 0) {
-    const { data: tDivs } = await admin.from("divisions").select("id, name").in("id", tournamentDivIds);
-    for (const d of tDivs ?? []) tournamentDivMap.set(d.id, d.name);
+  for (const d of tDivsRes.data ?? []) tournamentDivMap.set(d.id, d.name);
+
+  const stages = stagesRes.data ?? [];
+  const stagesByTournament = new Map<string, Array<{ id: string; stage_name: string; is_completed: boolean }>>();
+  for (const s of stages) {
+    const arr = stagesByTournament.get(s.tournament_id) ?? [];
+    arr.push(s);
+    stagesByTournament.set(s.tournament_id, arr);
   }
 
-  const tournamentIds = (tournamentsRaw ?? []).map((t) => t.id);
-  const stagesByTournament = new Map<string, Array<{ id: string; stage_name: string; is_completed: boolean }>>();
+  // ── Phase C: matches depend on stage ids ────────────────────────────────────
   const matchesByStage = new Map<string, Array<{ is_win: boolean | null }>>();
-
-  if (tournamentIds.length > 0) {
-    const { data: stages } = await admin
-      .from("tournament_stages")
-      .select("id, tournament_id, stage_name, is_completed")
-      .in("tournament_id", tournamentIds);
-
-    for (const s of stages ?? []) {
-      const arr = stagesByTournament.get(s.tournament_id) ?? [];
-      arr.push(s);
-      stagesByTournament.set(s.tournament_id, arr);
-    }
-
-    const stageIds = (stages ?? []).map((s) => s.id);
-    if (stageIds.length > 0) {
-      // tournament_matches not in generated types — use any cast (same as features/tournaments/queries.ts)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data: matches } = await (admin as any)
-        .from("tournament_matches")
-        .select("stage_id, is_win")
-        .in("stage_id", stageIds);
-      for (const m of (matches ?? []) as { stage_id: string; is_win: boolean | null }[]) {
-        const arr = matchesByStage.get(m.stage_id) ?? [];
-        arr.push({ is_win: m.is_win });
-        matchesByStage.set(m.stage_id, arr);
-      }
+  const stageIds = stages.map((s) => s.id);
+  if (stageIds.length > 0) {
+    // tournament_matches not in generated types — use any cast (same as features/tournaments/queries.ts)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: matches } = await (admin as any)
+      .from("tournament_matches")
+      .select("stage_id, is_win")
+      .in("stage_id", stageIds);
+    for (const m of (matches ?? []) as { stage_id: string; is_win: boolean | null }[]) {
+      const arr = matchesByStage.get(m.stage_id) ?? [];
+      arr.push({ is_win: m.is_win });
+      matchesByStage.set(m.stage_id, arr);
     }
   }
 
@@ -311,16 +383,10 @@ export async function generateMonthlyReport(
     list: tournamentList,
   };
 
-  // ── 7. Finances (owner only) ──────────────────────────────────────────────
+  // ── Finances (owner only) ───────────────────────────────────────────────────
   let finances: MonthlyReport["finances"] = null;
   if (role === "owner") {
-    const { data: finData } = await admin
-      .from("finances")
-      .select("type, amount, description, category, date")
-      .eq("organization_id", orgId)
-      .gte("date", `${year}-${monthPad}-01`)
-      .lte("date", `${year}-${monthPad}-31`)
-      .order("date", { ascending: false });
+    const finData = finDataRes.data;
 
     let totalIncome = 0, totalExpense = 0;
     const incomeList: NonNullable<MonthlyReport["finances"]>["incomeList"] = [];
@@ -334,15 +400,10 @@ export async function generateMonthlyReport(
     finances = { totalIncome, totalExpense, balance: totalIncome - totalExpense, incomeList, expenseList };
   }
 
-  // ── 8. Sponsors (owner only) ──────────────────────────────────────────────
+  // ── Sponsors (owner only) ───────────────────────────────────────────────────
   let sponsors: MonthlyReport["sponsors"] = null;
   if (role === "owner") {
-    const { data: sponsorData } = await admin
-      .from("sponsors")
-      .select("id, name, status, start_date, deal_value, currency, notes")
-      .eq("organization_id", orgId)
-      .order("status")
-      .order("name");
+    const sponsorData = sponsorDataRes.data;
 
     const activeSp = (sponsorData ?? []).filter((s) => s.status === "active");
     sponsors = {
@@ -362,46 +423,7 @@ export async function generateMonthlyReport(
     };
   }
 
-  // ── 9. Trend (last 6 months) — fetch sequentially to avoid race condition ──
-  const trendMonths = last6Months(year, month);
-  // last6Months always returns exactly 6 elements
-  const firstTrendMonth = trendMonths[0] as { year: number; month: number };
-  const trendStart = new Date(firstTrendMonth.year, firstTrendMonth.month - 1, 1).toISOString();
-  const trendEnd = new Date(year, month, 0, 23, 59, 59).toISOString();
-
-  // Step 1: fetch scrims for the 6-month window
-  const { data: trendScrims } = await admin
-    .from("scrims")
-    .select("id, scheduled_at, status")
-    .eq("organization_id", orgId)
-    .gte("scheduled_at", trendStart)
-    .lte("scheduled_at", trendEnd);
-
-  const trendScrimIds = (trendScrims ?? []).map((s) => s.id);
-
-  // Step 2: fetch scrim results + attendance + finances in parallel (we now have the IDs)
-  const trendFinStart = `${firstTrendMonth.year}-${String(firstTrendMonth.month).padStart(2, "0")}-01`;
-  const trendFinEnd = `${year}-${monthPad}-31`;
-
-  const [trendResultsRes, trendAttRes, trendFinRes] = await Promise.all([
-    trendScrimIds.length > 0
-      ? admin.from("scrim_results").select("scrim_id, is_win").in("scrim_id", trendScrimIds.filter((id) => {
-          // only completed scrims
-          const s = (trendScrims ?? []).find((x) => x.id === id);
-          return s?.status === "completed";
-        }))
-      : Promise.resolve({ data: [] as Array<{ scrim_id: string; is_win: boolean | null }> }),
-    trendScrimIds.length > 0
-      ? admin.from("scrim_attendances").select("scrim_id, status").in("scrim_id", trendScrimIds)
-      : Promise.resolve({ data: [] as Array<{ scrim_id: string; status: string }> }),
-    role === "owner"
-      ? admin.from("finances").select("type, amount, date")
-          .eq("organization_id", orgId)
-          .gte("date", trendFinStart)
-          .lte("date", trendFinEnd)
-      : Promise.resolve({ data: [] as Array<{ type: string; amount: number; date: string }> }),
-  ]);
-
+  // ── Trend (last 6 months) ───────────────────────────────────────────────────
   const trendResultMap = new Map<string, boolean | null>();
   for (const r of trendResultsRes.data ?? []) trendResultMap.set(r.scrim_id, r.is_win);
 
@@ -423,7 +445,7 @@ export async function generateMonthlyReport(
   const financeTrend: FinanceTrendPoint[] | null = role === "owner"
     ? trendMonths.map(({ year: y, month: m }) => {
         const prefix = `${y}-${String(m).padStart(2, "0")}`;
-        const monthFin = (trendFinRes.data ?? []) as Array<{ type: string; amount: number; date: string }>;
+        const monthFin = trendFinRes.data ?? [];
         const income = monthFin.filter((f) => f.date.startsWith(prefix) && f.type === "income").reduce((s, f) => s + f.amount, 0);
         const expense = monthFin.filter((f) => f.date.startsWith(prefix) && f.type === "expense").reduce((s, f) => s + f.amount, 0);
         return { monthLabel: monthLabel(y, m), income, expense };
@@ -440,7 +462,7 @@ export async function generateMonthlyReport(
     return { monthLabel: monthLabel(y, m), avgRate: mTotal > 0 ? Math.round((mConfirmed / mTotal) * 100) : 0 };
   });
 
-  // ── 10. Activity ──────────────────────────────────────────────────────────
+  // ── Activity ────────────────────────────────────────────────────────────────
   const activity = {
     scrimsScheduled: (scrims ?? []).length,
     tournamentsActive: tournaments.ongoing,
