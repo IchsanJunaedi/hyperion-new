@@ -22,7 +22,7 @@ export type Database = {
           division_id: string | null
           id: string
           image_url: string | null
-          organization_id: string
+          organization_id: string | null
           placement: number | null
           title: string
           tournament_id: string | null
@@ -34,7 +34,7 @@ export type Database = {
           division_id?: string | null
           id?: string
           image_url?: string | null
-          organization_id: string
+          organization_id?: string | null
           placement?: number | null
           title: string
           tournament_id?: string | null
@@ -46,7 +46,7 @@ export type Database = {
           division_id?: string | null
           id?: string
           image_url?: string | null
-          organization_id?: string
+          organization_id?: string | null
           placement?: number | null
           title?: string
           tournament_id?: string | null

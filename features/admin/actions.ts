@@ -291,7 +291,7 @@ export async function createAchievement(data: {
   const admin = createAdminClient();
   const { error } = await admin.from("achievements").insert({
     ...data,
-    organization_id: data.organization_id ?? "",
+    organization_id: data.organization_id ?? null,
   });
   if (error) return { ok: false, message: error.message };
   revalidatePath("/");
