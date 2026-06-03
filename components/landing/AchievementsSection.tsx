@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { useRef } from "react";
+import { useRouter } from "next/navigation";
 import { motion, useInView } from "motion/react";
 import type { Achievement } from "@/features/admin/queries";
 
@@ -17,9 +17,18 @@ interface RowProps {
 const AchievementRow = ({ item, index }: RowProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-40px" });
+  const router = useRouter();
 
-  const inner = (
-    <div className={`group relative block overflow-hidden border-b border-white/8 transition-colors${item.href ? " cursor-pointer hover:bg-white/[0.02]" : ""}`}>
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 16 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.5, delay: index * 0.08, ease: "easeOut" }}
+      onClick={item.href ? () => router.push(item.href!) : undefined}
+      style={item.href ? { cursor: "pointer" } : undefined}
+    >
+      <div className={`group relative overflow-hidden border-b border-white/8 transition-colors${item.href ? " hover:bg-white/[0.02]" : ""}`}>
         {/* Hover-reveal photo */}
         {item.image_url && (
           <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100">
@@ -65,23 +74,7 @@ const AchievementRow = ({ item, index }: RowProps) => {
             </span>
           </div>
         </div>
-    </div>
-  );
-
-  return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 16 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.5, delay: index * 0.08, ease: "easeOut" }}
-    >
-      {item.href ? (
-        <Link href={item.href} className="block cursor-pointer">
-          {inner}
-        </Link>
-      ) : (
-        inner
-      )}
+      </div>
     </motion.div>
   );
 };
