@@ -232,13 +232,14 @@ export async function getTournamentsForAdmin(): Promise<AdminTournament[]> {
   return (data ?? []) as AdminTournament[];
 }
 
-export async function getFeaturedTournament(): Promise<FeaturedTournament | null> {
+export async function getFeaturedTournaments(): Promise<FeaturedTournament[]> {
   const admin = createAdminClient();
   const { data, error } = await admin
     .from("tournaments")
     .select("id, name, start_date, start_time")
     .eq("show_in_hero", true)
-    .maybeSingle();
-  if (error) console.error("getFeaturedTournament:", error);
-  return data as FeaturedTournament | null;
+    .order("start_date", { ascending: true })
+    .limit(5);
+  if (error) console.error("getFeaturedTournaments:", error);
+  return (data ?? []) as FeaturedTournament[];
 }

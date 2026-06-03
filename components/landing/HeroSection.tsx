@@ -28,10 +28,11 @@ export interface HeroSettings {
 interface HeroSectionProps {
   slides: HeroSlide[];
   settings: HeroSettings;
-  featuredTournament?: FeaturedTournament | null;
+  featuredTournaments?: FeaturedTournament[];
 }
 
-const HeroSection = ({ slides, settings, featuredTournament }: HeroSectionProps) => {
+const HeroSection = ({ slides, settings, featuredTournaments = [] }: HeroSectionProps) => {
+  const hasTournament = featuredTournaments.length > 0;
   const [current, setCurrent] = useState(0);
   const [paused, setPaused] = useState(false);
 
@@ -70,7 +71,7 @@ const HeroSection = ({ slides, settings, featuredTournament }: HeroSectionProps)
             aria-hidden="true"
             className="h-full w-full object-cover"
             style={{
-              opacity: featuredTournament ? 0.22 : 0.07,
+              opacity: hasTournament ? 0.22 : 0.07,
               filter: "grayscale(100%)",
             }}
           />
@@ -81,9 +82,9 @@ const HeroSection = ({ slides, settings, featuredTournament }: HeroSectionProps)
       <div className="h-14 shrink-0" />
 
       {/* Tournament countdown — shown fullscreen, hides wordmark */}
-      {featuredTournament ? (
-        <div className="flex flex-1 items-center justify-center">
-          <HeroCountdown tournament={featuredTournament} />
+      {hasTournament ? (
+        <div className="flex flex-1 items-center justify-center px-5 sm:px-8 lg:px-10">
+          <HeroCountdown tournaments={featuredTournaments} />
         </div>
       ) : (
         /* Main content — bottom-left aligned like CHEW */
@@ -127,7 +128,7 @@ const HeroSection = ({ slides, settings, featuredTournament }: HeroSectionProps)
       )}
 
       {/* CHEW-style bottom info bar — hidden when countdown is active */}
-      {!featuredTournament && <div className="relative z-10 border-t border-white/8">
+      {!hasTournament && <div className="relative z-10 border-t border-white/8">
         <div className="mx-auto max-w-7xl">
           <div className="grid grid-cols-2 px-5 sm:grid-cols-4 sm:px-8 lg:px-10">
             {/* Tagline */}

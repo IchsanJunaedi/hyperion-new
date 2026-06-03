@@ -333,27 +333,18 @@ export async function deleteAchievement(id: string): Promise<ActionResult> {
 // ── Tournament Hero Toggle ────────────────────────────────────────────────────
 
 export async function toggleHeroTournamentAction(
-  tournamentId: string | null
+  tournamentId: string,
+  nextValue: boolean
 ): Promise<ActionResult> {
   const auth = await verifyAdminAccess();
   if (!auth.ok) return auth;
   const admin = createAdminClient();
 
-  // Clear any currently featured tournament
-  const { error: clearErr } = await admin
+  const { error } = await admin
     .from("tournaments")
-    .update({ show_in_hero: false })
-    .eq("show_in_hero", true);
-  if (clearErr) return { ok: false, message: clearErr.message };
-
-  // Set the new one if provided
-  if (tournamentId) {
-    const { error } = await admin
-      .from("tournaments")
-      .update({ show_in_hero: true })
-      .eq("id", tournamentId);
-    if (error) return { ok: false, message: error.message };
-  }
+    .update({ show_in_hero: nextValue })
+    .eq("id", tournamentId);
+  if (error) return { ok: false, message: error.message };
 
   revalidatePath("/");
   revalidatePath("/admin/tournaments");

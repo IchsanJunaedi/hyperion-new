@@ -15,26 +15,29 @@ const TournamentsAdminClient = ({ tournaments: initial }: Props) => {
   const [pending, startTransition] = useTransition();
 
   const handleToggle = (id: string, currentlyActive: boolean) => {
-    const nextId = currentlyActive ? null : id;
+    const nextValue = !currentlyActive;
 
-    // Optimistic update
+    // Optimistic update — independent per tournament
     setTournaments((prev) =>
-      prev.map((t) => ({ ...t, show_in_hero: t.id === id ? !currentlyActive : false }))
+      prev.map((t) => (t.id === id ? { ...t, show_in_hero: nextValue } : t))
     );
 
     startTransition(async () => {
-      const result = await toggleHeroTournamentAction(nextId);
+      const result = await toggleHeroTournamentAction(id, nextValue);
       if (!result.ok) {
         toast.error(result.message);
-        // Revert on error
-        setTournaments(initial);
+        setTournaments((prev) =>
+          prev.map((t) => (t.id === id ? { ...t, show_in_hero: currentlyActive } : t))
+        );
       } else {
         toast.success(
-          nextId ? "Tournament ditampilkan di hero" : "Tournament disembunyikan dari hero"
+          nextValue ? "Tournament ditampilkan di hero" : "Tournament disembunyikan dari hero"
         );
       }
     });
   };
+
+  const activeCount = tournaments.filter((t) => t.show_in_hero).length;
 
   return (
     <div>
@@ -44,9 +47,14 @@ const TournamentsAdminClient = ({ tournaments: initial }: Props) => {
             Tournaments
           </h1>
           <p className="mt-1 text-xs text-[#6B6A68]">
-            Pilih satu tournament untuk ditampilkan sebagai countdown di hero section.
-            Hanya tournament yang sudah dikonfirmasi pendaftarannya (is_registered) yang muncul di sini.
+            Aktifkan satu atau lebih tournament untuk ditampilkan sebagai countdown di hero section.
+            Hanya tournament yang sudah dikonfirmasi pendaftarannya yang muncul di sini.
           </p>
+          {activeCount > 0 && (
+            <p className="mt-1.5 text-xs font-semibold text-[#F5C400]">
+              {activeCount} tournament aktif di hero
+            </p>
+          )}
         </div>
       </div>
 
@@ -66,7 +74,11 @@ const TournamentsAdminClient = ({ tournaments: initial }: Props) => {
         {tournaments.map((t) => (
           <div
             key={t.id}
-            className="flex items-center justify-between rounded border border-[#2D2D2D] bg-[#1a1a1a] px-4 py-3"
+            className={`flex items-center justify-between rounded border px-4 py-3 transition ${
+              t.show_in_hero
+                ? "border-[#F5C400]/30 bg-[#1a1800]"
+                : "border-[#2D2D2D] bg-[#1a1a1a]"
+            }`}
           >
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-semibold text-[#D4D4D4]">{t.name}</p>
