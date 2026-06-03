@@ -34,7 +34,7 @@ function diffParts(target: Date): CountdownParts {
 
 const TournamentCountdown = ({ name, startDate, startTime, prizePool, organizer }: TournamentCountdownProps) => {
   const target = useMemo(() => {
-    const timeStr = startTime || "00:00";
+    const timeStr = startTime ? startTime.slice(0, 5) : "00:00";
     return new Date(`${startDate}T${timeStr}:00+07:00`);
   }, [startDate, startTime]);
   const [parts, setParts] = useState<CountdownParts | null>(null);

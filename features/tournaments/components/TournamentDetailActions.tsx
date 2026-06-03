@@ -33,7 +33,7 @@ const TournamentDetailActions = ({ tournament, orgSlug }: TournamentDetailAction
     ) {
       return true;
     }
-    const timeStr = tournament.start_time || "00:00";
+    const timeStr = tournament.start_time ? tournament.start_time.slice(0, 5) : "00:00";
     const startDateTime = new Date(`${tournament.start_date}T${timeStr}:00+07:00`);
     return startDateTime.getTime() <= Date.now();
   }, [tournament.registration_deadline, tournament.start_date, tournament.start_time]);

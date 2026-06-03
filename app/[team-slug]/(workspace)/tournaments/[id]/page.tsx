@@ -1,4 +1,4 @@
-import { ArrowLeft, Calendar, ExternalLink, Trophy } from "lucide-react";
+import { ArrowLeft, Calendar, ExternalLink, Medal, Trophy } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -15,6 +15,59 @@ export const dynamic = "force-dynamic";
 
 interface TournamentDetailPageProps {
   params: Promise<{ "team-slug": string; id: string }>;
+}
+
+const PLACEMENT_STYLE: Record<number, { gradient: string; ring: string; textColor: string; label: string }> = {
+  1: {
+    gradient: "from-yellow-500/20 via-yellow-400/10 to-transparent",
+    ring: "border-yellow-400/40",
+    textColor: "text-yellow-300",
+    label: "JUARA 1",
+  },
+  2: {
+    gradient: "from-zinc-400/20 via-zinc-300/10 to-transparent",
+    ring: "border-zinc-400/40",
+    textColor: "text-zinc-300",
+    label: "JUARA 2",
+  },
+  3: {
+    gradient: "from-orange-700/20 via-orange-600/10 to-transparent",
+    ring: "border-orange-600/40",
+    textColor: "text-orange-400",
+    label: "JUARA 3",
+  },
+};
+
+function PlacementBanner({ placement, prizeEarned }: { placement: number; prizeEarned: string | null }) {
+  const style = PLACEMENT_STYLE[placement] ?? {
+    gradient: "from-white/10 to-transparent",
+    ring: "border-white/20",
+    textColor: "text-white/70",
+    label: `JUARA ${placement}`,
+  };
+
+  return (
+    <div className={`relative overflow-hidden rounded-2xl border bg-gradient-to-br p-5 ${style.ring} ${style.gradient}`}>
+      <div className="flex items-center gap-4">
+        <div className={`grid h-14 w-14 shrink-0 place-items-center rounded-full border ${style.ring} bg-black/30`}>
+          {placement <= 3 ? (
+            <Medal className={`h-7 w-7 ${style.textColor}`} />
+          ) : (
+            <Trophy className={`h-7 w-7 ${style.textColor}`} />
+          )}
+        </div>
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.3em] text-white/40">Hasil Turnamen</p>
+          <p className={`text-3xl font-black tracking-tight ${style.textColor}`}>{style.label}</p>
+          {prizeEarned && (
+            <p className="mt-0.5 text-sm font-semibold text-white/60">
+              Prize: Rp {Number(prizeEarned).toLocaleString("id-ID")}
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 const STATUS_BADGE: Record<string, { color: string; label: string }> = {
@@ -37,13 +90,14 @@ export default async function TournamentDetailPage({ params }: TournamentDetailP
   const canManage = ["captain", "manager", "owner"].includes(currentUserRole ?? "");
   const canManageBracket = ["captain", "manager", "owner", "coach"].includes(currentUserRole ?? "");
 
+  const startTimeStr = detail.start_time ? detail.start_time.slice(0, 5) : "00:00";
   const isRegistrationExpired =
     detail.status === "upcoming" &&
     ((detail.registration_deadline != null &&
       new Date(detail.registration_deadline).getTime() < Date.now()) ||
-     new Date(`${detail.start_date}T${detail.start_time || "00:00"}:00+07:00`).getTime() <= Date.now());
+     new Date(`${detail.start_date}T${startTimeStr}:00+07:00`).getTime() <= Date.now());
 
-  const tournamentStarted = new Date(`${detail.start_date}T${detail.start_time || "00:00"}:00+07:00`).getTime() <= Date.now();
+  const tournamentStarted = new Date(`${detail.start_date}T${startTimeStr}:00+07:00`).getTime() <= Date.now();
   const badgeKey = isRegistrationExpired ? "expired" : detail.status;
   let badge = STATUS_BADGE[badgeKey] ?? STATUS_BADGE["upcoming"] ?? { color: "bg-white/5 text-[#9B9A97] border-white/10", label: "TIDAK DIKETAHUI" };
   if (detail.status === "ongoing" && tournamentStarted) {
@@ -132,6 +186,11 @@ export default async function TournamentDetailPage({ params }: TournamentDetailP
           )}
         </dl>
       </header>
+
+      {/* Placement result banner for completed tournaments */}
+      {detail.status === "completed" && detail.result && detail.result.placement != null && (
+        <PlacementBanner placement={detail.result.placement} prizeEarned={detail.result.prize_earned} />
+      )}
 
       {/* Action buttons — inline like scrim */}
       {canManage && (

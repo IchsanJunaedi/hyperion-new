@@ -22,9 +22,16 @@ export interface TournamentStageWithMatches extends TournamentStage {
   matches: TournamentMatch[];
 }
 
+export interface TournamentResult {
+  placement: number | null;
+  prize_earned: string | null;
+  notes: string | null;
+}
+
 export interface TournamentWithStages extends Tournament {
   stages: TournamentStageWithMatches[];
   division_name: string | null;
+  result: TournamentResult | null;
 }
 
 /**
@@ -57,7 +64,7 @@ export async function getTournamentDetail(
     .maybeSingle();
   if (!tournament) return null;
 
-  const [stagesRes, divRes] = await Promise.all([
+  const [stagesRes, divRes, resultRes] = await Promise.all([
     supabase
       .from("tournament_stages")
       .select("*")
@@ -67,6 +74,11 @@ export async function getTournamentDetail(
       .from("divisions")
       .select("name")
       .eq("id", tournament.division_id)
+      .maybeSingle(),
+    supabase
+      .from("tournament_results")
+      .select("placement, prize_earned, notes")
+      .eq("tournament_id", tournamentId)
       .maybeSingle(),
   ]);
 
@@ -97,6 +109,7 @@ export async function getTournamentDetail(
       matches: matchesByStage.get(s.id) ?? [],
     })),
     division_name: divRes.data?.name ?? null,
+    result: resultRes.data ?? null,
   };
 }
 
