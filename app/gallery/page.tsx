@@ -40,14 +40,14 @@ export default async function GalleryPage() {
             <div className="mb-4 flex items-center gap-3">
               <div className="h-px w-8 bg-[#F5C400]" />
               <span className="text-[11px] font-bold uppercase tracking-[0.3em] text-[#F5C400]">
-                Highlights
+                Trophy Room
               </span>
             </div>
             <h1 className="text-4xl font-black uppercase tracking-tight text-white sm:text-5xl lg:text-6xl">
-              GALLERY
+              ACHIEVEMENT
             </h1>
             <p className="mt-4 max-w-lg text-sm leading-relaxed text-white/40">
-              Momen-momen terbaik Hyperion Team di berbagai turnamen nasional dan regional.
+              Prestasi dan pencapaian Hyperion Team di berbagai turnamen nasional dan regional.
             </p>
           </div>
         </section>

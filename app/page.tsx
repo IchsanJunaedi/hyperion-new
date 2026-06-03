@@ -14,7 +14,6 @@ import {
   getActivePartners,
   getActiveTestimonials,
   getSiteSettings,
-  getPublicAchievements,
 } from "@/features/admin/queries";
 import type { HeroSlide, HeroSettings } from "@/components/landing/HeroSection";
 
@@ -74,9 +73,8 @@ export default async function HomePage() {
     }
   }
 
-  const [galleryEntries, achievements, partners, testimonials, settings] = await Promise.all([
+  const [galleryEntries, partners, testimonials, settings] = await Promise.all([
     getGalleryEntries(),
-    getPublicAchievements(),
     getActivePartners(),
     getActiveTestimonials(),
     getSiteSettings(),
@@ -87,6 +85,27 @@ export default async function HomePage() {
     achievement: e.title,
     rank: e.position,
     year: e.tournament_date,
+  }));
+
+  // Map gallery entries to Achievement shape for the home achievements section.
+  // gallery_entries are tournament results — they serve as the public achievement list.
+  function parsePlacement(position: string): number | null {
+    if (/#?1\b/i.test(position) || /champion/i.test(position)) return 1;
+    if (/#?2\b/i.test(position)) return 2;
+    if (/#?3\b/i.test(position)) return 3;
+    return null;
+  }
+  const achievementsFromGallery = galleryEntries.map((e) => ({
+    id: e.id,
+    title: e.title,
+    description: e.description ?? null,
+    placement: parsePlacement(e.position ?? ""),
+    achieved_at: e.tournament_date ?? "",
+    image_url: e.preview_images[0] ?? e.logo_url ?? null,
+    organization_id: null,
+    division_id: null,
+    tournament_id: null,
+    created_at: "",
   }));
 
   const heroSettings: HeroSettings = {
@@ -122,7 +141,7 @@ export default async function HomePage() {
       <main className="flex-1">
         <HeroSection slides={heroSlides} settings={heroSettings} />
         <DivisionsSection />
-        <AchievementsSection entries={achievements} />
+        <AchievementsSection entries={achievementsFromGallery} />
         <TestimonialsSection testimonials={testimonials} />
         <PartnersSection partners={partners} />
         <JoinUsSection settings={joinSettings} />
