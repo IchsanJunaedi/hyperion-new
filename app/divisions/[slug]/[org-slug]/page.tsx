@@ -64,7 +64,7 @@ export default async function TeamDetailPage({ params }: Props) {
     .select("user_id, role, jersey_number, position, main_role")
     .eq("organization_id", org.id)
     .eq("is_active", true)
-    .order("role")
+    .in("role", ["coach", "captain", "member"])
     .limit(30);
   if (mErr) console.error("TeamDetailPage: members fetch:", mErr);
 
@@ -89,10 +89,10 @@ export default async function TeamDetailPage({ params }: Props) {
     .limit(20);
   if (aErr) console.error("TeamDetailPage: achievements fetch:", aErr);
 
-  const members = (membersData ?? []).map((m) => ({
-    ...m,
-    profile: profileMap.get(m.user_id),
-  }));
+  const ROLE_ORDER: Record<string, number> = { coach: 0, captain: 1, member: 2 };
+  const members = (membersData ?? [])
+    .map((m) => ({ ...m, profile: profileMap.get(m.user_id) }))
+    .sort((a, b) => (ROLE_ORDER[a.role] ?? 9) - (ROLE_ORDER[b.role] ?? 9));
 
   return (
     <>
