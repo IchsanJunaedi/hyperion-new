@@ -69,7 +69,10 @@ const HeroSection = ({ slides, settings, featuredTournament }: HeroSectionProps)
             alt=""
             aria-hidden="true"
             className="h-full w-full object-cover"
-            style={{ opacity: 0.07, filter: "grayscale(100%)" }}
+            style={{
+              opacity: featuredTournament ? 0.22 : 0.07,
+              filter: "grayscale(100%)",
+            }}
           />
         </motion.div>
       </AnimatePresence>
@@ -77,54 +80,54 @@ const HeroSection = ({ slides, settings, featuredTournament }: HeroSectionProps)
       {/* Header spacer */}
       <div className="h-14 shrink-0" />
 
-      {/* Tournament countdown — absolute center of hero */}
-      {featuredTournament && (
-        <div className="absolute inset-x-0 z-10" style={{ top: "35%", transform: "translateY(-50%)" }}>
+      {/* Tournament countdown — shown fullscreen, hides wordmark */}
+      {featuredTournament ? (
+        <div className="flex flex-1 items-center justify-center">
           <HeroCountdown tournament={featuredTournament} />
         </div>
-      )}
-
-      {/* Main content — bottom-left aligned like CHEW */}
-      <div className="flex flex-1 items-end px-5 pb-8 sm:px-8 lg:px-10">
-        <div className="max-w-5xl">
-          <p className="mb-4 text-[11px] font-bold uppercase tracking-[0.5em] text-white/28">
-            {settings.hero_eyebrow}
-          </p>
-
-          {/* Massive wordmark */}
-          <h1
-            className="font-black uppercase leading-[0.88] tracking-tighter text-white"
-            style={{ fontSize: "clamp(3.4rem, 12vw, 10.5rem)" }}
-          >
-            HYPERION
-            <br />
-            <span className="text-[#F5C400]">{'// TEAM'}</span>
-          </h1>
-
-          <div className="mt-8 flex flex-wrap items-center gap-6 sm:mt-10">
-            <p className="text-sm text-white/35">
-              {settings.hero_tagline}
+      ) : (
+        /* Main content — bottom-left aligned like CHEW */
+        <div className="flex flex-1 items-end px-5 pb-8 sm:px-8 lg:px-10">
+          <div className="max-w-5xl">
+            <p className="mb-4 text-[11px] font-bold uppercase tracking-[0.5em] text-white/28">
+              {settings.hero_eyebrow}
             </p>
-            <div className="flex items-center gap-5">
-              <Link
-                href={settings.hero_cta_href}
-                className="inline-flex h-10 items-center border border-[#F5C400] px-6 text-[11px] font-black uppercase tracking-widest text-[#F5C400] transition duration-200 hover:bg-[#F5C400] hover:text-black"
-              >
-                {settings.hero_cta_label}
-              </Link>
-              <Link
-                href="#achievements"
-                className="text-[11px] font-bold uppercase tracking-widest text-white/35 transition hover:text-white"
-              >
-                Explore ↓
-              </Link>
+
+            {/* Massive wordmark */}
+            <h1
+              className="font-black uppercase leading-[0.88] tracking-tighter text-white"
+              style={{ fontSize: "clamp(3.4rem, 12vw, 10.5rem)" }}
+            >
+              HYPERION
+              <br />
+              <span className="text-[#F5C400]">{'// TEAM'}</span>
+            </h1>
+
+            <div className="mt-8 flex flex-wrap items-center gap-6 sm:mt-10">
+              <p className="text-sm text-white/35">
+                {settings.hero_tagline}
+              </p>
+              <div className="flex items-center gap-5">
+                <Link
+                  href={settings.hero_cta_href}
+                  className="inline-flex h-10 items-center border border-[#F5C400] px-6 text-[11px] font-black uppercase tracking-widest text-[#F5C400] transition duration-200 hover:bg-[#F5C400] hover:text-black"
+                >
+                  {settings.hero_cta_label}
+                </Link>
+                <Link
+                  href="#achievements"
+                  className="text-[11px] font-bold uppercase tracking-widest text-white/35 transition hover:text-white"
+                >
+                  Explore ↓
+                </Link>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
-      {/* CHEW-style bottom info bar */}
-      <div className="relative z-10 border-t border-white/8">
+      {/* CHEW-style bottom info bar — hidden when countdown is active */}
+      {!featuredTournament && <div className="relative z-10 border-t border-white/8">
         <div className="mx-auto max-w-7xl">
           <div className="grid grid-cols-2 px-5 sm:grid-cols-4 sm:px-8 lg:px-10">
             {/* Tagline */}
@@ -199,7 +202,7 @@ const HeroSection = ({ slides, settings, featuredTournament }: HeroSectionProps)
             </div>
           </div>
         </div>
-      </div>
+      </div>}
     </section>
   );
 };
