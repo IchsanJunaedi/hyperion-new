@@ -5,7 +5,6 @@ import Image from "next/image";
 
 import { Footer } from "@/components/landing/Footer";
 import { Header } from "@/components/landing/Header";
-import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 const GAME_META: Record<string, { color: string; abbr: string }> = {
@@ -28,31 +27,36 @@ export const dynamic = "force-dynamic";
 
 export default async function DivisionDetailPage({ params }: Props) {
   const { slug } = await params;
-  const supabase = await createClient();
   const admin = createAdminClient();
 
-  const { data: division } = await supabase
+  const { data: divisionRows, error: divErr } = await admin
     .from("divisions")
     .select("id, name, slug, game, description, is_active")
-    .is("organization_id", null)
     .eq("slug", slug)
-    .maybeSingle();
+    .eq("is_public", true)
+    .limit(1);
+  if (divErr) console.error("DivisionDetailPage division:", divErr);
 
+  const division = divisionRows?.[0];
   if (!division) notFound();
 
   const meta = getMeta(division.game ?? "");
 
-  const subQuery = await supabase
+  // Only orgs whose division row is public should surface on the public site.
+  const subQuery = await admin
     .from("divisions")
     .select("organization_id")
     .eq("slug", slug)
-    .not("organization_id", "is", null);
+    .eq("is_public", true)
+    .not("organization_id", "is", null)
+    .limit(50);
+  if (subQuery.error) console.error("DivisionDetailPage orgs:", subQuery.error);
 
   const orgIds = (subQuery.data ?? []).map((d) => d.organization_id).filter(Boolean) as string[];
 
   let teams: { id: string; name: string; slug: string; logo_url: string | null; description: string | null }[] = [];
   if (orgIds.length > 0) {
-    const { data } = await supabase
+    const { data } = await admin
       .from("organizations")
       .select("id, name, slug, logo_url, description")
       .in("id", orgIds)

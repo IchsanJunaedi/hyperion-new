@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import { Footer } from "@/components/landing/Footer";
 import { Header } from "@/components/landing/Header";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
 
@@ -20,15 +20,23 @@ function getMeta(game: string) {
 }
 
 export default async function DivisionsPage() {
-  const supabase = await createClient();
+  const admin = createAdminClient();
 
-  const { data: divisions } = await supabase
+  const { data: divisions, error } = await admin
     .from("divisions")
     .select("id, name, slug, game, description, is_active")
-    .is("organization_id", null)
-    .order("name");
+    .eq("is_public", true)
+    .order("name")
+    .limit(50);
+  if (error) console.error("DivisionsPage:", error);
 
-  const items = divisions ?? [];
+  // Dedupe by slug — multiple orgs can share the same game/slug.
+  const seen = new Set<string>();
+  const items = (divisions ?? []).filter((d) => {
+    if (seen.has(d.slug)) return false;
+    seen.add(d.slug);
+    return true;
+  });
 
   return (
     <>
