@@ -3,8 +3,13 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { HeroCountdown } from "@/components/landing/HeroCountdown";
+import dynamic from "next/dynamic";
 import type { FeaturedTournament } from "@/features/admin/queries";
+
+const HeroCountdown = dynamic(
+  () => import("@/components/landing/HeroCountdown").then((m) => ({ default: m.HeroCountdown })),
+  { ssr: false }
+);
 
 export interface HeroSlide {
   image: string;
