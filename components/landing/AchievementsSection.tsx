@@ -1,13 +1,16 @@
 "use client";
 
+import Link from "next/link";
 import { useRef } from "react";
 import { motion, useInView } from "motion/react";
 import type { Achievement } from "@/features/admin/queries";
 
+export type AchievementItem = Achievement & { href?: string };
+
 const PLACEMENT_LABEL: Record<number, string> = { 1: "Juara 1", 2: "Juara 2", 3: "Juara 3" };
 
 interface RowProps {
-  item: Achievement;
+  item: AchievementItem;
   index: number;
 }
 
@@ -15,14 +18,8 @@ const AchievementRow = ({ item, index }: RowProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-40px" });
 
-  return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 16 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.5, delay: index * 0.08, ease: "easeOut" }}
-    >
-      <div className="group relative block overflow-hidden border-b border-white/8">
+  const inner = (
+    <div className="group relative block overflow-hidden border-b border-white/8">
         {/* Hover-reveal photo */}
         {item.image_url && (
           <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100">
@@ -68,13 +65,29 @@ const AchievementRow = ({ item, index }: RowProps) => {
             </span>
           </div>
         </div>
-      </div>
+    </div>
+  );
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 16 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.5, delay: index * 0.08, ease: "easeOut" }}
+    >
+      {item.href ? (
+        <Link href={item.href} className="block cursor-pointer">
+          {inner}
+        </Link>
+      ) : (
+        inner
+      )}
     </motion.div>
   );
 };
 
 interface AchievementsSectionProps {
-  entries: Achievement[];
+  entries: AchievementItem[];
 }
 
 const AchievementsSection = ({ entries }: AchievementsSectionProps) => {

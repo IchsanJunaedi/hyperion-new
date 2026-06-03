@@ -108,11 +108,12 @@ export default async function HomePage() {
     division_id: null,
     tournament_id: null,
     created_at: "",
+    href: `/gallery/${e.slug}`,
   }));
   // Merge: manual achievements first, then gallery entries not already covered by title
   const manualTitles = new Set(manualAchievements.map((a) => a.title));
   const mergedAchievements = [
-    ...manualAchievements,
+    ...manualAchievements.map((a) => ({ ...a, href: "/gallery" })),
     ...galleryAsAchievements.filter((a) => !manualTitles.has(a.title)),
   ].sort((a, b) => b.achieved_at.localeCompare(a.achieved_at));
 
