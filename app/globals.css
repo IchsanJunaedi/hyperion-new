@@ -249,3 +249,21 @@ input[type="number"] {
   appearance: textfield;
 }
 
+/* Hero Countdown */
+.countdown-num {
+  font-size: clamp(64px, 11vw, 130px);
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: -0.03em;
+  text-shadow: 0 0 80px rgba(245, 196, 0, 0.1), 0 4px 40px rgba(0, 0, 0, 0.4);
+  font-variant-numeric: tabular-nums;
+}
+.countdown-dot {
+  font-size: clamp(36px, 6vw, 78px);
+  font-weight: 900;
+  color: #f5c400;
+  opacity: 0.7;
+  margin: 0 4px;
+  align-self: center;
+}
+
