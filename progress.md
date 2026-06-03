@@ -101,6 +101,25 @@
 
 ---
 
+## Features & Fixes Completed (2026-06-03 session)
+
+Audit issue #19–#24 (lihat folder `issues/`) — semua dikerjakan, CI gate hijau (typecheck + lint 0 error + 656 unit tests pass).
+
+**#19 — `createAchievement` bug (org_id NOT NULL)** 🔴
+- Achievement dari admin selalu gagal karena insert `""` ke `achievements.organization_id` (UUID NOT NULL).
+- Keputusan: achievement admin = site-wide (form tak punya org picker). `organization_id` dibuat NULLABLE.
+- Migration `20260603010000_achievements_org_nullable.sql` (sudah `db push` ke remote), `types/database.ts` (organization_id → `string | null`), action insert `?? null`.
+
+**#20 — `listApplicants()` unbounded** — tambah `.limit(200)` + kolom eksplisit + `console.error` (`features/trials/queries.ts`).
+
+**#21 — calendar RSVP/komentar unbounded** — `.limit()` + error check pada `getRsvpAttendees`, `getRsvpCounts`, `getEventComments`, dan komentar/relations di `getEventDetail` (`features/calendar/queries.ts`).
+
+**#22 — `select("*")` di list view** — diganti kolom eksplisit: trials (semua fn), `listTournaments`, `listContent`+`listPendingApproval`, meta (patches + hero ratings), `listPolls` (+ poll_votes + availability_votes). Sisa yang sengaja dibiarkan: announcements list & scrims list (spread full-row, keputusan B2-2 sebelumnya), detail single-fetch tabel kecil (exception CLAUDE.md), dan calendar permission event-list (casted, date-bounded) — dicatat untuk ronde berikutnya.
+
+**#23 — `.single()` → `.maybeSingle()`** — dikonversi pada read-path yang bisa 0-row + punya guard `!data`: `vodLinkAction` (2), `notifications/actions` (1), `permission-queries.ts` (8), `lib/permissions/calendar-access.ts` (9). Insert/update + `.select().single()` (error-handled, row dijamin ada) sengaja dibiarkan sesuai rule. Mock test `calendar-access.test.ts` di-alias `maybeSingle`→`single`.
+
+**#24 — `generateMonthlyReport` waterfall** — lihat B2-9 di bawah.
+
 ## Features & Fixes Completed (2026-05-28 session)
 
 ### Bug & Performance Fixes (from audit-report-2026-05-28.md)
@@ -320,8 +339,12 @@ All `<input type="number">` must use `<NumberInput>` from `@/components/ui/numbe
 ### B2-7: `admin.auth.admin.listUsers` → query dari tabel `profiles`
 - ✅ Sudah resolved — kedua page sudah query dari `profiles` table
 
-### B2-9: Waterfall di `generateMonthlyReport`
-- `features/reports/queries.ts` — masih ~7 serial round-trips (step trend sudah parallel, sisanya belum)
+### B2-9: Waterfall di `generateMonthlyReport` ✅ Done (2026-06-03)
+- `features/reports/queries.ts` — direstrukturisasi jadi 3 fase paralel:
+  - Phase A: 7 query independen (scrims bulan ini, member count, tournaments, finances, sponsors, trend scrims, trend finances) via `Promise.all`
+  - Phase B: 7 query yang bergantung pada id dari Phase A (results, divisions, attendances, tournament divisions, stages, trend results, trend attendances) via `Promise.all`
+  - Phase C: `tournament_matches` (bergantung pada stage ids)
+  - Dari ~7+ round-trip serial → 3 fase. Output report identik (behavior-preserving).
 
 ---
 
@@ -330,7 +353,7 @@ All `<input type="number">` must use `<NumberInput>` from `@/components/ui/numbe
 ### Medium Priority
 - ✅ **M1** — fixed: `player_target_history` limit raised to `.limit(200)`, explicit cols (2026-05-28)
 - ✅ **M2** — fixed: removed unused `count:exact` from calendar-access.ts; explicit cols on all audit routes (2026-05-28)
-- **M3** — `generateMonthlyReport` masih ~7 serial round-trips (`features/reports/queries.ts`) — reports page not public yet, defer
+- ✅ **M3** — fixed: `generateMonthlyReport` diparalelkan jadi 3 fase (lihat B2-9) (2026-06-03)
 - ✅ **M4** — fixed: mounted flag added to all 3 useEffects in PermissionGuard (2026-05-28)
 - ✅ **M5** — fixed: `.single()` → `.maybeSingle()` + error log in `getScrimWinLossRecord` (2026-05-28)
 - ✅ **M6** — fixed: screenshotUrl/cvUrl validated against Supabase storage prefix (2026-05-28)
