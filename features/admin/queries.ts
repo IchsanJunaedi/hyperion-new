@@ -8,6 +8,79 @@ export type DivisionPublic = Database["public"]["Tables"]["divisions_public"]["R
 export type SiteSetting = Database["public"]["Tables"]["site_settings"]["Row"];
 export type Achievement = Database["public"]["Tables"]["achievements"]["Row"];
 
+export type DivisionMember = {
+  user_id: string;
+  role: string;
+  position: string | null;
+  jersey_number: number | null;
+  display_name: string | null;
+  avatar_url: string | null;
+};
+
+export type DivisionWithMembers = {
+  id: string;
+  name: string;
+  game: string;
+  description: string | null;
+  logo_url: string | null;
+  is_active: boolean;
+  is_public: boolean;
+  members: DivisionMember[];
+};
+
+export async function getDivisionsWithMembers(): Promise<DivisionWithMembers[]> {
+  const admin = createAdminClient();
+
+  const { data: divisions, error: divErr } = await admin
+    .from("divisions")
+    .select("id, name, game, description, logo_url, is_active, is_public")
+    .order("name")
+    .limit(50);
+  if (divErr) console.error("getDivisionsWithMembers divisions:", divErr);
+  if (!divisions || divisions.length === 0) return [];
+
+  const divisionIds = divisions.map((d) => d.id);
+
+  const { data: members, error: memErr } = await admin
+    .from("team_members")
+    .select("user_id, role, position, jersey_number, division_id")
+    .in("division_id", divisionIds)
+    .in("role", ["captain", "member", "coach"])
+    .eq("is_active", true)
+    .limit(500);
+  if (memErr) console.error("getDivisionsWithMembers members:", memErr);
+
+  const userIds = [...new Set((members ?? []).map((m) => m.user_id))];
+  let profileMap = new Map<string, { display_name: string | null; avatar_url: string | null }>();
+
+  if (userIds.length > 0) {
+    const { data: profiles, error: profErr } = await admin
+      .from("profiles")
+      .select("id, display_name, avatar_url")
+      .in("id", userIds)
+      .limit(500);
+    if (profErr) console.error("getDivisionsWithMembers profiles:", profErr);
+    profileMap = new Map((profiles ?? []).map((p) => [p.id, p]));
+  }
+
+  return divisions.map((div) => {
+    const divMembers = (members ?? [])
+      .filter((m) => m.division_id === div.id)
+      .map((m) => {
+        const profile = profileMap.get(m.user_id);
+        return {
+          user_id: m.user_id,
+          role: m.role,
+          position: m.position,
+          jersey_number: m.jersey_number,
+          display_name: profile?.display_name ?? null,
+          avatar_url: profile?.avatar_url ?? null,
+        };
+      });
+    return { ...div, members: divMembers };
+  });
+}
+
 export async function getGalleryEntries(): Promise<GalleryEntry[]> {
   const admin = createAdminClient();
   const { data, error } = await admin

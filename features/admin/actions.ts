@@ -224,6 +224,36 @@ export async function deleteDivisionPublic(id: string): Promise<ActionResult> {
   return { ok: true };
 }
 
+// ── Divisions (real) ──────────────────────────────────────────────────────────
+
+export async function toggleDivisionPublic(id: string, isPublic: boolean): Promise<ActionResult> {
+  const auth = await verifyAdminAccess();
+  if (!auth.ok) return auth;
+  const admin = createAdminClient();
+  const { error } = await admin.from("divisions").update({ is_public: isPublic }).eq("id", id);
+  if (error) return { ok: false, message: error.message };
+  revalidatePath("/");
+  revalidatePath("/admin/divisions");
+  return { ok: true };
+}
+
+export async function updateDivisionPublicInfo(
+  id: string,
+  data: { description: string | null; logo_url: string | null },
+): Promise<ActionResult> {
+  const auth = await verifyAdminAccess();
+  if (!auth.ok) return auth;
+  const admin = createAdminClient();
+  const { error } = await admin
+    .from("divisions")
+    .update({ description: data.description, logo_url: data.logo_url })
+    .eq("id", id);
+  if (error) return { ok: false, message: error.message };
+  revalidatePath("/");
+  revalidatePath("/admin/divisions");
+  return { ok: true };
+}
+
 // ── Site Settings ─────────────────────────────────────────────────────────────
 
 export async function upsertSiteSettings(settings: Record<string, string>): Promise<ActionResult> {

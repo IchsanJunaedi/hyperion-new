@@ -1,13 +1,14 @@
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export async function DivisionsSection() {
-  const supabase = await createClient();
+  const admin = createAdminClient();
 
-  const { data: divisions } = await supabase
-    .from("divisions_public")
-    .select("id, name, description, icon_url, sort_order, is_active")
+  const { data: divisions } = await admin
+    .from("divisions")
+    .select("id, name, game, description, logo_url")
+    .eq("is_public", true)
     .eq("is_active", true)
-    .order("sort_order")
+    .order("name")
     .limit(20);
 
   const items = divisions ?? [];
@@ -33,9 +34,9 @@ export async function DivisionsSection() {
             <div key={div.id} className="border-b border-white/8 py-6">
               <div className="grid grid-cols-[3.5rem_1fr] items-center gap-4 sm:grid-cols-[5rem_1fr] sm:gap-8">
                 <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded border border-white/10 bg-white/5">
-                  {div.icon_url ? (
+                  {div.logo_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={div.icon_url} alt={div.name} className="h-full w-full object-cover" />
+                    <img src={div.logo_url} alt={div.name} className="h-full w-full object-cover" />
                   ) : (
                     <span className="text-xs font-black uppercase text-white/40">
                       {div.name.slice(0, 2).toUpperCase()}
@@ -46,6 +47,7 @@ export async function DivisionsSection() {
                   <p className="font-black uppercase leading-tight tracking-tight text-white sm:text-lg">
                     {div.name}
                   </p>
+                  <p className="mt-0.5 text-[11px] text-white/28 uppercase tracking-wider">{div.game}</p>
                   {div.description && (
                     <p className="mt-1 line-clamp-1 text-xs text-white/32">{div.description}</p>
                   )}

@@ -584,6 +584,7 @@ export type Database = {
           game: string
           id: string
           is_active: boolean
+          is_public: boolean
           logo_url: string | null
           name: string
           organization_id: string | null
@@ -595,6 +596,7 @@ export type Database = {
           game: string
           id?: string
           is_active?: boolean
+          is_public?: boolean
           logo_url?: string | null
           name: string
           organization_id?: string | null
@@ -606,6 +608,7 @@ export type Database = {
           game?: string
           id?: string
           is_active?: boolean
+          is_public?: boolean
           logo_url?: string | null
           name?: string
           organization_id?: string | null
