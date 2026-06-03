@@ -114,6 +114,27 @@ export async function getTournamentDetail(
 }
 
 /**
+ * Batch-fetch placements for a list of tournament IDs.
+ * Returns a Map of tournament_id → placement (null if not recorded).
+ */
+export async function listTournamentPlacements(
+  tournamentIds: string[],
+): Promise<Map<string, number | null>> {
+  if (tournamentIds.length === 0) return new Map();
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("tournament_results")
+    .select("tournament_id, placement")
+    .in("tournament_id", tournamentIds)
+    .limit(200);
+  const map = new Map<string, number | null>();
+  for (const row of data ?? []) {
+    map.set(row.tournament_id, row.placement);
+  }
+  return map;
+}
+
+/**
  * Categorize tournaments into panels.
  * - upcoming: status upcoming (belum daftar)
  * - registered: status ongoing + start_date belum lewat (terdaftar, countdown)
