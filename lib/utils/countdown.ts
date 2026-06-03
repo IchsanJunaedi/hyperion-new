@@ -3,7 +3,7 @@ export function getTargetDate(
   start_time: string | null
 ): Date {
   const timeStr = start_time ?? "00:00:00";
-  return new Date(`${start_date}T${timeStr}`);
+  return new Date(`${start_date}T${timeStr}+07:00`);
 }
 
 export type TimeLeft = {
