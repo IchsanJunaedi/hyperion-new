@@ -82,6 +82,16 @@ export default defineConfig({
         ...devices["Desktop Chrome"],
       },
     },
+    {
+      // Integration specs drive multiple roles per flow via test.use().
+      name: "integration-tests",
+      testDir: "./e2e/workspace/integration",
+      testMatch: "**/*.spec.ts",
+      dependencies: ["workspace-seed"],
+      use: {
+        ...devices["Desktop Chrome"],
+      },
+    },
   ],
 
   // Auto-start Next.js dev server for local runs
