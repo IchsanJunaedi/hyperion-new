@@ -46,6 +46,21 @@ export default defineConfig({
         storageState: "e2e/.auth/admin.json",
       },
     },
+    {
+      name: "workspace-seed",
+      testMatch: "**/workspace/setup/seed.ts",
+      use: { ...devices["Desktop Chrome"] },
+    },
+    {
+      name: "dashboard-tests",
+      testDir: "./e2e/workspace/dashboard",
+      testMatch: "**/*.spec.ts",
+      dependencies: ["workspace-seed"],
+      use: {
+        ...devices["Desktop Chrome"],
+        storageState: "e2e/.auth/owner.json",
+      },
+    },
   ],
 
   // Auto-start Next.js dev server for local runs
