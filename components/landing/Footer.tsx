@@ -35,7 +35,7 @@ interface FooterProps {
 
 const Footer = ({ settings = DEFAULT_FOOTER_SETTINGS }: FooterProps) => {
   return (
-    <footer className="border-t border-white/8 bg-black px-5 pb-10 pt-16 sm:px-8 lg:px-10">
+    <footer className="border-t border-white/12 bg-[#040D1C] px-5 pb-10 pt-16 sm:px-8 lg:px-10">
       <div className="mx-auto max-w-7xl">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.6fr_1fr_1fr_1fr]">
           {/* Brand */}
@@ -52,7 +52,7 @@ const Footer = ({ settings = DEFAULT_FOOTER_SETTINGS }: FooterProps) => {
                 Hyperion<span className="text-[#F5C400]">.</span>
               </span>
             </Link>
-            <p className="mt-4 max-w-xs text-xs leading-relaxed text-white/28">
+            <p className="mt-4 max-w-xs text-xs leading-relaxed text-white/45">
               {settings.footer_tagline}
             </p>
             <Link
@@ -60,7 +60,7 @@ const Footer = ({ settings = DEFAULT_FOOTER_SETTINGS }: FooterProps) => {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Instagram"
-              className="mt-5 inline-flex items-center gap-2 text-xs text-white/28 transition hover:text-white"
+              className="mt-5 inline-flex items-center gap-2 text-xs text-white/45 transition hover:text-white"
             >
               <Instagram className="h-3.5 w-3.5" />
               {settings.footer_instagram_handle}
@@ -73,7 +73,7 @@ const Footer = ({ settings = DEFAULT_FOOTER_SETTINGS }: FooterProps) => {
           {/* Link columns */}
           {Object.entries(LINKS).map(([title, items]) => (
             <div key={title}>
-              <h3 className="mb-4 text-[10px] font-bold uppercase tracking-[0.3em] text-white/28">
+              <h3 className="mb-4 text-[10px] font-bold uppercase tracking-[0.3em] text-white/45">
                 {title}
               </h3>
               <ul className="space-y-2.5">
@@ -81,7 +81,7 @@ const Footer = ({ settings = DEFAULT_FOOTER_SETTINGS }: FooterProps) => {
                   <li key={l.href}>
                     <Link
                       href={l.href}
-                      className="text-xs text-white/30 transition hover:text-white"
+                      className="text-xs text-white/45 transition hover:text-white"
                     >
                       {l.label}
                     </Link>
@@ -93,11 +93,11 @@ const Footer = ({ settings = DEFAULT_FOOTER_SETTINGS }: FooterProps) => {
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-14 flex flex-col gap-2 border-t border-white/8 pt-6 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-[10px] uppercase tracking-widest text-white/18">
+        <div className="mt-14 flex flex-col gap-2 border-t border-white/12 pt-6 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-[10px] uppercase tracking-widest text-white/38">
             © {new Date().getFullYear()} Hyperion Team. All rights reserved.
           </p>
-          <p className="text-[10px] font-bold uppercase tracking-widest text-[#F5C400]/30">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-[#F5C400]/50">
             {settings.footer_hashtag}
           </p>
         </div>
