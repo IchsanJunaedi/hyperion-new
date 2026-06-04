@@ -349,3 +349,53 @@ export async function getNearestPublicTournament(): Promise<PublicTournament | n
   if (!data) return null;
   return mapPublicRow(data as unknown as RawPublicRow);
 }
+
+// ── News CMS ──────────────────────────────────────────────────────────────────
+
+export type NewsPost = {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string | null;
+  content: string | null;
+  cover_image_url: string | null;
+  status: 'draft' | 'published';
+  published_at: string | null;
+  updated_at: string;
+  created_at: string;
+};
+
+export async function getNewsPosts(): Promise<NewsPost[]> {
+  const admin = createAdminClient();
+  const { data, error } = await admin
+    .from("news_posts")
+    .select("id, title, slug, excerpt, content, cover_image_url, status, published_at, updated_at, created_at")
+    .order("created_at", { ascending: false })
+    .limit(50);
+  if (error) console.error("getNewsPosts:", error);
+  return (data ?? []) as NewsPost[];
+}
+
+export async function getPublishedNewsPosts(): Promise<NewsPost[]> {
+  const admin = createAdminClient();
+  const { data, error } = await admin
+    .from("news_posts")
+    .select("id, title, slug, excerpt, cover_image_url, published_at, updated_at, created_at, content, status")
+    .eq("status", "published")
+    .order("published_at", { ascending: false })
+    .limit(20);
+  if (error) console.error("getPublishedNewsPosts:", error);
+  return (data ?? []) as NewsPost[];
+}
+
+export async function getNewsPostBySlug(slug: string): Promise<NewsPost | null> {
+  const admin = createAdminClient();
+  const { data, error } = await admin
+    .from("news_posts")
+    .select("id, title, slug, excerpt, content, cover_image_url, status, published_at, updated_at, created_at")
+    .eq("slug", slug)
+    .eq("status", "published")
+    .maybeSingle();
+  if (error) console.error("getNewsPostBySlug:", error);
+  return data as NewsPost | null;
+}

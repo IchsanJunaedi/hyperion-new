@@ -371,6 +371,101 @@ export async function toggleTournamentScheduleAction(
   return { ok: true };
 }
 
+// ── News CMS ──────────────────────────────────────────────────────────────────
+
+export async function createNewsPostAction(data: {
+  title: string;
+  slug: string;
+  excerpt: string | null;
+  content: string | null;
+  cover_image_url: string | null;
+  status: 'draft' | 'published';
+}): Promise<ActionResult> {
+  const auth = await verifyAdminAccess();
+  if (!auth.ok) return auth;
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  const admin = createAdminClient();
+
+  const published_at = data.status === "published" ? new Date().toISOString() : null;
+  const { error } = await admin.from("news_posts").insert({
+    ...data,
+    published_at,
+    created_by: user!.id,
+  });
+  if (error) return { ok: false, message: error.message };
+  revalidatePath("/news");
+  revalidatePath("/admin/news");
+  return { ok: true };
+}
+
+export async function updateNewsPostAction(
+  id: string,
+  data: {
+    title: string;
+    slug: string;
+    excerpt: string | null;
+    content: string | null;
+    cover_image_url: string | null;
+    status: 'draft' | 'published';
+  }
+): Promise<ActionResult> {
+  const auth = await verifyAdminAccess();
+  if (!auth.ok) return auth;
+  const admin = createAdminClient();
+
+  const { data: existing } = await admin
+    .from("news_posts")
+    .select("status, published_at")
+    .eq("id", id)
+    .maybeSingle();
+
+  const published_at =
+    data.status === "published" && !existing?.published_at
+      ? new Date().toISOString()
+      : existing?.published_at ?? null;
+
+  const { error } = await admin
+    .from("news_posts")
+    .update({ ...data, published_at })
+    .eq("id", id);
+  if (error) return { ok: false, message: error.message };
+  revalidatePath("/news");
+  revalidatePath(`/news/${data.slug}`);
+  revalidatePath("/admin/news");
+  return { ok: true };
+}
+
+export async function deleteNewsPostAction(id: string): Promise<ActionResult> {
+  const auth = await verifyAdminAccess();
+  if (!auth.ok) return auth;
+  const admin = createAdminClient();
+  const { error } = await admin.from("news_posts").delete().eq("id", id);
+  if (error) return { ok: false, message: error.message };
+  revalidatePath("/news");
+  revalidatePath("/admin/news");
+  return { ok: true };
+}
+
+export async function toggleNewsPostStatusAction(
+  id: string,
+  currentStatus: string
+): Promise<ActionResult> {
+  const auth = await verifyAdminAccess();
+  if (!auth.ok) return auth;
+  const admin = createAdminClient();
+  const nextStatus: 'draft' | 'published' = currentStatus === "published" ? "draft" : "published";
+  const published_at = nextStatus === "published" ? new Date().toISOString() : null;
+  const { error } = await admin
+    .from("news_posts")
+    .update({ status: nextStatus, ...(published_at ? { published_at } : {}) })
+    .eq("id", id);
+  if (error) return { ok: false, message: error.message };
+  revalidatePath("/news");
+  revalidatePath("/admin/news");
+  return { ok: true };
+}
+
 // ── About Alumni ─────────────────────────────────────────────────────────────
 
 export async function createAboutAlumnusAction(data: {
