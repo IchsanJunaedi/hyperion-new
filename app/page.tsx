@@ -21,7 +21,14 @@ import {
   getNearestPublicTournament,
 } from "@/features/admin/queries";
 import { UpcomingMatchesSection } from "@/components/landing/UpcomingMatchesSection";
+import type { PublicTournament } from "@/features/admin/queries";
 import type { HeroSlide, HeroSettings } from "@/components/landing/HeroSection";
+
+const DUMMY_UPCOMING: PublicTournament[] = [
+  { id: "dummy-1", name: "MPL Indonesia Season 15", start_date: "2026-07-10", start_time: "18:00:00", status: "upcoming", organizer: "Moonton", prize_pool: "IDR 2.000.000.000", registration_url: null, division_name: "Mobile Legends", game: "MLBB" },
+  { id: "dummy-2", name: "Hyperion Internal Cup", start_date: "2026-06-20", start_time: "15:00:00", status: "upcoming", organizer: null, prize_pool: null, registration_url: null, division_name: "Mobile Legends", game: "MLBB" },
+  { id: "dummy-3", name: "ESL Pro League Regional", start_date: "2026-08-05", start_time: "20:00:00", status: "upcoming", organizer: "ESL Gaming", prize_pool: "IDR 500.000.000", registration_url: null, division_name: null, game: "MLBB" },
+];
 
 export const dynamic = "force-dynamic";
 
@@ -166,6 +173,8 @@ export default async function HomePage() {
     ? [{ id: nearestTournament.id, name: nearestTournament.name, start_date: nearestTournament.start_date, start_time: nearestTournament.start_time }]
     : featuredTournaments;
 
+  const displayUpcoming = upcomingMatches.length > 0 ? upcomingMatches : DUMMY_UPCOMING;
+
   return (
     <>
       <Header />
@@ -176,7 +185,7 @@ export default async function HomePage() {
           featuredTournaments={heroTournaments}
           heroBackground={settings.hero_background_url || null}
         />
-        <UpcomingMatchesSection tournaments={upcomingMatches} />
+        <UpcomingMatchesSection tournaments={displayUpcoming} />
         <DivisionsSection />
         <AchievementsSection entries={mergedAchievements} />
         <TestimonialsSection testimonials={testimonials} />

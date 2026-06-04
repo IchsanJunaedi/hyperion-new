@@ -1,17 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CalendarRange } from "lucide-react";
-import nextDynamic from "next/dynamic";
 
 import { Header } from "@/components/landing/Header";
 import { Footer } from "@/components/landing/Footer";
+import { ScheduleCountdown } from "@/components/landing/ScheduleCountdown";
 import { getScheduleTournaments } from "@/features/admin/queries";
 import type { PublicTournament } from "@/features/admin/queries";
-
-const ScheduleCountdown = nextDynamic(
-  () => import("@/components/landing/ScheduleCountdown").then((m) => ({ default: m.ScheduleCountdown })),
-  { ssr: false }
-);
 
 export const dynamic = "force-dynamic";
 
