@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -48,7 +48,7 @@ function Field({
   );
 }
 
-export function ProfileSection({ userId }: { userId: string }) {
+const ProfileSection = ({ userId }: { userId: string }) => {
   const [loading, setLoading] = useState(true);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -194,7 +194,13 @@ export function ProfileSection({ userId }: { userId: string }) {
         </Field>
         <Field label="Nomor WhatsApp" className="col-span-2">
           <input
-            {...register("phone_wa")}
+            inputMode="numeric"
+            maxLength={15}
+            {...register("phone_wa", {
+              onChange: (e) => {
+                e.target.value = e.target.value.replace(/\D/g, "");
+              },
+            })}
             className={inputCls}
           />
         </Field>
@@ -219,4 +225,5 @@ export function ProfileSection({ userId }: { userId: string }) {
       </button>
     </form>
   );
-}
+};
+export { ProfileSection };

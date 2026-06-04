@@ -5,6 +5,7 @@ import { useState } from "react";
 
 import { AddTargetForm } from "./AddTargetForm";
 import { PlayerTargetCard } from "./PlayerTargetCard";
+import { SkillRadarChart } from "./SkillRadarChart";
 import type { PlayerTargetWithHistory } from "@/features/player-development/queries";
 
 interface PlayerDevelopmentClientProps {
@@ -14,12 +15,12 @@ interface PlayerDevelopmentClientProps {
   grouped: Record<string, PlayerTargetWithHistory[]>;
 }
 
-export function PlayerDevelopmentClient({
+const PlayerDevelopmentClient = ({
   targets,
   orgSlug,
   members,
   grouped,
-}: PlayerDevelopmentClientProps) {
+}: PlayerDevelopmentClientProps) => {
   const [showForm, setShowForm] = useState(false);
 
   return (
@@ -56,7 +57,8 @@ export function PlayerDevelopmentClient({
                     {playerTargets.length} skill{playerTargets.length > 1 ? "s" : ""}
                   </span>
                 </div>
-                <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                <SkillRadarChart targets={playerTargets} />
+                <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 mt-3">
                   {playerTargets.map((t) => (
                     <PlayerTargetCard key={t.id} target={t} orgSlug={orgSlug} canManage={true} />
                   ))}
@@ -68,4 +70,5 @@ export function PlayerDevelopmentClient({
       )}
     </div>
   );
-}
+};
+export { PlayerDevelopmentClient };

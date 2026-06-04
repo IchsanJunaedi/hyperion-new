@@ -25,23 +25,13 @@ export default async function ManagerAssignPage() {
   // Get all registered users
   const { data: profiles } = await admin
     .from("profiles")
-    .select("id, full_name, username, display_name")
+    .select("id, full_name, username, display_name, email")
     .order("full_name", { ascending: true });
-
-  // Get emails to identify owner
-  const { data: authUsers } = await admin.auth.admin.listUsers({ perPage: 500 });
-  const emailMap = new Map<string, string>();
-  for (const u of authUsers?.users ?? []) {
-    if (u.email) emailMap.set(u.id, u.email);
-  }
 
   const ownerEmail = process.env.OWNER_EMAIL;
 
   // Filter out owner from the user list
-  const filteredProfiles = (profiles ?? []).filter((p) => {
-    const email = emailMap.get(p.id);
-    return email !== ownerEmail;
-  });
+  const filteredProfiles = (profiles ?? []).filter((p) => p.email !== ownerEmail);
 
   // Get orgs
   const { data: orgs } = orgIds.length > 0
@@ -85,7 +75,7 @@ export default async function ManagerAssignPage() {
           }))}
           divisions={(divisions ?? []).map((d) => ({
             id: d.id,
-            organizationId: d.organization_id,
+            organizationId: d.organization_id ?? "",
             name: d.name,
           }))}
           orgHasCaptain={orgHasCaptain}

@@ -92,7 +92,7 @@ export async function getUserRoleInOrg(
       .eq("user_id", userId)
       .eq("organization_id", organizationId)
       .eq("is_active", true)
-      .single();
+      .maybeSingle();
 
     if (error) {
       if (error.code === "PGRST116") {
@@ -141,7 +141,7 @@ export async function checkCalendarVisibility(
       .select("id, visibility, created_by, deleted_at")
       .eq("id", calendarId)
       .eq("organization_id", organizationId)
-      .single();
+      .maybeSingle();
 
     if (error || !calendar) {
       return {
@@ -176,7 +176,7 @@ export async function checkCalendarVisibility(
       case "management-only":
         // Owner, Manager, Coach
         return {
-          allowed: userRole && ["owner", "manager", "coach"].includes(userRole),
+          allowed: !!(userRole && ["owner", "manager", "coach"].includes(userRole)),
           reason:
             !userRole || !["owner", "manager", "coach"].includes(userRole)
               ? "Management-only calendar - requires manager or coach role"
@@ -188,7 +188,7 @@ export async function checkCalendarVisibility(
       case "captain-only":
         // Owner, Manager, Coach, Captain
         return {
-          allowed: userRole && ["owner", "manager", "coach", "captain"].includes(userRole),
+          allowed: !!(userRole && ["owner", "manager", "coach", "captain"].includes(userRole)),
           reason:
             !userRole || !["owner", "manager", "coach", "captain"].includes(userRole)
               ? "Captain-only calendar - requires captain or higher role"
@@ -221,9 +221,9 @@ export async function checkCalendarVisibility(
           .select("can_view")
           .eq("calendar_id", calendarId)
           .eq("member_user_id", userId)
-          .eq("deleted_at", null)
+          .is("deleted_at", null)
           .eq("can_view", true)
-          .single();
+          .maybeSingle();
 
         return {
           allowed: !!permission,
@@ -286,7 +286,7 @@ export async function checkEventVisibility(
       .from("event_visibility")
       .select("id, visibility, allowed_member_ids, event_id, calendar_id")
       .eq("event_id", eventId)
-      .single();
+      .maybeSingle();
 
     let visibility: CalendarVisibility;
     let allowedMembers: string[] | undefined;
@@ -304,7 +304,7 @@ export async function checkEventVisibility(
         .select("calendar_id")
         .eq("id", eventId)
         .eq("organization_id", organizationId)
-        .single();
+        .maybeSingle();
 
       if (!event) {
         return {
@@ -339,7 +339,7 @@ export async function checkEventVisibility(
       .from("calendar_events")
       .select("created_by")
       .eq("id", eventId)
-      .single();
+      .maybeSingle();
 
     // Apply visibility rules
     switch (visibility) {
@@ -353,7 +353,7 @@ export async function checkEventVisibility(
 
       case "management-only":
         return {
-          allowed: userRole && ["owner", "manager", "coach"].includes(userRole),
+          allowed: !!(userRole && ["owner", "manager", "coach"].includes(userRole)),
           reason:
             !userRole || !["owner", "manager", "coach"].includes(userRole)
               ? "Management-only event"
@@ -364,7 +364,7 @@ export async function checkEventVisibility(
 
       case "captain-only":
         return {
-          allowed: userRole && ["owner", "manager", "coach", "captain"].includes(userRole),
+          allowed: !!(userRole && ["owner", "manager", "coach", "captain"].includes(userRole)),
           reason:
             !userRole || !["owner", "manager", "coach", "captain"].includes(userRole)
               ? "Captain-only event"
@@ -460,7 +460,7 @@ export async function checkCalendarPermission(
       .from("calendar_configs")
       .select("created_by, visibility")
       .eq("id", calendarId)
-      .single();
+      .maybeSingle();
 
     if (!calendar) {
       return {
@@ -516,7 +516,7 @@ export async function checkCalendarPermission(
             .select("can_edit_event, can_delete_event")
             .eq("calendar_id", calendarId)
             .eq("member_user_id", userId)
-            .single();
+            .maybeSingle();
 
           const hasPermission =
             permission === "edit-event" ? perm?.can_edit_event : perm?.can_delete_event;
@@ -610,7 +610,6 @@ export async function getAccessibleCalendars(
         deleted_at,
         updated_by
       `,
-        { count: "exact" },
       )
       .eq("organization_id", organizationId)
       .eq("is_active", true);
@@ -656,13 +655,13 @@ export async function getAccessibleCalendars(
           .eq("calendar_id", calendar.id)
           .eq("member_user_id", userId)
           .is("deleted_at", null)
-          .single();
+          .maybeSingle();
 
         userPermissions = perm as CalendarMemberPermission | null;
       }
 
       result.push({
-        ...calendar,
+        ...(calendar as unknown as import("@/lib/permissions/calendar-types").CalendarConfig),
         userPermissions,
       });
     }
@@ -718,7 +717,6 @@ export async function getAccessibleEvents(
         created_by,
         calendar_id
       `,
-        { count: "exact" },
       )
       .eq("organization_id", organizationId)
       .in("calendar_id", calendarIds)

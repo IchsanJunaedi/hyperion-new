@@ -13,7 +13,7 @@ interface ScrimRequestListProps {
   orgSlug: string;
 }
 
-export function ScrimRequestList({ requests, type, orgSlug }: ScrimRequestListProps) {
+const ScrimRequestList = ({ requests, type, orgSlug }: ScrimRequestListProps) => {
   if (requests.length === 0) {
     return (
       <p className="text-sm text-[#6B6A68] py-4 text-center">
@@ -29,7 +29,8 @@ export function ScrimRequestList({ requests, type, orgSlug }: ScrimRequestListPr
       ))}
     </div>
   );
-}
+};
+export { ScrimRequestList };
 
 function ScrimRequestCard({
   request,

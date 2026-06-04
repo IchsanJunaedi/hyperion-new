@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
+import { logAudit } from "@/lib/audit";
 import { createClient } from "@/lib/supabase/server";
 
 export interface FileActionError {
@@ -24,6 +25,8 @@ export async function recordFileUploadAction(
     file_type: string;
     file_size: number;
     division_id?: string | null;
+    ref_type?: string | null;
+    ref_id?: string | null;
   },
 ): Promise<FileActionError | { ok: true; id: string }> {
   const supabase = await createClient();
@@ -43,6 +46,8 @@ export async function recordFileUploadAction(
       file_type: payload.file_type,
       file_size: payload.file_size,
       division_id: payload.division_id ?? null,
+      ref_type: payload.ref_type ?? null,
+      ref_id: payload.ref_id ?? null,
     })
     .select("id")
     .single();
@@ -53,6 +58,14 @@ export async function recordFileUploadAction(
       message: error?.message ?? "Gagal menyimpan record file",
     };
   }
+
+  await logAudit({
+    actorId: user.id,
+    action: "file.upload",
+    entityType: "file",
+    entityId: data.id,
+    metadata: { name: payload.file_name, size: payload.file_size, type: payload.file_type },
+  });
 
   revalidatePath(`/${orgSlug}/files`);
   return { ok: true, id: data.id };

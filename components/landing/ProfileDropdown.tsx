@@ -14,7 +14,7 @@ export interface ProfileDropdownProps {
   };
 }
 
-export function ProfileDropdown({ authed }: ProfileDropdownProps) {
+const ProfileDropdown = ({ authed }: ProfileDropdownProps) => {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -124,4 +124,5 @@ export function ProfileDropdown({ authed }: ProfileDropdownProps) {
       ) : null}
     </div>
   );
-}
+};
+export { ProfileDropdown };

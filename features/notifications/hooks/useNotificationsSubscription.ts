@@ -15,6 +15,8 @@ export function useNotificationsSubscription(userId: string) {
   const [status, setStatus] = useState<ConnectionStatus>("disconnected");
   const retryCountRef = useRef(0);
   const retryTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Incrementing this triggers a clean teardown + fresh channel creation
+  const [retryKey, setRetryKey] = useState(0);
 
   useEffect(() => {
     const supabase = createClient();
@@ -50,8 +52,11 @@ export function useNotificationsSubscription(userId: string) {
             setStatus("reconnecting");
             retryCountRef.current += 1;
             const delay = Math.pow(2, retryCountRef.current) * 1000;
+            // Increment retryKey so cleanup removes the broken channel
+            // and the new effect creates a fresh one — avoids re-subscribing
+            // on an already-errored channel which would leak duplicate listeners
             retryTimeoutRef.current = setTimeout(() => {
-              channel.subscribe();
+              setRetryKey((k) => k + 1);
             }, delay);
           } else {
             setStatus("disconnected");
@@ -67,7 +72,7 @@ export function useNotificationsSubscription(userId: string) {
       }
       supabase.removeChannel(channel);
     };
-  }, [userId, queryClient]);
+  }, [userId, queryClient, retryKey]);
 
   return { status };
 }

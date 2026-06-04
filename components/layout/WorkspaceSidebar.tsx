@@ -1,17 +1,22 @@
 "use client";
 
 import {
+  Activity,
+  Banknote,
   BarChart3,
   Calendar,
   CalendarClock,
   ChevronDown,
+  ClipboardList,
   DollarSign,
   FolderOpen,
+  Handshake,
   Home,
   LayoutDashboard,
   Lightbulb,
   LogOut,
   Megaphone,
+  Radar,
   Settings,
   Shield,
   Swords,
@@ -20,6 +25,7 @@ import {
   Trophy,
   UserPlus,
   Users,
+  Zap,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -107,6 +113,13 @@ const MANAGER_NAV_GROUP: NavGroup = {
       Icon: DollarSign,
     },
     {
+      key: "manage-sponsors",
+      href: "",
+      absoluteHref: "/manage/sponsors",
+      label: "Sponsor",
+      Icon: Handshake,
+    },
+    {
       key: "manage-content",
       href: "",
       absoluteHref: "/manage/content",
@@ -119,6 +132,13 @@ const MANAGER_NAV_GROUP: NavGroup = {
       absoluteHref: "/manage/development",
       label: "Player Dev",
       Icon: TrendingUp,
+    },
+    {
+      key: "manage-salaries",
+      href: "",
+      absoluteHref: "/manage/salaries",
+      label: "Salary Player",
+      Icon: Banknote,
     },
     {
       key: "manage-reports",
@@ -149,6 +169,25 @@ const WORKSPACE_NAV_GROUPS: NavGroup[] = [
         label: "Turnamen",
         Icon: Trophy,
       },
+      {
+        key: "scouting",
+        href: "/scouting",
+        label: "Scouting",
+        Icon: Radar,
+      },
+      {
+        key: "analytics",
+        href: "/analytics",
+        label: "Analytics",
+        Icon: Activity,
+      },
+      { key: "meta", href: "/meta", label: "Meta", Icon: Zap },
+      {
+        key: "trials",
+        href: "/trials",
+        label: "Open Trial",
+        Icon: ClipboardList,
+      },
     ],
   },
   {
@@ -156,6 +195,12 @@ const WORKSPACE_NAV_GROUPS: NavGroup[] = [
     items: [
       { key: "roster", href: "/roster", label: "Roster", Icon: Users },
       { key: "polls", href: "/polls", label: "Polling", Icon: BarChart3 },
+      {
+        key: "development",
+        href: "/development",
+        label: "Development",
+        Icon: TrendingUp,
+      },
     ],
   },
   {
@@ -185,14 +230,14 @@ const ROLE_BADGE: Record<string, string> = {
   captain: "text-green-400 drop-shadow-[0_0_8px_rgba(74,222,128,0.5)]",
 };
 
-export function WorkspaceSidebar({
+const WorkspaceSidebar = ({
   orgSlug,
   orgId,
   orgName,
   orgLogoUrl,
   divisions,
   user,
-}: WorkspaceSidebarProps) {
+}: WorkspaceSidebarProps) => {
   const pathname = usePathname();
   const activeDivisionId = useWorkspaceStore((s) => s.activeDivisionId);
   const setActiveDivision = useWorkspaceStore((s) => s.setActiveDivision);
@@ -226,42 +271,61 @@ export function WorkspaceSidebar({
     return pathname?.startsWith(full) ?? false;
   };
 
-  const allGroups: NavGroup[] = isManager
+  const hasFilesAccess =
+    user.role === "owner" || user.role === "manager" || user.role === "coach";
+
+  const hasScoutingAccess =
+    user.role === "owner" ||
+    user.role === "manager" ||
+    user.role === "coach" ||
+    user.role === "captain";
+
+  const allGroups: NavGroup[] = (isManager
     ? [MANAGER_NAV_GROUP, ...WORKSPACE_NAV_GROUPS]
-    : WORKSPACE_NAV_GROUPS;
+    : WORKSPACE_NAV_GROUPS)
+    .map((group) => ({
+      ...group,
+      items: group.items.filter((item) => {
+        if (item.key === "files") return hasFilesAccess;
+        if (item.key === "scouting") return hasScoutingAccess;
+        return true;
+      }),
+    }));
 
   return (
-    <aside className="hidden md:flex md:w-[280px] md:flex-col md:border-r md:border-[#2D2D2D] md:bg-[#202020] h-screen sticky top-0">
+    <aside className="print-hide hidden md:flex md:w-[280px] md:flex-col md:border-r md:border-[#2D2D2D] md:bg-[#202020] h-screen sticky top-0">
       {/* Org header */}
-      <Link
-        href={`/${orgSlug}`}
-        className="flex h-12 shrink-0 items-center gap-3 border-b border-[#2D2D2D] px-4 transition hover:bg-[#2C2C2C]"
-      >
-        {orgLogoUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={orgLogoUrl}
-            alt={orgName}
-            className="h-5 w-5 rounded object-cover"
-          />
-        ) : (
-          <div className="grid h-5 w-5 place-items-center rounded bg-[#353434] text-xs font-semibold text-[#E5E2E1]">
-            {orgName.slice(0, 1).toUpperCase()}
+      <div className="flex h-12 shrink-0 items-center border-b border-[#2D2D2D]">
+        <Link
+          href={`/${orgSlug}`}
+          className="flex h-full min-w-0 flex-1 items-center gap-3 px-4 transition hover:bg-[#2C2C2C]"
+        >
+          {orgLogoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={orgLogoUrl}
+              alt={orgName}
+              className="h-5 w-5 rounded object-cover"
+            />
+          ) : (
+            <div className="grid h-5 w-5 place-items-center rounded bg-[#353434] text-xs font-semibold text-[#E5E2E1]">
+              {orgName.slice(0, 1).toUpperCase()}
+            </div>
+          )}
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-medium text-[#D4D4D4]">
+              {orgName}
+            </p>
           </div>
-        )}
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-medium text-[#D4D4D4]">
-            {orgName}
-          </p>
-        </div>
-        {user.role && (
-          <span
-            className={`shrink-0 text-[10px] font-bold uppercase tracking-widest ${ROLE_BADGE[user.role] ?? "text-white/50"}`}
-          >
-            {user.role}
-          </span>
-        )}
-      </Link>
+          {user.role && (
+            <span
+              className={`shrink-0 text-[10px] font-bold uppercase tracking-widest ${ROLE_BADGE[user.role] ?? "text-white/50"}`}
+            >
+              {user.role}
+            </span>
+          )}
+        </Link>
+      </div>
 
       {/* Division switcher */}
       {divisions.length > 1 && (
@@ -381,4 +445,5 @@ export function WorkspaceSidebar({
       </div>
     </aside>
   );
-}
+};
+export { WorkspaceSidebar };

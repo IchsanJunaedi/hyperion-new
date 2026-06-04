@@ -35,12 +35,12 @@ const CHOICES: Array<{
   },
 ];
 
-export function AttendanceTracker({
+const AttendanceTracker = ({
   scrimId,
   orgSlug,
   initialStatus,
   locked,
-}: AttendanceTrackerProps) {
+}: AttendanceTrackerProps) => {
   // Optimistic value the user just clicked; falls back to server value
   // after the action resolves.
   const [status, setStatus] = useState<AttendanceStatus>(initialStatus);
@@ -63,12 +63,8 @@ export function AttendanceTracker({
           filter: `scrim_id=eq.${scrimId}`,
         },
         () => {
-          // Soft refresh — server actions already revalidate the page,
-          // this just covers updates from peers.
-          startTransition(() => {
-            // no-op placeholder; revalidation comes from the page level
-            // (router.refresh is owned by AttendanceList wrapper).
-          });
+          // Soft refresh — revalidation comes from the page level
+          // (router.refresh is owned by AttendanceList wrapper).
         },
       )
       .subscribe();
@@ -130,4 +126,5 @@ export function AttendanceTracker({
       ) : null}
     </div>
   );
-}
+};
+export { AttendanceTracker };

@@ -18,10 +18,10 @@ interface GoogleOAuthButtonProps {
  * consent screen; on return Supabase hits `/auth/callback?code=...`
  * which exchanges the code for a session and redirects to `next`.
  */
-export function GoogleOAuthButton({
+const GoogleOAuthButton = ({
   next = "/",
   label = "Lanjut dengan Google",
-}: GoogleOAuthButtonProps) {
+}: GoogleOAuthButtonProps) => {
   const [pending, startTransition] = useTransition();
   const [submitting, setSubmitting] = useState(false);
 
@@ -54,7 +54,8 @@ export function GoogleOAuthButton({
       {label}
     </Button>
   );
-}
+};
+export { GoogleOAuthButton };
 
 function GoogleLogo() {
   return (

@@ -5,13 +5,21 @@ import Link from "next/link";
 
 import type { Tournament } from "@/features/tournaments/queries";
 
+const PLACEMENT_BADGE: Record<number, { label: string; color: string }> = {
+  1: { label: "Juara 1", color: "border-yellow-400/40 bg-yellow-400/10 text-yellow-300" },
+  2: { label: "Juara 2", color: "border-zinc-400/30 bg-zinc-400/10 text-zinc-300" },
+  3: { label: "Juara 3", color: "border-orange-600/30 bg-orange-600/10 text-orange-400" },
+};
+
 interface TournamentCardProps {
   tournament: Tournament;
   orgSlug: string;
+  placement?: number | null;
 }
 
 const STATUS_COLORS: Record<string, string> = {
   upcoming: "bg-white/5 text-[#9B9A97]",
+  expired: "bg-orange-500/10 text-orange-400",
   ongoing: "bg-yellow-500/10 text-yellow-400",
   completed: "bg-green-500/10 text-green-400",
   cancelled: "bg-red-500/10 text-red-400",
@@ -19,17 +27,35 @@ const STATUS_COLORS: Record<string, string> = {
 
 const STATUS_LABELS: Record<string, string> = {
   upcoming: "Belum Daftar",
+  expired: "Kadaluarsa",
   ongoing: "Terdaftar",
   completed: "Selesai",
   cancelled: "Dibatalkan",
 };
 
-export function TournamentCard({ tournament, orgSlug }: TournamentCardProps) {
+const TournamentCard = ({ tournament, orgSlug, placement }: TournamentCardProps) => {
   const startDate = new Date(tournament.start_date).toLocaleDateString("id-ID", {
     day: "numeric",
     month: "short",
     year: "numeric",
   });
+
+  const isRegistrationExpired =
+    tournament.status === "upcoming" &&
+    ((tournament.registration_deadline != null &&
+      new Date(tournament.registration_deadline) < new Date()) ||
+     new Date(`${tournament.start_date}T${tournament.start_time || "00:00"}:00+07:00`) <= new Date());
+
+  const tournamentStarted = new Date(`${tournament.start_date}T${tournament.start_time || "00:00"}:00+07:00`) <= new Date();
+  const isActivePlaying = tournament.status === "ongoing" && tournamentStarted;
+
+  const displayStatus = isRegistrationExpired ? "expired" : tournament.status;
+  const displayLabel = isActivePlaying
+    ? "Berlangsung"
+    : (STATUS_LABELS[displayStatus] ?? tournament.status);
+  const displayColor = isActivePlaying
+    ? "bg-blue-500/10 text-blue-400"
+    : (STATUS_COLORS[displayStatus] ?? STATUS_COLORS.upcoming);
 
   return (
     <Link
@@ -43,8 +69,8 @@ export function TournamentCard({ tournament, orgSlug }: TournamentCardProps) {
             <p className="text-xs text-[#6B6A68] mt-0.5 truncate">{tournament.organizer}</p>
           )}
         </div>
-        <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium ${STATUS_COLORS[tournament.status] ?? STATUS_COLORS.scheduled}`}>
-          {STATUS_LABELS[tournament.status] ?? tournament.status}
+        <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium ${displayColor}`}>
+          {displayLabel}
         </span>
       </div>
 
@@ -60,6 +86,23 @@ export function TournamentCard({ tournament, orgSlug }: TournamentCardProps) {
           </span>
         )}
       </div>
+
+      {tournament.status === "completed" && placement != null && (
+        <div className="mt-2">
+          {PLACEMENT_BADGE[placement] ? (
+            <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-bold ${PLACEMENT_BADGE[placement].color}`}>
+              <Trophy className="h-2.5 w-2.5" />
+              {PLACEMENT_BADGE[placement].label}
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1 rounded-full border border-white/15 px-2 py-0.5 text-[10px] font-medium text-white/50">
+              <Trophy className="h-2.5 w-2.5" />
+              Juara {placement}
+            </span>
+          )}
+        </div>
+      )}
     </Link>
   );
-}
+};
+export { TournamentCard };

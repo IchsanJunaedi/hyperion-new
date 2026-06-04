@@ -15,7 +15,7 @@ interface FinanceDeleteButtonProps {
   revalidatePaths: string[];
 }
 
-export function FinanceDeleteButton({ financeId, orgId, description, revalidatePaths }: FinanceDeleteButtonProps) {
+const FinanceDeleteButton = ({ financeId, orgId, description, revalidatePaths }: FinanceDeleteButtonProps) => {
   const router = useRouter();
   const { success, error: notifyError } = useNotify();
   const [open, setOpen] = useState(false);
@@ -55,4 +55,5 @@ export function FinanceDeleteButton({ financeId, orgId, description, revalidateP
       />
     </>
   );
-}
+};
+export { FinanceDeleteButton };

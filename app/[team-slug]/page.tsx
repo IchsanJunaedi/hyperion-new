@@ -1,4 +1,4 @@
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 
 import { Header } from "@/components/landing/Header";
 import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
@@ -9,6 +9,7 @@ import { PublicTeamProfile } from "@/components/team/PublicTeamProfile";
 import { TeamHome } from "@/components/team/TeamHome";
 import {
   getOrgBySlug,
+  getPersonalPlayerStats,
   getPublicTeamData,
   getTeamHomeData,
   isCurrentUserMember,
@@ -40,9 +41,6 @@ export default async function TeamSlugPage({ params }: TeamSlugPageProps) {
   const member = isOwner || await isCurrentUserMember(organization.id);
 
   if (!member) {
-    if (!user) {
-      redirect(`/login?next=/${encodeURIComponent(slug)}`);
-    }
     const publicData = await getPublicTeamData(organization);
     return (
       <>
@@ -54,9 +52,15 @@ export default async function TeamSlugPage({ params }: TeamSlugPageProps) {
 
   if (!user) notFound();
 
-  const data = await getTeamHomeData(organization);
-  const currentUserRole = await getCurrentUserRole(organization.id);
+  const [data, currentUserRole] = await Promise.all([
+    getTeamHomeData(organization),
+    getCurrentUserRole(organization.id),
+  ]);
   const canManageScrims = ["captain", "manager", "owner"].includes(currentUserRole ?? "");
+  const personalStats =
+    !isOwner && (currentUserRole === "captain" || currentUserRole === "member")
+      ? await getPersonalPlayerStats(organization.id, user.id)
+      : null;
 
   return (
     <div className="flex min-h-screen flex-1">
@@ -65,7 +69,7 @@ export default async function TeamSlugPage({ params }: TeamSlugPageProps) {
         orgId={organization.id}
         orgName={organization.name}
         orgLogoUrl={organization.logo_url}
-        divisions={data.divisions.map((d) => ({ id: d.id, name: d.name }))}
+        divisions={data.divisions.map((d: { id: string; name: string }) => ({ id: d.id, name: d.name }))}
         user={{
           userId: user.id,
           displayName:
@@ -86,7 +90,7 @@ export default async function TeamSlugPage({ params }: TeamSlugPageProps) {
           className="hidden md:flex"
         />
         <main className="flex-1">
-          <TeamHome data={data} canManageScrims={canManageScrims} />
+          <TeamHome data={data} canManageScrims={canManageScrims} personalStats={personalStats} />
         </main>
         <MobileBottomNav orgSlug={organization.slug} />
       </div>

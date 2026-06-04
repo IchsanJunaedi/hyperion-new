@@ -14,12 +14,12 @@ interface KickMemberButtonProps {
   isSelf: boolean;
 }
 
-export function KickMemberButton({
+const KickMemberButton = ({
   orgSlug,
   memberId,
   memberName,
   isSelf,
-}: KickMemberButtonProps) {
+}: KickMemberButtonProps) => {
   const [confirming, setConfirming] = useState(false);
   const [pending, startTransition] = useTransition();
 
@@ -69,4 +69,5 @@ export function KickMemberButton({
       />
     </>
   );
-}
+};
+export { KickMemberButton };

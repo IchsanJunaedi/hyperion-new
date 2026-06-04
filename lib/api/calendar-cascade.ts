@@ -7,10 +7,18 @@
 
 import { createAdminClient } from "@/lib/supabase/admin";
 import { logAudit } from "@/lib/audit";
-import type {
-  CalendarMemberPermissionRow,
-  CalendarConfigRow,
-} from "@/types/database";
+
+// v2 calendar types — tables not yet in DB, defined locally until migration
+type CalendarMemberPermissionRow = {
+  can_view?: boolean;
+  can_create_event?: boolean;
+  can_edit_event?: boolean;
+  can_delete_event?: boolean;
+  can_manage_permissions?: boolean;
+  updated_by?: string | null;
+  [key: string]: unknown;
+};
+type CalendarConfigRow = Record<string, unknown>;
 
 /**
  * Invalidate cache for all events in a calendar
@@ -77,7 +85,7 @@ export async function cascadePermissionChange(
     // Get member profile for notification
     const { data: memberProfile } = await admin
       .from("profiles")
-      .select("display_name, email")
+      .select("display_name")
       .eq("id", memberId)
       .maybeSingle();
 

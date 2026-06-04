@@ -1,9 +1,14 @@
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { Suspense } from "react";
 
 import { CalendarWithQuickAdd } from "@/features/calendar/components/CalendarWithQuickAdd";
+import { CalendarAgendaView } from "@/features/calendar/components/CalendarAgendaView";
+import { CalendarViewToggle } from "@/features/calendar/components/CalendarViewToggle";
+import { CalendarWeeklyWarRoom } from "@/features/calendar/components/CalendarWeeklyWarRoom";
 import { listUnifiedCalendarEvents } from "@/features/calendar/unified";
+import { getRsvpCountsForEvents } from "@/features/calendar/queries";
 import { getOrgBySlug } from "@/features/teams/queries";
 import { createClient } from "@/lib/supabase/server";
 
@@ -11,7 +16,7 @@ export const dynamic = "force-dynamic";
 
 interface CalendarPageProps {
   params: Promise<{ "team-slug": string }>;
-  searchParams: Promise<{ y?: string; m?: string }>;
+  searchParams: Promise<{ y?: string; m?: string; view?: string }>;
 }
 
 export default async function CalendarPage({
@@ -19,6 +24,7 @@ export default async function CalendarPage({
   searchParams,
 }: CalendarPageProps) {
   const [{ "team-slug": slug }, sp] = await Promise.all([params, searchParams]);
+  const viewMode = sp.view === "list" ? "list" : sp.view === "week" ? "week" : "grid";
   const organization = await getOrgBySlug(slug);
   if (!organization) notFound();
 
@@ -48,22 +54,40 @@ export default async function CalendarPage({
   const year = sp.y ? parseInt(sp.y, 10) : now.getFullYear();
   const month = sp.m ? parseInt(sp.m, 10) : now.getMonth(); // 0-indexed
 
-  // Compute WIB-aware month boundaries for the query
+  // Compute WIB-aware date range for the query
   const WIB_OFFSET_MS = 7 * 60 * 60 * 1000;
-  const startUtcMs = Date.UTC(year, month, 1) - WIB_OFFSET_MS;
-  const endUtcMs = Date.UTC(year, month + 1, 0, 23, 59, 59) - WIB_OFFSET_MS;
-  const from = new Date(startUtcMs).toISOString();
-  const to = new Date(endUtcMs).toISOString();
+  let from: string;
+  let to: string;
+  if (viewMode === "week") {
+    // Week view needs ±8 weeks from today to allow navigation
+    const fromMs = now.getTime() - 8 * 7 * 24 * 60 * 60 * 1000;
+    const toMs = now.getTime() + 8 * 7 * 24 * 60 * 60 * 1000;
+    from = new Date(fromMs).toISOString();
+    to = new Date(toMs).toISOString();
+  } else {
+    const startUtcMs = Date.UTC(year, month, 1) - WIB_OFFSET_MS;
+    const endUtcMs = Date.UTC(year, month + 1, 0, 23, 59, 59) - WIB_OFFSET_MS;
+    from = new Date(startUtcMs).toISOString();
+    to = new Date(endUtcMs).toISOString();
+  }
 
-  const events = await listUnifiedCalendarEvents(organization.id, from, to);
+  const events = await listUnifiedCalendarEvents(organization.id, from, to, isOwner ? "owner" : role);
 
-  // Get divisions for the quick-add modal dropdown
-  const { data: divisions } = await supabase
-    .from("divisions")
-    .select("id, name")
-    .eq("organization_id", organization.id)
-    .eq("is_active", true)
-    .order("name");
+  // Only real calendar events have RSVP rows (not synthetic scrim/tournament entries)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const calendarEventIds = events.filter((e) => !(e as any).ref_type).map((e) => e.id);
+
+  // Get divisions for the quick-add modal dropdown + RSVP counts in parallel
+  const [divisionsResult, rsvpCounts] = await Promise.all([
+    supabase
+      .from("divisions")
+      .select("id, name")
+      .eq("organization_id", organization.id)
+      .eq("is_active", true)
+      .order("name"),
+    getRsvpCountsForEvents(calendarEventIds),
+  ]);
+  const divisions = divisionsResult.data;
 
   return (
     <div className="space-y-6 px-4 py-6 sm:px-8">
@@ -73,27 +97,39 @@ export default async function CalendarPage({
             Kalender Tim
           </h1>
         </div>
-        {canCreate && (
-          <Link
-            href={`/${slug}/calendar/new`}
-            className="inline-flex h-10 items-center gap-2 rounded-md bg-yellow-400 px-4 text-sm font-semibold text-black transition hover:bg-yellow-300"
-          >
-            <Plus className="h-4 w-4" />
-            Tambah event
-          </Link>
-        )}
+        <div className="flex items-center gap-2">
+          <Suspense>
+            <CalendarViewToggle activeView={viewMode as "grid" | "list" | "week"} />
+          </Suspense>
+          {canCreate && (
+            <Link
+              href={`/${slug}/calendar/new`}
+              className="inline-flex h-10 items-center gap-2 rounded-md bg-yellow-400 px-4 text-sm font-semibold text-black transition hover:bg-yellow-300"
+            >
+              <Plus className="h-4 w-4" />
+              Tambah event
+            </Link>
+          )}
+        </div>
       </header>
 
       <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-4 sm:p-6">
-        <CalendarWithQuickAdd
-          orgSlug={slug}
-          events={events}
-          year={year}
-          month={month}
-          divisions={divisions ?? []}
-          canCreate={canCreate}
-          userRole={isOwner ? "owner" : (role ?? "member")}
-        />
+        {viewMode === "week" ? (
+          <CalendarWeeklyWarRoom orgSlug={slug} events={events} />
+        ) : viewMode === "list" ? (
+          <CalendarAgendaView orgSlug={slug} events={events} />
+        ) : (
+          <CalendarWithQuickAdd
+            orgSlug={slug}
+            events={events}
+            year={year}
+            month={month}
+            divisions={divisions ?? []}
+            canCreate={canCreate}
+            userRole={isOwner ? "owner" : (role ?? "member")}
+            rsvpCounts={rsvpCounts}
+          />
+        )}
       </div>
 
       {!canCreate && (

@@ -1,10 +1,12 @@
 "use client";
 
-import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 import type { Database } from "@/types/database";
+import type { RsvpCountMap } from "@/features/calendar/queries";
 
 type CalendarEvent = Database["public"]["Tables"]["calendar_events"]["Row"];
 
@@ -20,6 +22,7 @@ interface CalendarGridProps {
   canCreate?: boolean;
   /** Called when user clicks a day cell (when canCreate=true) */
   onDayClick?: (date: Date) => void;
+  rsvpCounts?: RsvpCountMap;
 }
 
 const DAY_NAMES = ["Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"];
@@ -32,7 +35,7 @@ const EVENT_TYPE_COLORS: Record<string, string> = {
   other: "bg-white/40",
 };
 
-export function CalendarGrid({
+const CalendarGrid = ({
   orgSlug,
   events,
   year,
@@ -41,8 +44,10 @@ export function CalendarGrid({
   navBasePath,
   canCreate = false,
   onDayClick,
-}: CalendarGridProps) {
+  rsvpCounts,
+}: CalendarGridProps) => {
   const router = useRouter();
+  const [expandedDay, setExpandedDay] = useState<number | null>(null);
 
   const firstDay = new Date(year, month, 1);
   const lastDay = new Date(year, month + 1, 0);
@@ -181,12 +186,23 @@ export function CalendarGrid({
               {/* Events */}
               <div className="mt-0.5 space-y-0.5">
                 {dayEvents.slice(0, 3).map((ev) => {
+                  const rsvp = rsvpCounts?.[ev.id];
+                  const hadirCount = rsvp?.hadir ?? 0;
+                  const tentativeCount = rsvp?.tentative ?? 0;
+
                   const eventContent = (
                     <>
-                      <span
-                        className={`mr-1 inline-block h-1.5 w-1.5 rounded-full ${EVENT_TYPE_COLORS[ev.event_type] ?? "bg-white/40"}`}
-                      />
-                      {ev.title}
+                      <span className="flex min-w-0 items-center">
+                        <span
+                          className={`mr-1 inline-block h-1.5 w-1.5 shrink-0 rounded-full ${EVENT_TYPE_COLORS[ev.event_type] ?? "bg-white/40"}`}
+                        />
+                        <span className="truncate">{ev.title}</span>
+                      </span>
+                      {hadirCount > 0 && (
+                        <span className="mt-0.5 block text-[9px] leading-none text-green-400/70">
+                          {hadirCount} hadir{tentativeCount > 0 ? ` · ${tentativeCount}?` : ""}
+                        </span>
+                      )}
                     </>
                   );
 
@@ -194,7 +210,7 @@ export function CalendarGrid({
                     return (
                       <div
                         key={ev.id}
-                        className="block truncate rounded px-1 py-0.5 text-[10px] leading-tight text-white/80"
+                        className="block rounded px-1 py-0.5 text-[10px] leading-tight text-white/80"
                       >
                         {eventContent}
                       </div>
@@ -218,22 +234,97 @@ export function CalendarGrid({
                       key={ev.id}
                       href={eventHref}
                       onClick={(e) => e.stopPropagation()}
-                      className="block truncate rounded px-1 py-0.5 text-[10px] leading-tight text-white/80 transition hover:bg-white/10"
+                      className="block rounded px-1 py-0.5 text-[10px] leading-tight text-white/80 transition hover:bg-white/10"
                     >
                       {eventContent}
                     </Link>
                   );
                 })}
                 {dayEvents.length > 3 && (
-                  <span className="block px-1 text-[10px] text-white/40">
+                  <button
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); setExpandedDay(day); }}
+                    className="block w-full cursor-pointer rounded px-1 text-left text-[10px] text-white/40 transition hover:bg-white/10 hover:text-white/70"
+                  >
                     +{dayEvents.length - 3} lagi
-                  </span>
+                  </button>
                 )}
               </div>
             </div>
           );
         })}
       </div>
+
+      {/* Day events popup */}
+      {expandedDay !== null && (() => {
+        const popupEvents = eventsByDay.get(expandedDay) ?? [];
+        const label = new Date(year, month, expandedDay).toLocaleDateString("id-ID", {
+          weekday: "long", day: "numeric", month: "long",
+        });
+        return (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+            onClick={() => setExpandedDay(null)}
+          >
+            <div
+              className="w-full max-w-sm rounded-xl border border-[#2D2D2D] bg-[#1C1C1C] shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between border-b border-[#2D2D2D] px-4 py-3">
+                <span className="text-sm font-semibold capitalize text-white">{label}</span>
+                <button
+                  type="button"
+                  onClick={() => setExpandedDay(null)}
+                  className="cursor-pointer text-white/40 transition hover:text-white"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+              <div className="max-h-72 overflow-y-auto py-2">
+                {popupEvents.map((ev) => {
+                  const dot = (
+                    <span className={`mr-2 inline-block h-2 w-2 shrink-0 rounded-full ${EVENT_TYPE_COLORS[ev.event_type] ?? "bg-white/40"}`} />
+                  );
+                  const time = new Date(new Date(ev.starts_at).getTime() + 7 * 60 * 60 * 1000)
+                    .toISOString()
+                    .slice(11, 16);
+
+                  if (readOnly) {
+                    return (
+                      <div key={ev.id} className="flex items-center gap-2 px-4 py-2 text-sm text-white/80">
+                        {dot}
+                        <span className="flex-1 truncate">{ev.title}</span>
+                        <span className="shrink-0 text-xs text-white/40">{time}</span>
+                      </div>
+                    );
+                  }
+
+                  let href = `/${orgSlug}/calendar/${ev.id}`;
+                  if (ev.event_type === "scrim" || ev.ref_type === "scrim") {
+                    href = `/${orgSlug}/scrim/${ev.ref_id || ev.id.replace("scrim-", "")}`;
+                  } else if (ev.event_type === "tournament" || ev.ref_type === "tournament") {
+                    href = `/${orgSlug}/tournaments/${ev.ref_id || ev.id.replace("tournament-", "")}`;
+                  }
+
+                  return (
+                    <Link
+                      key={ev.id}
+                      href={href}
+                      onClick={() => setExpandedDay(null)}
+                      className="flex items-center gap-2 px-4 py-2 text-sm text-white/80 transition hover:bg-white/5"
+                    >
+                      {dot}
+                      <span className="flex-1 truncate">{ev.title}</span>
+                      <span className="shrink-0 text-xs text-white/40">{time}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
-}
+};
+export { CalendarGrid };

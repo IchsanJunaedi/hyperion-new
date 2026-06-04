@@ -9,6 +9,7 @@ interface ScrimWaData {
   format: string;
   serverRegion?: string | null;
   roomInfo?: string | null;
+  notes?: string | null;
   scrimUrl: string;
 }
 
@@ -67,10 +68,55 @@ export function buildScrimWaMessage(data: ScrimWaData): string {
   if (data.roomInfo) {
     lines.push(`*Room:* ${data.roomInfo}`);
   }
+  if (data.notes) {
+    lines.push(`*Catatan:* ${data.notes}`);
+  }
 
   lines.push("");
   lines.push("Konfirmasi kehadiran di:");
   lines.push(data.scrimUrl);
+
+  return lines.join("\n");
+}
+
+interface TournamentRegisteredWaData {
+  orgName: string;
+  tournamentName: string;
+  organizer?: string | null;
+  startDate: string;
+  prizePool?: string | null;
+  registrationUrl?: string | null;
+  tournamentUrl: string;
+}
+
+/**
+ * Build WA message when registration is confirmed for a tournament.
+ */
+export function buildTournamentRegisteredWaMessage(data: TournamentRegisteredWaData): string {
+  const lines = [
+    `[${data.orgName}] ✅ *Pendaftaran Dikonfirmasi!*`,
+    "",
+    `*Turnamen:* ${data.tournamentName}`,
+  ];
+
+  if (data.organizer) {
+    lines.push(`*Organizer:* ${data.organizer}`);
+  }
+
+  lines.push(`*Mulai:* ${formatDateOnly(data.startDate)}`);
+
+  if (data.prizePool) {
+    lines.push(`*Prize Pool:* ${data.prizePool}`);
+  }
+
+  if (data.registrationUrl) {
+    lines.push(`Link registrasi: ${data.registrationUrl}`);
+  }
+
+  lines.push("");
+  lines.push("Tim kita sudah resmi terdaftar. Persiapkan dirimu!");
+  lines.push("");
+  lines.push(`Info turnamen: ${data.tournamentUrl}`);
 
   return lines.join("\n");
 }

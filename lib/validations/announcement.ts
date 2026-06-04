@@ -19,6 +19,7 @@ export const createAnnouncementSchema = z.object({
     .transform((v) => v ?? null),
   is_pinned: z.coerce.boolean().default(false),
   send_wa_blast: z.coerce.boolean().default(false),
+  requires_ack: z.coerce.boolean().default(false),
 });
 
 export type CreateAnnouncementInput = z.infer<typeof createAnnouncementSchema>;

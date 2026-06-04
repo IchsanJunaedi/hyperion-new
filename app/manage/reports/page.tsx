@@ -42,7 +42,7 @@ export default async function ManageReportsPage({ searchParams }: ReportsPagePro
   const year = sp.year ? parseInt(sp.year) : now.getFullYear();
   const month = sp.month ? parseInt(sp.month) : now.getMonth() + 1;
 
-  const report = await generateMonthlyReport(orgId, year, month);
+  const report = await generateMonthlyReport(orgId, year, month, "manager");
 
   // Generate month navigation
   const months = Array.from({ length: 12 }, (_, i) => ({

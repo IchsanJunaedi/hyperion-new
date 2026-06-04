@@ -1,4 +1,4 @@
-import { Calendar, MapPin, MessageCircle } from "lucide-react";
+import { ArrowLeft, Calendar, MapPin, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -7,14 +7,20 @@ import { AttendanceList } from "@/features/scrim/components/AttendanceList";
 import { AttendanceTracker } from "@/features/scrim/components/AttendanceTracker";
 import { CancelScrimButton } from "@/features/scrim/components/CancelScrimButton";
 import { FinishScrimSection } from "@/features/scrim/components/FinishScrimSection";
+import { ScrimReviewSection } from "@/features/scrim/components/ScrimReviewSection";
 import { ScrimStatusBadge } from "@/features/scrim/components/StatusBadge";
+import { ScrimVodLinkSection } from "@/features/scrim/components/ScrimVodLinkSection";
 import { getCurrentUserRole } from "@/features/roster/queries";
 import {
   getScrimDetail,
+  getScrimReviewRequest,
+  getOpponentHistory,
   summarizeAttendance,
 } from "@/features/scrim/queries";
 import { findOpponentByName } from "@/features/scouting/queries";
 import { ScoutingCard } from "@/features/scouting/components/ScoutingCard";
+import { ContextFiles } from "@/features/files/components/ContextFiles";
+import { getLinkedFiles } from "@/features/files/queries";
 
 export const dynamic = "force-dynamic";
 
@@ -36,8 +42,12 @@ export default async function ScrimDetailPage({
   const canManageScrims = ["captain", "manager", "owner"].includes(currentUserRole ?? "");
   const isCoach = currentUserRole === "coach";
 
-  // Auto-show scouting info if opponent profile exists
-  const opponentProfile = await findOpponentByName(scrim.organization_id, scrim.opponent_name);
+  const [opponentProfile, reviewRequest, opponentHistory, linkedFiles] = await Promise.all([
+    findOpponentByName(scrim.organization_id, scrim.opponent_name),
+    getScrimReviewRequest(id),
+    getOpponentHistory(scrim.organization_id, scrim.opponent_name, id),
+    getLinkedFiles(scrim.organization_id, "scrim", id),
+  ]);
 
   const scheduled = new Date(scrim.scheduled_at).toLocaleString("id-ID", {
     weekday: "long",
@@ -52,12 +62,15 @@ export default async function ScrimDetailPage({
   return (
     <div className="space-y-6 px-4 py-6 sm:px-8">
       <header className="space-y-2">
+      <div className="flex justify-start">
         <Link
           href={`/${slug}/scrim`}
-          className="text-xs text-white/55 hover:text-white"
+          className="group inline-flex items-center gap-2 rounded-full border border-white/5 bg-zinc-900/40 px-3.5 py-1.5 text-xs font-semibold text-white/60 transition-all duration-300 hover:bg-zinc-800/60 hover:text-white"
         >
-          ← Daftar scrim
+          <ArrowLeft className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-x-0.5" />
+          Kembali ke daftar scrim
         </Link>
+      </div>
         <div className="flex items-center gap-2">
           <ScrimStatusBadge status={scrim.status} />
           <span className="text-xs uppercase tracking-wide text-white/55">
@@ -68,7 +81,7 @@ export default async function ScrimDetailPage({
         <h1 className="text-3xl font-bold text-white">vs {scrim.opponent_name}</h1>
         {scrim.status === "scheduled" && (
           <div className="mt-3">
-            <ScrimCountdown scrim={scrim} orgSlug={slug} />
+            <ScrimCountdown scrim={scrim} orgSlug={slug} myAttendanceStatus={myAttendance?.status} />
           </div>
         )}
         <dl className="grid gap-1 text-sm text-white/70 sm:grid-cols-2">
@@ -161,6 +174,14 @@ export default async function ScrimDetailPage({
               ) : null}
             </article>
           ) : null}
+
+          {(scrim.vod_link || canManageScrims || isCoach) && (
+            <ScrimVodLinkSection
+              scrimId={scrim.id}
+              initialLink={scrim.vod_link}
+              canEdit={canManageScrims || isCoach}
+            />
+          )}
         </section>
 
         <aside className="space-y-6">
@@ -172,11 +193,79 @@ export default async function ScrimDetailPage({
             resultImageUrl={resultImageUrl}
           />
 
+          {/* Review request (shown for coaches, captains, and members on completed scrims) */}
+          {(isCoach || currentUserRole === "captain" || currentUserRole === "member") && (
+            <ScrimReviewSection
+              orgSlug={slug}
+              scrimId={scrim.id}
+              role={currentUserRole}
+              reviewRequest={reviewRequest}
+              scrimCompleted={scrim.status === "completed"}
+            />
+          )}
+
+          {/* Files linked to this scrim */}
+          {(linkedFiles.length > 0 || isCoach || canManageScrims) && (
+            <article className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
+              <ContextFiles
+                orgId={scrim.organization_id}
+                orgSlug={slug}
+                refType="scrim"
+                refId={id}
+                canUpload={isCoach || canManageScrims}
+                initialFiles={linkedFiles}
+              />
+            </article>
+          )}
+
           {/* Scouting info (auto-shown if opponent profile exists) */}
           {opponentProfile && (
             <article className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
               <h2 className="text-sm font-semibold text-white mb-3">Intel Lawan</h2>
               <ScoutingCard profile={opponentProfile} />
+            </article>
+          )}
+
+          {/* Opponent history */}
+          {opponentHistory.length > 0 && (
+            <article className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
+              <div className="mb-3 flex items-center justify-between">
+                <h2 className="text-sm font-semibold text-white">Riwayat vs {scrim.opponent_name}</h2>
+                <span className="text-xs text-white/40">{opponentHistory.length} pertandingan</span>
+              </div>
+              <div className="space-y-2">
+                {opponentHistory.map((h) => {
+                  const date = new Date(h.scheduled_at).toLocaleDateString("id-ID", {
+                    day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Jakarta",
+                  });
+                  const scoreText = h.our_score != null && h.opponent_score != null
+                    ? `${h.our_score}–${h.opponent_score}`
+                    : "–";
+                  return (
+                    <div key={h.scrim_id} className="flex items-center justify-between text-xs">
+                      <span className="text-white/50">{date} · {h.format.toUpperCase()}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-white/70">{scoreText}</span>
+                        {h.is_win !== null && (
+                          <span className={h.is_win ? "font-semibold text-green-400" : "font-semibold text-red-400"}>
+                            {h.is_win ? "W" : "L"}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              {(() => {
+                const wins = opponentHistory.filter(h => h.is_win === true).length;
+                const total = opponentHistory.filter(h => h.is_win !== null).length;
+                if (total === 0) return null;
+                return (
+                  <div className="mt-3 border-t border-white/5 pt-3 text-xs text-white/40">
+                    W/L: <span className="font-semibold text-white/70">{wins}/{total - wins}</span>
+                  </div>
+                );
+              })()}
             </article>
           )}
         </aside>

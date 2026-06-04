@@ -15,18 +15,28 @@ import { useState } from "react";
 import { PropertyField } from "./PropertyField";
 import type { CalendarEvent } from "../types";
 
+type ExtendedCalendarEvent = CalendarEvent & {
+  area?: string | null;
+  platform?: string | null;
+  status?: string | null;
+  priority?: string | null;
+  pic_user_id?: string | null;
+  tags?: string[] | null;
+  visual_needed?: boolean | null;
+};
+
 interface EventPropertiesProps {
-  event: CalendarEvent;
-  onPropertyChange: (field: string, value: any) => void;
+  event: ExtendedCalendarEvent;
+  onPropertyChange: (field: string, value: unknown) => void;
   readOnly?: boolean;
 }
 
-export function EventProperties({
+const EventProperties = ({
   event,
   onPropertyChange,
   readOnly = false,
-}: EventPropertiesProps) {
-  const handlePropertyChange = (field: string, value: any) => {
+}: EventPropertiesProps) => {
+  const handlePropertyChange = (field: string, value: unknown) => {
     onPropertyChange(field, value);
   };
 
@@ -120,4 +130,5 @@ export function EventProperties({
       />
     </div>
   );
-}
+};
+export { EventProperties };

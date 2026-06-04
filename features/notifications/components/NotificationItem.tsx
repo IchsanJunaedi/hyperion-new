@@ -1,6 +1,6 @@
-﻿"use client";
+"use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { notify } from "@/features/dashboard/components/NotifyModal";
 
@@ -36,18 +36,31 @@ function resolveRoute(
       return `/${orgSlug}/scrim/${refId}`;
     case "announcement":
       return `/${orgSlug}/announcements/${refId}`;
+    case "tournament":
+      return `/${orgSlug}/tournaments/${refId}`;
+    case "calendar":
+      return refId ? `/${orgSlug}/calendar/${refId}` : `/${orgSlug}/calendar`;
+    case "poll":
+      return `/${orgSlug}/polls`;
+    case "strategy":
+      return `/${orgSlug}/strategy/${refId}`;
+    case "finance":
+      return `/${orgSlug}/finances`;
+    case "development":
+      return `/${orgSlug}/development`;
     default:
       return null;
   }
 }
 
-export function NotificationItem({
+const NotificationItem = ({
   notification,
   userId,
   orgSlug,
   onNavigate,
-}: NotificationItemProps) {
+}: NotificationItemProps) => {
   const router = useRouter();
+  const pathname = usePathname();
   const queryClient = useQueryClient();
 
   const isUnread = notification.read_at === null;
@@ -57,7 +70,7 @@ export function NotificationItem({
     if (isUnread) {
       // Optimistically update notification list
       queryClient.setQueryData(
-        ["notifications", userId, 10],
+         ["notifications", userId, 10],
         (old: Notification[] | undefined) =>
           old?.map((n) =>
             n.id === notification.id
@@ -83,11 +96,16 @@ export function NotificationItem({
       }
     }
 
-    // 2. Navigate if ref_type and ref_id exist
+    // 2. Navigate if ref_type and ref_id exist, always close popup
+    onNavigate();
     if (notification.ref_type && notification.ref_id) {
-      const route = resolveRoute(orgSlug, notification.ref_type, notification.ref_id);
+      const targetOrgSlug =
+        (notification.organizations as { slug: string } | null)?.slug || orgSlug;
+      const route = resolveRoute(targetOrgSlug, notification.ref_type, notification.ref_id);
       if (route) {
-        onNavigate();
+        if (pathname?.startsWith("/dashboard")) {
+          notify.info("Beralih ke halaman workspace...");
+        }
         router.push(route);
       }
     }
@@ -97,7 +115,7 @@ export function NotificationItem({
     <button
       type="button"
       onClick={handleClick}
-      className={`flex w-full gap-3 px-4 py-3 text-left transition hover:bg-white/[0.05] ${
+      className={`cursor-pointer flex w-full gap-3 px-4 py-3 text-left transition hover:bg-white/[0.05] ${
         isUnread ? "bg-white/[0.03]" : ""
       }`}
     >
@@ -126,4 +144,5 @@ export function NotificationItem({
       </div>
     </button>
   );
-}
+};
+export { NotificationItem };

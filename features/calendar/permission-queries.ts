@@ -63,7 +63,7 @@ export async function getAccessibleCalendarsAction(
     .from("organizations")
     .select("id")
     .eq("slug", orgSlug)
-    .single();
+    .maybeSingle();
 
   if (!org) {
     return { ok: false, message: "Organisasi tidak ditemukan" };
@@ -129,7 +129,7 @@ export async function getCalendarDetailAction(
     .from("organizations")
     .select("id")
     .eq("slug", orgSlug)
-    .single();
+    .maybeSingle();
 
   if (!org) {
     return { ok: false, message: "Organisasi tidak ditemukan" };
@@ -142,7 +142,7 @@ export async function getCalendarDetailAction(
     .eq("id", calendarId)
     .eq("organization_id", org.id)
     .is("deleted_at", null)
-    .single();
+    .maybeSingle();
 
   if (!calendar) {
     return { ok: false, message: "Kalender tidak ditemukan" };
@@ -161,7 +161,7 @@ export async function getCalendarDetailAction(
 
   return {
     ok: true,
-    data: { calendar },
+    data: { calendar: calendar as unknown as CalendarConfig },
   };
 }
 
@@ -196,7 +196,7 @@ export async function listCalendarEventsWithPermissionsAction(
     .from("organizations")
     .select("id")
     .eq("slug", orgSlug)
-    .single();
+    .maybeSingle();
 
   if (!org) {
     return { ok: false, message: "Organisasi tidak ditemukan" };
@@ -209,7 +209,7 @@ export async function listCalendarEventsWithPermissionsAction(
     .eq("id", calendarId)
     .eq("organization_id", org.id)
     .is("deleted_at", null)
-    .single();
+    .maybeSingle();
 
   if (!calendar) {
     return { ok: false, message: "Kalender tidak ditemukan" };
@@ -245,8 +245,8 @@ export async function listCalendarEventsWithPermissionsAction(
     // Add permission context to each event
     const eventsWithContext: EventWithPermissionContext[] = (events ?? []).map(
       (event) => ({
-        ...event,
-        calendar,
+        ...(event as unknown as CalendarEvent),
+        calendar: calendar as unknown as CalendarConfig,
         userCanEdit: user.id === event.created_by,
         userCanDelete: user.id === event.created_by,
       }),
@@ -294,7 +294,7 @@ export async function getUserAccessibleEventsAction(
     .from("organizations")
     .select("id")
     .eq("slug", orgSlug)
-    .single();
+    .maybeSingle();
 
   if (!org) {
     return { ok: false, message: "Organisasi tidak ditemukan" };
@@ -331,8 +331,8 @@ export async function getUserAccessibleEventsAction(
     const calendarMap = new Map(calendars.map((c) => [c.id, c]));
     const eventsWithContext: EventWithPermissionContext[] = (events ?? []).map(
       (event) => ({
-        ...event,
-        calendar: calendarMap.get(event.calendar_id) || null,
+        ...(event as unknown as CalendarEvent),
+        calendar: (event.calendar_id ? calendarMap.get(event.calendar_id) ?? null : null) as unknown as CalendarConfig | null,
         userCanEdit: user.id === event.created_by,
         userCanDelete: user.id === event.created_by,
       }),
@@ -384,7 +384,7 @@ export async function getCalendarAuditLogsAction(
     .from("organizations")
     .select("id")
     .eq("slug", orgSlug)
-    .single();
+    .maybeSingle();
 
   if (!org) {
     return { ok: false, message: "Organisasi tidak ditemukan" };
@@ -396,7 +396,7 @@ export async function getCalendarAuditLogsAction(
     .select("role")
     .eq("user_id", user.id)
     .eq("organization_id", org.id)
-    .single();
+    .maybeSingle();
 
   const ownerEmail = process.env.OWNER_EMAIL;
   const isOwner = user.email === ownerEmail;
@@ -417,7 +417,7 @@ export async function getCalendarAuditLogsAction(
     // Build query
     let query = supabase
       .from("calendar_audit_logs")
-      .select("*", { count: "exact" })
+      .select("id, action, actor_id, calendar_id, changes, created_at, entity_type, event_id, metadata, organization_id", { count: "exact" })
       .eq("organization_id", org.id);
 
     if (calendarId) {

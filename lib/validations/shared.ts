@@ -8,7 +8,7 @@ export const waNumberSchema = z
   .string()
   .trim()
   .min(8, "Nomor WhatsApp terlalu pendek")
-  .max(20, "Nomor WhatsApp terlalu panjang")
+  .max(15, "Nomor WhatsApp maksimal 15 karakter")
   .regex(/^[0-9+\s-]+$/, "Nomor WhatsApp hanya boleh angka, +, spasi, dan -")
   .transform((raw) => {
     const digits = raw.replace(/[\s-]/g, "");

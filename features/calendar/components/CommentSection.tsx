@@ -12,13 +12,13 @@ interface CommentSectionProps {
   readOnly?: boolean;
 }
 
-export function CommentSection({
+const CommentSection = ({
   comments,
   onAddComment,
   onDeleteComment,
   currentUserId,
   readOnly = false,
-}: CommentSectionProps) {
+}: CommentSectionProps) => {
   const [commentBody, setCommentBody] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -161,4 +161,5 @@ export function CommentSection({
       )}
     </div>
   );
-}
+};
+export { CommentSection };

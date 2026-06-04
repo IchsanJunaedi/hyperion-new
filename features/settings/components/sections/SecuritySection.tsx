@@ -9,7 +9,7 @@ import { createClient } from "@/lib/supabase/client";
 const inputCls =
   "w-full rounded border border-[#2D2D2D] bg-[#191919] px-3 py-1.5 pr-10 text-sm text-[#E5E2E1] placeholder-[#6B6A68] focus:outline-none focus:border-[#4D4D4D] transition";
 
-export function SecuritySection() {
+const SecuritySection = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showNew, setShowNew] = useState(false);
@@ -118,4 +118,5 @@ export function SecuritySection() {
       </div>
     </div>
   );
-}
+};
+export { SecuritySection };

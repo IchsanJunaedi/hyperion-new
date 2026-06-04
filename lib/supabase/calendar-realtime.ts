@@ -34,6 +34,7 @@ export type RealtimeCallback<T = unknown> = (payload: T) => void;
  */
 export async function subscribeToCalendarPermissions(
   calendarId: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   callback: RealtimeCallback<RealtimePostgresChangesPayload<any>>,
 ): Promise<(() => void) | null> {
   try {
@@ -92,6 +93,7 @@ export async function subscribeToCalendarPermissions(
  */
 export async function subscribeToCalendarAuditLogs(
   calendarId: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   callback: RealtimeCallback<RealtimePostgresChangesPayload<any>>,
 ): Promise<(() => void) | null> {
   try {
@@ -147,6 +149,7 @@ export async function subscribeToCalendarAuditLogs(
  */
 export async function subscribeToEventVisibility(
   eventId: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   callback: RealtimeCallback<RealtimePostgresChangesPayload<any>>,
 ): Promise<(() => void) | null> {
   try {
@@ -203,6 +206,7 @@ export async function subscribeToEventVisibility(
  */
 export async function subscribeToCalendarConfig(
   calendarId: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   callback: RealtimeCallback<RealtimePostgresChangesPayload<any>>,
 ): Promise<(() => void) | null> {
   try {
@@ -258,6 +262,7 @@ export async function subscribeToCalendarConfig(
  */
 export async function subscribeToMultipleCalendars(
   calendarIds: string[],
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   callback: (change: RealtimePostgresChangesPayload<any>, calendarId: string) => void,
 ): Promise<() => void> {
   const unsubscribeFunctions: Array<() => void> = [];
@@ -280,94 +285,3 @@ export async function subscribeToMultipleCalendars(
   };
 }
 
-/**
- * Subscribe to all calendar changes for a user's organization
- *
- * Listens to all calendar-related tables in an organization.
- * Use with caution as this creates multiple subscriptions.
- *
- * @param organizationId - Organization ID
- * @param callback - Function called when any calendar changes
- * @returns Function to unsubscribe from all
- *
- * @example
- * ```typescript
- * const unsubscribeAll = await subscribeToOrganizationCalendars(
- *   orgId,
- *   (type, change) => {
- *     console.log(`${type} changed:`, change)
- *   }
- * )
- * ```
- */
-export async function subscribeToOrganizationCalendars(
-  organizationId: string,
-  callback: (
-    type: "config" | "permissions" | "audit" | "event-visibility",
-    change: RealtimePostgresChangesPayload<any>,
-  ) => void,
-): Promise<() => void> {
-  try {
-    const supabase = await createClient();
-
-    const channels = [
-      {
-        name: `org-calendars:${organizationId}`,
-        table: "calendar_configs",
-        filter: `organization_id=eq.${organizationId}`,
-        type: "config" as const,
-      },
-      {
-        name: `org-permissions:${organizationId}`,
-        table: "calendar_member_permissions",
-        filter: `organization_id=eq.${organizationId}`,
-        type: "permissions" as const,
-      },
-      {
-        name: `org-audit:${organizationId}`,
-        table: "calendar_audit_logs",
-        filter: `organization_id=eq.${organizationId}`,
-        type: "audit" as const,
-      },
-      {
-        name: `org-event-vis:${organizationId}`,
-        table: "event_visibility",
-        filter: `organization_id=eq.${organizationId}`,
-        type: "event-visibility" as const,
-      },
-    ];
-
-    for (const { name, table, filter, type } of channels) {
-      supabase
-        .channel(name)
-        .on(
-          "postgres_changes",
-          {
-            event: "*",
-            schema: "public",
-            table,
-            filter,
-          },
-          (payload) => {
-            console.log(`[Realtime] ${type} changed in org:`, payload);
-            callback(type, payload);
-          },
-        )
-        .subscribe((status) => {
-          console.log(`[Realtime] ${type} subscription status: ${status}`);
-        });
-    }
-
-    // Return unsubscribe function that removes all channels
-    return () => {
-      for (const { name } of channels) {
-        supabase.removeChannel(supabase.getChannel(name)!);
-      }
-    };
-  } catch (err) {
-    console.error("Organization calendar subscription error:", err);
-    return () => {
-      // No-op
-    };
-  }
-}

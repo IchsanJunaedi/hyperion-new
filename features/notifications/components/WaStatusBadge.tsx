@@ -21,7 +21,7 @@ const statusConfig = {
   },
 } as const;
 
-export function WaStatusBadge({ status }: WaStatusBadgeProps) {
+const WaStatusBadge = ({ status }: WaStatusBadgeProps) => {
   const config = statusConfig[status];
 
   return (
@@ -34,4 +34,5 @@ export function WaStatusBadge({ status }: WaStatusBadgeProps) {
       {config.label}
     </span>
   );
-}
+};
+export { WaStatusBadge };

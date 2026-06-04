@@ -25,7 +25,7 @@ interface FinancePageClientProps {
   revalidatePaths: string[];
 }
 
-export function FinancePageClient({
+const FinancePageClient = ({
   orgId,
   rows,
   summary,
@@ -33,7 +33,7 @@ export function FinancePageClient({
   month,
   canDelete,
   revalidatePaths,
-}: FinancePageClientProps) {
+}: FinancePageClientProps) => {
   const router = useRouter();
   const [showForm, setShowForm] = useState(false);
 
@@ -123,4 +123,5 @@ export function FinancePageClient({
       )}
     </>
   );
-}
+};
+export { FinancePageClient };

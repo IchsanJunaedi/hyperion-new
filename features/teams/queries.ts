@@ -1,6 +1,7 @@
 import "server-only";
 
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import type { Database } from "@/types/database";
 
 export type Organization = Database["public"]["Tables"]["organizations"]["Row"];
@@ -200,6 +201,107 @@ export async function getPublicTeamData(organization: Organization): Promise<{
     divisions: divisionsRes.data ?? [],
     memberCount: memberCountRes.count ?? 0,
   };
+}
+
+export interface PersonalPlayerStats {
+  attendanceRate: number;
+  totalPresent: number;
+  totalScrims: number;
+  avgRating: number | null;
+  winRateWhenPresent: number;
+  winsWhenPresent: number;
+  scrimsWhenPresent: number;
+  streak: number;
+  targets: Array<{
+    id: string;
+    skill_name: string;
+    current_level: number;
+    target_level: number;
+    notes: string | null;
+  }>;
+}
+
+export async function getPersonalPlayerStats(
+  orgId: string,
+  userId: string,
+): Promise<PersonalPlayerStats | null> {
+  const admin = createAdminClient();
+
+  const [scrimsRes, targetsRes] = await Promise.all([
+    admin
+      .from("scrims")
+      .select("id, scrim_results(is_win)")
+      .eq("organization_id", orgId)
+      .eq("status", "completed")
+      .order("scheduled_at", { ascending: false })
+      .limit(50),
+    admin
+      .from("player_targets")
+      .select("id, skill_name, current_level, target_level, notes")
+      .eq("organization_id", orgId)
+      .eq("user_id", userId)
+      .order("created_at", { ascending: true }),
+  ]);
+
+  const scrims = scrimsRes.data ?? [];
+  const totalScrims = scrims.length;
+  const targets = (targetsRes.data ?? []).map((t) => ({
+    id: t.id,
+    skill_name: t.skill_name,
+    current_level: t.current_level,
+    target_level: t.target_level,
+    notes: t.notes,
+  }));
+
+  if (totalScrims === 0) {
+    return { attendanceRate: 0, totalPresent: 0, totalScrims: 0, avgRating: null, winRateWhenPresent: 0, winsWhenPresent: 0, scrimsWhenPresent: 0, streak: 0, targets };
+  }
+
+  const scrimIds = scrims.map((s) => s.id);
+  const { data: attendances } = await admin
+    .from("scrim_attendances")
+    .select("scrim_id, status, rating")
+    .in("scrim_id", scrimIds)
+    .eq("user_id", userId);
+
+  const allAtt = attendances ?? [];
+  const confirmed = allAtt.filter((a) => a.status === "confirmed");
+  const totalPresent = confirmed.length;
+  const attendanceRate = Math.round((totalPresent / totalScrims) * 100);
+
+  // Win rate when present
+  type ScrimRow = { id: string; scrim_results: unknown };
+  const scrimResultMap = new Map<string, boolean | null>();
+  for (const s of scrims as ScrimRow[]) {
+    const arr = Array.isArray(s.scrim_results) ? s.scrim_results : [s.scrim_results];
+    const first = arr[0] as { is_win?: boolean | null } | null;
+    scrimResultMap.set(s.id, first?.is_win ?? null);
+  }
+  const confirmedIds = new Set(confirmed.map((a) => a.scrim_id));
+  const winsWhenPresent = confirmed.filter((a) => scrimResultMap.get(a.scrim_id) === true).length;
+  const scrimsWhenPresent = confirmed.length;
+  const winRateWhenPresent = scrimsWhenPresent === 0 ? 0 : Math.round((winsWhenPresent / scrimsWhenPresent) * 100);
+
+  // Avg rating
+  const ratings = allAtt.filter((a) => a.rating != null).map((a) => a.rating as number);
+  const avgRating = ratings.length > 0 ? Math.round((ratings.reduce((s, r) => s + r, 0) / ratings.length) * 10) / 10 : null;
+
+  // Streak (newest-first: positive = consecutive present, negative = consecutive absent)
+  let streak = 0;
+  for (const s of scrims as ScrimRow[]) {
+    const isPresent = confirmedIds.has(s.id);
+    if (streak === 0) {
+      streak = isPresent ? 1 : -1;
+    } else if (streak > 0 && isPresent) {
+      streak++;
+    } else if (streak < 0 && !isPresent) {
+      streak--;
+    } else {
+      break;
+    }
+  }
+
+  return { attendanceRate, totalPresent, totalScrims, avgRating, winRateWhenPresent, winsWhenPresent, scrimsWhenPresent, streak, targets };
 }
 
 function computeWinRate(

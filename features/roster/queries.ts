@@ -10,6 +10,7 @@ export type RosterMember = {
   jersey_number: number | null;
   position: string | null;
   availability: MemberAvailability;
+  main_role: string | null;
   joined_at: string;
   division_id: string | null;
   division_name: string | null;
@@ -26,7 +27,7 @@ export async function getRosterMembers(orgId: string): Promise<RosterMember[]> {
   const { data: members, error } = await supabase
     .from("team_members")
     .select(
-      "id, user_id, role, jersey_number, position, availability, joined_at, division_id",
+      "id, user_id, role, jersey_number, position, availability, main_role, joined_at, division_id",
     )
     .eq("organization_id", orgId)
     .eq("is_active", true)
@@ -70,6 +71,7 @@ export async function getRosterMembers(orgId: string): Promise<RosterMember[]> {
       jersey_number: m.jersey_number,
       position: m.position,
       availability: m.availability,
+      main_role: m.main_role,
       joined_at: m.joined_at,
       division_id: m.division_id,
       division_name: division?.name ?? null,
@@ -91,6 +93,22 @@ export async function getCurrentUserRole(
   } = await supabase.auth.getUser();
   if (!user) return null;
 
+  // 1. Check if global owner by email
+  const ownerEmail = process.env.OWNER_EMAIL || process.env.E2E_OWNER_EMAIL;
+  if (user.email && user.email === ownerEmail) {
+    return "owner";
+  }
+
+  // 2. Check if organization owner by owner_id
+  const { data: org } = await supabase
+    .from("organizations")
+    .select("owner_id")
+    .eq("id", orgId)
+    .maybeSingle();
+  if (org?.owner_id === user.id) {
+    return "owner";
+  }
+
   const { data } = await supabase
     .from("team_members")
     .select("role")
@@ -100,5 +118,5 @@ export async function getCurrentUserRole(
     .limit(1)
     .maybeSingle();
 
-  return data?.role ?? null;
+  return (data?.role as MemberRole | null) ?? null;
 }

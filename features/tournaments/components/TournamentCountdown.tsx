@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 interface TournamentCountdownProps {
   name: string;
   startDate: string;
+  startTime?: string | null;
   prizePool: string | null;
   organizer: string | null;
 }
@@ -31,8 +32,11 @@ function diffParts(target: Date): CountdownParts {
   };
 }
 
-export function TournamentCountdown({ name, startDate, prizePool, organizer }: TournamentCountdownProps) {
-  const target = useMemo(() => new Date(startDate), [startDate]);
+const TournamentCountdown = ({ name, startDate, startTime, prizePool, organizer }: TournamentCountdownProps) => {
+  const target = useMemo(() => {
+    const timeStr = startTime ? startTime.slice(0, 5) : "00:00";
+    return new Date(`${startDate}T${timeStr}:00+07:00`);
+  }, [startDate, startTime]);
   const [parts, setParts] = useState<CountdownParts | null>(null);
   const [formatted, setFormatted] = useState("");
 
@@ -113,7 +117,8 @@ export function TournamentCountdown({ name, startDate, prizePool, organizer }: T
       </div>
     </article>
   );
-}
+};
+export { TournamentCountdown };
 
 function CountdownCell({ value, label }: { value: number; label: string }) {
   return (

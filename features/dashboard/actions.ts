@@ -761,6 +761,7 @@ export async function createTeamWithDivisionsAction(input: {
       }));
       const { data: createdDivs } = await admin.from("divisions").insert(newDivRows).select("id");
       if (createdDivs && createdDivs.length > 0) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         firstDivId = (createdDivs[0] as any).id;
       }
     }

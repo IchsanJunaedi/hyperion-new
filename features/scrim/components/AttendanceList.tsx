@@ -41,7 +41,7 @@ const STATUS_META: Record<
  * peer RSVPs trigger a `router.refresh()` and the latest data is
  * re-fetched.
  */
-export function AttendanceList({ scrimId, rows }: AttendanceListProps) {
+const AttendanceList = ({ scrimId, rows }: AttendanceListProps) => {
   const router = useRouter();
   useEffect(() => {
     const supabase = createClient();
@@ -113,4 +113,5 @@ export function AttendanceList({ scrimId, rows }: AttendanceListProps) {
       })}
     </ul>
   );
-}
+};
+export { AttendanceList };

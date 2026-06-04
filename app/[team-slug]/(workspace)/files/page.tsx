@@ -1,9 +1,9 @@
-import { FolderOpen } from "lucide-react";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 import { FileList } from "@/features/files/components/FileList";
 import { FileUpload } from "@/features/files/components/FileUpload";
 import { getOrgBySlug } from "@/features/teams/queries";
+import { getCurrentUserRole } from "@/features/roster/queries";
 
 export const dynamic = "force-dynamic";
 
@@ -16,6 +16,14 @@ export default async function FilesPage({ params }: FilesPageProps) {
   const organization = await getOrgBySlug(slug);
   if (!organization) notFound();
 
+  const currentUserRole = await getCurrentUserRole(organization.id);
+  if (!currentUserRole) redirect(`/${slug}`);
+
+  const canUpload =
+    currentUserRole === "owner" ||
+    currentUserRole === "manager" ||
+    currentUserRole === "coach";
+
   return (
     <div className="space-y-6 px-4 py-6 sm:px-8">
       <header>
@@ -23,17 +31,18 @@ export default async function FilesPage({ params }: FilesPageProps) {
           File Tim
         </h1>
         <p className="mt-1 text-sm text-white/60">
-          Upload dan kelola file tim: screenshot, replay, dokumen, strategi.
-          Hanya member yang bisa mengakses.
+          File tim: screenshot, replay, dokumen, strategi.
         </p>
       </header>
 
-      <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5 sm:p-6">
-        <h2 className="text-sm font-semibold text-white">Upload file baru</h2>
-        <div className="mt-3">
-          <FileUpload orgSlug={slug} orgId={organization.id} />
+      {canUpload && (
+        <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5 sm:p-6">
+          <h2 className="text-sm font-semibold text-white">Upload file baru</h2>
+          <div className="mt-3">
+            <FileUpload orgSlug={slug} orgId={organization.id} />
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5 sm:p-6">
         <h2 className="mb-4 text-sm font-semibold text-white">

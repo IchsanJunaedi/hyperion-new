@@ -2,114 +2,107 @@ import { Instagram } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-const PRODUCT_LINKS = [
-  { href: "/#features", label: "Features" },
-  { href: "/#pricing", label: "Pricing" },
-];
-const COMPANY_LINKS = [
-  { href: "/about", label: "About Us" },
-  { href: "/gallery", label: "Gallery" },
-];
-const LEGAL_LINKS = [
-  { href: "/privacy", label: "Privacy Policy" },
-  { href: "/terms", label: "Terms of Service" },
-  { href: "/cookies", label: "Cookie Policy" },
-  { href: "/contact", label: "Contact Us" },
-];
+const LINKS = {
+  Team: [
+    { href: "/about", label: "About Us" },
+    { href: "/gallery", label: "Gallery" },
+    { href: "/divisions", label: "Divisions" },
+  ],
+  Legal: [
+    { href: "/privacy", label: "Privacy Policy" },
+    { href: "/terms", label: "Terms of Service" },
+    { href: "/contact", label: "Contact Us" },
+  ],
+};
 
-export function Footer() {
+interface FooterSettings {
+  footer_tagline: string;
+  footer_instagram_handle: string;
+  footer_instagram_url: string;
+  footer_hashtag: string;
+}
+
+const DEFAULT_FOOTER_SETTINGS: FooterSettings = {
+  footer_tagline: "Empowering Young Talents to Rise and Rule. Est. 2020 — Palembang, Indonesia.",
+  footer_instagram_handle: "@hyperionteam.id",
+  footer_instagram_url: "https://www.instagram.com/hyperionteam.id/",
+  footer_hashtag: "#HypeWin",
+};
+
+interface FooterProps {
+  settings?: FooterSettings;
+}
+
+const Footer = ({ settings = DEFAULT_FOOTER_SETTINGS }: FooterProps) => {
   return (
-    <footer className="border-t border-white/5 px-6 pb-10 pt-16 text-sm text-white/55 sm:px-12 lg:px-20">
-      <div className="mx-auto grid max-w-6xl gap-10 md:grid-cols-[1.4fr_repeat(3,1fr)_1fr]">
-        <div className="flex items-start gap-3">
-          <Image
-            src="/brand/logo.jpg"
-            alt="Hyperion Team"
-            width={48}
-            height={48}
-            className="h-12 w-12 rounded-md object-cover"
-          />
-          <Link href="/" className="text-base font-semibold leading-tight text-white">
-            Hyperion
-            <br />
-            Team
-          </Link>
-        </div>
-
-        <div>
-          <h3 className="mb-3 text-sm font-semibold text-white">Products</h3>
-          <ul className="space-y-2">
-            {PRODUCT_LINKS.map((l) => (
-              <li key={l.href}>
-                <Link href={l.href} className="transition hover:text-white">
-                  {l.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div>
-          <h3 className="mb-3 text-sm font-semibold text-white">Company</h3>
-          <ul className="space-y-2">
-            {COMPANY_LINKS.map((l) => (
-              <li key={l.href}>
-                <Link href={l.href} className="transition hover:text-white">
-                  {l.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div>
-          <h3 className="mb-3 text-sm font-semibold text-white">
-            Legal &amp; Contact
-          </h3>
-          <ul className="space-y-2">
-            {LEGAL_LINKS.map((l) => (
-              <li key={l.href}>
-                <Link href={l.href} className="transition hover:text-white">
-                  {l.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div>
-          <h3 className="mb-3 text-sm font-semibold text-white">
-            Connect with us
-          </h3>
-          <Link
-            href="https://www.instagram.com/hyperionteam.id/"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Instagram"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 transition hover:bg-white/5 hover:text-white"
-          >
-            <Instagram className="h-4 w-4" />
-          </Link>
-        </div>
-      </div>
-
-      <div className="mx-auto mt-12 flex max-w-6xl flex-col gap-2 border-t border-white/5 pt-6 text-xs text-white/45 sm:flex-row sm:items-center sm:justify-between">
-        <p>
-          © {new Date().getFullYear()} Hyperion Team. All rights reserved.
-        </p>
-        <ul className="flex gap-6">
-          <li>
-            <Link href="/privacy" className="transition hover:text-white">
-              Privacy
+    <footer className="border-t border-white/12 bg-[#040D1C] px-5 pb-10 pt-16 sm:px-8 lg:px-10">
+      <div className="mx-auto max-w-7xl">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.6fr_1fr_1fr_1fr]">
+          {/* Brand */}
+          <div>
+            <Link href="/" className="flex items-center gap-2.5" aria-label="Hyperion Team">
+              <Image
+                src="/brand/logo.jpg"
+                alt="Hyperion Team"
+                width={36}
+                height={36}
+                className="h-9 w-9 rounded object-cover opacity-90"
+              />
+              <span className="text-sm font-black uppercase tracking-wider text-white">
+                Hyperion<span className="text-[#F5C400]">.</span>
+              </span>
             </Link>
-          </li>
-          <li>
-            <Link href="/terms" className="transition hover:text-white">
-              Terms
+            <p className="mt-4 max-w-xs text-xs leading-relaxed text-white/45">
+              {settings.footer_tagline}
+            </p>
+            <Link
+              href={settings.footer_instagram_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram"
+              className="mt-5 inline-flex items-center gap-2 text-xs text-white/45 transition hover:text-white"
+            >
+              <Instagram className="h-3.5 w-3.5" />
+              {settings.footer_instagram_handle}
             </Link>
-          </li>
-        </ul>
+          </div>
+
+          {/* Spacer on large screens */}
+          <div className="hidden lg:block" />
+
+          {/* Link columns */}
+          {Object.entries(LINKS).map(([title, items]) => (
+            <div key={title}>
+              <h3 className="mb-4 text-[10px] font-bold uppercase tracking-[0.3em] text-white/45">
+                {title}
+              </h3>
+              <ul className="space-y-2.5">
+                {items.map((l) => (
+                  <li key={l.href}>
+                    <Link
+                      href={l.href}
+                      className="text-xs text-white/45 transition hover:text-white"
+                    >
+                      {l.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+
+        {/* Bottom bar */}
+        <div className="mt-14 flex flex-col gap-2 border-t border-white/12 pt-6 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-[10px] uppercase tracking-widest text-white/38">
+            © {new Date().getFullYear()} Hyperion Team. All rights reserved.
+          </p>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-[#F5C400]/50">
+            {settings.footer_hashtag}
+          </p>
+        </div>
       </div>
     </footer>
   );
-}
+};
+export { Footer };

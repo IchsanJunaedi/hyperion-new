@@ -14,13 +14,13 @@ interface CoachNotesSectionProps {
   existingNotes: string | null;
 }
 
-export function CoachNotesSection({
+const CoachNotesSection = ({
   scrimId,
   orgSlug,
   orgId,
   isCoach,
   existingNotes,
-}: CoachNotesSectionProps) {
+}: CoachNotesSectionProps) => {
   const router = useRouter();
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(existingNotes ?? "");
@@ -101,4 +101,5 @@ export function CoachNotesSection({
       )}
     </article>
   );
-}
+};
+export { CoachNotesSection };

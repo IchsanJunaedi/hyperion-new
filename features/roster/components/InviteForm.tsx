@@ -1,7 +1,7 @@
-﻿"use client";
+"use client";
 
-import { Copy, Loader2, X } from "lucide-react";
-import { useState, useTransition } from "react";
+import { ChevronDown, Copy, Loader2, X } from "lucide-react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { notify } from "@/features/dashboard/components/NotifyModal";
 
 import type { MemberRole } from "@/types/database";
@@ -11,6 +11,7 @@ interface InviteFormProps {
   orgSlug: string;
   orgId: string;
   divisions: Array<{ id: string; name: string }>;
+  members?: Array<{ role: string; division_id: string | null }>;
   onClose: () => void;
 }
 
@@ -21,12 +22,55 @@ const ROLES: Array<{ value: MemberRole; label: string }> = [
   { value: "manager", label: "Manajer" },
 ];
 
-export function InviteForm({
+const InviteForm = ({
   orgSlug,
   orgId,
   divisions,
+  members = [],
   onClose,
-}: InviteFormProps) {
+}: InviteFormProps) => {
+  const [selectedDivisionId, setSelectedDivisionId] = useState<string>(
+    divisions[0]?.id ?? ""
+  );
+  const [divisionOpen, setDivisionOpen] = useState(false);
+  const [roleOpen, setRoleOpen] = useState(false);
+  const [selectedRole, setSelectedRole] = useState<MemberRole>("member");
+
+  const availableRoles = ROLES.filter((r) => {
+    if (r.value === "manager" || r.value === "captain") {
+      const divId = selectedDivisionId || null;
+      const hasRole = members.some(
+        (m) => m.role === r.value && m.division_id === divId
+      );
+      return !hasRole;
+    }
+    return true;
+  });
+
+  // Keep selected role valid when division changes
+  useEffect(() => {
+    const isAvailable = availableRoles.some((r) => r.value === selectedRole);
+    if (!isAvailable && availableRoles.length > 0 && availableRoles[0]) {
+      setSelectedRole(availableRoles[0].value);
+    }
+  }, [selectedDivisionId, availableRoles, selectedRole]);
+
+  const divisionRef = useRef<HTMLDivElement>(null);
+  const roleRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleOutsideClick(event: MouseEvent) {
+      if (divisionRef.current && !divisionRef.current.contains(event.target as Node)) {
+        setDivisionOpen(false);
+      }
+      if (roleRef.current && !roleRef.current.contains(event.target as Node)) {
+        setRoleOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, []);
+
   const [pending, startTransition] = useTransition();
   const [inviteUrl, setInviteUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -101,50 +145,99 @@ export function InviteForm({
       </div>
 
       {divisions.length > 0 && (
-        <Field label="Divisi (opsional)">
-          <select
-            name="division_id"
-            className="h-9 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
-          >
-            <option value="">— Tanpa divisi —</option>
-            {divisions.map((d) => (
-              <option key={d.id} value={d.id}>
-                {d.name}
-              </option>
-            ))}
-          </select>
+        <Field label="Divisi">
+          <div ref={divisionRef} className="relative">
+            <button
+              type="button"
+              onClick={() => setDivisionOpen(!divisionOpen)}
+              className="flex h-9 w-full items-center justify-between rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white transition hover:bg-zinc-800 focus:border-yellow-400 focus:outline-none"
+            >
+              <span>
+                {divisions.find((d) => d.id === selectedDivisionId)?.name ?? "Pilih divisi..."}
+              </span>
+              <ChevronDown className={`h-4 w-4 text-white/50 transition-transform duration-200 ${divisionOpen ? 'rotate-180' : ''}`} />
+            </button>
+
+            {divisionOpen && (
+              <div className="absolute left-0 z-50 mt-1.5 w-full rounded-md border border-white/10 bg-zinc-950/95 p-1 shadow-2xl backdrop-blur-xl animate-in fade-in-50 slide-in-from-top-1 duration-100">
+                {divisions.map((d) => (
+                  <button
+                    key={d.id}
+                    type="button"
+                    onClick={() => {
+                      setSelectedDivisionId(d.id);
+                      setDivisionOpen(false);
+                    }}
+                    className={`flex w-full items-center rounded px-3 py-1.5 text-left text-sm transition ${
+                      selectedDivisionId === d.id
+                        ? "bg-yellow-400/10 text-yellow-400 font-semibold"
+                        : "text-white/80 hover:bg-white/5 hover:text-white"
+                    }`}
+                  >
+                    {d.name}
+                  </button>
+                ))}
+              </div>
+            )}
+            <input type="hidden" name="division_id" value={selectedDivisionId} />
+          </div>
         </Field>
       )}
 
       <Field label="Role">
-        <select
-          name="role"
-          defaultValue="member"
-          className="h-9 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
-        >
-          {ROLES.map((r) => (
-            <option key={r.value} value={r.value}>
-              {r.label}
-            </option>
-          ))}
-        </select>
+        <div ref={roleRef} className="relative">
+          <button
+            type="button"
+            onClick={() => setRoleOpen(!roleOpen)}
+            className="flex h-9 w-full items-center justify-between rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white transition hover:bg-zinc-800 focus:border-yellow-400 focus:outline-none"
+          >
+            <span>
+              {ROLES.find((r) => r.value === selectedRole)?.label ?? "Pilih role..."}
+            </span>
+            <ChevronDown className={`h-4 w-4 text-white/50 transition-transform duration-200 ${roleOpen ? 'rotate-180' : ''}`} />
+          </button>
+
+          {roleOpen && (
+            <div className="absolute left-0 z-50 mt-1.5 w-full rounded-md border border-white/10 bg-zinc-950/95 p-1 shadow-2xl backdrop-blur-xl animate-in fade-in-50 slide-in-from-top-1 duration-100">
+              {availableRoles.map((r) => (
+                <button
+                  key={r.value}
+                  type="button"
+                  onClick={() => {
+                    setSelectedRole(r.value);
+                    setRoleOpen(false);
+                  }}
+                  className={`flex w-full items-center rounded px-3 py-1.5 text-left text-sm transition ${
+                    selectedRole === r.value
+                      ? "bg-yellow-400/10 text-yellow-400 font-semibold"
+                      : "text-white/80 hover:bg-white/5 hover:text-white"
+                  }`}
+                >
+                  {r.label}
+                </button>
+              ))}
+            </div>
+          )}
+          <input type="hidden" name="role" value={selectedRole} />
+        </div>
       </Field>
 
-      <Field label="Email (opsional)">
+      <Field label="Email">
         <input
           name="email"
           type="email"
-          placeholder="member@email.com"
-          className="h-9 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white placeholder:text-white/30 focus:border-yellow-400 focus:outline-none"
+          className="h-9 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
         />
       </Field>
 
-      <Field label="Nomor WA (opsional)">
+      <Field label="Nomor WA">
         <input
           name="phone_wa"
           type="tel"
-          placeholder="628xxxxxxxxxx"
-          className="h-9 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white placeholder:text-white/30 focus:border-yellow-400 focus:outline-none"
+          inputMode="numeric"
+          maxLength={15}
+          onInput={(e) => { e.currentTarget.value = e.currentTarget.value.replace(/\D/g, ""); }}
+          className="h-9 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
         />
       </Field>
 
@@ -168,7 +261,8 @@ export function InviteForm({
       </button>
     </form>
   );
-}
+};
+export { InviteForm };
 
 function Field({
   label,

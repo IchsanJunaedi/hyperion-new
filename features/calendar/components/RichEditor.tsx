@@ -23,14 +23,14 @@ interface RichEditorProps {
  * - Basic formatting indicators
  * - Autosave functionality
  */
-export function RichEditor({
+const RichEditor = ({
   value = null,
   onChange,
   onSave,
   placeholder = "Tulis catatan, checklist, atau daftar...",
   editable = true,
   minHeight = "300px",
-}: RichEditorProps) {
+}: RichEditorProps) => {
   const [content, setContent] = useState<string>(() => {
     if (typeof value === "string") return value;
     if (value && typeof value === "object" && "content" in value) {
@@ -174,4 +174,5 @@ export function RichEditor({
       </p>
     </div>
   );
-}
+};
+export { RichEditor };

@@ -20,11 +20,11 @@ interface RoleSelectorProps {
   currentRole: MemberRole;
 }
 
-export function RoleSelector({
+const RoleSelector = ({
   orgSlug,
   memberId,
   currentRole,
-}: RoleSelectorProps) {
+}: RoleSelectorProps) => {
   const [pending, startTransition] = useTransition();
 
   function handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
@@ -57,4 +57,5 @@ export function RoleSelector({
       {pending && <Loader2 className="h-3 w-3 animate-spin text-white/40" />}
     </div>
   );
-}
+};
+export { RoleSelector };

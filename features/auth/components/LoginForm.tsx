@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
@@ -20,7 +20,7 @@ interface LoginFormProps {
   next?: string;
 }
 
-export function LoginForm({ next = "/" }: LoginFormProps) {
+const LoginForm = ({ next = "/" }: LoginFormProps) => {
   const [serverError, setServerError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
@@ -60,16 +60,8 @@ export function LoginForm({ next = "/" }: LoginFormProps) {
         ) : null}
       </div>
 
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <Label htmlFor="password">Password</Label>
-          <Link
-            href="/forgot-password"
-            className="text-xs text-muted-foreground underline-offset-4 hover:underline"
-          >
-            Lupa password?
-          </Link>
-        </div>
+      <div className="space-y-2 relative">
+        <Label htmlFor="password">Password</Label>
         <Input
           id="password"
           type="password"
@@ -77,6 +69,14 @@ export function LoginForm({ next = "/" }: LoginFormProps) {
           aria-invalid={errors.password ? "true" : undefined}
           {...register("password")}
         />
+        <div className="absolute right-0 top-0">
+          <Link
+            href="/forgot-password"
+            className="text-xs text-muted-foreground underline-offset-4 hover:underline"
+          >
+            Lupa password?
+          </Link>
+        </div>
         {errors.password ? (
           <p className="text-xs text-destructive">{errors.password.message}</p>
         ) : null}
@@ -111,4 +111,5 @@ export function LoginForm({ next = "/" }: LoginFormProps) {
       </p>
     </form>
   );
-}
+};
+export { LoginForm };

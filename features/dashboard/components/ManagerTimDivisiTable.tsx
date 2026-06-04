@@ -21,7 +21,7 @@ interface ManagerTimDivisiTableProps {
   allDivisions?: Array<{ id: string; name: string; organizationId: string | null }>;
 }
 
-export function ManagerTimDivisiTable({ rows, allDivisions = [] }: ManagerTimDivisiTableProps) {
+const ManagerTimDivisiTable = ({ rows, allDivisions = [] }: ManagerTimDivisiTableProps) => {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [deleteTarget, setDeleteTarget] = useState<ManagerRow | null>(null);
@@ -283,4 +283,5 @@ export function ManagerTimDivisiTable({ rows, allDivisions = [] }: ManagerTimDiv
       />
     </>
   );
-}
+};
+export { ManagerTimDivisiTable };

@@ -18,13 +18,13 @@ interface FileUploadProps {
   onUpload?: (path: string, url: string) => void;
 }
 
-export function FileUpload({
+const FileUpload = ({
   orgSlug,
   orgId,
   folder = "files",
   maxSize = 50 * 1024 * 1024,
   onUpload,
-}: FileUploadProps) {
+}: FileUploadProps) => {
   const [uploading, setUploading] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -72,14 +72,14 @@ export function FileUpload({
         file_size: file.size,
       });
       if (!dbResult.ok) {
-        // Non-fatal: storage upload succeeded; DB record failed.
-        notify.warning(
-          `File diupload tapi gagal dicatat ke database: ${dbResult.message}`,
+        notify.error(
+          `Gagal mencatat file ke database: ${dbResult.message}`,
         );
-      } else {
-        notify.success("File berhasil diupload");
+        setFileName(null);
+        return;
       }
 
+      notify.success("File berhasil diupload");
       onUpload?.(filePath, url);
     } catch {
       notify.error("Gagal mengupload file");
@@ -132,4 +132,5 @@ export function FileUpload({
       </p>
     </div>
   );
-}
+};
+export { FileUpload };

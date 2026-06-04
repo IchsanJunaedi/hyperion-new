@@ -2,8 +2,13 @@ import { Eye, Lock, Users } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { getStrategyNote } from "@/features/strategy/queries";
+import { createClient } from "@/lib/supabase/server";
+import { getStrategyNote, listStrategyComments } from "@/features/strategy/queries";
 import { StrategyNoteActions } from "@/features/strategy/components/StrategyNoteActions";
+import { StrategyComments } from "@/features/strategy/components/StrategyComments";
+import { ContextFiles } from "@/features/files/components/ContextFiles";
+import { getLinkedFiles } from "@/features/files/queries";
+import { getCurrentUserRole } from "@/features/roster/queries";
 
 export const dynamic = "force-dynamic";
 
@@ -21,8 +26,22 @@ export default async function StrategyNoteDetailPage({
   params,
 }: StrategyNoteDetailPageProps) {
   const { "team-slug": slug, id } = await params;
-  const note = await getStrategyNote(id);
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const [note, comments] = await Promise.all([
+    getStrategyNote(id),
+    listStrategyComments(id),
+  ]);
   if (!note) notFound();
+
+  const [currentUserRole, linkedFiles] = await Promise.all([
+    getCurrentUserRole(note.organization_id),
+    getLinkedFiles(note.organization_id, "strategy", id),
+  ]);
+  const canUploadFiles = ["coach", "captain", "manager", "owner"].includes(currentUserRole ?? "");
 
   const date = new Date(note.updated_at).toLocaleString("id-ID", {
     weekday: "long",
@@ -34,7 +53,7 @@ export default async function StrategyNoteDetailPage({
     timeZone: "Asia/Jakarta",
   });
 
-  const vis = VISIBILITY_LABELS[note.visibility] ?? VISIBILITY_LABELS["division"];
+  const vis = VISIBILITY_LABELS[note.visibility] ?? VISIBILITY_LABELS["division"] ?? { label: "Divisi saja", Icon: Users };
   const VisIcon = vis.Icon;
 
   return (
@@ -75,6 +94,29 @@ export default async function StrategyNoteDetailPage({
       </article>
 
       <StrategyNoteActions orgSlug={slug} noteId={note.id} />
+
+      {(linkedFiles.length > 0 || canUploadFiles) && (
+        <article className="max-w-3xl rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
+          <ContextFiles
+            orgId={note.organization_id}
+            orgSlug={slug}
+            refType="strategy"
+            refId={id}
+            canUpload={canUploadFiles}
+            initialFiles={linkedFiles}
+          />
+        </article>
+      )}
+
+      <div className="max-w-3xl">
+        <StrategyComments
+          orgSlug={slug}
+          noteId={note.id}
+          currentUserId={user?.id ?? ""}
+          currentUserDisplayName={(user?.user_metadata?.["display_name"] as string | undefined) ?? user?.email ?? "Member"}
+          comments={comments}
+        />
+      </div>
     </div>
   );
 }

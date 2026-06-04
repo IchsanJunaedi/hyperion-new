@@ -17,9 +17,9 @@ interface ContentActionButtonsProps {
   isCreatedByMe: boolean;
 }
 
-export function ContentActionButtons({
+const ContentActionButtons = ({
   contentId, orgId, currentStatus, isOwner, isCreatedByMe,
-}: ContentActionButtonsProps) {
+}: ContentActionButtonsProps) => {
   const router = useRouter();
   const { success, error: notifyError } = useNotify();
   const [pending, startTransition] = useTransition();
@@ -127,4 +127,5 @@ export function ContentActionButtons({
       />
     </div>
   );
-}
+};
+export { ContentActionButtons };

@@ -5,6 +5,7 @@ import { useState } from "react";
 
 import { AvailabilityBadge } from "@/features/roster/components/AvailabilityBadge";
 import { AvailabilitySelector } from "@/features/roster/components/AvailabilitySelector";
+import { MainRoleBadge, MainRoleSelector } from "@/features/roster/components/MainRoleSelector";
 import type { MemberRole } from "@/types/database";
 
 import type { RosterMember } from "../queries";
@@ -12,6 +13,7 @@ import { InviteForm } from "./InviteForm";
 import { KickMemberButton } from "./KickMemberButton";
 import { RoleBadge } from "./RoleBadge";
 import { RoleSelector } from "./RoleSelector";
+import type { MainRole } from "../actions/updateMainRole";
 
 interface RosterTableProps {
   members: RosterMember[];
@@ -22,22 +24,40 @@ interface RosterTableProps {
   divisions: Array<{ id: string; name: string }>;
 }
 
-export function RosterTable({
+const RosterTable = ({
   members,
   currentUserId,
   currentUserRole,
   orgSlug,
   orgId,
   divisions,
-}: RosterTableProps) {
+}: RosterTableProps) => {
   const [showInviteForm, setShowInviteForm] = useState(false);
   const isCaptainOrAbove =
     currentUserRole === "owner" || currentUserRole === "captain";
+  const isManagerOrAbove =
+    currentUserRole === "owner" || currentUserRole === "manager";
+  const canAssignMainRole =
+    currentUserRole === "owner" ||
+    currentUserRole === "manager" ||
+    currentUserRole === "coach";
+
+  const ROLE_ORDER: Record<string, number> = { owner: 0, manager: 1, coach: 2, captain: 3, member: 4 };
+
+  const sortedMembers = [...members].sort((a, b) => {
+    const roleA = ROLE_ORDER[a.role] ?? 99;
+    const roleB = ROLE_ORDER[b.role] ?? 99;
+    if (roleA !== roleB) return roleA - roleB;
+
+    const nameA = (a.display_name ?? a.username ?? "").toLowerCase();
+    const nameB = (b.display_name ?? b.username ?? "").toLowerCase();
+    return nameA.localeCompare(nameB);
+  });
 
   return (
     <div className="space-y-4">
       {/* Invite panel */}
-      {isCaptainOrAbove && (
+      {isManagerOrAbove && (
         <div>
           {showInviteForm ? (
             <div className="rounded-xl border border-white/10 bg-zinc-900/40 p-5">
@@ -45,6 +65,7 @@ export function RosterTable({
                 orgSlug={orgSlug}
                 orgId={orgId}
                 divisions={divisions}
+                members={members}
                 onClose={() => setShowInviteForm(false)}
               />
             </div>
@@ -69,7 +90,7 @@ export function RosterTable({
           </p>
         )}
 
-        {members.map((m) => {
+        {sortedMembers.map((m, idx) => {
           const isSelf = m.user_id === currentUserId;
           // RLS: captain+ can update any non-owner member; cannot reassign owner role
           const canEditRole =
@@ -121,11 +142,21 @@ export function RosterTable({
                       </span>
                     )}
                   </p>
-                  {m.division_name && (
-                    <p className="truncate text-xs text-white/50">
-                      {m.division_name}
-                    </p>
-                  )}
+                  <p className="flex flex-wrap items-center gap-x-1.5 text-xs text-white/50">
+                    {m.division_name && <span>{m.division_name}</span>}
+                    {m.position && (
+                      <>
+                        {m.division_name && <span className="text-white/20">·</span>}
+                        <span>{m.position}</span>
+                      </>
+                    )}
+                    {m.jersey_number != null && (
+                      <>
+                        {(m.division_name || m.position) && <span className="text-white/20">·</span>}
+                        <span className="font-mono">#{m.jersey_number}</span>
+                      </>
+                    )}
+                  </p>
                 </div>
               </div>
 
@@ -144,6 +175,25 @@ export function RosterTable({
                   )}
                 </div>
 
+                {/* In-game role (only for captain/member) */}
+                {(m.role === "captain" || m.role === "member") && (
+                  <div className="flex shrink-0 items-center justify-start sm:w-28">
+                    {canAssignMainRole ? (
+                      <MainRoleSelector
+                        orgSlug={orgSlug}
+                        memberId={m.id}
+                        currentMainRole={m.main_role as MainRole}
+                        direction={idx >= sortedMembers.length - 2 && idx > 0 ? "up" : "down"}
+                      />
+                    ) : (
+                      <MainRoleBadge mainRole={m.main_role as MainRole} />
+                    )}
+                  </div>
+                )}
+                {m.role !== "captain" && m.role !== "member" && (
+                  <div className="shrink-0 sm:w-28" />
+                )}
+
                 {/* Availability */}
                 <div className="flex shrink-0 justify-start sm:w-36">
                   {canChangeAvailability ? (
@@ -151,6 +201,7 @@ export function RosterTable({
                       orgSlug={orgSlug}
                       memberId={m.id}
                       currentAvailability={m.availability}
+                      direction={idx >= sortedMembers.length - 2 && idx > 0 ? "up" : "down"}
                     />
                   ) : (
                     <AvailabilityBadge availability={m.availability} />
@@ -178,4 +229,5 @@ export function RosterTable({
       </div>
     </div>
   );
-}
+};
+export { RosterTable };

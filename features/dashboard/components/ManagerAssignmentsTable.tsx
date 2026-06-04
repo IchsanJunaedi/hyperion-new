@@ -27,12 +27,12 @@ interface ManagerAssignmentsTableProps {
   allDivisions: Array<{ id: string; name: string; organization_id: string }>;
 }
 
-export function ManagerAssignmentsTable({
+const ManagerAssignmentsTable = ({
   members,
   profiles,
   orgs,
   allDivisions,
-}: ManagerAssignmentsTableProps) {
+}: ManagerAssignmentsTableProps) => {
   const [selectedOrg, setSelectedOrg] = useState<OrgDetail | null>(null);
 
   const managers = members.filter((m) => m.role === "manager" && m.is_active);
@@ -54,7 +54,7 @@ export function ManagerAssignmentsTable({
   if (managers.length === 0) {
     return (
       <p className="rounded-lg border border-white/5 bg-white/[0.02] px-4 py-6 text-center text-sm text-white/40">
-        Belum ada Manager yang di-assign. Gunakan "Assign Role" untuk menambahkan.
+        Belum ada Manager yang di-assign. Gunakan &quot;Assign Role&quot; untuk menambahkan.
       </p>
     );
   }
@@ -118,4 +118,5 @@ export function ManagerAssignmentsTable({
       />
     </>
   );
-}
+};
+export { ManagerAssignmentsTable };

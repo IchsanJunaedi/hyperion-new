@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const matchFormatSchema = z.enum(["bo1", "bo2", "bo3", "bo5", "bo7", "4match", "scrimmage"]);
+export const matchFormatSchema = z.enum(["bo1", "bo2", "bo3", "bo5", "bo7", "4match"]);
 
 export const attendanceStatusSchema = z.enum([
   "confirmed",

@@ -1,0 +1,1 @@
+ALTER TABLE trial_applicants ADD COLUMN IF NOT EXISTS cv_url TEXT;

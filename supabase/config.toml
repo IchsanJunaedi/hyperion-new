@@ -74,5 +74,9 @@ policy = "oneshot"
 verify_jwt = false
 import_map = "./functions/process-wa-queue/deno.json"
 
+[functions.weekly-digest]
+verify_jwt = false
+import_map = "./functions/weekly-digest/deno.json"
+
 [analytics]
 enabled = false

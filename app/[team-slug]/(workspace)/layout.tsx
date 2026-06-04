@@ -34,41 +34,38 @@ export default async function WorkspaceLayout({
   params,
 }: WorkspaceLayoutProps) {
   const { "team-slug": slug } = await params;
-  const organization = await getOrgBySlug(slug);
-  if (!organization) notFound();
 
+  // Phase 1: org lookup + auth in parallel
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
+  const [organization, { data: { user } }] = await Promise.all([
+    getOrgBySlug(slug),
+    supabase.auth.getUser(),
+  ]);
+  if (!organization) notFound();
   if (!user) redirect(`/login?next=/${slug}`);
 
-  // Owner (by email) has access to all workspaces
   const ownerEmail = process.env.OWNER_EMAIL;
   const isOwner = user.email === ownerEmail;
 
-  if (!isOwner) {
-    const member = await isCurrentUserMember(organization.id);
-    if (!member) redirect(`/${slug}`);
-  }
+  // Phase 2: member check + team data + role lookup all in parallel
+  const [memberResult, teamData, membershipRow] = await Promise.all([
+    isOwner ? Promise.resolve(true) : isCurrentUserMember(organization.id),
+    getPublicTeamData(organization),
+    isOwner
+      ? Promise.resolve({ data: null as { role: string } | null })
+      : supabase
+          .from("team_members")
+          .select("role")
+          .eq("user_id", user.id)
+          .eq("organization_id", organization.id)
+          .eq("is_active", true)
+          .maybeSingle(),
+  ]);
 
-  const { divisions } = await getPublicTeamData(organization);
+  if (!isOwner && !memberResult) redirect(`/${slug}`);
 
-  // Get user's role in this org
-  let userRole: string | undefined;
-  if (isOwner) {
-    userRole = "owner";
-  } else {
-    const { data: membership } = await supabase
-      .from("team_members")
-      .select("role")
-      .eq("user_id", user.id)
-      .eq("organization_id", organization.id)
-      .eq("is_active", true)
-      .maybeSingle();
-    userRole = membership?.role ?? undefined;
-  }
+  const { divisions } = teamData;
+  const userRole: string | undefined = isOwner ? "owner" : (membershipRow.data?.role ?? undefined);
 
   return (
     <div className="flex min-h-screen flex-1">
@@ -89,7 +86,7 @@ export default async function WorkspaceLayout({
           role: userRole,
         }}
       />
-      <div className="flex min-w-0 flex-1 flex-col bg-[#191919] min-h-screen pb-20 md:pb-0">
+      <div className="print-main flex min-w-0 flex-1 flex-col bg-[#191919] min-h-screen pb-20 md:pb-0">
         <WorkspaceTopbar organization={organization} userId={user.id} />
         <WorkspaceBreadcrumb
           orgName={organization.name}

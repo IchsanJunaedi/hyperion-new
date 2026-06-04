@@ -11,7 +11,7 @@ interface StrategyNoteFormProps {
   divisions: Array<{ id: string; name: string }>;
 }
 
-export function StrategyNoteForm({ orgSlug, divisions }: StrategyNoteFormProps) {
+const StrategyNoteForm = ({ orgSlug, divisions }: StrategyNoteFormProps) => {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [globalError, setGlobalError] = useState<string | null>(null);
@@ -48,7 +48,6 @@ export function StrategyNoteForm({ orgSlug, divisions }: StrategyNoteFormProps) 
           name="title"
           required
           maxLength={200}
-          placeholder="mis. Draft pick vs Team Spartan"
           className="h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
         />
       </Field>
@@ -59,7 +58,6 @@ export function StrategyNoteForm({ orgSlug, divisions }: StrategyNoteFormProps) 
           required
           rows={12}
           maxLength={20000}
-          placeholder="Tulis strategi, draft pick, analisis lawan, dll..."
           className="w-full rounded-md border border-white/10 bg-zinc-900 px-3 py-2 font-mono text-sm text-white focus:border-yellow-400 focus:outline-none"
         />
       </Field>
@@ -83,7 +81,6 @@ export function StrategyNoteForm({ orgSlug, divisions }: StrategyNoteFormProps) 
         <input
           name="tags"
           maxLength={500}
-          placeholder="mis. draft, valorant, bind, defense"
           className="h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
         />
       </Field>
@@ -116,7 +113,8 @@ export function StrategyNoteForm({ orgSlug, divisions }: StrategyNoteFormProps) 
       </button>
     </form>
   );
-}
+};
+export { StrategyNoteForm };
 
 function Field({
   label,

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Loader2, Pencil, Save, X } from "lucide-react";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
@@ -23,7 +24,7 @@ interface OrgSettingsCardProps {
   }>;
 }
 
-export function OrgSettingsCard({ org, divisions }: OrgSettingsCardProps) {
+const OrgSettingsCard = ({ org, divisions }: OrgSettingsCardProps) => {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [editing, setEditing] = useState(false);
@@ -68,13 +69,21 @@ export function OrgSettingsCard({ org, divisions }: OrgSettingsCardProps) {
             </button>
           </div>
         ) : (
-          <div className="flex items-center gap-3">
-            <h3 className="text-lg font-semibold text-[#E5E2E1]">{org.name}</h3>
-            <span className="text-xs text-[#6B6A68]">/{org.slug}</span>
-            <button onClick={() => setEditing(true)} className="p-1 text-[#9B9A97] hover:text-[#D4D4D4] hover:bg-[#2C2C2C] rounded">
-              <Pencil className="h-3.5 w-3.5" />
-            </button>
-          </div>
+          <>
+            <div className="flex items-center gap-3">
+              <h3 className="text-lg font-semibold text-[#E5E2E1]">{org.name}</h3>
+              <span className="text-xs text-[#6B6A68]">/{org.slug}</span>
+              <button onClick={() => setEditing(true)} className="p-1 text-[#9B9A97] hover:text-[#D4D4D4] hover:bg-[#2C2C2C] rounded cursor-pointer">
+                <Pencil className="h-3.5 w-3.5" />
+              </button>
+            </div>
+            <Link
+              href={`/${org.slug}`}
+              className="inline-flex h-8 items-center gap-1.5 rounded bg-white/10 hover:bg-white/15 px-3 text-xs font-medium text-[#E5E2E1] transition-colors cursor-pointer"
+            >
+              Buka Workspace
+            </Link>
+          </>
         )}
       </div>
 
@@ -101,4 +110,5 @@ export function OrgSettingsCard({ org, divisions }: OrgSettingsCardProps) {
       </div>
     </div>
   );
-}
+};
+export { OrgSettingsCard };

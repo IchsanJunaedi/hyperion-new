@@ -3,6 +3,8 @@
 import { useState } from "react";
 
 import { AvailabilityBadge } from "@/features/roster/components/AvailabilityBadge";
+import { MainRoleBadge, MainRoleSelector } from "@/features/roster/components/MainRoleSelector";
+import type { MainRole } from "@/features/roster/actions/updateMainRole";
 import { RemoveMemberButton } from "./RemoveMemberButton";
 import { UserDetailModal, type UserDetail } from "./UserDetailModal";
 
@@ -20,7 +22,9 @@ interface ManageMember {
   role: string;
   division: string | null;
   orgName: string | null;
+  orgSlug: string;
   availability: "active" | "hiatus" | "unavailable";
+  mainRole: string | null;
 }
 
 interface ManageMemberTableProps {
@@ -43,12 +47,12 @@ function RoleBadge({ role }: { role: string }) {
   );
 }
 
-export function ManageMemberTable({ members, orgName }: ManageMemberTableProps) {
+const ManageMemberTable = ({ members, orgName }: ManageMemberTableProps) => {
   const [selected, setSelected] = useState<UserDetail | null>(null);
 
   return (
     <>
-      <div className="overflow-x-auto rounded-lg border border-white/5">
+      <div className="overflow-x-auto md:overflow-visible sidebar-scroll rounded-lg border border-white/5">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-white/5 bg-white/[0.02]">
@@ -56,13 +60,14 @@ export function ManageMemberTable({ members, orgName }: ManageMemberTableProps) 
               <th className="px-4 py-3 text-left text-xs font-medium text-white/50">Username</th>
               <th className="px-4 py-3 text-left text-xs font-medium text-white/50">Divisi</th>
               <th className="px-4 py-3 text-left text-xs font-medium text-white/50">Role</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-white/50">Role Ingame</th>
               <th className="px-4 py-3 text-left text-xs font-medium text-white/50">WA</th>
               <th className="px-4 py-3 text-left text-xs font-medium text-white/50">Status</th>
               <th className="px-4 py-3 text-right text-xs font-medium text-white/50">Aksi</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-white/5">
-            {members.map((m) => (
+            {members.map((m, idx) => (
               <tr key={m.id} className="transition hover:bg-white/[0.04]">
                 <td
                   className="px-4 py-3 text-white/80 cursor-pointer hover:text-yellow-400"
@@ -90,6 +95,18 @@ export function ManageMemberTable({ members, orgName }: ManageMemberTableProps) 
                 <td className="px-4 py-3">
                   <RoleBadge role={m.role} />
                 </td>
+                <td className="px-4 py-3">
+                  {(m.role === "captain" || m.role === "member") ? (
+                    <MainRoleSelector
+                      orgSlug={m.orgSlug}
+                      memberId={m.id}
+                      currentMainRole={m.mainRole as MainRole}
+                      direction={idx >= members.length - 2 && idx > 0 ? "up" : "down"}
+                    />
+                  ) : (
+                    <MainRoleBadge mainRole={null} />
+                  )}
+                </td>
                 <td className="px-4 py-3 text-white/60">{m.phoneWa ?? "—"}</td>
                 <td className="px-4 py-3"><AvailabilityBadge availability={m.availability} /></td>
                 <td className="px-4 py-3 text-right">
@@ -101,7 +118,7 @@ export function ManageMemberTable({ members, orgName }: ManageMemberTableProps) 
             ))}
             {members.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-4 py-6 text-center text-sm text-white/40">
+                <td colSpan={8} className="px-4 py-6 text-center text-sm text-white/40">
                   Belum ada member di tim ini.
                 </td>
               </tr>
@@ -112,4 +129,5 @@ export function ManageMemberTable({ members, orgName }: ManageMemberTableProps) 
       <UserDetailModal user={selected} onClose={() => setSelected(null)} />
     </>
   );
-}
+};
+export { ManageMemberTable };

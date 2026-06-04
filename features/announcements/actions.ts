@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
+import { logAudit } from "@/lib/audit";
 import { createClient } from "@/lib/supabase/server";
 import {
   createAnnouncementSchema,
@@ -64,6 +65,7 @@ export async function createAnnouncementAction(
       body: parsed.data.body,
       is_pinned: parsed.data.is_pinned,
       send_wa_blast: parsed.data.send_wa_blast,
+      requires_ack: parsed.data.requires_ack,
       published_at: new Date().toISOString(),
     })
     .select("*")
@@ -78,6 +80,14 @@ export async function createAnnouncementAction(
           : (error?.message ?? "Gagal membuat pengumuman"),
     };
   }
+
+  await logAudit({
+    actorId: user.id,
+    action: "announcement.create",
+    entityType: "announcement",
+    entityId: announcement.id,
+    metadata: { title: announcement.title, orgId: org.id },
+  });
 
   // Fan-out WA blast if requested
   if (parsed.data.send_wa_blast) {
@@ -192,6 +202,14 @@ export async function updateAnnouncementAction(
     };
   }
 
+  await logAudit({
+    actorId: user.id,
+    action: "announcement.update",
+    entityType: "announcement",
+    entityId: parsed.data.id,
+    metadata: { title: parsed.data.title },
+  });
+
   revalidatePath(`/${orgSlug}/announcements`);
   revalidatePath(`/${orgSlug}/announcements/${parsed.data.id}`);
   revalidatePath(`/${orgSlug}`);
@@ -226,8 +244,38 @@ export async function deleteAnnouncementAction(
     };
   }
 
+  await logAudit({
+    actorId: user.id,
+    action: "announcement.delete",
+    entityType: "announcement",
+    entityId: announcementId,
+  });
+
   revalidatePath(`/${orgSlug}/announcements`);
   revalidatePath(`/${orgSlug}`);
+  return { ok: true };
+}
+
+/**
+ * Explicitly acknowledge a requires_ack announcement. Any authenticated member.
+ */
+export async function acknowledgeAnnouncementAction(
+  orgSlug: string,
+  announcementId: string,
+): Promise<ActionError | { ok: true }> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { ok: false, message: "Anda harus login" };
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await (supabase as any)
+    .from("announcement_reads")
+    .upsert(
+      { announcement_id: announcementId, user_id: user.id },
+      { onConflict: "announcement_id,user_id", ignoreDuplicates: true },
+    );
+
+  revalidatePath(`/${orgSlug}/announcements/${announcementId}`);
   return { ok: true };
 }
 

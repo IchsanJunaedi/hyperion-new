@@ -14,7 +14,7 @@ const STATUS_LABEL: Record<ScrimStatus, string> = {
   cancelled: "Batal",
 };
 
-export function ScrimStatusBadge({ status }: { status: ScrimStatus }) {
+const ScrimStatusBadge = ({ status }: { status: ScrimStatus }) => {
   return (
     <span
       className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide ${STATUS_STYLE[status]}`}
@@ -22,4 +22,5 @@ export function ScrimStatusBadge({ status }: { status: ScrimStatus }) {
       {STATUS_LABEL[status]}
     </span>
   );
-}
+};
+export { ScrimStatusBadge };

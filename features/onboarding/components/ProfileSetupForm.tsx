@@ -20,7 +20,7 @@ interface ProfileSetupFormProps {
   };
 }
 
-export function ProfileSetupForm({ lockedValues, defaultValues }: ProfileSetupFormProps) {
+const ProfileSetupForm = ({ lockedValues, defaultValues }: ProfileSetupFormProps) => {
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
@@ -130,7 +130,8 @@ export function ProfileSetupForm({ lockedValues, defaultValues }: ProfileSetupFo
             <input
               name="game_mlbb"
               value={mlbbId}
-              onChange={(e) => setMlbbId(e.target.value)}
+              inputMode="numeric"
+              onChange={(e) => setMlbbId(e.target.value.replace(/\D/g, ""))}
               className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm focus:border-primary focus:outline-none"
             />
           </Field>
@@ -174,7 +175,6 @@ export function ProfileSetupForm({ lockedValues, defaultValues }: ProfileSetupFo
             required
             defaultValue={defaultValues.username}
             maxLength={24}
-            placeholder="huruf kecil, angka, underscore (3-24 karakter)"
             className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm focus:border-primary focus:outline-none"
           />
         </Field>
@@ -231,7 +231,8 @@ export function ProfileSetupForm({ lockedValues, defaultValues }: ProfileSetupFo
       </button>
     </form>
   );
-}
+};
+export { ProfileSetupForm };
 
 function Field({
   label,

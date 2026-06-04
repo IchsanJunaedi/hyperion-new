@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { listFinances, getFinanceSummary } from "@/features/finances/queries";
 import { FinancePageClient } from "@/features/finances/components/FinancePageClient";
+import { OrgSwitcher } from "@/features/finances/components/OrgSwitcher";
 
 export const dynamic = "force-dynamic";
 
@@ -46,6 +47,15 @@ export default async function DashboardFinancesPage({ searchParams }: FinancesPa
         </div>
       </header>
       <main className="flex-1 max-w-5xl w-full mx-auto px-8 py-10 space-y-6">
+        {orgs && orgs.length > 1 && (
+          <OrgSwitcher
+            orgs={orgs}
+            currentOrgId={orgId}
+            basePath="/dashboard/finances"
+            year={year}
+            month={month}
+          />
+        )}
         <FinancePageClient
           orgId={orgId}
           rows={rows}

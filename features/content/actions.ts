@@ -4,8 +4,11 @@ import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { createContentSchema } from "@/lib/validations/content";
-import type { ContentCalendarRow, ContentStatus } from "@/types/database";
+import type { Database } from "@/types/database";
+import { logAudit } from "@/lib/audit";
 
+type ContentCalendarRow = Database["public"]["Tables"]["content_calendar"]["Row"];
+type ContentStatus = Database["public"]["Enums"]["content_status"];
 type ContentUpdate = Partial<Omit<ContentCalendarRow, "id" | "created_at">>;
 
 export interface ContentActionError {
@@ -26,17 +29,22 @@ export async function createContentAction(
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { ok: false, message: "Anda harus login." };
 
-  const admin = createAdminClient();
-  const { data: membership } = await admin
-    .from("team_members")
-    .select("role")
-    .eq("organization_id", orgId)
-    .eq("user_id", user.id)
-    .eq("is_active", true)
-    .in("role", ["manager", "owner"])
-    .maybeSingle();
+  const ownerEmail = process.env.OWNER_EMAIL;
+  const isOwnerByEmail = ownerEmail && user.email === ownerEmail;
 
-  if (!membership) return { ok: false, message: "Hanya manager/owner yang bisa membuat konten." };
+  const admin = createAdminClient();
+  if (!isOwnerByEmail) {
+    const { data: membership } = await admin
+      .from("team_members")
+      .select("role")
+      .eq("organization_id", orgId)
+      .eq("user_id", user.id)
+      .eq("is_active", true)
+      .in("role", ["manager", "owner"])
+      .maybeSingle();
+
+    if (!membership) return { ok: false, message: "Hanya manager/owner yang bisa membuat konten." };
+  }
 
   const { error } = await admin.from("content_calendar").insert({
     organization_id: orgId,
@@ -51,6 +59,13 @@ export async function createContentAction(
   });
 
   if (error) return { ok: false, message: error.message };
+
+  await logAudit({
+    actorId: user.id,
+    action: "content.create",
+    entityType: "content_calendar",
+    metadata: { title: parsed.data.title, platform: parsed.data.platform },
+  });
 
   revalidatePath("/manage/content");
   revalidatePath("/dashboard/content");
@@ -105,6 +120,14 @@ export async function updateContentStatusAction(
 
   if (error) return { ok: false, message: error.message };
 
+  await logAudit({
+    actorId: user.id,
+    action: "content.status_change",
+    entityType: "content_calendar",
+    entityId: contentId,
+    metadata: { to: newStatus },
+  });
+
   revalidatePath("/manage/content");
   revalidatePath("/dashboard/content");
   return { ok: true };
@@ -154,6 +177,13 @@ export async function deleteContentAction(
     .eq("organization_id", orgId);
 
   if (error) return { ok: false, message: error.message };
+
+  await logAudit({
+    actorId: user.id,
+    action: "content.delete",
+    entityType: "content_calendar",
+    entityId: contentId,
+  });
 
   revalidatePath("/manage/content");
   revalidatePath("/dashboard/content");

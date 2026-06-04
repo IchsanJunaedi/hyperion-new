@@ -1,90 +1,196 @@
-import Link from "next/link";
+"use client";
 
-interface Achievement {
-  title: string;
-  description: string;
-  imageUrl: string;
-  ctaHref?: string;
-}
+import { useRef, useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { X } from "lucide-react";
+import { motion, useInView, AnimatePresence } from "motion/react";
+import type { Achievement } from "@/features/admin/queries";
 
-// Mirrors the live hyperionteam.id achievement timeline. These will be moved
-// into Supabase content tables in a later step; for now we hardcode them so
-// the visual matches 1:1.
-const ACHIEVEMENTS: Achievement[] = [
-  {
-    title: "Juara 1 Liga Esport Nasional Pelajar 2024",
-    description:
-      "Ini dia SANG JUARA LIGA ESPORTS NASIONAL PELAJAR 2024 - MOBILE LEGENDS🔥🔥 Perjuangan keras tidak mengkhianati hasil dari kerjasama tim. Tetap semangat dan semoga bisa terus mendapatkan juara✨",
-    imageUrl:
-      "https://hyperionteam.id/storage/timelines/01JZN7JDHN76Z29F9R2NW4VX8K.jpeg",
-  },
-  {
-    title: "Champion RRQ MABAR Esports Tournament Season 4",
-    description:
-      "Ribuan pelajar telah bertanding di RRQ MABAR Esports Tournament Season 4 dan inilah juaranya! SMAS Xaverius 1 Palembang berhasil raih back to back champion setelah menang 3-1 di Grand Final RRQ MABAR National Championship melawan SMAK Yos Sudarso Batam.",
-    imageUrl:
-      "https://hyperionteam.id/storage/timelines/01JZPD3B2P75DVSJT6N1609AM3.jpeg",
-  },
-  {
-    title: "Champion H3RO ROOKIE TOURNAMENT 4.0",
-    description:
-      "H3RO Esports 4.0 is the 4th edition of the event organized by H3RO. Champion qualifies to Seleknas IESF 2023.",
-    imageUrl:
-      "https://hyperionteam.id/storage/timelines/01JZPD3RM26KW2BNB68WFYTT6X.jpeg",
-  },
-];
+export type AchievementItem = Achievement & { href?: string };
 
-export function AchievementsSection() {
+const PLACEMENT_LABEL: Record<number, string> = { 1: "Juara 1", 2: "Juara 2", 3: "Juara 3" };
+
+const ImageLightbox = ({ src, title, onClose }: { src: string; title: string; onClose: () => void }) => {
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, [onClose]);
+
   return (
-    <section
-      id="achievements"
-      className="relative px-6 py-24 sm:px-12 lg:px-20"
-    >
-      <div className="mx-auto max-w-6xl">
-        <h2 className="text-3xl font-semibold text-white sm:text-4xl">
-          Our Achievement
-        </h2>
-        <p className="mt-3 max-w-2xl text-sm text-white/60 sm:text-base">
-          We began our journey in 2020. Here are the awards we have received
-          since then
-        </p>
-
-        <ol className="relative mt-12 space-y-16 border-l border-yellow-500/30 pl-8">
-          {ACHIEVEMENTS.map((a) => (
-            <li key={a.title} className="relative">
-              <span
-                aria-hidden
-                className="absolute -left-10 top-2 inline-flex h-3 w-3 rounded-full bg-white ring-4 ring-yellow-500/30"
-              />
-              <div className="grid gap-8 lg:grid-cols-[1fr_1.5fr] lg:gap-12">
-                <h3 className="text-3xl font-bold leading-tight text-white/45 sm:text-4xl">
-                  {a.title}
-                </h3>
-                <div className="space-y-4">
-                  <p className="text-sm leading-relaxed text-white/80 sm:text-base">
-                    {a.description}
-                  </p>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={a.imageUrl}
-                    alt={a.title}
-                    loading="lazy"
-                    className="w-full max-w-lg rounded-md"
-                  />
-                  <div className="pt-2">
-                    <Link
-                      href={a.ctaHref ?? "/gallery"}
-                      className="inline-flex h-9 items-center justify-center rounded-[10px] bg-white px-4 text-xs font-medium text-black transition hover:bg-white/90"
-                    >
-                      Load More
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </li>
-          ))}
-        </ol>
-      </div>
-    </section>
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2 }}
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
+        onClick={onClose}
+      >
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute right-4 top-4 cursor-pointer text-white/50 transition hover:text-white"
+          aria-label="Tutup"
+        >
+          <X className="h-6 w-6" />
+        </button>
+        <motion.div
+          initial={{ scale: 0.95, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.95, opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          className="relative max-h-[90vh] max-w-[90vw]"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={src}
+            alt={title}
+            className="max-h-[85vh] max-w-[88vw] rounded object-contain shadow-2xl"
+          />
+          {title && (
+            <p className="mt-3 text-center text-sm font-semibold text-white/60">{title}</p>
+          )}
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
   );
+};
+
+interface RowProps {
+  item: AchievementItem;
+  index: number;
+  onImageClick: (src: string, title: string) => void;
 }
+
+const AchievementRow = ({ item, index, onImageClick }: RowProps) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-40px" });
+  const router = useRouter();
+
+  const handleClick = () => {
+    if (item.image_url) {
+      onImageClick(item.image_url, item.title);
+    } else if (item.href) {
+      router.push(item.href);
+    }
+  };
+
+  const isClickable = !!(item.image_url || item.href);
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 16 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.5, delay: index * 0.08, ease: "easeOut" }}
+      onClick={isClickable ? handleClick : undefined}
+      style={isClickable ? { cursor: "pointer" } : undefined}
+    >
+      <div className={`group relative overflow-hidden border-b border-white/12 transition-colors${isClickable ? " hover:bg-white/[0.04]" : ""}`}>
+        {/* Hover-reveal photo */}
+        {item.image_url && (
+          <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={item.image_url}
+              alt=""
+              aria-hidden="true"
+              loading="lazy"
+              className="h-full w-full object-cover"
+              style={{ filter: "brightness(0.12) grayscale(60%)" }}
+            />
+          </div>
+        )}
+
+        <div className="relative grid grid-cols-[3rem_1fr] items-center gap-4 py-7 sm:grid-cols-[4rem_1fr_auto] sm:gap-8 sm:py-8">
+          <span className="text-3xl font-black tabular-nums text-white/18 sm:text-4xl">
+            {String(index + 1).padStart(2, "0")}
+          </span>
+
+          <div className="min-w-0">
+            <h3 className="text-base font-black uppercase leading-tight tracking-tight text-white sm:text-xl lg:text-2xl">
+              {item.title}
+            </h3>
+            {item.description && (
+              <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-white/55 sm:text-sm">
+                {item.description}
+              </p>
+            )}
+          </div>
+
+          <div className="hidden flex-col items-end gap-2 sm:flex">
+            {item.placement != null && (
+              <span className="text-[11px] font-black uppercase tracking-widest text-[#F5C400]">
+                {PLACEMENT_LABEL[item.placement] ?? `Juara ${item.placement}`}
+              </span>
+            )}
+            <span className="text-[10px] font-bold uppercase tracking-widest text-white/45">
+              {item.achieved_at.slice(0, 4)}
+            </span>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+interface AchievementsSectionProps {
+  entries: AchievementItem[];
+}
+
+const AchievementsSection = ({ entries }: AchievementsSectionProps) => {
+  const headerRef = useRef<HTMLDivElement>(null);
+  const headerInView = useInView(headerRef, { once: true });
+  const [lightbox, setLightbox] = useState<{ src: string; title: string } | null>(null);
+
+  if (entries.length === 0) return null;
+
+  return (
+    <>
+      <section id="achievements" className="scroll-mt-14 bg-[#040D1C] px-5 py-20 sm:px-8 lg:px-10">
+        <div className="mx-auto max-w-7xl">
+          <motion.div
+            ref={headerRef}
+            initial={{ opacity: 0, y: 16 }}
+            animate={headerInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.5 }}
+            className="mb-0 border-b border-white/12 pb-8"
+          >
+            <div className="flex flex-wrap items-end justify-between gap-4">
+              <div>
+                <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.4em] text-white/40">
+                  01 — Trophy Room
+                </p>
+                <h2 className="text-3xl font-black uppercase tracking-tight text-white sm:text-4xl lg:text-5xl">
+                  Our Achievement
+                </h2>
+              </div>
+            </div>
+          </motion.div>
+
+          <div>
+            {entries.map((item, i) => (
+              <AchievementRow
+                key={item.id}
+                item={item}
+                index={i}
+                onImageClick={(src, title) => setLightbox({ src, title })}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {lightbox && (
+        <ImageLightbox
+          src={lightbox.src}
+          title={lightbox.title}
+          onClose={() => setLightbox(null)}
+        />
+      )}
+    </>
+  );
+};
+export { AchievementsSection };

@@ -17,7 +17,7 @@ import {
 } from "@/lib/validations/auth";
 import { forgotPasswordAction } from "@/app/(auth)/forgot-password/actions";
 
-export function ForgotPasswordForm() {
+const ForgotPasswordForm = () => {
   const [sent, setSent] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -106,4 +106,5 @@ export function ForgotPasswordForm() {
       </p>
     </form>
   );
-}
+};
+export { ForgotPasswordForm };

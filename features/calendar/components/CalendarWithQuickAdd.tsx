@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 
 import type { Database } from "@/types/database";
+import type { RsvpCountMap } from "@/features/calendar/queries";
 import { CalendarGrid } from "./CalendarGrid";
 import { QuickAddEventModal } from "./QuickAddEventModal";
 
@@ -19,9 +20,10 @@ interface CalendarWithQuickAddProps {
   /** Overrides the base path used for month navigation */
   navBasePath?: string;
   userRole?: string;
+  rsvpCounts?: RsvpCountMap;
 }
 
-export function CalendarWithQuickAdd({
+const CalendarWithQuickAdd = ({
   orgSlug,
   events,
   year,
@@ -30,7 +32,8 @@ export function CalendarWithQuickAdd({
   canCreate = true,
   navBasePath,
   userRole = "member",
-}: CalendarWithQuickAddProps) {
+  rsvpCounts,
+}: CalendarWithQuickAddProps) => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
   const handleDayClick = useCallback((date: Date) => {
@@ -51,6 +54,7 @@ export function CalendarWithQuickAdd({
         canCreate={canCreate}
         navBasePath={navBasePath}
         onDayClick={canCreate ? handleDayClick : undefined}
+        rsvpCounts={rsvpCounts}
       />
 
       {canCreate && (
@@ -65,4 +69,5 @@ export function CalendarWithQuickAdd({
       )}
     </>
   );
-}
+};
+export { CalendarWithQuickAdd };

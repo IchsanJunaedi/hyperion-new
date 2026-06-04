@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 
 import { getCurrentUserRole } from "@/features/roster/queries";
 import { getOrgBySlug } from "@/features/teams/queries";
-import { listTournaments, categorizeTournaments } from "@/features/tournaments/queries";
+import { listTournaments, categorizeTournaments, listTournamentPlacements } from "@/features/tournaments/queries";
 import { TournamentCard } from "@/features/tournaments/components/TournamentCard";
 
 export const dynamic = "force-dynamic";
@@ -34,6 +34,9 @@ export default async function TournamentsPage({ params, searchParams }: Tourname
 
   const tournaments = await listTournaments(organization.id);
   const { upcoming, registered, ongoing, completed, cancelled } = categorizeTournaments(tournaments);
+
+  const completedIds = [...completed, ...cancelled].map((t) => t.id);
+  const placementMap = await listTournamentPlacements(completedIds);
 
   const tab: TabKey = (sp.tab === "upcoming" || sp.tab === "registered" || sp.tab === "completed" || sp.tab === "all")
     ? sp.tab
@@ -66,7 +69,11 @@ export default async function TournamentsPage({ params, searchParams }: Tourname
       <nav aria-label="Filter turnamen" className="flex flex-wrap gap-2">
         {TABS.map((t) => {
           const active = tab === t.key;
-          const count = t.key === "upcoming" ? upcoming.length : 0;
+          const now = new Date();
+          const activeUpcoming = upcoming.filter(
+            (u) => u.registration_deadline == null || new Date(u.registration_deadline) >= now,
+          );
+          const count = t.key === "upcoming" ? activeUpcoming.length : 0;
           return (
             <Link
               key={t.key}
@@ -121,7 +128,11 @@ export default async function TournamentsPage({ params, searchParams }: Tourname
         <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
           {filtered.map((t) => (
             <li key={t.id}>
-              <TournamentCard tournament={t} orgSlug={slug} />
+              <TournamentCard
+                tournament={t}
+                orgSlug={slug}
+                placement={placementMap.get(t.id)}
+              />
             </li>
           ))}
         </ul>

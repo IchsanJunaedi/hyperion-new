@@ -83,21 +83,81 @@
   * {
     @apply border-border;
   }
+  html {
+    scroll-padding-top: 4rem;
+  }
   body {
     @apply bg-background text-foreground;
   }
 }
 
-/* ── Sidebar custom scrollbar ─────────────────────────────────────────────── */
+/* ── Date/time picker icon — white on dark input backgrounds ─────────────── */
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  opacity: 0.7;
+  cursor: pointer;
+}
+input[type="date"]::-webkit-calendar-picker-indicator:hover,
+input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
+/* ── Global premium scrollbar ─────────────────────────────────────────────── */
+/* Applies everywhere — thin, minimal, dark-mode aware.                        */
+
 /* Firefox */
-.sidebar-scroll {
+* {
   scrollbar-width: thin;
-  scrollbar-color: rgba(107, 106, 104, 0.2) transparent;
+  scrollbar-color: rgba(120, 120, 120, 0.18) transparent;
 }
 
 /* Chrome / Safari / Edge */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(120, 120, 120, 0.22);
+  border-radius: 9999px;
+  transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(160, 160, 160, 0.5);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Dark mode — slightly brighter thumb so it's still visible on dark panels  */
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.dark * {
+  scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
+}
+
+/* ── .sidebar-scroll — inherits global, stays 4px for tight sidebars ─────── */
+.sidebar-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
+
 .sidebar-scroll::-webkit-scrollbar {
   width: 4px;
+  height: 4px;
 }
 
 .sidebar-scroll::-webkit-scrollbar-track {
@@ -105,16 +165,105 @@
 }
 
 .sidebar-scroll::-webkit-scrollbar-thumb {
-  background: rgba(107, 106, 104, 0.2);
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 9999px;
 }
 
 .sidebar-scroll::-webkit-scrollbar-thumb:hover {
-  background: rgba(155, 154, 151, 0.5);
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* ── .scroll-premium — for dropdowns, modals, notification panels ─────────── */
+/* Use this class on any overflow container that needs extra polish.           */
+.scroll-premium {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
+
+.scroll-premium::-webkit-scrollbar {
+  width: 4px;
+}
+
+.scroll-premium::-webkit-scrollbar-track {
+  background: transparent;
+  margin-block: 4px;          /* small gap top/bottom so thumb floats */
+}
+
+.scroll-premium::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.13);
+  border-radius: 9999px;
+}
+
+.scroll-premium::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.32);
 }
 
 /* ── Calendar icon color ───────────────────────────────────────────────────── */
-input[type="date"]::-webkit-calendar-picker-indicator {
+input::-webkit-calendar-picker-indicator {
   filter: invert(1);
   cursor: pointer;
 }
+
+/* ── Print styles (analytics export) ─────────────────────────────────────── */
+@media print {
+  .print-hide {
+    display: none !important;
+  }
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  .print-main {
+    width: 100% !important;
+    padding-bottom: 0 !important;
+  }
+}
+
+/* ── Landing page animations ──────────────────────────────────────────────── */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-marquee {
+  animation: marquee 28s linear infinite;
+}
+
+.animate-fadeinup {
+  animation: fadeInUp 0.7s ease both;
+}
+
+/* ── Hide default browser spin buttons globally ────────────────────────── */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/* Hero Countdown */
+.countdown-num {
+  font-size: clamp(64px, 11vw, 130px);
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: -0.03em;
+  text-shadow: 0 0 80px rgba(245, 196, 0, 0.1), 0 4px 40px rgba(0, 0, 0, 0.4);
+  font-variant-numeric: tabular-nums;
+}
+.countdown-dot {
+  font-size: clamp(36px, 6vw, 78px);
+  font-weight: 900;
+  color: #f5c400;
+  opacity: 0.7;
+  margin: 0 4px;
+  align-self: center;
+}
+

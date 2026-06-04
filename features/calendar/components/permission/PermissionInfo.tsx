@@ -155,7 +155,7 @@ function RoleBadge({ role, compact = false }: RoleBadgeProps) {
         className={`inline-block h-6 w-6 rounded-full ${roleInfo.bg} border ${roleInfo.text} border-current flex items-center justify-center text-xs font-bold`}
         title={roleInfo.label}
       >
-        {role[0].toUpperCase()}
+        {role[0]?.toUpperCase() ?? ""}
       </span>
     );
   }
@@ -173,7 +173,7 @@ function RoleBadge({ role, compact = false }: RoleBadgeProps) {
 // Main Component
 // ============================================================================
 
-export function PermissionInfo({
+const PermissionInfo = ({
   userRole,
   calendarVisibility,
   userPermissions,
@@ -181,7 +181,7 @@ export function PermissionInfo({
   canRequestAccess = false,
   onRequestAccess,
   compact = false,
-}: PermissionInfoProps) {
+}: PermissionInfoProps) => {
   const { success } = useNotify();
   const [copied, setCopied] = useState(false);
 
@@ -224,13 +224,13 @@ Permissions: ${permList || "None"}`;
         </div>
         <div className="flex items-center gap-2">
           {userPermissions.has("view") && (
-            <Eye className="h-4 w-4 text-green-400" title="Can view" />
+            <Eye className="h-4 w-4 text-green-400" aria-label="Can view" />
           )}
           {userPermissions.has("create-event") && (
-            <Plus className="h-4 w-4 text-blue-400" title="Can create" />
+            <Plus className="h-4 w-4 text-blue-400" aria-label="Can create" />
           )}
           {userPermissions.has("manage-permissions") && (
-            <Lock className="h-4 w-4 text-purple-400" title="Can manage" />
+            <Lock className="h-4 w-4 text-purple-400" aria-label="Can manage" />
           )}
         </div>
       </div>
@@ -323,6 +323,6 @@ Permissions: ${permList || "None"}`;
       )}
     </div>
   );
-}
-
+};
+export { PermissionInfo };
 export type { PermissionInfoProps };

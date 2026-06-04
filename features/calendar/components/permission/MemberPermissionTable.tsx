@@ -182,14 +182,14 @@ function EmptyState({ onAddMember }: { onAddMember: () => void }) {
  * - Loading states and error handling
  * - Responsive design without horizontal scroll
  */
-export function MemberPermissionTable({
+const MemberPermissionTable = ({
   members,
   onUpdatePermission,
   onRemoveMember,
   onAddMember,
   isLoading = false,
   compact = false,
-}: MemberPermissionTableProps) {
+}: MemberPermissionTableProps) => {
   const { success, error } = useNotify();
   const [selectedMembers, setSelectedMembers] = useState<Set<string>>(
     new Set(),
@@ -316,7 +316,7 @@ export function MemberPermissionTable({
           selectedCount={selectedMembers.size}
           onSelectAll={toggleSelectAll}
           onClearAll={() => setSelectedMembers(new Set())}
-          onBulkUpdate={onUpdatePermission}
+          onBulkUpdate={(permission, value) => onUpdatePermission("", permission, value)}
           isLoading={isLoading}
         />
       )}
@@ -400,7 +400,6 @@ export function MemberPermissionTable({
                 memberId={member.id}
                 permission="edit"
                 value={perm?.can_edit_event ?? false}
-                title="Can edit events"
                 label="Can edit events"
                 onToggle={handleUpdatePermission}
                 loading={isUpdating}
@@ -537,6 +536,6 @@ export function MemberPermissionTable({
       </button>
     </div>
   );
-}
-
+};
+export { MemberPermissionTable };
 export type { MemberPermissionTableProps };

@@ -4,7 +4,7 @@ interface WinLossRecordProps {
   record: WinLossRecord;
 }
 
-export function WinLossRecordBadge({ record }: WinLossRecordProps) {
+const WinLossRecordBadge = ({ record }: WinLossRecordProps) => {
   if (record.total === 0) return null;
   return (
     <div className="flex items-center gap-3 text-xs">
@@ -24,4 +24,5 @@ export function WinLossRecordBadge({ record }: WinLossRecordProps) {
       )}
     </div>
   );
-}
+};
+export { WinLossRecordBadge };

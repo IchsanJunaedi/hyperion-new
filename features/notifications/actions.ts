@@ -23,7 +23,7 @@ export async function markNotificationRead(
   if (!user) return { ok: false, message: "Anda harus login" };
 
   const { error } = await supabase.rpc("mark_notification_read", {
-    p_notification_id: notificationId,
+    notification_id: notificationId,
   });
   if (error) return { ok: false, message: error.message };
   return { ok: true };
@@ -74,12 +74,13 @@ export async function retryFailedWa(
   const admin = createAdminClient();
 
   // Fetch the notification and validate it belongs to the org and is failed
-  const { data: notif } = await admin
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: notif } = await (admin as any)
     .from("notifications")
     .select("retry_count, status, organization_id")
     .eq("id", notificationId)
     .eq("organization_id", orgId)
-    .single();
+    .maybeSingle();
 
   if (!notif) return { ok: false, message: "Notifikasi tidak ditemukan" };
   if (notif.status !== "failed")
@@ -90,11 +91,7 @@ export async function retryFailedWa(
   // Reset to pending so pg_cron picks it up again
   const { error } = await admin
     .from("notifications")
-    .update({
-      status: "pending",
-      claimed_at: null,
-      retry_count: (notif.retry_count ?? 0) + 1,
-    })
+    .update({ status: "pending" })
     .eq("id", notificationId);
 
   if (error) return { ok: false, message: error.message };

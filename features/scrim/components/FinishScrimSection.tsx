@@ -4,6 +4,7 @@ import { Loader2, Star, Trophy, Upload, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
 
+import { NumberInput } from "@/components/ui/number-input";
 import { submitResultAction } from "@/features/scrim/actions";
 import { createClient } from "@/lib/supabase/client";
 import type { ScrimResult } from "@/features/scrim/queries";
@@ -19,13 +20,13 @@ interface FinishScrimSectionProps {
   resultImageUrl: string | null;
 }
 
-export function FinishScrimSection({
+const FinishScrimSection = ({
   scrim,
   orgSlug,
   canManage,
   initialResult,
   resultImageUrl,
-}: FinishScrimSectionProps) {
+}: FinishScrimSectionProps) => {
   const [pastDue, setPastDue] = useState(
     () => Date.now() >= new Date(scrim.scheduled_at).getTime(),
   );
@@ -49,7 +50,21 @@ export function FinishScrimSection({
 
   if (scrim.status === "cancelled") return null;
 
-  if (!canManage || (!pastDue && scrim.status !== "ongoing")) return null;
+  if (!canManage) return null;
+
+  if (!pastDue && scrim.status !== "ongoing") {
+    const scheduledTime = new Date(scrim.scheduled_at).toLocaleString("id-ID", {
+      weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "Asia/Jakarta",
+    });
+    return (
+      <article className="rounded-2xl border border-white/5 bg-zinc-900/30 p-5">
+        <div className="flex items-center gap-2 text-sm text-white/50">
+          <Trophy className="h-4 w-4 text-white/30" />
+          <span>Tombol hasil akan muncul setelah scrim dimulai ({scheduledTime})</span>
+        </div>
+      </article>
+    );
+  }
 
   if (!showForm) {
     return (
@@ -80,7 +95,8 @@ export function FinishScrimSection({
       onCancel={() => setShowForm(false)}
     />
   );
-}
+};
+export { FinishScrimSection };
 
 function ResultDisplay({
   result,
@@ -280,26 +296,24 @@ function ResultForm({
         <div className="grid grid-cols-2 gap-3">
           <label className="block text-xs font-medium text-white/70">
             Skor kami
-            <input
-              type="number"
+            <NumberInput
               name="our_score"
               required
               min={0}
               max={5}
               defaultValue={0}
-              className="mt-1 h-12 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-2xl font-bold text-white focus:border-yellow-400 focus:outline-none"
+              className="mt-1 h-12 text-2xl font-bold text-white bg-zinc-900 border-white/10 focus:border-yellow-400 focus:outline-none"
             />
           </label>
           <label className="block text-xs font-medium text-white/70">
             Skor lawan
-            <input
-              type="number"
+            <NumberInput
               name="opponent_score"
               required
               min={0}
               max={5}
               defaultValue={0}
-              className="mt-1 h-12 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-2xl font-bold text-white focus:border-yellow-400 focus:outline-none"
+              className="mt-1 h-12 text-2xl font-bold text-white bg-zinc-900 border-white/10 focus:border-yellow-400 focus:outline-none"
             />
           </label>
         </div>

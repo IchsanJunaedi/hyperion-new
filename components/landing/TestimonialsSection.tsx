@@ -1,94 +1,169 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion, useInView } from "motion/react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import { useState } from "react";
+import type { Testimonial } from "@/features/admin/queries";
 
-interface Testimonial {
-  name: string;
-  team: string;
-  quote: string;
-  imageUrl: string;
+interface TestimonialsSectionProps {
+  testimonials: Testimonial[];
 }
 
-// Hardcoded to match live site visuals; will move to Supabase later.
-const TESTIMONIALS: Testimonial[] = [
-  {
-    name: "RRQ Kaeya",
-    team: "Player of Team RRQ",
-    quote:
-      "Awalnya gue kira bakal biasa aja kayak komunitas lain, tapi ternyata banyak ilmu yang gue dapet dari awal trial sampai akhir. Di Hyperion, gue ketemu banyak orang yang semangat kompetisinya sama, jadi lebih enak buat berkembang. Sering scrim dan ada evaluasi via Discord yang bikin gameplay makin bagus, jadi kenal banyak orang keren di esports yang pastinya nguntungin banget buat ke depannya.",
-    imageUrl:
-      "https://hyperionteam.id/storage/testimonials/01K2SMTH386QV9Q3R8PTF7913YR.png",
-  },
-  {
-    name: "Evos Rendyy",
-    team: "Team of Evos Esports",
-    quote:
-      "Gue mulai bareng Hyperion BLCK di awal 2023 dan berhasil juara di banyak turnamen nasional pelajar. Setelah itu gue lanjut bareng Hyperion Palembang di DGWIB 2024 bersama Fenzu, yang jadi pengalaman penting buat ngasah mental tanding dan konsistensi. Semua proses itu jadi fondasi kuat sampai akhirnya gue bisa tembus ke EVOS. Buat gue, Hyperion adalah titik awal perjalanan gue di scene profesional.",
-    imageUrl:
-      "https://hyperionteam.id/storage/testimonials/01K2RYQS6A36J458VGK7DE8AS9.png",
-  },
-  {
-    name: "Pajajaran Firlyboy",
-    team: "Player of Team Pajajaran",
-    quote:
-      "Hyperion jadi titik awal penting buat perjalanan gue di esports. Di sini gue nggak cuma belajar mekanik, tapi juga disiplin, mindset, dan cara bersaing sehat. Semua itu ngebantu banget waktu gue masuk ke Seleknas Pajajaran 2024, dan gue yakin tanpa Hyperion gue nggak bakal sampai di tahap ini.",
-    imageUrl:
-      "https://hyperionteam.id/storage/testimonials/01K2RYVPWSFF8GGREVCD4VKRRH.png",
-  },
-];
+const TestimonialsSection = ({ testimonials }: TestimonialsSectionProps) => {
+  const [active, setActive] = useState(0);
+  const total = testimonials.length;
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const inView = useInView(sectionRef, { once: true, margin: "-80px" });
 
-export function TestimonialsSection() {
-  const [index, setIndex] = useState(0);
-  const total = TESTIMONIALS.length;
-  const t = TESTIMONIALS[index]!;
+  const handleNext = () => setActive((p) => (p + 1) % total);
+  const handlePrev = () => setActive((p) => (p - 1 + total) % total);
+
+  useEffect(() => {
+    if (total === 0) return;
+    const id = setInterval(handleNext, 5500);
+    return () => clearInterval(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [total]);
+
+  if (testimonials.length === 0) return null;
 
   return (
-    <section className="px-6 py-24 sm:px-12 lg:px-20">
-      <div className="mx-auto max-w-5xl">
-        <h2 className="text-center text-3xl font-semibold text-white sm:text-4xl">
-          Testimonials
-        </h2>
+    <section
+      ref={sectionRef}
+      className="bg-[#040D1C] px-5 py-20 sm:px-8 lg:px-10"
+    >
+      <div className="mx-auto max-w-7xl">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.5 }}
+          className="mb-0 border-b border-white/12 pb-8"
+        >
+          <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.4em] text-white/40">
+            03 — Alumni
+          </p>
+          <h2 className="text-3xl font-black uppercase tracking-tight text-white sm:text-4xl lg:text-5xl">
+            Testimonials
+          </h2>
+        </motion.div>
 
-        <div className="mt-14 grid items-center gap-10 lg:grid-cols-[1fr_1.4fr] lg:gap-16">
-          <div className="flex justify-center lg:justify-end">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={t.imageUrl}
-              alt={t.name}
-              loading="lazy"
-              className="h-72 w-auto object-contain sm:h-80"
-            />
-          </div>
-          <div>
-            <h3 className="text-xl font-bold text-white sm:text-2xl">
-              {t.name}
-            </h3>
-            <p className="mt-1 text-sm text-white/55">{t.team}</p>
-            <p className="mt-6 text-sm leading-relaxed text-white/85 sm:text-base">
-              {t.quote}
+        <div className="grid grid-cols-1 gap-0 lg:grid-cols-2">
+          {/* Left: stacked photo */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={inView ? { opacity: 1 } : {}}
+            transition={{ duration: 0.7, delay: 0.15 }}
+            className="border-b border-white/12 py-10 lg:border-b-0 lg:border-r lg:py-14 lg:pr-16"
+          >
+            <div className="relative h-64 w-full sm:h-80">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={active}
+                  initial={{ opacity: 0, scale: 0.96 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 1.02 }}
+                  transition={{ duration: 0.4, ease: "easeOut" }}
+                  className="absolute inset-0 overflow-hidden"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={testimonials[active]?.avatar_url ?? ""}
+                    alt={testimonials[active]?.author_name ?? ""}
+                    draggable={false}
+                    loading="lazy"
+                    className="h-full w-full object-cover object-top"
+                    style={{ filter: "saturate(0.75) brightness(0.9)" }}
+                  />
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </motion.div>
+
+          {/* Right: quote */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={inView ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.25 }}
+            className="flex flex-col justify-center py-10 lg:py-14 lg:pl-16"
+          >
+            {/* Large faint quotation mark */}
+            <p className="mb-4 text-8xl font-black leading-none text-white/10 sm:text-9xl">
+              &ldquo;
             </p>
-            <div className="mt-8 flex items-center gap-3">
+
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={active}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ duration: 0.28, ease: "easeOut" }}
+              >
+                <p className="text-sm leading-relaxed text-white/65 sm:text-base">
+                  {testimonials[active]?.content ?? ""}
+                </p>
+                <div className="mt-6 border-l-2 border-[#F5C400] pl-4">
+                  <p className="font-black uppercase tracking-tight text-white">
+                    {testimonials[active]?.author_name ?? ""}
+                  </p>
+                  <p className="mt-0.5 text-xs font-bold uppercase tracking-wider text-white/35">
+                    {testimonials[active]?.author_role ?? ""}
+                  </p>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+
+            {/* Controls */}
+            <div className="mt-10 flex items-center gap-3">
               <button
                 type="button"
-                aria-label="Previous testimonial"
-                onClick={() => setIndex((i) => (i - 1 + total) % total)}
-                className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-zinc-800 text-white/80 transition hover:bg-zinc-700 hover:text-white"
+                onClick={handlePrev}
+                aria-label="Previous"
+                className="flex h-9 w-9 cursor-pointer items-center justify-center border border-white/20 text-white/50 transition hover:border-white/50 hover:text-white"
               >
                 <ArrowLeft className="h-4 w-4" />
               </button>
               <button
                 type="button"
-                aria-label="Next testimonial"
-                onClick={() => setIndex((i) => (i + 1) % total)}
-                className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-zinc-800 text-white/80 transition hover:bg-zinc-700 hover:text-white"
+                onClick={handleNext}
+                aria-label="Next"
+                className="flex h-9 w-9 cursor-pointer items-center justify-center border border-white/20 text-white/50 transition hover:border-white/50 hover:text-white"
               >
                 <ArrowRight className="h-4 w-4" />
               </button>
+              <div className="ml-2 flex items-center gap-2">
+                {testimonials.map((_, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => setActive(i)}
+                    aria-label={`Go to testimonial ${i + 1}`}
+                    className="cursor-pointer py-1"
+                  >
+                    <motion.div
+                      animate={{
+                        width: i === active ? 18 : 6,
+                        background:
+                          i === active
+                            ? "rgb(245,196,0)"
+                            : "rgba(255,255,255,0.18)",
+                      }}
+                      transition={{ duration: 0.3 }}
+                      className="h-px rounded-full"
+                    />
+                  </button>
+                ))}
+              </div>
+              <span className="ml-auto text-[10px] tabular-nums text-white/20">
+                {String(active + 1).padStart(2, "0")} /{" "}
+                {String(total).padStart(2, "0")}
+              </span>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>
   );
-}
+};
+export { TestimonialsSection };

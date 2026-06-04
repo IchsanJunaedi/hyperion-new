@@ -23,9 +23,9 @@ Owner (1 person, determined by OWNER_EMAIL env var)
 Manager (assigned by Owner)
   → /manage (roster, assign captain/member, view stats)
 Coach (assigned by Owner)
-  → workspace (evaluate scrims, write notes)
+  → workspace (evaluate scrims, write notes, manage VOD links)
 Captain (assigned by Manager)
-  → workspace (create scrims, manage attendance)
+  → workspace (create scrims, manage attendance, manage VOD links)
 Member (assigned by Manager)
   → workspace (view scrims, RSVP, view schedule)
 ```
@@ -56,6 +56,7 @@ The project uses TWO notification systems — use the right one for the context:
 - Workspace features (roster, calendar, files, announcements, etc.) → use `toast` from sonner
 - Dashboard/manage panel components → use `useNotify()` hook (NotifyModal)
 - Match the pattern of the file you're editing — look at existing imports
+- Exception: `PlayerTargetCard` uses `useNotify()` — don't change it.
 
 ## UI Style Guide (Notion Dark Theme)
 ```
@@ -82,18 +83,57 @@ app/
   api/                  → API routes (calendar permissions, events, audit)
   auth/callback/        → OAuth callback handler
   dashboard/            → Owner panel
+    (panel)/
+      assign/           → Assign members to divisions
+      audit/            → Audit log viewer
+      calendar/         → Calendar management
+      content/          → Content calendar
+      divisions/        → Division management
+      export/           → Data export
+      files/            → File management
+      finances/         → Finance CRUD
+      managers/         → Manager management
+      reports/          → Reports (not public yet)
+      salaries/         → Player contracts & salary
+      sponsors/         → Sponsor tracker
+      teams/            → Team management
+      tournaments/      → Tournament management
+      users/            → User management
   invite/[token]/       → Invite acceptance flow
   manage/               → Manager panel
+    assign/             → Assign members
+    captains/           → Captain management
+    content/            → Content calendar
+    development/        → Player skill targets
+    divisions/          → Division management
+    finances/           → Finance CRUD
+    reports/            → Reports
+    salaries/           → Salary management
+    sponsors/           → Sponsor tracker
   onboarding/           → Org + profile setup
   [team-slug]/          → Workspace (captain/member/coach)
     (workspace)/        → Protected workspace routes
+      analytics/        → Stats, draft analytics, PDF export
+      announcements/    → Announcements + read receipts
+      calendar/         → Unified calendar + RSVP
+      development/      → Member self-view skill targets
+      files/            → File upload/download
+      meta/             → MLBB meta tracker
+      polls/            → Polls (regular + availability grid)
+      roster/           → Member list
+      scrim/            → Scrim list + detail + results
+      settings/         → Notification preferences
+      strategy/         → Strategy notes + comments
+      tournaments/      → Tournaments + bracket
+      trials/           → Open trials pipeline
 components/
   landing/              → Landing page components
   layout/               → Layout components (sidebar, nav)
   providers/            → React context providers (QueryProvider)
   team/                 → Team-related shared components
-  ui/                   → Reusable UI primitives (button, card, input, label, alert)
+  ui/                   → Reusable UI primitives (button, card, input, label, alert, number-input)
 features/
+  analytics/            → Draft analytics, player stats, hero modal
   announcements/        → Announcements CRUD
   auth/                 → Auth forms (login, register, OAuth)
   calendar/             → Calendar events + permissions
@@ -103,18 +143,23 @@ features/
   finances/             → Finance tracking
   invite/               → Invite system
   manage/               → Manager-specific actions
-  matchmaking/          → Scrim matchmaking between orgs
+  matchmaking/          → Scrim matchmaking (archived)
+  meta/                 → MLBB meta tracker
   notifications/        → Bell, realtime, WA delivery
   onboarding/           → Onboarding forms
   player-development/   → Player targets & progress tracking
-  polls/                → Team polls/voting
+  polls/                → Team polls/voting (regular + availability)
   reports/              → Reports & analytics
   roster/               → Roster management
-  scouting/             → Player scouting
-  scrim/                → Scrim CRUD
-  strategy/             → Strategy notes
+  salary/               → Player contracts & salary payments
+  scouting/             → Opponent scouting (archived)
+  scrim/                → Scrim CRUD + VOD review + draft picks
+  settings/             → Notification preferences
+  sponsors/             → Sponsor tracker + ROI dashboard
+  strategy/             → Strategy notes + comments
   teams/                → Team management
   tournaments/          → Tournament brackets & stages
+  trials/               → Open trials pipeline
 lib/
   actions/              → Shared server action utilities
   api/                  → API helpers (permission-middleware, response utils)
@@ -127,7 +172,7 @@ stores/                 → Zustand stores (useWorkspaceStore, calendar-preferen
 types/                  → TypeScript types (database.ts, jwt.ts)
 supabase/
   migrations/           → SQL migrations (push with `npx supabase db push`)
-  functions/            → Edge Functions (process-wa-queue)
+  functions/            → Edge Functions (process-wa-queue, weekly-digest)
 middleware.ts           → Auth gating + custom domain routing
 ```
 
@@ -157,13 +202,22 @@ FONNTE_WEBHOOK_SECRET=
 - Batch related changes together
 
 ### Git Workflow
-- ALWAYS commit and push after completing a task
+- ALWAYS commit and push after completing a task — **always use `rtk commit`** (never run `git commit` or push manually)
 - Use conventional commits: `feat:`, `fix:`, `chore:`, `refactor:`
 - Push to `main` branch (this is a solo dev project)
 - Stage specific files, not `git add .` blindly
 - Check `git status` before committing
 - Batch related files in one commit, don't commit file-by-file
 - Keep commit messages short and descriptive (max 72 chars)
+
+### Pre-Commit CI Gate (WAJIB sebelum setiap commit/push)
+Sebelum `git commit`, SELALU jalankan ketiga perintah ini dan pastikan semua lulus:
+```bash
+npm run lint        # ← tidak boleh ada "error" (warning OK)
+npm run typecheck   # ← harus exit 0
+npm run test:unit   # ← semua tests harus pass
+```
+Jika ada yang gagal, **perbaiki dulu sebelum commit**. Jangan commit kode yang bakal merahkan CI.
 
 ### Code Quality
 - Run `getDiagnostics` after every file change to verify no errors
@@ -172,23 +226,104 @@ FONNTE_WEBHOOK_SECRET=
 - All server actions must validate auth and return `{ ok: true }` or `{ ok: false, message: string }`
 - Use `cn()` for conditional Tailwind classes, not string concatenation
 
+### Query Rules (Supabase) — WAJIB setiap kali nulis query baru
+1. **Selalu `.limit()`** — setiap `.select()` dari tabel yang bisa tumbuh WAJIB punya `.limit()`. Default safe: list page = `50`, analytics = `200`, per-user/per-item = `30`.
+2. **Jangan `select("*")`** — selalu tulis kolom eksplisit. Exception: tabel kecil yang dipakai di detail page (bukan list).
+3. **`count: "exact"` tanpa `head: true`** — hanya boleh jika hasil `count` *dan* `data` keduanya dipakai (pagination). Jika hanya butuh count, tambah `head: true`. Jika count tidak dipakai sama sekali, hapus `{ count: "exact" }`.
+4. **`.single()` → `.maybeSingle()`** — jangan pernah pakai `.single()` kecuali yakin 100% row selalu ada. Kalau error bisa terjadi, pakai `.maybeSingle()` + cek error.
+5. **Error handling** — selalu destructure `{ data, error }` dan `console.error` jika ada error. Jangan biarkan error ter-swallow diam-diam.
+
+### React useEffect Rules — WAJIB setiap kali nulis useEffect baru
+1. **Mounted flag untuk async** — setiap `useEffect` yang isi-nya `async` atau `.then()` WAJIB pakai mounted flag:
+   ```ts
+   useEffect(() => {
+     let mounted = true;
+     someAsyncFn().then((result) => {
+       if (!mounted) return;  // ← WAJIB
+       setState(result);
+     });
+     return () => { mounted = false; };
+   }, [dep]);
+   ```
+2. **Cleanup channel realtime** — setiap Supabase `channel.subscribe()` WAJIB `return () => supabase.removeChannel(channel)`.
+3. **Jangan no-op dalam startTransition** — `startTransition(() => {})` kosong itu waste. Hapus atau isi dengan aksi nyata.
+4. **Jangan fire-and-forget `.then()`** — promise yang tidak di-await dan tidak ada cleanup dapat update state setelah unmount.
+
+### Public Action / Form Rules
+1. **Rate limiting** — setiap server action yang bisa dipanggil tanpa auth (form publik) WAJIB ada rate limiting. Gunakan `login_rate_limits` table dengan identifier = `{prefix}:{email/phone}`.
+2. **Validasi URL upload** — URL dari upload (screenshot, CV) WAJIB divalidasi harus berasal dari Supabase storage (`process.env.NEXT_PUBLIC_SUPABASE_URL/storage/v1/object/public/`). Jangan terima URL arbitrary dari user.
+
+### HMR / Webpack Crash Prevention (CRITICAL)
+Next.js 15 Webpack HMR crashes (`__webpack_modules__[moduleId] is not a function`) with inline-exported components.
+
+**ALWAYS use this pattern:**
+```tsx
+// ✅ CORRECT
+const MyComponent = () => { ... };
+export { MyComponent };
+
+// ❌ WRONG — causes HMR crash
+export default function MyComponent() { ... }
+export function MyComponent() { ... }
+```
+
 ### What NOT to Do
 - Don't use emojis as icons (use Lucide React)
 - Don't check `team_members` for owner verification (use OWNER_EMAIL env)
 - Don't use native `<select>` dropdowns (use CustomSelect component from `@/features/dashboard/components/CustomSelect`)
+- Don't use native `<input type="number">` (use `NumberInput` from `@/components/ui/number-input`)
 - Don't create "placeholder" or "pool" orgs as workarounds
 - Don't add horizontal scroll to tables
 - Don't modify files unrelated to the current task
 - Don't use `font-[Inter]` or `font-[Instrument_Sans]` class (font is already set globally via CSS variable)
+- Don't include Owner in salary contract dropdowns (they share business revenue, not salaried)
+
+## Reusable Components (Jangan Buat Ulang)
+
+Sebelum membuat komponen baru, cek apakah sudah ada:
+
+| Kebutuhan | Komponen | Path |
+|-----------|----------|------|
+| Dropdown / select | `CustomSelect` | `@/features/dashboard/components/CustomSelect` |
+| Konfirmasi hapus | `ConfirmDeleteDialog` | `@/features/dashboard/components/ConfirmDeleteDialog` |
+| Notifikasi dashboard/manage | `useNotify()` | `@/features/dashboard/components/NotifyModal` |
+| Notifikasi workspace | `toast` | `sonner` |
+| Audit log | `logAudit()` | `@/lib/audit` |
+| Input angka / stepper | `NumberInput` | `@/components/ui/number-input` |
+
+### Pola Dropdown di Dalam Card
+Dropdown `absolute` di dalam card **WAJIB** ikuti aturan ini atau akan terpotong:
+- Container parent: **JANGAN** pakai `overflow-hidden`
+- List dropdown: gunakan `absolute`, `z-50`, `top-full`
+- Referensi implementasi: `features/salary/components/SalaryCard.tsx` (bonus turnamen dropdown)
+
+### Pola Konfirmasi Hapus
+Selalu gunakan `ConfirmDeleteDialog` dengan `confirmPhrase="HAPUS"` untuk aksi destruktif. Jangan buat dialog konfirmasi custom.
+
+### Pola Modal
+- Modal overlay: `fixed inset-0 z-50 flex items-center justify-center bg-black/60`
+- Klik backdrop menutup modal (pasang `onClick={onClose}` di overlay, `onClick={(e) => e.stopPropagation()}` di inner div)
+- Referensi: `features/tournaments/components/TournamentCompleteModal.tsx`
+
+### NumberInput Stepper
+Gunakan `<NumberInput>` dari `@/components/ui/number-input` untuk semua input angka:
+- Auto-trim leading zeros (05 → 5)
+- Auto-select on focus when value is 0
+- Custom chevron up/down buttons (tidak pakai browser default spinner)
+
+### Salary Contract Rules
+- Owner **tidak boleh** masuk dropdown player di form kontrak salary
+- Filter: `eligibleMembers = members.filter(m => m.role !== 'owner')`
 
 ### Database
-- Migrations go in `supabase/migrations/` with timestamp prefix (format: `YYYYMMDDHHMMSS_description.sql`)
+- Migrations go in `supabase/migrations/` with timestamp prefix (format: `YYYYMMDDHHmmSS_description.sql`)
 - Push with: `npx supabase db push`
-- If conflict: `npx supabase migration repair --status applied <version>`
+- If conflict: `npx supabase migration repair --status reverted <version>` then `npx supabase migration repair --status applied <version>`
 - Always use `createAdminClient()` for cross-user operations (bypasses RLS)
 - Always use `createClient()` (server) for user-scoped operations (respects RLS)
 - RLS is enabled on all tables — admin client bypasses RLS
-- Generate types: `npx supabase gen types typescript --project-id tbuxtlbtjpoholcflmoy --schema public > types/database.ts`
+- Generate types: `npx supabase gen types typescript --project-id pqzdukrlmbwjjgjyoqva --schema public > types/database.ts`
+- If gen fails ("Resource has been removed"): edit `types/database.ts` manually
 
 ### API Routes
 - Permission middleware at `lib/api/permission-middleware.ts` — use `validateRequest()`, `isOwner()`, `getUserRole()`, `requireRole()`
@@ -220,22 +355,29 @@ Permission system determines who can create/view/edit events based on role. Visi
 `ends_at` must be >= `starts_at` when both are provided. `ends_at` is optional.
 Applied in Zod schema (`lib/validations/calendar.ts`) via `.refine()` on both create and update schemas.
 
-### QuickAddEventModal (features/calendar/components/QuickAddEventModal.tsx)
-- Stacked grid layout for datetime inputs (responsive, no overflow)
-- Custom switch toggle for "Event Seharian" (not a native checkbox)
-- Client-side + server-side date validation
-- `startsAt` state drives the `min` attribute on `ends_at` input
+## Scrim System (features/scrim/)
 
-## Scrim Format Values
+### Format Values
 Valid formats: `"bo1" | "bo2" | "bo3" | "bo5" | "bo7" | "4match"`.
-`"scrimmage"` is **NOT** a valid format — removed from `ScrimForm.tsx` and `ScrimEditForm.tsx`.
+`"scrimmage"` is **NOT** a valid format.
 
-## Current State (as of 2026-05-17)
-- Owner dashboard: fully functional with Notion-style UI
-- Manager panel: functional with assign, divisions, captains, invite system
-- Workspace: scrim CRUD, roster, calendar (v2 with visibility permissions + date validation), announcements, strategy, files, polls
-- Calendar: unified view (manual events + tournaments), QuickAddEventModal with premium switch toggle, date range validation (starts_at ≤ ends_at)
-- Auth: register, login, Google OAuth, role-based redirect
-- Features: finances, content calendar, invite system, tournaments, matchmaking, player development, scouting, notifications (bell + WA delivery), audit logging
-- Infrastructure: custom domain support, audit logging, calendar permission system (visibility: all/management/coach_up/private)
-- UI: Notion dark theme, custom switch toggles, consistent dropdown labels, responsive datetime grids
+### VOD System (Two Separate Concepts)
+1. **`scrims.vod_link`** (column) + `ScrimVodLinkSection` — ONE link per scrim (full match recording/livestream), shown on scrim detail page sidebar area under "Detail Tambahan"
+2. **`scrim_vod_timestamps`** (table) + `VodReviewSection` — per-game timestamp annotations (coach notes at specific video moments), shown inside each game result card on the results page
+
+### Hero Images
+Use `getHeroImageUrl(heroName)` from `@/features/scrim/data/mlbb-heroes` to get `/heroes/<slug>.webp` path.
+Circular portrait: `<div className="h-5 w-5 overflow-hidden rounded-full border border-white/10 bg-zinc-800"><img ... className="h-full w-full object-cover" /></div>`
+
+## Current State
+See **`progress.md`** in the project root for the full, up-to-date feature inventory, new DB tables, technical gotchas, dead features, and what's not yet done.
+
+**Always read `progress.md` at the start of a new session before making any changes.**
+
+Quick summary (as of 2026-05-27):
+- All workspace routes functional: scrim (+ VOD link + hero portraits in results), calendar (RSVP), tournaments (bracket + match tracking), announcements (read receipts + ack), strategy (comments), polls (regular + availability grid), analytics (PDF export), roster, files, development, meta, trials
+- Premium `NumberInput` stepper component replaces all native `<input type="number">` app-wide
+- Salary contracts: player contracts + payments + bonus distributions — Owner excluded from receiving salary
+- 68 migrations applied
+- Dead features (do not revive): scouting, AI insights, matchmaking, reports (not public)
+- Performance Batch 2 items remaining: B2-1, B2-2, B2-7, B2-9 (see progress.md)

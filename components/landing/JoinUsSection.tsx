@@ -1,32 +1,65 @@
-import Link from "next/link";
+"use client";
 
-export function JoinUsSection() {
+import { useRef } from "react";
+import { motion, useInView } from "motion/react";
+import { JoinModal } from "./JoinModal";
+
+interface JoinSettings {
+  join_eyebrow: string;
+  join_title_line1: string;
+  join_title_line2: string;
+  join_description: string;
+  join_fine_print: string;
+}
+
+interface JoinUsSectionProps {
+  settings: JoinSettings;
+}
+
+const JoinUsSection = ({ settings }: JoinUsSectionProps) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-80px" });
+
   return (
-    <section className="relative overflow-hidden px-6 py-24 sm:py-32">
-      {/* Subtle yellow accent lines (decorative) — mirrors the live page. */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-25"
-        style={{
-          backgroundImage:
-            "linear-gradient(120deg, transparent 35%, rgba(222,179,4,0.45) 36%, rgba(222,179,4,0.45) 36.4%, transparent 36.5%), linear-gradient(120deg, transparent 60%, rgba(222,179,4,0.45) 61%, rgba(222,179,4,0.45) 61.3%, transparent 61.5%)",
-        }}
-      />
-      <div className="relative mx-auto flex max-w-3xl flex-col items-center text-center">
-        <h2 className="text-4xl font-bold text-white/55 sm:text-5xl">
-          Join Us
-        </h2>
-        <p className="mt-6 max-w-xl text-base text-white/70 sm:text-lg">
-          Unleash Young Potential Power. Focus of Develop Young Player
-        </p>
-        <p className="mt-2 text-sm text-white/60">#HypeWin</p>
-        <Link
-          href="/register"
-          className="mt-8 inline-flex h-11 items-center justify-center rounded-[10px] bg-white px-6 text-sm font-medium text-black shadow-md transition hover:bg-white/90"
-        >
-          Join Now
-        </Link>
+    <section className="bg-[#040D1C] px-5 py-24 sm:px-8 lg:px-10">
+      <div className="mx-auto max-w-7xl" ref={ref}>
+        <div className="border-b border-t border-white/12 py-20">
+          <div className="grid items-center gap-10 lg:grid-cols-[1fr_auto]">
+            {/* Left: headline */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.55 }}
+            >
+              <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.4em] text-white/45">
+                {settings.join_eyebrow}
+              </p>
+              <h2 className="text-4xl font-black uppercase leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl">
+                {settings.join_title_line1}
+                <br />
+                <span className="text-[#F5C400]">{settings.join_title_line2}</span>
+              </h2>
+              <p className="mt-5 max-w-lg text-sm leading-relaxed text-white/55 sm:text-[15px]">
+                {settings.join_description}
+              </p>
+            </motion.div>
+
+            {/* Right: CTA */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.55, delay: 0.12 }}
+              className="flex flex-col items-start gap-3 lg:items-end"
+            >
+              <JoinModal />
+              <p className="text-xs text-white/22">
+                {settings.join_fine_print}
+              </p>
+            </motion.div>
+          </div>
+        </div>
       </div>
     </section>
   );
-}
+};
+export { JoinUsSection };

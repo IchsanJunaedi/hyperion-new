@@ -1,0 +1,85 @@
+name: CI — Lint, Typecheck & Unit Tests
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: [main, feat/**]
+
+jobs:
+  ci:
+    name: Lint · Typecheck · Unit Tests · Coverage Gate
+    runs-on: ubuntu-latest
+
+    env:
+      # These are non-secret and needed at build time for Next.js
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+      NEXT_PUBLIC_APP_URL: http://localhost:3000
+      NEXT_PUBLIC_MAIN_DOMAIN: localhost:3000
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      OWNER_EMAIL: ${{ secrets.OWNER_EMAIL }}
+      FONNTE_API_TOKEN: ${{ secrets.FONNTE_API_TOKEN }}
+      FONNTE_WEBHOOK_SECRET: ${{ secrets.FONNTE_WEBHOOK_SECRET }}
+
+    steps:
+      - name: ⬇️ Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: 📥 Install dependencies
+        run: npm ci
+
+      - name: 🔍 Run ESLint
+        run: npm run lint
+
+      - name: 🔷 Run TypeScript type check
+        run: npm run typecheck
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # Coverage gate: vitest.config.ts thresholds are enforced here.
+      # CI will FAIL if coverage drops below the configured thresholds.
+      # See AUTOMATED_TESTING_TRACKER.md § Coverage Threshold Gates for the
+      # phase schedule (thresholds increase after each wave is merged).
+      # ─────────────────────────────────────────────────────────────────────────
+      - name: 🧪 Run Vitest unit tests with coverage (threshold-enforced)
+        run: npm run test:unit:coverage
+        # Exit code is non-zero if thresholds are violated — CI fails automatically
+
+      - name: 📋 Print coverage summary
+        if: always()
+        run: |
+          echo "## 📊 Coverage Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "See full report in the \`coverage-report\` artifact." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Threshold | Target | Reference |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----------|--------|-----------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Statements | ≥15% (Phase 0) | AUTOMATED_TESTING_TRACKER.md |" >> $GITHUB_STEP_SUMMARY
+          echo "| Branches | ≥12% (Phase 0) | AUTOMATED_TESTING_TRACKER.md |" >> $GITHUB_STEP_SUMMARY
+          echo "| Functions | ≥25% (Phase 0) | AUTOMATED_TESTING_TRACKER.md |" >> $GITHUB_STEP_SUMMARY
+          echo "| Lines | ≥15% (Phase 0) | AUTOMATED_TESTING_TRACKER.md |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "> 🎯 **Final target: 80% across all metrics**" >> $GITHUB_STEP_SUMMARY
+
+      - name: 📤 Upload coverage to Codecov
+        if: always()
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: IchsanJunaedi/hyperion-new
+          fail_ci_if_error: false
+          files: coverage/lcov.info
+
+      - name: 📊 Upload coverage report artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report-${{ github.run_number }}
+          path: coverage/
+          retention-days: 14

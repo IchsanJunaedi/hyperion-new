@@ -4,7 +4,7 @@ import { Search, X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 
-export function UserSearch() {
+const UserSearch = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
@@ -54,4 +54,5 @@ export function UserSearch() {
       )}
     </div>
   );
-}
+};
+export { UserSearch };

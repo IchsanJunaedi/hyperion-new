@@ -19,7 +19,7 @@ interface OrgCardProps {
   allDivisions: Array<{ id: string; name: string; organizationId: string | null }>;
 }
 
-export function OrgCard({ org, divisions, allDivisions }: OrgCardProps) {
+const OrgCard = ({ org, divisions, allDivisions }: OrgCardProps) => {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [editing, setEditing] = useState(false);
@@ -214,4 +214,5 @@ export function OrgCard({ org, divisions, allDivisions }: OrgCardProps) {
       />
     </div>
   );
-}
+};
+export { OrgCard };

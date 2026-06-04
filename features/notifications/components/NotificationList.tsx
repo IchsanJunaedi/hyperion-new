@@ -6,15 +6,16 @@ import { NotificationItem } from "./NotificationItem";
 interface NotificationListProps {
   userId: string;
   orgSlug: string;
+  limit?: number;
   onClose: () => void;
 }
 
-export function NotificationList({ userId, orgSlug, onClose }: NotificationListProps) {
-  const { data, isLoading, isError } = useNotifications(userId, 10);
+const NotificationList = ({ userId, orgSlug, limit = 10, onClose }: NotificationListProps) => {
+  const { data, isLoading, isError } = useNotifications(userId, limit);
 
   if (isLoading) {
     return (
-      <div className="max-h-96 overflow-y-auto p-4">
+      <div className="scroll-premium max-h-96 overflow-y-auto p-4">
         <div className="space-y-3">
           {Array.from({ length: 3 }).map((_, i) => (
             <div key={i} className="animate-pulse space-y-2">
@@ -30,7 +31,7 @@ export function NotificationList({ userId, orgSlug, onClose }: NotificationListP
 
   if (isError) {
     return (
-      <div className="max-h-96 overflow-y-auto p-4">
+      <div className="scroll-premium max-h-96 overflow-y-auto p-4">
         <p className="text-center text-sm text-red-400">
           Gagal memuat notifikasi
         </p>
@@ -40,7 +41,7 @@ export function NotificationList({ userId, orgSlug, onClose }: NotificationListP
 
   if (!data || data.length === 0) {
     return (
-      <div className="max-h-96 overflow-y-auto p-4">
+      <div className="scroll-premium max-h-96 overflow-y-auto p-4">
         <p className="text-center text-sm text-white/50">
           Belum ada notifikasi
         </p>
@@ -49,7 +50,7 @@ export function NotificationList({ userId, orgSlug, onClose }: NotificationListP
   }
 
   return (
-    <div className="max-h-96 overflow-y-auto">
+    <div className="scroll-premium max-h-96 overflow-y-auto">
       {data.map((notification) => (
         <NotificationItem
           key={notification.id}
@@ -61,4 +62,5 @@ export function NotificationList({ userId, orgSlug, onClose }: NotificationListP
       ))}
     </div>
   );
-}
+};
+export { NotificationList };

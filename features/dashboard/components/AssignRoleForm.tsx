@@ -22,12 +22,12 @@ const ALL_ROLES: Array<{ value: MemberRole; label: string }> = [
   { value: "member", label: "Member" },
 ];
 
-export function AssignRoleForm({
+const AssignRoleForm = ({
   users,
   organizations,
   divisions,
   orgFilledRoles,
-}: AssignRoleFormProps) {
+}: AssignRoleFormProps) => {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [selectedUser, setSelectedUser] = useState("");
@@ -181,7 +181,8 @@ export function AssignRoleForm({
       </button>
     </form>
   );
-}
+};
+export { AssignRoleForm };
 
 function Field({
   label,

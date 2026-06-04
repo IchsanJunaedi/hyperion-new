@@ -4,13 +4,13 @@ import Link from "next/link";
 import { ScrimStatusBadge } from "@/features/scrim/components/StatusBadge";
 import type { ScrimListItem } from "@/features/scrim/queries";
 
-export function ScrimCard({
+const ScrimCard = ({
   scrim,
   orgSlug,
 }: {
   scrim: ScrimListItem;
   orgSlug: string;
-}) {
+}) => {
   const scheduled = new Date(scrim.scheduled_at).toLocaleString("id-ID", {
     weekday: "short",
     day: "numeric",
@@ -70,4 +70,5 @@ export function ScrimCard({
       </dl>
     </Link>
   );
-}
+};
+export { ScrimCard };

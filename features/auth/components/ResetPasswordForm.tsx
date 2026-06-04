@@ -16,7 +16,7 @@ import {
 } from "@/lib/validations/auth";
 import { resetPasswordAction } from "@/app/(auth)/reset-password/actions";
 
-export function ResetPasswordForm() {
+const ResetPasswordForm = () => {
   const router = useRouter();
   const [serverError, setServerError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -91,4 +91,5 @@ export function ResetPasswordForm() {
       </Button>
     </form>
   );
-}
+};
+export { ResetPasswordForm };

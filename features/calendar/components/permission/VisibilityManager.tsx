@@ -279,7 +279,7 @@ function MemberSelector({
 // Main Component
 // ============================================================================
 
-export function VisibilityManager({
+const VisibilityManager = ({
   calendarId,
   currentVisibility,
   selectedMembers: initialSelectedMembers = [],
@@ -287,7 +287,7 @@ export function VisibilityManager({
   onSave,
   isLoading = false,
   compact = false,
-}: VisibilityManagerProps) {
+}: VisibilityManagerProps) => {
   const { success, error } = useNotify();
   const [visibility, setVisibility] = useState<CalendarVisibility>(
     currentVisibility,
@@ -488,12 +488,12 @@ export function VisibilityManager({
       {hasChanges && (
         <div className="p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
           <p className="text-xs text-blue-400">
-            You have unsaved changes. Click 'Save Changes' to apply them.
+            You have unsaved changes. Click &apos;Save Changes&apos; to apply them.
           </p>
         </div>
       )}
     </div>
   );
-}
-
+};
+export { VisibilityManager };
 export type { VisibilityManagerProps };

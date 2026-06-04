@@ -20,7 +20,19 @@ function formatNumber(value: string): string {
   return Number(num).toLocaleString("id-ID");
 }
 
-export function TournamentForm({ orgSlug, divisionId, tournament, onSuccess }: TournamentFormProps) {
+function toDatetimeLocal(isoString?: string | null): string {
+  if (!isoString) return "";
+  const d = new Date(isoString);
+  if (isNaN(d.getTime())) return "";
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  const hh = String(d.getHours()).padStart(2, "0");
+  const min = String(d.getMinutes()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}T${hh}:${min}`;
+}
+
+const TournamentForm = ({ orgSlug, divisionId, tournament, onSuccess }: TournamentFormProps) => {
   const isEdit = !!tournament;
   const [pending, startTransition] = useTransition();
   const { success, error } = useNotify();
@@ -34,6 +46,30 @@ export function TournamentForm({ orgSlug, divisionId, tournament, onSuccess }: T
   const [registrationFee, setRegistrationFee] = useState(tournament?.registration_fee ?? "");
   const [registrationUrl, setRegistrationUrl] = useState(tournament?.registration_url ?? "");
   const [notes, setNotes] = useState(tournament?.notes ?? "");
+  const [registrationDeadline, setRegistrationDeadline] = useState(
+    tournament?.registration_deadline ? toDatetimeLocal(tournament.registration_deadline) : "",
+  );
+  const [deadlineError, setDeadlineError] = useState<string | null>(null);
+
+  // Max datetime-local value = start_date at 23:59 (user can only pick up to a moment before start_date)
+  const deadlineMax = startDate ? `${startDate}T23:58` : undefined;
+
+  function handleStartDateChange(val: string) {
+    setStartDate(val);
+    if (registrationDeadline && val && registrationDeadline >= `${val}T00:00`) {
+      setRegistrationDeadline("");
+      setDeadlineError(null);
+    }
+  }
+
+  function handleDeadlineChange(val: string) {
+    setRegistrationDeadline(val);
+    if (startDate && val >= `${startDate}T00:00`) {
+      setDeadlineError("Batas pendaftaran harus sebelum tanggal mulai turnamen");
+    } else {
+      setDeadlineError(null);
+    }
+  }
 
   function handleSubmit() {
     const payload = {
@@ -48,6 +84,7 @@ export function TournamentForm({ orgSlug, divisionId, tournament, onSuccess }: T
       registration_fee: registrationFee || undefined,
       registration_url: registrationUrl || undefined,
       notes: notes || undefined,
+      registration_deadline: registrationDeadline || undefined,
     };
 
     startTransition(async () => {
@@ -92,7 +129,7 @@ export function TournamentForm({ orgSlug, divisionId, tournament, onSuccess }: T
           <input
             type="date"
             value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
+            onChange={(e) => handleStartDateChange(e.target.value)}
             className="h-9 w-full rounded-md border border-[#2D2D2D] bg-[#202020] px-3 text-sm text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none"
           />
         </div>
@@ -117,7 +154,23 @@ export function TournamentForm({ orgSlug, divisionId, tournament, onSuccess }: T
             className="h-9 w-full rounded-md border border-[#2D2D2D] bg-[#202020] px-3 text-sm text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none"
           />
         </div>
-        <div />
+        <div>
+          <label className="text-xs text-[#9B9A97] mb-1 block">Batas Pendaftaran / Pembayaran *</label>
+          <input
+            type="datetime-local"
+            value={registrationDeadline}
+            max={deadlineMax}
+            onChange={(e) => handleDeadlineChange(e.target.value)}
+            className={`h-9 w-full rounded-md border bg-[#202020] px-3 text-sm text-[#E5E2E1] focus:outline-none ${
+              deadlineError
+                ? "border-red-500/60 focus:border-red-500"
+                : "border-[#2D2D2D] focus:border-yellow-400/50"
+            }`}
+          />
+          {deadlineError && (
+            <p className="mt-1 text-[11px] text-red-400">{deadlineError}</p>
+          )}
+        </div>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
@@ -162,7 +215,7 @@ export function TournamentForm({ orgSlug, divisionId, tournament, onSuccess }: T
 
       <button
         type="button"
-        disabled={pending || !name || !startDate}
+        disabled={pending || !name || !startDate || !registrationDeadline || !!deadlineError}
         onClick={handleSubmit}
         className="inline-flex h-9 items-center gap-1.5 rounded-md bg-yellow-400 px-4 text-xs font-semibold text-black hover:bg-yellow-300 disabled:opacity-50 cursor-pointer"
       >
@@ -171,4 +224,5 @@ export function TournamentForm({ orgSlug, divisionId, tournament, onSuccess }: T
       </button>
     </div>
   );
-}
+};
+export { TournamentForm };

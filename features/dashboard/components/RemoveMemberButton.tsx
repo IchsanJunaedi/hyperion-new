@@ -13,7 +13,7 @@ interface RemoveMemberButtonProps {
   name: string;
 }
 
-export function RemoveMemberButton({ memberId, name }: RemoveMemberButtonProps) {
+const RemoveMemberButton = ({ memberId, name }: RemoveMemberButtonProps) => {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [open, setOpen] = useState(false);
@@ -53,4 +53,5 @@ export function RemoveMemberButton({ memberId, name }: RemoveMemberButtonProps) 
       />
     </>
   );
-}
+};
+export { RemoveMemberButton };

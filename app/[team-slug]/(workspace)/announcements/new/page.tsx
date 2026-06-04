@@ -1,3 +1,4 @@
+import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -20,28 +21,30 @@ export default async function NewAnnouncementPage({
   const { divisions } = await getPublicTeamData(organization);
 
   return (
-    <div className="space-y-6 px-4 py-6 sm:px-8">
-      <header className="space-y-1">
+    <div className="space-y-6 px-4 py-6 sm:px-8 w-full">
+      {/* Tombol Kembali - Di kiri halaman di bawah breadcrumbs */}
+      <div className="flex justify-start">
         <Link
           href={`/${slug}/announcements`}
-          className="text-xs text-white/55 hover:text-white"
+          className="group inline-flex items-center gap-2 rounded-full border border-white/5 bg-zinc-900/40 px-3.5 py-1.5 text-xs font-semibold text-white/60 transition-all duration-300 hover:bg-zinc-800/60 hover:text-white"
         >
-          ← Kembali ke pengumuman
+          <ArrowLeft className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-x-0.5" />
+          Kembali ke pengumuman
         </Link>
-        <h1 className="text-2xl font-bold text-white sm:text-3xl">
-          Buat pengumuman baru
-        </h1>
-        <p className="text-sm text-white/65">
-          Pengumuman akan terlihat oleh semua member. Aktifkan WA blast untuk
-          kirim notifikasi langsung.
-        </p>
-      </header>
+      </div>
 
-      <div className="max-w-2xl rounded-2xl border border-white/10 bg-zinc-900/40 p-5 sm:p-6">
-        <AnnouncementForm
-          orgSlug={slug}
-          divisions={divisions.map((d) => ({ id: d.id, name: d.name }))}
-        />
+      {/* Konten Terpusat: Judul & Card Form */}
+      <div className="mx-auto max-w-2xl w-full space-y-4">
+        <h1 className="text-2xl font-bold text-white sm:text-3xl tracking-tight text-left">
+          Buat Pengumuman Baru
+        </h1>
+
+        <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5 sm:p-6 w-full shadow-xl shadow-black/20">
+          <AnnouncementForm
+            orgSlug={slug}
+            divisions={divisions.map((d) => ({ id: d.id, name: d.name }))}
+          />
+        </div>
       </div>
     </div>
   );

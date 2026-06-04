@@ -9,6 +9,7 @@
  */
 
 import { createAdminClient } from "@/lib/supabase/admin";
+import type { Json } from "@/types/database";
 
 import type {
   CalendarAuditLog,
@@ -80,8 +81,8 @@ export async function logCalendarAudit(
       actor_id: actor,
       action,
       entity_type: entityType,
-      changes: changes ?? {},
-      metadata: metadata ?? {},
+      changes: (changes ?? {}) as unknown as Json,
+      metadata: (metadata ?? {}) as unknown as Json,
     };
 
     const { error } = await admin.from("calendar_audit_logs").insert(logEntry);
@@ -258,8 +259,8 @@ export async function logEventCreated(
       actor_id: actor,
       action: AUDIT_ACTIONS.EVENT_CREATED,
       entity_type: "event",
-      changes,
-      metadata: metadata ?? {},
+      changes: changes as unknown as Json,
+      metadata: (metadata ?? {}) as unknown as Json,
     });
   } catch (err) {
     console.error("Failed to log event creation:", err);
@@ -307,8 +308,8 @@ export async function logEventUpdated(
       actor_id: actor,
       action: AUDIT_ACTIONS.EVENT_UPDATED,
       entity_type: "event",
-      changes,
-      metadata: metadata ?? {},
+      changes: changes as unknown as Json,
+      metadata: (metadata ?? {}) as unknown as Json,
     });
   } catch (err) {
     console.error("Failed to log event update:", err);
@@ -348,8 +349,8 @@ export async function logEventDeleted(
       actor_id: actor,
       action: AUDIT_ACTIONS.EVENT_DELETED,
       entity_type: "event",
-      changes,
-      metadata: metadata ?? {},
+      changes: changes as unknown as Json,
+      metadata: (metadata ?? {}) as unknown as Json,
     });
   } catch (err) {
     console.error("Failed to log event deletion:", err);
@@ -393,8 +394,8 @@ export async function logEventVisibilityChanged(
       actor_id: actor,
       action: AUDIT_ACTIONS.EVENT_VISIBILITY_CHANGED,
       entity_type: "event",
-      changes,
-      metadata: metadata ?? {},
+      changes: changes as unknown as Json,
+      metadata: (metadata ?? {}) as unknown as Json,
     });
   } catch (err) {
     console.error("Failed to log event visibility change:", err);
@@ -441,11 +442,8 @@ export async function logPermissionGranted(
       actor_id: actor,
       action: AUDIT_ACTIONS.PERMISSION_GRANTED,
       entity_type: "permission",
-      changes,
-      metadata: {
-        ...metadata,
-        member_user_id: memberUserId,
-      },
+      changes: changes as unknown as Json,
+      metadata: { ...metadata, member_user_id: memberUserId } as unknown as Json,
     });
   } catch (err) {
     console.error("Failed to log permission grant:", err);
@@ -485,11 +483,8 @@ export async function logPermissionRevoked(
       actor_id: actor,
       action: AUDIT_ACTIONS.PERMISSION_REVOKED,
       entity_type: "permission",
-      changes,
-      metadata: {
-        ...metadata,
-        member_user_id: memberUserId,
-      },
+      changes: changes as unknown as Json,
+      metadata: { ...metadata, member_user_id: memberUserId } as unknown as Json,
     });
   } catch (err) {
     console.error("Failed to log permission revocation:", err);
@@ -537,11 +532,8 @@ export async function logPermissionUpdated(
       actor_id: actor,
       action: AUDIT_ACTIONS.PERMISSION_UPDATED,
       entity_type: "permission",
-      changes,
-      metadata: {
-        ...metadata,
-        member_user_id: memberUserId,
-      },
+      changes: changes as unknown as Json,
+      metadata: { ...metadata, member_user_id: memberUserId } as unknown as Json,
     });
   } catch (err) {
     console.error("Failed to log permission update:", err);

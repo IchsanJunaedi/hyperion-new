@@ -54,11 +54,15 @@ export async function listScrims(
     q = q
       .eq("status", "scheduled")
       .gte("scheduled_at", new Date().toISOString())
-      .order("scheduled_at", { ascending: true });
+      .order("scheduled_at", { ascending: true })
+      .limit(20);
   } else if (filter === "ongoing") {
+    // Show explicitly-ongoing scrims + scheduled scrims whose time has passed
+    // (result not yet submitted — they "fell through" from upcoming).
     q = q
-      .eq("status", "ongoing")
-      .order("scheduled_at", { ascending: false });
+      .or(`status.eq.ongoing,and(status.eq.scheduled,scheduled_at.lt.${new Date().toISOString()})`)
+      .order("scheduled_at", { ascending: false })
+      .limit(20);
   } else if (filter === "completed") {
     q = q
       .in("status", ["completed", "cancelled"])
@@ -113,11 +117,13 @@ export async function getScrimDetail(
   scrimId: string,
 ): Promise<ScrimDetail | null> {
   const supabase = await createClient();
-  const { data: scrim, error } = await supabase
-    .from("scrims")
-    .select("*")
-    .eq("id", scrimId)
-    .maybeSingle();
+
+  // Fetch the scrim row and the caller's identity concurrently — auth.getUser()
+  // has no dependency on scrim data, so there's no reason to waterfall it.
+  const [{ data: scrim, error }, { data: { user } }] = await Promise.all([
+    supabase.from("scrims").select("*").eq("id", scrimId).maybeSingle(),
+    supabase.auth.getUser(),
+  ]);
   if (error || !scrim) return null;
 
   const [attendancesRes, resultRes, divisionRes, membersRes] =
@@ -192,6 +198,8 @@ export async function getScrimDetail(
         user_id: m.user_id,
         status: "pending" as const,
         note: null,
+        rating: null,
+        coach_notes: null,
         updated_at: scrim.created_at,
       } satisfies ScrimAttendance);
     return {
@@ -227,9 +235,7 @@ export async function getScrimDetail(
   }
 
   // Resolve the caller's own attendance row (if any).
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // `user` was resolved concurrently with the initial scrim fetch above.
   const myAttendance =
     user && attendanceMap.has(user.id)
       ? (attendanceMap.get(user.id) ?? null)
@@ -262,24 +268,86 @@ export interface WinLossRecord {
 
 export async function getScrimWinLossRecord(orgId: string): Promise<WinLossRecord> {
   const supabase = await createClient();
+  const { data, error } = await supabase
+    .rpc("get_scrim_win_loss", { p_org_id: orgId })
+    .maybeSingle();
+  if (error) console.error("[getScrimWinLossRecord]", error);
+
+  return {
+    wins: Number(data?.wins ?? 0),
+    losses: Number(data?.losses ?? 0),
+    draws: Number(data?.draws ?? 0),
+    total: Number(data?.total ?? 0),
+  };
+}
+
+export interface ScrimReviewRequest {
+  id: string;
+  scrim_id: string;
+  requested_by: string;
+  notes: string | null;
+  status: "pending" | "reviewed";
+  review_notes: string | null;
+  reviewed_at: string | null;
+  reviewed_by: string | null;
+  created_at: string;
+}
+
+/**
+ * Get the review request for a scrim (if any).
+ */
+export async function getScrimReviewRequest(
+  scrimId: string,
+): Promise<ScrimReviewRequest | null> {
+  const supabase = await createClient();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data } = await (supabase as any)
+    .from("scrim_review_requests")
+    .select("*")
+    .eq("scrim_id", scrimId)
+    .maybeSingle();
+  return data ?? null;
+}
+
+export interface OpponentHistoryEntry {
+  scrim_id: string;
+  scheduled_at: string;
+  format: string;
+  our_score: number | null;
+  opponent_score: number | null;
+  is_win: boolean | null;
+}
+
+/**
+ * Get past completed scrims vs the same opponent (case-insensitive).
+ */
+export async function getOpponentHistory(
+  orgId: string,
+  opponentName: string,
+  excludeScrimId: string,
+): Promise<OpponentHistoryEntry[]> {
+  const supabase = await createClient();
   const { data } = await supabase
     .from("scrims")
-    .select("id, scrim_results(is_win)")
+    .select("id, scheduled_at, format, scrim_results(our_score, opponent_score, is_win)")
     .eq("organization_id", orgId)
-    .eq("status", "completed");
+    .eq("status", "completed")
+    .ilike("opponent_name", opponentName)
+    .neq("id", excludeScrimId)
+    .order("scheduled_at", { ascending: false })
+    .limit(10);
 
-  const rows = data ?? [];
-  let wins = 0, losses = 0, draws = 0;
-  for (const s of rows) {
-    const result = Array.isArray(s.scrim_results)
-      ? s.scrim_results[0]
-      : s.scrim_results;
-    if (!result) continue;
-    if (result.is_win === true) wins++;
-    else if (result.is_win === false) losses++;
-    else draws++;
-  }
-  return { wins, losses, draws, total: wins + losses + draws };
+  return (data ?? []).map((s) => {
+    const r = Array.isArray(s.scrim_results) ? s.scrim_results[0] : s.scrim_results;
+    return {
+      scrim_id: s.id,
+      scheduled_at: s.scheduled_at,
+      format: s.format,
+      our_score: r?.our_score ?? null,
+      opponent_score: r?.opponent_score ?? null,
+      is_win: r?.is_win ?? null,
+    };
+  });
 }
 
 export function summarizeAttendance(

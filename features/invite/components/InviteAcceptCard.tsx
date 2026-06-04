@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { notify } from "@/features/dashboard/components/NotifyModal";
+import { ConfirmDeleteDialog } from "@/features/dashboard/components/ConfirmDeleteDialog";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -19,16 +20,17 @@ interface InviteAcceptCardProps {
   inviterName: string | null;
 }
 
-export function InviteAcceptCard({
+const InviteAcceptCard = ({
   token,
   orgName,
   orgSlug,
   divisionName,
   role,
   inviterName,
-}: InviteAcceptCardProps) {
+}: InviteAcceptCardProps) => {
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  const [confirmRejectOpen, setConfirmRejectOpen] = useState(false);
 
   const accept = () => {
     setError(null);
@@ -42,7 +44,6 @@ export function InviteAcceptCard({
   };
 
   const reject = () => {
-    if (!confirm("Tolak undangan ini?")) return;
     setError(null);
     startTransition(async () => {
       const result = await rejectInviteAction(token);
@@ -50,6 +51,7 @@ export function InviteAcceptCard({
         setError(result.error);
         notify.error(result.error);
       }
+      setConfirmRejectOpen(false);
     });
   };
 
@@ -78,11 +80,20 @@ export function InviteAcceptCard({
           type="button"
           variant="outline"
           className="flex-1"
-          onClick={reject}
+          onClick={() => setConfirmRejectOpen(true)}
           disabled={pending}
         >
           Tolak
         </Button>
+        <ConfirmDeleteDialog
+          open={confirmRejectOpen}
+          title="Tolak Undangan"
+          message="Apakah kamu yakin ingin menolak undangan ini?"
+          confirmText="Tolak"
+          pending={pending}
+          onConfirm={reject}
+          onCancel={() => setConfirmRejectOpen(false)}
+        />
         <Button
           type="button"
           className="flex-1"
@@ -94,4 +105,5 @@ export function InviteAcceptCard({
       </div>
     </div>
   );
-}
+};
+export { InviteAcceptCard };

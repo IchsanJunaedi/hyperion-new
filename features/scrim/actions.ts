@@ -7,6 +7,7 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { blastWaMessage } from "@/lib/utils/fonnte";
+import { logAudit } from "@/lib/audit";
 import { buildScrimWaMessage } from "@/lib/utils/wa-templates";
 import {
   cancelScrimSchema,
@@ -91,6 +92,14 @@ export async function createScrimAction(
     };
   }
 
+  await logAudit({
+    actorId: user.id,
+    action: "scrim.create",
+    entityType: "scrim",
+    entityId: scrim.id,
+    metadata: { opponent: scrim.opponent_name, format: scrim.format },
+  });
+
   await fanOutScrimNotifications(supabase, scrim, org.name);
 
   revalidatePath(`/${orgSlug}/scrim`);
@@ -146,6 +155,7 @@ async function fanOutScrimNotifications(
     format: scrim.format,
     serverRegion: scrim.server_region,
     roomInfo: scrim.room_info,
+    notes: scrim.notes,
     scrimUrl,
   });
 
@@ -357,6 +367,14 @@ export async function cancelScrimAction(
       message: "Scrim sudah selesai atau sudah dibatalkan",
     };
   }
+
+  await logAudit({
+    actorId: user.id,
+    action: "scrim.cancel",
+    entityType: "scrim",
+    entityId: parsed.data.scrim_id,
+  });
+
   revalidatePath(`/${orgSlug}/scrim/${parsed.data.scrim_id}`);
   revalidatePath(`/${orgSlug}/scrim`);
   return { ok: true };
@@ -389,7 +407,7 @@ export async function updateScrimAction(
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, message: "Anda harus login" };
 
-  const { error } = await supabase
+  const { data: updatedScrim, error } = await supabase
     .from("scrims")
     .update({
       division_id: parsed.data.division_id,
@@ -401,7 +419,9 @@ export async function updateScrimAction(
       room_info: parsed.data.room_info,
       notes: parsed.data.notes,
     })
-    .eq("id", parsed.data.scrim_id);
+    .eq("id", parsed.data.scrim_id)
+    .select("*")
+    .single();
 
   if (error) {
     return {
@@ -413,9 +433,185 @@ export async function updateScrimAction(
     };
   }
 
+  await logAudit({
+    actorId: user.id,
+    action: "scrim.update",
+    entityType: "scrim",
+    entityId: parsed.data.scrim_id,
+  });
+
+  // Fan-out update notification to members (best-effort, fire-and-forget)
+  if (updatedScrim) {
+    const { data: org } = await supabase
+      .from("organizations")
+      .select("name")
+      .eq("slug", orgSlug)
+      .maybeSingle();
+    if (org) {
+      fanOutScrimUpdateNotification(updatedScrim, org.name).catch((err) =>
+        console.error("[Scrim Update Notification]", err),
+      );
+    }
+  }
+
   revalidatePath(`/${orgSlug}/scrim/${parsed.data.scrim_id}`);
   revalidatePath(`/${orgSlug}/scrim`);
   revalidatePath(`/${orgSlug}`);
+  return { ok: true };
+}
+
+async function fanOutScrimUpdateNotification(scrim: Scrim, orgName: string) {
+  const admin = createAdminClient();
+  const { data: members } = await admin
+    .from("team_members")
+    .select("user_id")
+    .eq("organization_id", scrim.organization_id)
+    .eq("is_active", true);
+  if (!members || members.length === 0) return;
+
+  const scheduled = new Date(scrim.scheduled_at).toLocaleString("id-ID", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "Asia/Jakarta",
+  });
+  const title = `Scrim diperbarui: vs ${scrim.opponent_name}`;
+  const body = `Jadwal scrim ${scrim.format.toUpperCase()} diperbarui menjadi ${scheduled}.`;
+
+  const rows = members.map((m) => ({
+    organization_id: scrim.organization_id,
+    user_id: m.user_id,
+    type: "scrim_invite" as const,
+    title,
+    body,
+    ref_id: scrim.id,
+    ref_type: "scrim",
+    wa_number: null,
+    wa_message: null,
+  }));
+
+  await admin.from("notifications").insert(rows);
+}
+
+/**
+ * Request a coach review for a scrim. Any authenticated member can request.
+ * Fans out bell + WA notifications to all active coaches in the org.
+ */
+export async function requestScrimReviewAction(
+  orgSlug: string,
+  scrimId: string,
+  notes?: string,
+): Promise<ActionError | { ok: true }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, message: "Anda harus login" };
+
+  // Resolve org id from slug
+  const { data: org } = await supabase
+    .from("organizations")
+    .select("id, name")
+    .eq("slug", orgSlug)
+    .maybeSingle();
+  if (!org) return { ok: false, message: "Organisasi tidak ditemukan" };
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase as any).from("scrim_review_requests").insert({
+    scrim_id: scrimId,
+    requested_by: user.id,
+    notes: notes?.trim() || null,
+  });
+
+  if (error) {
+    if (error.code === "23505") {
+      return { ok: false, message: "Review sudah diminta sebelumnya" };
+    }
+    return { ok: false, message: error.message };
+  }
+
+  // Best-effort: fan out bell + WA to coaches
+  try {
+    const admin = createAdminClient();
+    const { data: coaches } = await admin
+      .from("team_members")
+      .select("user_id")
+      .eq("organization_id", org.id)
+      .eq("role", "coach")
+      .eq("is_active", true);
+
+    if (coaches && coaches.length > 0) {
+      const coachIds = coaches.map((c) => c.user_id);
+      const { data: profiles } = await admin
+        .from("profiles")
+        .select("id, phone_wa")
+        .in("id", coachIds);
+      const phoneMap = new Map(
+        (profiles ?? []).map((p) => [p.id, p.phone_wa]),
+      );
+
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+      const scrimUrl = `${appUrl}/${orgSlug}/scrim/${scrimId}`;
+      const title = `Review scrim diminta`;
+      const body = `Seseorang meminta review scrim. Cek detail dan tulis catatanmu.`;
+      const waText = `*[${org.name}] Review Scrim Diminta*\n\nSeseorang meminta review untuk scrim. Buka link berikut untuk menulis catatanmu:\n${scrimUrl}`;
+
+      const rows = coaches.map((c) => ({
+        organization_id: org.id,
+        user_id: c.user_id,
+        type: "scrim_invite" as const,
+        title,
+        body,
+        ref_id: scrimId,
+        ref_type: "scrim",
+        wa_number: phoneMap.get(c.user_id) ?? null,
+        wa_message: phoneMap.get(c.user_id) ? waText : null,
+      }));
+
+      await admin.from("notifications").insert(rows);
+    }
+  } catch {
+    // Non-blocking — review request already created above
+  }
+
+  revalidatePath(`/${orgSlug}/scrim/${scrimId}`);
+  return { ok: true };
+}
+
+/**
+ * Coach submits review notes and marks the request as reviewed.
+ */
+export async function submitScrimReviewAction(
+  orgSlug: string,
+  scrimId: string,
+  reviewNotes: string,
+): Promise<ActionError | { ok: true }> {
+  if (!reviewNotes?.trim()) {
+    return { ok: false, message: "Catatan review wajib diisi" };
+  }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, message: "Anda harus login" };
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase as any)
+    .from("scrim_review_requests")
+    .update({
+      status: "reviewed",
+      review_notes: reviewNotes.trim(),
+      reviewed_at: new Date().toISOString(),
+      reviewed_by: user.id,
+    })
+    .eq("scrim_id", scrimId);
+
+  if (error) return { ok: false, message: error.message };
+
+  revalidatePath(`/${orgSlug}/scrim/${scrimId}`);
   return { ok: true };
 }
 

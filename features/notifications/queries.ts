@@ -10,7 +10,7 @@ export async function getNotifications(limit = 10) {
   const supabase = await createClient();
   const { data } = await supabase
     .from("notifications")
-    .select("*")
+    .select("id, title, body, created_at, read_at, ref_type, ref_id, organizations(slug)")
     .order("created_at", { ascending: false })
     .limit(limit);
   return data ?? [];
@@ -24,7 +24,7 @@ export async function getUnreadCount() {
   const supabase = await createClient();
   const { count } = await supabase
     .from("notifications")
-    .select("*", { count: "exact", head: true })
+    .select("id", { count: "exact", head: true })
     .is("read_at", null);
   return count ?? 0;
 }
@@ -44,7 +44,7 @@ export async function getWaDeliveryList(
 
   let q = supabase
     .from("notifications")
-    .select("*, profiles!inner(display_name)", { count: "exact" })
+    .select("id, title, status, wa_number, attempts, created_at, profiles!inner(display_name)", { count: "exact" })
     .eq("organization_id", orgId)
     .not("wa_number", "is", null)
     .order("created_at", { ascending: false })

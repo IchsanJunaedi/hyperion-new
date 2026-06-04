@@ -7,12 +7,13 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { logAudit } from "@/lib/audit";
 import { blastWaMessage } from "@/lib/utils/fonnte";
-import { buildTournamentWaMessage } from "@/lib/utils/wa-templates";
+import { buildTournamentRegisteredWaMessage } from "@/lib/utils/wa-templates";
 import {
   createTournamentSchema,
   updateTournamentSchema,
   createTournamentStageSchema,
 } from "@/lib/validations/tournament";
+import { shouldAutoCreateAchievement, buildAchievementTitle } from "./achievement-helpers";
 
 export interface ActionError {
   ok: false;
@@ -60,6 +61,7 @@ export async function createTournamentAction(
       registration_url: parsed.data.registration_url,
       notes: parsed.data.notes,
       start_time: parsed.data.start_time ?? null,
+      registration_deadline: parsed.data.registration_deadline ?? null,
       status: "upcoming",
     })
     .select("id")
@@ -79,21 +81,6 @@ export async function createTournamentAction(
     action: "tournament.create",
     entityType: "tournament",
     entityId: tournament.id,
-  });
-
-  // WA blast to all active members of the org (or division if specified)
-  await fanOutTournamentNotifications(supabase, {
-    tournamentId: tournament.id,
-    orgId: org.id,
-    orgSlug,
-    divisionId: parsed.data.division_id ?? null,
-    name: parsed.data.name,
-    organizer: parsed.data.organizer ?? null,
-    startDate: parsed.data.start_date,
-    endDate: parsed.data.end_date ?? null,
-    prizePool: parsed.data.prize_pool ?? null,
-    registrationFee: parsed.data.registration_fee ?? null,
-    registrationUrl: parsed.data.registration_url ?? null,
   });
 
   revalidatePath(`/${orgSlug}/tournaments`);
@@ -132,6 +119,7 @@ export async function updateTournamentAction(
       registration_url: parsed.data.registration_url,
       notes: parsed.data.notes,
       start_time: parsed.data.start_time ?? null,
+      registration_deadline: parsed.data.registration_deadline ?? null,
       h1_reminder_sent_at: null,
       day_reminder_sent_at: null,
     })
@@ -193,6 +181,22 @@ export async function updateTournamentStatusAction(
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, message: "Anda harus login" };
 
+  // Guard: block registration confirmation if deadline has passed
+  if (status === "ongoing") {
+    const { data: existing } = await supabase
+      .from("tournaments")
+      .select("status, registration_deadline")
+      .eq("id", tournamentId)
+      .maybeSingle();
+    if (
+      existing?.status === "upcoming" &&
+      existing.registration_deadline != null &&
+      new Date(existing.registration_deadline).getTime() < Date.now()
+    ) {
+      return { ok: false, message: "Batas pendaftaran sudah lewat, tidak bisa dikonfirmasi." };
+    }
+  }
+
   // DB uses text check: upcoming/ongoing/completed/cancelled
   const { error } = await supabase
     .from("tournaments")
@@ -201,27 +205,41 @@ export async function updateTournamentStatusAction(
 
   if (error) return { ok: false, message: error.message };
 
-  // When confirming registration (upcoming → ongoing), auto-add finance expense
+  // When confirming registration (upcoming → ongoing)
   if (status === "ongoing") {
     const { data: tournament } = await supabase
       .from("tournaments")
-      .select("organization_id, name, registration_fee")
+      .select("organization_id, name, organizer, start_date, registration_fee, prize_pool")
       .eq("id", tournamentId)
       .maybeSingle();
 
-    if (tournament?.registration_fee) {
-      const amount = parseInt(tournament.registration_fee.replace(/\D/g, ""), 10);
-      if (amount > 0) {
-        await supabase.from("finances").insert({
-          organization_id: tournament.organization_id,
-          type: "expense",
-          amount,
-          category: "Turnamen",
-          description: `Biaya registrasi: ${tournament.name}`,
-          date: new Date().toISOString().slice(0, 10),
-          created_by: user.id,
-        });
+    if (tournament) {
+      // Auto-add finance expense if there's a registration fee
+      if (tournament.registration_fee) {
+        const amount = parseInt(tournament.registration_fee.replace(/\D/g, ""), 10);
+        if (amount > 0) {
+          await supabase.from("finances").insert({
+            organization_id: tournament.organization_id,
+            type: "expense",
+            amount,
+            category: "Turnamen",
+            description: `Biaya registrasi: ${tournament.name}`,
+            date: new Date().toISOString().slice(0, 10),
+            created_by: user.id,
+          });
+        }
       }
+
+      // WA + in-app notification blast to all members
+      fanOutRegistrationNotification(createAdminClient(), {
+        tournamentId,
+        orgId: tournament.organization_id,
+        orgSlug,
+        name: tournament.name,
+        organizer: tournament.organizer ?? null,
+        startDate: tournament.start_date,
+        prizePool: tournament.prize_pool ?? null,
+      }).catch((err) => console.error("[WA] Registration notification error:", err));
     }
   }
 
@@ -289,33 +307,336 @@ export async function toggleStageCompleteAction(
   return { ok: true };
 }
 
+export async function addTournamentMatchAction(
+  orgSlug: string,
+  tournamentId: string,
+  raw: {
+    stage_id: string;
+    round_label: string;
+    our_score?: number | null;
+    opponent_score?: number | null;
+    is_win?: boolean | null;
+    notes?: string;
+    played_at?: string;
+  },
+): Promise<ActionError | { ok: true }> {
+  if (!raw.round_label?.trim()) {
+    return { ok: false, message: "Label ronde wajib diisi" };
+  }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, message: "Anda harus login" };
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase as any).from("tournament_matches").insert({
+    stage_id: raw.stage_id,
+    round_label: raw.round_label.trim(),
+    our_score: raw.our_score ?? null,
+    opponent_score: raw.opponent_score ?? null,
+    is_win: raw.is_win ?? null,
+    notes: raw.notes?.trim() || null,
+    played_at: raw.played_at ? new Date(raw.played_at).toISOString() : null,
+  });
+
+  if (error) return { ok: false, message: error.message };
+
+  revalidatePath(`/${orgSlug}/tournaments/${tournamentId}`);
+  return { ok: true };
+}
+
+export async function updateTournamentMatchAction(
+  orgSlug: string,
+  tournamentId: string,
+  matchId: string,
+  raw: {
+    round_label: string;
+    our_score?: number | null;
+    opponent_score?: number | null;
+    is_win?: boolean | null;
+  },
+): Promise<ActionError | { ok: true }> {
+  if (!raw.round_label?.trim()) {
+    return { ok: false, message: "Label ronde wajib diisi" };
+  }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, message: "Anda harus login" };
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase as any)
+    .from("tournament_matches")
+    .update({
+      round_label: raw.round_label.trim(),
+      our_score: raw.our_score ?? null,
+      opponent_score: raw.opponent_score ?? null,
+      is_win: raw.is_win ?? null,
+    })
+    .eq("id", matchId);
+
+  if (error) return { ok: false, message: error.message };
+
+  revalidatePath(`/${orgSlug}/tournaments/${tournamentId}`);
+  return { ok: true };
+}
+
+export async function deleteTournamentMatchAction(
+  orgSlug: string,
+  tournamentId: string,
+  matchId: string,
+): Promise<ActionError | { ok: true }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, message: "Anda harus login" };
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase as any)
+    .from("tournament_matches")
+    .delete()
+    .eq("id", matchId);
+
+  if (error) return { ok: false, message: error.message };
+
+  revalidatePath(`/${orgSlug}/tournaments/${tournamentId}`);
+  return { ok: true };
+}
+
+export async function updateTournamentBracketAction(
+  orgSlug: string,
+  tournamentId: string,
+  bracketLink: string | null,
+  bracketFilePath: string | null,
+): Promise<ActionError | { ok: true }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, message: "Anda harus login" };
+
+  const { data: org } = await supabase
+    .from("organizations")
+    .select("id")
+    .eq("slug", orgSlug)
+    .maybeSingle();
+  if (!org) return { ok: false, message: "Organisasi tidak ditemukan" };
+
+  const { data: member } = await supabase
+    .from("team_members")
+    .select("role")
+    .eq("organization_id", org.id)
+    .eq("user_id", user.id)
+    .eq("is_active", true)
+    .maybeSingle();
+
+  const ownerEmail = process.env.OWNER_EMAIL || process.env.E2E_OWNER_EMAIL;
+  const isGlobalOwner = user.email && user.email === ownerEmail;
+
+  const { data: orgWithOwner } = await supabase
+    .from("organizations")
+    .select("owner_id")
+    .eq("id", org.id)
+    .maybeSingle();
+  const isOrgOwner = orgWithOwner?.owner_id === user.id;
+
+  const role = member?.role;
+  const canUpdateBracket = isGlobalOwner || isOrgOwner || (role && ["captain", "manager", "coach"].includes(role));
+
+  if (!canUpdateBracket) {
+    return { ok: false, message: "Hanya manager, coach, dan captain yang dapat mengatur bracket" };
+  }
+
+  const adminClient = createAdminClient();
+  const { error } = await adminClient
+    .from("tournaments")
+    .update({
+      bracket_link: bracketLink || null,
+      bracket_file_path: bracketFilePath || null,
+    })
+    .eq("id", tournamentId);
+
+  if (error) {
+    return { ok: false, message: error.message };
+  }
+
+  await logAudit({
+    actorId: user.id,
+    action: "tournament.update_bracket",
+    entityType: "tournament",
+    entityId: tournamentId,
+  });
+
+  revalidatePath(`/${orgSlug}/tournaments/${tournamentId}`);
+  return { ok: true };
+}
+
+
+export async function completeTournamentAction(
+  orgSlug: string,
+  tournamentId: string,
+  data: {
+    won: boolean;
+    placement?: number | null;
+    prizeEarned?: string | null;
+    eliminatedRound?: number | null;
+    notes?: string | null;
+  },
+): Promise<ActionError | { ok: true }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, message: "Anda harus login" };
+
+  const { error: statusError } = await supabase
+    .from("tournaments")
+    .update({ status: "completed" })
+    .eq("id", tournamentId);
+
+  if (statusError) return { ok: false, message: statusError.message };
+
+  const notesValue = data.won
+    ? (data.notes ?? null)
+    : `Gugur babak ${data.eliminatedRound ?? "penyisihan"}${data.notes ? ` — ${data.notes}` : ""}`;
+
+  const admin = createAdminClient();
+  const { error: resultError } = await admin.from("tournament_results").upsert(
+    {
+      tournament_id: tournamentId,
+      placement: data.won ? (data.placement ?? null) : null,
+      prize_earned: data.won && data.prizeEarned ? data.prizeEarned.replace(/\D/g, "") : null,
+      notes: notesValue,
+      recorded_by: user.id,
+      recorded_at: new Date().toISOString(),
+    },
+    { onConflict: "tournament_id" },
+  );
+
+  if (resultError) return { ok: false, message: resultError.message };
+
+  const { data: org } = await supabase
+    .from("organizations")
+    .select("id")
+    .eq("slug", orgSlug)
+    .maybeSingle();
+
+  if (org) {
+    const prizeAmount = data.won && data.prizeEarned
+      ? parseInt(data.prizeEarned.replace(/\D/g, ""), 10)
+      : 0;
+
+    // Auto-add prize income to finances
+    if (prizeAmount > 0) {
+      await admin.from("finances").insert({
+        organization_id: org.id,
+        type: "income",
+        amount: prizeAmount,
+        category: "Hadiah Turnamen",
+        description: `Prize turnamen${data.placement ? ` — Juara ${data.placement}` : ""}`,
+        date: new Date().toISOString().slice(0, 10),
+        created_by: user.id,
+      });
+    }
+
+    // Auto-distribute bonus to each active contract with bonus_percentage > 0
+    if (prizeAmount > 0) {
+      const { data: contracts } = await admin
+        .from("player_contracts")
+        .select("id, user_id, bonus_percentage")
+        .eq("organization_id", org.id)
+        .eq("status", "active")
+        .gt("bonus_percentage", 0);
+
+      if (contracts && contracts.length > 0) {
+        const { data: tournamentRow } = await admin
+          .from("tournaments")
+          .select("name")
+          .eq("id", tournamentId)
+          .maybeSingle();
+        const tournamentName = tournamentRow?.name ?? "Turnamen";
+
+        const distributions = contracts.map((c) => ({
+          tournament_id: tournamentId,
+          contract_id: c.id,
+          organization_id: org.id,
+          user_id: c.user_id,
+          tournament_name: tournamentName,
+          placement: data.placement ?? null,
+          bonus_amount: Math.round((prizeAmount * Number(c.bonus_percentage)) / 100),
+          bonus_percentage: Number(c.bonus_percentage),
+        }));
+
+        await admin
+          .from("tournament_bonus_distributions")
+          .upsert(distributions, { onConflict: "tournament_id,contract_id" });
+      }
+    }
+  }
+
+  // Auto-create achievement for podium placements
+  if (org && shouldAutoCreateAchievement(data.placement)) {
+    const { data: tournamentRow, error: tErr } = await admin
+      .from("tournaments")
+      .select("name, division_id, end_date")
+      .eq("id", tournamentId)
+      .maybeSingle();
+    if (tErr) console.error("completeTournamentAction: fetch tournament for achievement:", tErr);
+    if (tournamentRow) {
+      const { error: achErr } = await admin.from("achievements").insert({
+        title: buildAchievementTitle(data.placement!, tournamentRow.name),
+        organization_id: org.id,
+        division_id: tournamentRow.division_id,
+        tournament_id: tournamentId,
+        placement: data.placement!,
+        achieved_at: tournamentRow.end_date ?? new Date().toISOString().slice(0, 10),
+        image_url: null,
+      });
+      if (achErr) console.error("completeTournamentAction: achievement insert:", achErr);
+      else revalidatePath("/");
+    }
+  }
+
+  await logAudit({
+    actorId: user.id,
+    action: "tournament.complete",
+    entityType: "tournament",
+    entityId: tournamentId,
+    metadata: { won: data.won, placement: data.placement, prizeEarned: data.prizeEarned },
+  });
+
+  revalidatePath(`/${orgSlug}/tournaments`);
+  revalidatePath(`/${orgSlug}/tournaments/${tournamentId}`);
+  revalidatePath("/manage/finances");
+  revalidatePath("/dashboard/finances");
+  revalidatePath("/manage/salaries");
+  revalidatePath("/dashboard/salaries");
+  return { ok: true };
+}
 
 // ---------------------------------------------------------------------------
-// WA Blast for Tournament Creation
+// WA Blast for Registration Confirmed
 // ---------------------------------------------------------------------------
 
-interface TournamentNotifData {
+interface RegistrationNotifData {
   tournamentId: string;
   orgId: string;
   orgSlug: string;
-  divisionId: string | null;
   name: string;
   organizer: string | null;
   startDate: string;
-  endDate: string | null;
   prizePool: string | null;
-  registrationFee: string | null;
-  registrationUrl: string | null;
 }
 
-async function fanOutTournamentNotifications(
-  supabase: Awaited<ReturnType<typeof createClient>>,
-  data: TournamentNotifData,
+async function fanOutRegistrationNotification(
+  admin: ReturnType<typeof createAdminClient>,
+  data: RegistrationNotifData,
 ) {
-  // Use admin client to bypass RLS — we need to read all members & profiles
-  const admin = createAdminClient();
-
-  // Get org name
   const { data: org } = await admin
     .from("organizations")
     .select("name")
@@ -323,7 +644,6 @@ async function fanOutTournamentNotifications(
     .maybeSingle();
   const orgName = org?.name ?? "Tim";
 
-  // Get members — all active members in the org
   const { data: members } = await admin
     .from("team_members")
     .select("user_id")
@@ -336,28 +656,22 @@ async function fanOutTournamentNotifications(
     .from("profiles")
     .select("id, phone_wa")
     .in("id", userIds);
-  const phoneMap = new Map(
-    (profiles ?? []).map((p) => [p.id, p.phone_wa]),
-  );
+  const phoneMap = new Map((profiles ?? []).map((p) => [p.id, p.phone_wa]));
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
   const tournamentUrl = `${appUrl}/${data.orgSlug}/tournaments/${data.tournamentId}`;
 
-  const waMessage = buildTournamentWaMessage({
+  const waMessage = buildTournamentRegisteredWaMessage({
     orgName,
     tournamentName: data.name,
     organizer: data.organizer,
     startDate: data.startDate,
-    endDate: data.endDate,
     prizePool: data.prizePool,
-    registrationFee: data.registrationFee,
-    registrationUrl: data.registrationUrl,
     tournamentUrl,
   });
 
-  // Insert notification rows for in-app bell
-  const title = `Turnamen baru: ${data.name}`;
-  const body = `${orgName} mendaftarkan turnamen ${data.name} mulai ${data.startDate}.`;
+  const title = `Terdaftar: ${data.name}`;
+  const body = `${orgName} sudah resmi terdaftar di turnamen ${data.name}.`;
 
   const rows = members.map((m) => ({
     organization_id: data.orgId,
@@ -373,14 +687,14 @@ async function fanOutTournamentNotifications(
 
   await admin.from("notifications").insert(rows);
 
-  // Real-time WA blast
   const recipients = members
     .map((m) => ({ phone: phoneMap.get(m.user_id), message: waMessage }))
     .filter((r): r is { phone: string; message: string } => Boolean(r.phone));
 
   if (recipients.length > 0) {
     blastWaMessage(recipients).catch((err) =>
-      console.error("[WA Blast] Tournament notification error:", err),
+      console.error("[WA Blast] Registration notification error:", err),
     );
   }
 }
+

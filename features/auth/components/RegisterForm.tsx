@@ -20,7 +20,7 @@ interface RegisterFormProps {
   next?: string;
 }
 
-export function RegisterForm({ next = "/onboarding/profile" }: RegisterFormProps) {
+const RegisterForm = ({ next = "/onboarding/profile" }: RegisterFormProps) => {
   const [serverError, setServerError] = useState<string | null>(null);
   const [needsConfirm, setNeedsConfirm] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -116,7 +116,7 @@ export function RegisterForm({ next = "/onboarding/profile" }: RegisterFormProps
           id="password"
           type="password"
           autoComplete="new-password"
-          placeholder="Buat password kamu"
+
           className={cn(
             passwordValue.length > 0 && allRulesMet
               ? "border-green-500 focus-visible:ring-green-500/20"
@@ -152,12 +152,16 @@ export function RegisterForm({ next = "/onboarding/profile" }: RegisterFormProps
         <Label htmlFor="phone_wa">Nomor WhatsApp</Label>
         <Input
           id="phone_wa"
-          type="tel"
-          inputMode="tel"
+          type="text"
+          inputMode="numeric"
           autoComplete="tel"
           maxLength={14}
           aria-invalid={errors.phone_wa ? "true" : undefined}
-          {...register("phone_wa")}
+          {...register("phone_wa", {
+            onChange: (e) => {
+              e.target.value = e.target.value.replace(/\D/g, "");
+            },
+          })}
         />
         {errors.phone_wa ? (
           <p className="text-xs text-destructive">{errors.phone_wa.message}</p>
@@ -193,4 +197,5 @@ export function RegisterForm({ next = "/onboarding/profile" }: RegisterFormProps
       </p>
     </form>
   );
-}
+};
+export { RegisterForm };

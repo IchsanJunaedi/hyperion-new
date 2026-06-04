@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { Bell } from "lucide-react";
 import { usePathname } from "next/navigation";
@@ -15,10 +15,11 @@ interface NotificationBellProps {
   orgSlug: string;
 }
 
-export function NotificationBell({ userId, orgSlug }: NotificationBellProps) {
+const NotificationBell = ({ userId, orgSlug }: NotificationBellProps) => {
   const { data: unreadCount } = useUnreadCount(userId);
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
+  const [limit, setLimit] = useState(10);
   const popoverRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const pathname = usePathname();
@@ -26,6 +27,7 @@ export function NotificationBell({ userId, orgSlug }: NotificationBellProps) {
   // Close popover on route change
   useEffect(() => {
     setOpen(false);
+    setLimit(10);
   }, [pathname]);
 
   // Close popover on outside click
@@ -93,7 +95,7 @@ export function NotificationBell({ userId, orgSlug }: NotificationBellProps) {
         type="button"
         aria-label={ariaLabel}
         onClick={() => setOpen((v) => !v)}
-        className="relative rounded-full p-2 text-white/70 transition hover:bg-white/10 hover:text-white"
+        className="relative cursor-pointer rounded-full p-2 text-white/70 transition hover:bg-white/10 hover:text-white"
       >
         <Bell className="h-4 w-4" />
         {badgeText && (
@@ -115,7 +117,7 @@ export function NotificationBell({ userId, orgSlug }: NotificationBellProps) {
               type="button"
               disabled={!count}
               onClick={handleMarkAllRead}
-              className="text-xs text-white/60 transition hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+              className="cursor-pointer text-xs text-white/60 transition hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
             >
               Tandai semua dibaca
             </button>
@@ -125,10 +127,25 @@ export function NotificationBell({ userId, orgSlug }: NotificationBellProps) {
           <NotificationList
             userId={userId}
             orgSlug={orgSlug}
+            limit={limit}
             onClose={() => setOpen(false)}
           />
+
+          {/* Footer */}
+          {limit <= 10 && (
+            <div className="border-t border-white/5 px-4 py-2.5">
+              <button
+                type="button"
+                onClick={() => setLimit(50)}
+                className="w-full cursor-pointer text-center text-xs text-white/40 transition hover:text-white/70"
+              >
+                Lihat semua notifikasi
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>
   );
-}
+};
+export { NotificationBell };

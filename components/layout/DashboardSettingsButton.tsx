@@ -10,10 +10,10 @@ interface DashboardSettingsButtonProps {
   orgId: string;
 }
 
-export function DashboardSettingsButton({
+const DashboardSettingsButton = ({
   userId,
   orgId,
-}: DashboardSettingsButtonProps) {
+}: DashboardSettingsButtonProps) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -35,4 +35,5 @@ export function DashboardSettingsButton({
       />
     </>
   );
-}
+};
+export { DashboardSettingsButton };

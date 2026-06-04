@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+
 import { NotificationBell } from "@/features/notifications/components/NotificationBell";
 
 interface WorkspaceBreadcrumbProps {
@@ -24,12 +25,12 @@ const ROUTE_LABELS: Record<string, string> = {
   "/settings": "Settings",
 };
 
-export function WorkspaceBreadcrumb({
+const WorkspaceBreadcrumb = ({
   orgName,
   orgSlug,
   userId,
   className = "",
-}: WorkspaceBreadcrumbProps) {
+}: WorkspaceBreadcrumbProps) => {
   const pathname = usePathname();
   const segments = pathname?.split("/").filter(Boolean) ?? [];
   const subRoute = segments[1] ? `/${segments[1]}` : "";
@@ -49,9 +50,8 @@ export function WorkspaceBreadcrumb({
         <span className="text-[#6B6A68]">/</span>
         <span className="text-white font-medium">{activeLabel}</span>
       </div>
-      <div className="flex items-center">
-        <NotificationBell userId={userId} orgSlug={orgSlug} />
-      </div>
+      <NotificationBell userId={userId} orgSlug={orgSlug} />
     </header>
   );
-}
+};
+export { WorkspaceBreadcrumb };

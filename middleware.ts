@@ -11,22 +11,39 @@ const MAIN_DOMAIN = process.env.NEXT_PUBLIC_MAIN_DOMAIN ?? "hyperionteam.id";
  * Anything matching one of these segments is treated as a global app route.
  */
 const RESERVED_ROOT_SEGMENTS = new Set([
+  // Auth & platform routes
   "login",
   "register",
   "forgot-password",
   "reset-password",
   "callback",
   "invite",
+  "trial",
   "auth",
   "onboarding",
   "dashboard",
   "manage",
+  "admin",
+  // Static / infrastructure
   "_next",
   "api",
   "favicon.ico",
   "robots.txt",
   "sitemap.xml",
   "manifest.json",
+  // Public landing pages
+  "about",
+  "gallery",
+  "divisions",
+  "privacy",
+  "terms",
+  "contact",
+  "news",
+  "results",
+  "sponsors",
+  "schedule",
+  "rekrutmen",
+  "players",
 ]);
 
 /** Reserved segments that require an authenticated session. */
@@ -163,7 +180,7 @@ export async function middleware(request: NextRequest) {
   ) {
     // Special guard for /dashboard
     if (firstSegment === "dashboard") {
-      const ownerEmail = process.env.OWNER_EMAIL;
+      const ownerEmail = process.env.OWNER_EMAIL || process.env.E2E_OWNER_EMAIL;
       if (!user) {
         if (section !== "login") {
           return redirectWithCookies(
@@ -183,6 +200,39 @@ export async function middleware(request: NextRequest) {
         }
       }
       return response;
+    }
+
+    // Special guard for /admin
+    if (firstSegment === "admin") {
+      const adminEmail = process.env.ADMIN_EMAIL;
+      const ownerEmail = process.env.OWNER_EMAIL || process.env.E2E_OWNER_EMAIL;
+      if (!user) {
+        if (section !== "login") {
+          return redirectWithCookies(new URL("/admin/login", request.url), response);
+        }
+      } else {
+        if (section === "login") {
+          return redirectWithCookies(new URL("/admin", request.url), response);
+        }
+        if (
+          (!adminEmail || user.email !== adminEmail) &&
+          (!ownerEmail || user.email !== ownerEmail)
+        ) {
+          return redirectWithCookies(new URL("/", request.url), response);
+        }
+      }
+      return response;
+    }
+
+    // Special guard for /manage: platform owner/super-admin shouldn't access it
+    if (firstSegment === "manage") {
+      const ownerEmail = process.env.OWNER_EMAIL || process.env.E2E_OWNER_EMAIL;
+      if (user && ownerEmail && user.email === ownerEmail) {
+        return redirectWithCookies(
+          new URL("/dashboard", request.url),
+          response,
+        );
+      }
     }
 
     // Onboarding requires auth. Bounce visitors to /login with a

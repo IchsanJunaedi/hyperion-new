@@ -14,7 +14,7 @@ const EXPORTS = [
   { key: "announcements", label: "Pengumuman", description: "Judul, isi, tanggal" },
 ] as const;
 
-export function ExportButtons() {
+const ExportButtons = () => {
   const [loading, setLoading] = useState<string | null>(null);
   const { success, error: notifyError } = useNotify();
 
@@ -87,7 +87,8 @@ export function ExportButtons() {
       ))}
     </div>
   );
-}
+};
+export { ExportButtons };
 
 function toCsv(data: Record<string, unknown>[], headers: string[]): string {
   const keys = Object.keys(data[0]!);

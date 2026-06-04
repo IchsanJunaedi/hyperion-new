@@ -1,8 +1,23 @@
 import type { Database } from "@/types/database";
 
 export type CalendarEvent = Database["public"]["Tables"]["calendar_events"]["Row"];
-export type CalendarEventComment = Database["public"]["Tables"]["calendar_event_comments"]["Row"];
-export type CalendarEventRelation = Database["public"]["Tables"]["calendar_event_relations"]["Row"];
+
+export interface CalendarEventComment {
+  id: string;
+  event_id: string;
+  user_id: string;
+  body: string;
+  created_at: string;
+  updated_at?: string | null;
+}
+
+export interface CalendarEventRelation {
+  id: string;
+  event_id: string;
+  related_event_id: string;
+  relation_type: string;
+  created_at: string;
+}
 
 export interface RecurringRule {
   freq: "daily" | "weekly" | "monthly" | "yearly";

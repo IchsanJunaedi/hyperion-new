@@ -15,7 +15,7 @@ interface ContentFormProps {
   onClose: () => void;
 }
 
-export function ContentForm({ orgId, onClose }: ContentFormProps) {
+const ContentForm = ({ orgId, onClose }: ContentFormProps) => {
   const router = useRouter();
   const { success, error: notifyError } = useNotify();
   const [pending, startTransition] = useTransition();
@@ -121,4 +121,5 @@ export function ContentForm({ orgId, onClose }: ContentFormProps) {
       </div>
     </div>
   );
-}
+};
+export { ContentForm };

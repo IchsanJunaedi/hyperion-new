@@ -10,10 +10,10 @@ interface NotificationRealtimeProviderProps {
   children: React.ReactNode;
 }
 
-export function NotificationRealtimeProvider({
+const NotificationRealtimeProvider = ({
   userId,
   children,
-}: NotificationRealtimeProviderProps) {
+}: NotificationRealtimeProviderProps) => {
   const { status } = useNotificationsSubscription(userId);
   const prevStatusRef = useRef(status);
 
@@ -41,4 +41,5 @@ export function NotificationRealtimeProvider({
       {children}
     </>
   );
-}
+};
+export { NotificationRealtimeProvider };

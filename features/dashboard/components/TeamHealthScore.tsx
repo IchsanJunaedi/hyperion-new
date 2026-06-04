@@ -16,7 +16,7 @@ function ScoreBar({ value, color }: { value: number; color: string }) {
   );
 }
 
-export function TeamHealthScore({ score }: TeamHealthScoreProps) {
+const TeamHealthScore = ({ score }: TeamHealthScoreProps) => {
   const totalColor =
     score.total >= 75 ? "text-green-400" :
     score.total >= 50 ? "text-yellow-400" : "text-red-400";
@@ -64,4 +64,5 @@ export function TeamHealthScore({ score }: TeamHealthScoreProps) {
       </div>
     </div>
   );
-}
+};
+export { TeamHealthScore };

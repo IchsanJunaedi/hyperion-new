@@ -90,29 +90,27 @@ async function checkPermission(
  *   <EditEventForm />
  * </PermissionGuard>
  */
-export function PermissionGuard({
+const PermissionGuard = ({
   requiredPermission,
   calendarId,
   children,
   fallback,
   requireAll = false,
-}: PermissionGuardProps) {
+}: PermissionGuardProps) => {
   const [allowed, setAllowed] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let mounted = true;
     const checkAccess = async () => {
       setLoading(true);
-      const hasPermission = await checkPermission(
-        calendarId,
-        requiredPermission,
-        requireAll,
-      );
+      const hasPermission = await checkPermission(calendarId, requiredPermission, requireAll);
+      if (!mounted) return;
       setAllowed(hasPermission);
       setLoading(false);
     };
-
     checkAccess();
+    return () => { mounted = false; };
   }, [calendarId, requiredPermission, requireAll]);
 
   if (loading) {
@@ -133,7 +131,7 @@ export function PermissionGuard({
           <div>
             <p className="font-medium text-red-400">Access Denied</p>
             <p className="text-sm text-red-300 mt-1">
-              You don't have permission to perform this action.
+              You don&apos;t have permission to perform this action.
             </p>
           </div>
         </div>
@@ -142,7 +140,7 @@ export function PermissionGuard({
   }
 
   return <>{children}</>;
-}
+};
 
 // ============================================================================
 // Permission Button Component
@@ -161,7 +159,7 @@ export function PermissionGuard({
  *   Create Event
  * </PermissionButton>
  */
-export function PermissionButton({
+const PermissionButton = ({
   requiredPermission,
   calendarId,
   children,
@@ -171,26 +169,22 @@ export function PermissionButton({
   disabled,
   title,
   ...props
-}: PermissionButtonProps) {
+}: PermissionButtonProps) => {
   const [allowed, setAllowed] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let mounted = true;
     const checkAccess = async () => {
       setLoading(true);
-      const hasPermission = await checkPermission(
-        calendarId,
-        requiredPermission,
-        requireAll,
-      );
+      const hasPermission = await checkPermission(calendarId, requiredPermission, requireAll);
+      if (!mounted) return;
       setAllowed(hasPermission);
-      if (!hasPermission && onPermissionDenied) {
-        onPermissionDenied();
-      }
+      if (!hasPermission && onPermissionDenied) onPermissionDenied();
       setLoading(false);
     };
-
     checkAccess();
+    return () => { mounted = false; };
   }, [calendarId, requiredPermission, requireAll, onPermissionDenied]);
 
   const isDisabled = loading || !allowed || disabled;
@@ -222,7 +216,7 @@ export function PermissionButton({
       )}
     </button>
   );
-}
+};
 
 // ============================================================================
 // Permission Confirm Dialog Component
@@ -242,7 +236,7 @@ export function PermissionButton({
  *   <p>Are you sure you want to grant access?</p>
  * </PermissionConfirmDialog>
  */
-export function PermissionConfirmDialog({
+const PermissionConfirmDialog = ({
   requiredPermission,
   calendarId,
   action,
@@ -250,26 +244,23 @@ export function PermissionConfirmDialog({
   onConfirm,
   onCancel,
   loading = false,
-}: PermissionConfirmDialogProps) {
+}: PermissionConfirmDialogProps) => {
   const [open, setOpen] = useState(false);
   const [allowed, setAllowed] = useState<boolean | null>(null);
   const [checking, setChecking] = useState(true);
 
   useEffect(() => {
-    if (open) {
-      const checkAccess = async () => {
-        setChecking(true);
-        const hasPermission = await checkPermission(
-          calendarId,
-          requiredPermission,
-          false,
-        );
-        setAllowed(hasPermission);
-        setChecking(false);
-      };
-
-      checkAccess();
-    }
+    if (!open) return;
+    let mounted = true;
+    const checkAccess = async () => {
+      setChecking(true);
+      const hasPermission = await checkPermission(calendarId, requiredPermission, false);
+      if (!mounted) return;
+      setAllowed(hasPermission);
+      setChecking(false);
+    };
+    checkAccess();
+    return () => { mounted = false; };
   }, [open, calendarId, requiredPermission]);
 
   const handleConfirm = async () => {
@@ -291,7 +282,7 @@ export function PermissionConfirmDialog({
             <div>
               <h3 className="font-semibold text-[#E5E2E1]">Permission Denied</h3>
               <p className="text-sm text-[#9B9A97] mt-2">
-                You don't have permission to perform this action.
+                You don&apos;t have permission to perform this action.
               </p>
             </div>
           </div>
@@ -341,8 +332,8 @@ export function PermissionConfirmDialog({
       )}
     </>
   );
-}
-
+};
+export { PermissionGuard, PermissionButton, PermissionConfirmDialog };
 export type {
   PermissionGuardProps,
   PermissionButtonProps,

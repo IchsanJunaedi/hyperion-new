@@ -7,7 +7,9 @@ import type { EventPriority, EventStatus } from "../types";
 interface PropertyFieldProps {
   label: string;
   icon?: React.ReactNode;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   value: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onChange: (value: any) => void;
   fieldType:
     | "text"
@@ -40,7 +42,7 @@ const PRIORITY_OPTIONS = [
   { value: "urgent", label: "Urgent" },
 ];
 
-export function PropertyField({
+const PropertyField = ({
   label,
   icon,
   value,
@@ -51,10 +53,10 @@ export function PropertyField({
   editable = true,
   isEditing: isEditingProp,
   onEdit,
-}: PropertyFieldProps) {
+}: PropertyFieldProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [inputValue, setInputValue] = useState(value || "");
+  const [inputValue, setInputValue] = useState(String(value || ""));
   const [tagInput, setTagInput] = useState("");
 
   const handleEditToggle = useCallback(() => {
@@ -64,7 +66,7 @@ export function PropertyField({
   }, [isEditing, onEdit]);
 
   const handleChange = useCallback(
-    (newValue: any) => {
+    (newValue: unknown) => {
       onChange(newValue);
       setIsEditing(false);
       if (onEdit) onEdit(false);
@@ -80,7 +82,11 @@ export function PropertyField({
           <div className="flex flex-col">
             <span className="text-xs font-medium text-white/50">{label}</span>
             <span className="text-sm text-white/85">
-              {Array.isArray(value) ? value.join(", ") : value || placeholder}
+              {Array.isArray(value)
+                ? value.join(", ")
+                : typeof value === "boolean"
+                  ? value ? "Yes" : "No"
+                  : (value as string) || placeholder}
             </span>
           </div>
         </div>
@@ -106,7 +112,11 @@ export function PropertyField({
             <span className="text-xs font-medium text-white/50">{label}</span>
             {!isEditing ? (
               <span className="text-sm text-white/85">
-                {Array.isArray(value) ? value.join(", ") : value || placeholder}
+                {Array.isArray(value)
+                  ? value.join(", ")
+                  : typeof value === "boolean"
+                    ? value ? "Yes" : "No"
+                    : (value as string) || placeholder}
               </span>
             ) : (
               <>
@@ -207,7 +217,7 @@ export function PropertyField({
                   <label className="mt-1 flex items-center gap-2">
                     <input
                       type="checkbox"
-                      checked={value}
+                      checked={Boolean(value)}
                       onChange={(e) => handleChange(e.target.checked)}
                       className="h-4 w-4 rounded border-white/20 bg-zinc-900 text-yellow-400"
                     />
@@ -302,4 +312,5 @@ export function PropertyField({
       </div>
     </div>
   );
-}
+};
+export { PropertyField };

@@ -45,7 +45,7 @@ export default async function DashboardReportsPage({ searchParams }: ReportsPage
   const year = sp.year ? parseInt(sp.year) : now.getFullYear();
   const month = sp.month ? parseInt(sp.month) : now.getMonth() + 1;
 
-  const report = await generateMonthlyReport(org.id, year, month);
+  const report = await generateMonthlyReport(org.id, year, month, "owner");
 
   const months = Array.from({ length: 12 }, (_, i) => ({
     value: i + 1,

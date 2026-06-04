@@ -1,6 +1,7 @@
 ﻿"use client";
 
-import { Loader2, Pin, PinOff, Trash2 } from "lucide-react";
+import { Loader2, Pencil, Pin, PinOff, Trash2 } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { notify } from "@/features/dashboard/components/NotifyModal";
@@ -13,11 +14,11 @@ interface AnnouncementActionsProps {
   isPinned: boolean;
 }
 
-export function AnnouncementActions({
+const AnnouncementActions = ({
   orgSlug,
   announcementId,
   isPinned,
-}: AnnouncementActionsProps) {
+}: AnnouncementActionsProps) => {
   const router = useRouter();
   const [pinPending, startPinTransition] = useTransition();
   const [deletePending, startDeleteTransition] = useTransition();
@@ -54,6 +55,14 @@ export function AnnouncementActions({
 
   return (
     <div className="flex flex-wrap gap-2">
+      <Link
+        href={`/${orgSlug}/announcements/${announcementId}/edit`}
+        className="inline-flex h-9 items-center gap-2 rounded-md border border-white/10 px-3 text-xs font-medium text-white/70 transition hover:bg-white/5 hover:text-white"
+      >
+        <Pencil className="h-3.5 w-3.5" />
+        Edit
+      </Link>
+
       <button
         type="button"
         disabled={pinPending}
@@ -89,4 +98,5 @@ export function AnnouncementActions({
       </button>
     </div>
   );
-}
+};
+export { AnnouncementActions };
