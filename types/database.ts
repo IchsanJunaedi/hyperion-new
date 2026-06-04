@@ -1109,6 +1109,45 @@ export type Database = {
           },
         ]
       }
+      news_posts: {
+        Row: {
+          id: string
+          title: string
+          slug: string
+          excerpt: string | null
+          content: string | null
+          cover_image_url: string | null
+          status: string
+          published_at: string | null
+          created_at: string
+          created_by: string | null
+        }
+        Insert: {
+          id?: string
+          title: string
+          slug: string
+          excerpt?: string | null
+          content?: string | null
+          cover_image_url?: string | null
+          status?: string
+          published_at?: string | null
+          created_at?: string
+          created_by?: string | null
+        }
+        Update: {
+          id?: string
+          title?: string
+          slug?: string
+          excerpt?: string | null
+          content?: string | null
+          cover_image_url?: string | null
+          status?: string
+          published_at?: string | null
+          created_at?: string
+          created_by?: string | null
+        }
+        Relationships: []
+      }
       open_trials: {
         Row: {
           created_at: string
@@ -2237,6 +2276,8 @@ export type Database = {
           start_date: string | null
           status: string
           updated_at: string
+          is_public: boolean
+          public_sort_order: number
         }
         Insert: {
           contact_email?: string | null
@@ -2255,6 +2296,8 @@ export type Database = {
           start_date?: string | null
           status?: string
           updated_at?: string
+          is_public?: boolean | null
+          public_sort_order?: number | null
         }
         Update: {
           contact_email?: string | null
@@ -2273,6 +2316,8 @@ export type Database = {
           start_date?: string | null
           status?: string
           updated_at?: string
+          is_public?: boolean | null
+          public_sort_order?: number | null
         }
         Relationships: [
           {
@@ -2386,6 +2431,7 @@ export type Database = {
           position: string | null
           role: Database["public"]["Enums"]["member_role"]
           user_id: string
+          is_public: boolean
         }
         Insert: {
           availability?: Database["public"]["Enums"]["member_availability"]
@@ -2399,6 +2445,7 @@ export type Database = {
           position?: string | null
           role?: Database["public"]["Enums"]["member_role"]
           user_id: string
+          is_public?: boolean | null
         }
         Update: {
           availability?: Database["public"]["Enums"]["member_availability"]
@@ -2412,6 +2459,7 @@ export type Database = {
           position?: string | null
           role?: Database["public"]["Enums"]["member_role"]
           user_id?: string
+          is_public?: boolean | null
         }
         Relationships: [
           {
@@ -2571,6 +2619,8 @@ export type Database = {
           notes: string | null
           placement: number | null
           prize_earned: string | null
+          is_public: boolean
+          result_image_url: string | null
           recorded_at: string
           recorded_by: string | null
           tournament_id: string
@@ -2580,6 +2630,8 @@ export type Database = {
           notes?: string | null
           placement?: number | null
           prize_earned?: string | null
+          is_public?: boolean | null
+          result_image_url?: string | null
           recorded_at?: string
           recorded_by?: string | null
           tournament_id: string
@@ -2589,6 +2641,8 @@ export type Database = {
           notes?: string | null
           placement?: number | null
           prize_earned?: string | null
+          is_public?: boolean | null
+          result_image_url?: string | null
           recorded_at?: string
           recorded_by?: string | null
           tournament_id?: string
