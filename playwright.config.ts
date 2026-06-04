@@ -71,6 +71,17 @@ export default defineConfig({
         storageState: "e2e/.auth/manager.json",
       },
     },
+    {
+      // Workspace specs select their own per-role storageState via test.use(),
+      // so no default storageState is set on the project.
+      name: "workspace-tests",
+      testDir: "./e2e/workspace/workspace",
+      testMatch: "**/*.spec.ts",
+      dependencies: ["workspace-seed"],
+      use: {
+        ...devices["Desktop Chrome"],
+      },
+    },
   ],
 
   // Auto-start Next.js dev server for local runs
