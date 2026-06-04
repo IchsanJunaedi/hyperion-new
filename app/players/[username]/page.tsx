@@ -96,9 +96,9 @@ export default async function PlayerProfilePage({ params }: Props) {
   return (
     <>
       <Header />
-      <main className="flex-1 bg-[#070707]">
+      <main className="flex-1 bg-[#040D1C]">
         {/* Profile header */}
-        <section className="relative overflow-hidden border-b border-white/5 px-6 py-16 sm:px-10 lg:px-16">
+        <section className="relative overflow-hidden border-b border-white/12 px-6 py-16 sm:px-10 lg:px-16">
           <div
             className="pointer-events-none absolute inset-0 opacity-8"
             style={{
@@ -121,10 +121,10 @@ export default async function PlayerProfilePage({ params }: Props) {
                   alt={profile.display_name ?? profile.username ?? ""}
                   width={80}
                   height={80}
-                  className="h-20 w-20 shrink-0 rounded-full object-cover ring-2 ring-white/10"
+                  className="h-20 w-20 shrink-0 rounded-full object-cover ring-2 ring-[#F5C400]/40"
                 />
               ) : (
-                <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-[#1E1E1E] text-2xl font-black text-white/30 ring-2 ring-white/5">
+                <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-[#0C1E3C] text-2xl font-black text-white/50 ring-2 ring-[#F5C400]/30">
                   {(profile.display_name ?? profile.username ?? "?").slice(0, 1).toUpperCase()}
                 </div>
               )}
@@ -132,12 +132,12 @@ export default async function PlayerProfilePage({ params }: Props) {
                 <h1 className="text-2xl font-black uppercase tracking-tight text-white sm:text-3xl">
                   {profile.display_name ?? profile.username}
                 </h1>
-                <p className="mt-0.5 text-sm text-white/35">@{profile.username}</p>
+                <p className="mt-0.5 text-sm text-white/55">@{profile.username}</p>
                 {currentOrg && currentTeam && (
                   <div className="mt-2 flex items-center gap-2">
-                    <span className="text-xs text-white/25">Tim aktif:</span>
-                    <span className="text-xs font-semibold text-white/60">{currentOrg.name}</span>
-                    <span className="rounded bg-[#1E1E1E] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white/40">
+                    <span className="text-xs text-white/45">Tim aktif:</span>
+                    <span className="text-xs font-semibold text-white/75">{currentOrg.name}</span>
+                    <span className="rounded bg-[#0C1E3C] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white/60">
                       {ROLE_LABEL[currentTeam.role] ?? currentTeam.role}
                     </span>
                   </div>
@@ -151,8 +151,8 @@ export default async function PlayerProfilePage({ params }: Props) {
         <section className="px-6 py-14 sm:px-10 lg:px-16">
           <div className="mx-auto max-w-4xl">
             <div className="mb-6 flex items-center gap-3">
-              <Trophy className="h-4 w-4 text-white/30" />
-              <h2 className="text-xs font-bold uppercase tracking-[0.3em] text-white/30">
+              <Trophy className="h-4 w-4 text-white/50" />
+              <h2 className="text-xs font-bold uppercase tracking-[0.3em] text-white/50">
                 Prestasi
               </h2>
             </div>
@@ -164,7 +164,7 @@ export default async function PlayerProfilePage({ params }: Props) {
                   return (
                     <div
                       key={a.id}
-                      className="flex items-center gap-4 border border-white/5 bg-[#0D0D0D] px-5 py-4"
+                      className="flex items-center gap-4 border border-white/12 bg-[#071428] px-5 py-4"
                     >
                       {a.placement != null && (
                         <span
@@ -175,9 +175,9 @@ export default async function PlayerProfilePage({ params }: Props) {
                         </span>
                       )}
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-semibold text-[#E5E2E1]">{a.title}</p>
+                        <p className="truncate text-sm font-semibold text-white">{a.title}</p>
                         {org && (
-                          <p className="mt-0.5 text-[10px] text-white/30">{org.name}</p>
+                          <p className="mt-0.5 text-[10px] text-white/50">{org.name}</p>
                         )}
                       </div>
                       <div className="flex shrink-0 flex-col items-end gap-1">
@@ -189,7 +189,7 @@ export default async function PlayerProfilePage({ params }: Props) {
                             {PLACEMENT_LABEL[a.placement] ?? `Juara ${a.placement}`}
                           </span>
                         )}
-                        <span className="text-[10px] text-white/20">
+                        <span className="text-[10px] text-white/40">
                           {a.achieved_at?.slice(0, 4)}
                         </span>
                       </div>
@@ -198,9 +198,9 @@ export default async function PlayerProfilePage({ params }: Props) {
                 })}
               </div>
             ) : (
-              <div className="border border-white/5 bg-[#0D0D0D] py-14 text-center">
-                <Trophy className="mx-auto mb-3 h-6 w-6 text-white/10" />
-                <p className="text-sm text-white/25">Belum ada prestasi tercatat.</p>
+              <div className="border border-white/12 bg-[#071428] py-14 text-center">
+                <Trophy className="mx-auto mb-3 h-6 w-6 text-white/20" />
+                <p className="text-sm text-white/45">Belum ada prestasi tercatat.</p>
               </div>
             )}
           </div>
