@@ -9,6 +9,9 @@ const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 const AUTH_DIR = path.join(__dirname, "../../.auth");
 
+// Temporary password set on owner account for E2E testing
+const OWNER_E2E_PASSWORD = "E2eOwnerTemp001!";
+
 const ROLES = [
   { name: "manager",  email: process.env.E2E_MANAGER_EMAIL!,  password: process.env.E2E_MANAGER_PASSWORD!,  role: "manager"  },
   { name: "coach",    email: process.env.E2E_COACH_EMAIL!,    password: process.env.E2E_COACH_PASSWORD!,    role: "coach"    },
@@ -17,8 +20,8 @@ const ROLES = [
 ] as const;
 
 setup.skip(
-  !process.env.E2E_OWNER_EMAIL || !process.env.E2E_OWNER_PASSWORD,
-  "E2E_OWNER_EMAIL / E2E_OWNER_PASSWORD not set in .env.local"
+  !process.env.E2E_OWNER_EMAIL,
+  "E2E_OWNER_EMAIL not set in .env.local"
 );
 
 setup("seed workspace data and save auth states", async () => {
@@ -33,6 +36,10 @@ setup("seed workspace data and save auth states", async () => {
   const { data: { users: allUsers } } = await admin.auth.admin.listUsers({ perPage: 1000 });
   const ownerUser = allUsers.find((u) => u.email === ownerEmail);
   if (!ownerUser) throw new Error(`Owner user not found: ${ownerEmail}`);
+
+  // Set a known temporary password on the owner account for E2E testing
+  await admin.auth.admin.updateUserById(ownerUser.id, { password: OWNER_E2E_PASSWORD });
+  console.log(`  [seed] owner password set to E2E temp value`);
 
   // 2. Create 4 test users idempotently
   const userIds: Record<string, string> = {};
@@ -51,10 +58,12 @@ setup("seed workspace data and save auth states", async () => {
       userIds[r.name] = data.user.id;
       console.log(`  [seed] created ${r.name}`);
     }
+    const displayName = `[E2E] ${r.name.charAt(0).toUpperCase() + r.name.slice(1)}`;
     await admin.from("profiles").upsert(
       {
         id: userIds[r.name],
-        full_name: `[E2E] ${r.name.charAt(0).toUpperCase() + r.name.slice(1)}`,
+        full_name: displayName,
+        display_name: displayName,
         email: r.email,
       },
       { onConflict: "id" }
@@ -139,36 +148,33 @@ setup("seed workspace data and save auth states", async () => {
     }
   }
 
-  // 6. Save storage states via browser
-  console.log("  [seed] saving storage states...");
+  // 6. Save storage states via form-based login (most reliable for @supabase/ssr cookie setting)
+  console.log("  [seed] saving storage states via form login...");
   const browser = await chromium.launch();
 
-  // Save storage states via magic link (bypasses password entirely)
-  const allRoles: Array<{ name: string; email: string }> = [
-    { name: "owner", email: ownerEmail },
-    ...ROLES.map((r) => ({ name: r.name, email: r.email })),
-  ];
-
-  for (const r of allRoles) {
-    // Generate magic link via admin API (no password needed)
-    const { data: linkData, error: linkError } = await admin.auth.admin.generateLink({
-      type: "magiclink",
-      email: r.email,
-    });
-    if (linkError) throw new Error(`Magic link for ${r.name}: ${linkError.message}`);
-
-    const magicUrl = linkData.properties.action_link;
+  // Owner — form login at /login with temp password
+  {
     const ctx = await browser.newContext();
     const page = await ctx.newPage();
-    // Navigate to magic link — Supabase redirects to PKCE callback then to app
-    await page.goto(magicUrl);
-    await page.waitForURL(
-      (url) =>
-        !url.pathname.includes("/login") &&
-        !url.pathname.includes("/auth") &&
-        !url.hostname.includes("supabase"),
-      { timeout: 20_000 }
-    );
+    await page.goto(`${BASE_URL}/login`);
+    await page.getByLabel(/email/i).fill(ownerEmail);
+    await page.getByLabel(/password/i).fill(OWNER_E2E_PASSWORD);
+    await page.getByRole("button", { name: /masuk/i }).click();
+    await page.waitForURL((url) => !url.pathname.startsWith("/login"), { timeout: 15_000 });
+    await ctx.storageState({ path: path.join(AUTH_DIR, "owner.json") });
+    await ctx.close();
+    console.log("  [seed] saved owner.json");
+  }
+
+  // Other roles — form login at /login with their passwords
+  for (const r of ROLES) {
+    const ctx = await browser.newContext();
+    const page = await ctx.newPage();
+    await page.goto(`${BASE_URL}/login`);
+    await page.getByLabel(/email/i).fill(r.email);
+    await page.getByLabel(/password/i).fill(r.password);
+    await page.getByRole("button", { name: /masuk/i }).click();
+    await page.waitForURL((url) => !url.pathname.startsWith("/login"), { timeout: 15_000 });
     await ctx.storageState({ path: path.join(AUTH_DIR, `${r.name}.json`) });
     await ctx.close();
     console.log(`  [seed] saved ${r.name}.json`);
@@ -176,4 +182,6 @@ setup("seed workspace data and save auth states", async () => {
 
   await browser.close();
   console.log("✅ Workspace seed complete");
+  console.log("⚠️  Note: owner account password has been changed to E2E temp value.");
+  console.log("    Update E2E_OWNER_PASSWORD=E2eOwnerTemp001! in .env.local for future runs.");
 });
