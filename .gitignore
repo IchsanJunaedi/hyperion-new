@@ -52,6 +52,7 @@ supabase/.temp/
 
 # Docs (internal plans, not needed in prod)
 docs/
+!docs/superpowers/
 
 # Reference files
 master_workspace_notion_style/
