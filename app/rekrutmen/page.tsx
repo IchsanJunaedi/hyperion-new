@@ -31,9 +31,9 @@ export default async function RekrutmenPage() {
   return (
     <>
       <Header />
-      <main className="flex-1 bg-[#070707]">
+      <main className="flex-1 bg-[#040D1C]">
         {/* Hero */}
-        <section className="relative overflow-hidden border-b border-white/5 px-6 py-20 sm:px-10 lg:px-16">
+        <section className="relative overflow-hidden border-b border-white/12 px-6 py-20 sm:px-10 lg:px-16">
           <div
             className="pointer-events-none absolute inset-0 opacity-15"
             style={{
@@ -51,7 +51,7 @@ export default async function RekrutmenPage() {
             <h1 className="text-4xl font-black uppercase tracking-tight text-white sm:text-5xl lg:text-6xl">
               {title}
             </h1>
-            <p className="mt-4 max-w-lg text-sm leading-relaxed text-white/40 sm:text-base">
+            <p className="mt-4 max-w-lg text-sm leading-relaxed text-white/55 sm:text-base">
               {description}
             </p>
           </div>
@@ -65,7 +65,7 @@ export default async function RekrutmenPage() {
                 {trials.map((trial) => (
                   <div
                     key={trial.id}
-                    className="flex flex-col gap-5 border border-white/5 bg-[#0D0D0D] p-6"
+                    className="flex flex-col gap-5 border border-white/12 bg-[#071428] p-6"
                   >
                     {/* Org header */}
                     <div className="flex items-center gap-3">
@@ -78,11 +78,11 @@ export default async function RekrutmenPage() {
                           className="h-9 w-9 shrink-0 rounded object-cover"
                         />
                       ) : (
-                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded bg-[#1E1E1E] text-xs font-black text-white/30">
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded bg-[#0C1E3C] text-xs font-black text-white/50">
                           {trial.org_name.slice(0, 2).toUpperCase()}
                         </div>
                       )}
-                      <span className="truncate text-xs font-semibold uppercase tracking-wider text-white/40">
+                      <span className="truncate text-xs font-semibold uppercase tracking-wider text-white/55">
                         {trial.org_name}
                       </span>
                     </div>
@@ -95,8 +95,8 @@ export default async function RekrutmenPage() {
 
                       {/* Game */}
                       <div className="mt-2 flex items-center gap-1.5">
-                        <Gamepad2 className="h-3 w-3 text-white/25" />
-                        <span className="text-[11px] text-white/40">{trial.game}</span>
+                        <Gamepad2 className="h-3 w-3 text-white/45" />
+                        <span className="text-[11px] text-white/55">{trial.game}</span>
                       </div>
 
                       {/* Positions */}
@@ -125,12 +125,12 @@ export default async function RekrutmenPage() {
                 ))}
               </div>
             ) : (
-              <div className="border border-white/5 bg-[#0D0D0D] py-20 text-center">
-                <Gamepad2 className="mx-auto mb-4 h-8 w-8 text-white/10" />
-                <p className="text-sm font-semibold text-white/30">
+              <div className="border border-white/12 bg-[#071428] py-20 text-center">
+                <Gamepad2 className="mx-auto mb-4 h-8 w-8 text-white/20" />
+                <p className="text-sm font-semibold text-white/50">
                   Tidak ada rekrutmen terbuka saat ini.
                 </p>
-                <p className="mt-2 text-xs text-white/20">Pantau terus — posisi baru akan diumumkan di sini.</p>
+                <p className="mt-2 text-xs text-white/38">Pantau terus — posisi baru akan diumumkan di sini.</p>
               </div>
             )}
           </div>
