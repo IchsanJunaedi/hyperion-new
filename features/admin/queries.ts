@@ -229,6 +229,7 @@ export type AdminTournament = {
   start_date: string;
   start_time: string | null;
   show_in_hero: boolean;
+  show_on_schedule: boolean;
   status: string;
   division_id: string;
 };
@@ -240,11 +241,24 @@ export type FeaturedTournament = {
   start_time: string | null;
 };
 
+export type PublicTournament = {
+  id: string;
+  name: string;
+  start_date: string;
+  start_time: string | null;
+  status: string;
+  organizer: string | null;
+  prize_pool: string | null;
+  registration_url: string | null;
+  division_name: string | null;
+  game: string | null;
+};
+
 export async function getTournamentsForAdmin(): Promise<AdminTournament[]> {
   const admin = createAdminClient();
   const { data, error } = await admin
     .from("tournaments")
-    .select("id, name, start_date, start_time, show_in_hero, status, division_id")
+    .select("id, name, start_date, start_time, show_in_hero, show_on_schedule, status, division_id")
     .eq("is_registered", true)
     .order("start_date", { ascending: false })
     .limit(50);
@@ -262,4 +276,76 @@ export async function getFeaturedTournaments(): Promise<FeaturedTournament[]> {
     .limit(5);
   if (error) console.error("getFeaturedTournaments:", error);
   return (data ?? []) as FeaturedTournament[];
+}
+
+function todayISO(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+type RawPublicRow = {
+  id: string;
+  name: string;
+  start_date: string;
+  start_time: string | null;
+  status: string;
+  organizer: string | null;
+  prize_pool: string | null;
+  registration_url: string | null;
+  divisions: { name: string; game: string | null } | null;
+};
+
+function mapPublicRow(row: RawPublicRow): PublicTournament {
+  return {
+    id: row.id,
+    name: row.name,
+    start_date: row.start_date,
+    start_time: row.start_time,
+    status: row.status,
+    organizer: row.organizer,
+    prize_pool: row.prize_pool,
+    registration_url: row.registration_url,
+    division_name: row.divisions?.name ?? null,
+    game: row.divisions?.game ?? null,
+  };
+}
+
+export async function getScheduleTournaments(): Promise<PublicTournament[]> {
+  const admin = createAdminClient();
+  const { data, error } = await admin
+    .from("tournaments")
+    .select("id, name, start_date, start_time, status, organizer, prize_pool, registration_url, divisions(name, game)")
+    .eq("show_on_schedule", true)
+    .gte("start_date", todayISO())
+    .order("start_date", { ascending: true })
+    .limit(50);
+  if (error) console.error("getScheduleTournaments:", error);
+  return ((data ?? []) as unknown as RawPublicRow[]).map(mapPublicRow);
+}
+
+export async function getUpcomingPublicTournaments(limit = 3): Promise<PublicTournament[]> {
+  const admin = createAdminClient();
+  const { data, error } = await admin
+    .from("tournaments")
+    .select("id, name, start_date, start_time, status, organizer, prize_pool, registration_url, divisions(name, game)")
+    .eq("show_on_schedule", true)
+    .gte("start_date", todayISO())
+    .order("start_date", { ascending: true })
+    .limit(limit);
+  if (error) console.error("getUpcomingPublicTournaments:", error);
+  return ((data ?? []) as unknown as RawPublicRow[]).map(mapPublicRow);
+}
+
+export async function getNearestPublicTournament(): Promise<PublicTournament | null> {
+  const admin = createAdminClient();
+  const { data, error } = await admin
+    .from("tournaments")
+    .select("id, name, start_date, start_time, status, organizer, prize_pool, registration_url, divisions(name, game)")
+    .eq("show_on_schedule", true)
+    .gte("start_date", todayISO())
+    .order("start_date", { ascending: true })
+    .limit(1)
+    .maybeSingle();
+  if (error) console.error("getNearestPublicTournament:", error);
+  if (!data) return null;
+  return mapPublicRow(data as unknown as RawPublicRow);
 }
