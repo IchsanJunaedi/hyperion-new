@@ -19,8 +19,10 @@ import {
   getFeaturedTournaments,
   getUpcomingPublicTournaments,
   getNearestPublicTournament,
+  getPublishedNewsPosts,
 } from "@/features/admin/queries";
 import { UpcomingMatchesSection } from "@/components/landing/UpcomingMatchesSection";
+import { LatestNewsSection } from "@/components/landing/LatestNewsSection";
 import type { PublicTournament } from "@/features/admin/queries";
 import type { HeroSlide, HeroSettings } from "@/components/landing/HeroSection";
 
@@ -95,7 +97,7 @@ export default async function HomePage() {
     }
   }
 
-  const [galleryEntries, manualAchievements, partners, testimonials, settings, featuredTournaments, upcomingMatches, nearestTournament] =
+  const [galleryEntries, manualAchievements, partners, testimonials, settings, featuredTournaments, upcomingMatches, nearestTournament, latestNews] =
     await Promise.all([
       getGalleryEntries(),
       getPublicAchievements(),
@@ -105,6 +107,7 @@ export default async function HomePage() {
       getFeaturedTournaments(),
       getUpcomingPublicTournaments(3),
       getNearestPublicTournament(),
+      getPublishedNewsPosts(),
     ]);
 
   const heroSlides: HeroSlide[] = galleryEntries.slice(0, 3).map((e) => ({
@@ -188,6 +191,7 @@ export default async function HomePage() {
         <UpcomingMatchesSection tournaments={displayUpcoming} />
         <DivisionsSection />
         <AchievementsSection entries={mergedAchievements} />
+        <LatestNewsSection posts={latestNews.slice(0, 3)} />
         <TestimonialsSection testimonials={testimonials} />
         <PartnersSection partners={partners} />
         <JoinUsSection settings={joinSettings} />
