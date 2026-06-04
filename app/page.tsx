@@ -17,7 +17,10 @@ import {
   getActiveTestimonials,
   getSiteSettings,
   getFeaturedTournaments,
+  getUpcomingPublicTournaments,
+  getNearestPublicTournament,
 } from "@/features/admin/queries";
+import { UpcomingMatchesSection } from "@/components/landing/UpcomingMatchesSection";
 import type { HeroSlide, HeroSettings } from "@/components/landing/HeroSection";
 
 export const dynamic = "force-dynamic";
@@ -85,7 +88,7 @@ export default async function HomePage() {
     }
   }
 
-  const [galleryEntries, manualAchievements, partners, testimonials, settings, featuredTournaments] =
+  const [galleryEntries, manualAchievements, partners, testimonials, settings, featuredTournaments, upcomingMatches, nearestTournament] =
     await Promise.all([
       getGalleryEntries(),
       getPublicAchievements(),
@@ -93,6 +96,8 @@ export default async function HomePage() {
       getActiveTestimonials(),
       getSiteSettings(),
       getFeaturedTournaments(),
+      getUpcomingPublicTournaments(3),
+      getNearestPublicTournament(),
     ]);
 
   const heroSlides: HeroSlide[] = galleryEntries.slice(0, 3).map((e) => ({
@@ -157,6 +162,10 @@ export default async function HomePage() {
     join_fine_print: settings.join_fine_print ?? "Gratis · Tanpa syarat umur minimum",
   };
 
+  const heroTournaments = nearestTournament
+    ? [{ id: nearestTournament.id, name: nearestTournament.name, start_date: nearestTournament.start_date, start_time: nearestTournament.start_time }]
+    : featuredTournaments;
+
   return (
     <>
       <Header />
@@ -164,9 +173,10 @@ export default async function HomePage() {
         <HeroSection
           slides={heroSlides}
           settings={heroSettings}
-          featuredTournaments={featuredTournaments}
+          featuredTournaments={heroTournaments}
           heroBackground={settings.hero_background_url || null}
         />
+        <UpcomingMatchesSection tournaments={upcomingMatches} />
         <DivisionsSection />
         <AchievementsSection entries={mergedAchievements} />
         <TestimonialsSection testimonials={testimonials} />
