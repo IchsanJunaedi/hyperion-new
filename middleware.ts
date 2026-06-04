@@ -38,6 +38,12 @@ const RESERVED_ROOT_SEGMENTS = new Set([
   "privacy",
   "terms",
   "contact",
+  "news",
+  "results",
+  "sponsors",
+  "schedule",
+  "rekrutmen",
+  "players",
 ]);
 
 /** Reserved segments that require an authenticated session. */
