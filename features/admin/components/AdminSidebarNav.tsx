@@ -18,6 +18,7 @@ import {
   Search,
   UserPlus,
   Menu,
+  Newspaper,
 } from "lucide-react";
 
 const NAV_GROUPS = [
@@ -26,6 +27,7 @@ const NAV_GROUPS = [
     items: [
       { href: "/admin/gallery", Icon: Image, label: "Gallery & Achievement" },
       { href: "/admin/achievements", Icon: Trophy, label: "Achievements" },
+      { href: "/admin/news", Icon: Newspaper, label: "News" },
       { href: "/admin/tournaments", Icon: CalendarRange, label: "Tournaments & Schedule" },
       { href: "/admin/partners", Icon: Layers, label: "Partners" },
       { href: "/admin/testimonials", Icon: MessageSquare, label: "Testimonials" },
