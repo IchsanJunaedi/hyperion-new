@@ -399,3 +399,82 @@ export async function getNewsPostBySlug(slug: string): Promise<NewsPost | null> 
   if (error) console.error("getNewsPostBySlug:", error);
   return data as NewsPost | null;
 }
+
+// ── Results ───────────────────────────────────────────────────────────────────
+
+export type AdminResult = {
+  id: string;
+  tournament_id: string;
+  tournament_name: string;
+  tournament_start_date: string;
+  placement: number | null;
+  prize_earned: string | null;
+  notes: string | null;
+  recorded_at: string;
+  is_public: boolean;
+  result_image_url: string | null;
+};
+
+export type PublicResult = {
+  id: string;
+  tournament_name: string;
+  tournament_start_date: string;
+  placement: number | null;
+  prize_earned: string | null;
+  recorded_at: string;
+  result_image_url: string | null;
+};
+
+type RawResultRow = {
+  id: string;
+  tournament_id: string;
+  placement: number | null;
+  prize_earned: string | null;
+  notes: string | null;
+  recorded_at: string;
+  is_public: boolean;
+  result_image_url: string | null;
+  tournaments: { name: string; start_date: string } | null;
+};
+
+export async function getResultsForAdmin(): Promise<AdminResult[]> {
+  const admin = createAdminClient();
+  const { data, error } = await admin
+    .from("tournament_results")
+    .select("id, tournament_id, placement, prize_earned, notes, recorded_at, is_public, result_image_url, tournaments(name, start_date)")
+    .order("recorded_at", { ascending: false })
+    .limit(50);
+  if (error) console.error("getResultsForAdmin:", error);
+  return ((data ?? []) as unknown as RawResultRow[]).map((r) => ({
+    id: r.id,
+    tournament_id: r.tournament_id,
+    tournament_name: r.tournaments?.name ?? "—",
+    tournament_start_date: r.tournaments?.start_date ?? "",
+    placement: r.placement,
+    prize_earned: r.prize_earned,
+    notes: r.notes,
+    recorded_at: r.recorded_at,
+    is_public: r.is_public,
+    result_image_url: r.result_image_url,
+  }));
+}
+
+export async function getPublicResults(): Promise<PublicResult[]> {
+  const admin = createAdminClient();
+  const { data, error } = await admin
+    .from("tournament_results")
+    .select("id, placement, prize_earned, recorded_at, result_image_url, tournaments(name, start_date)")
+    .eq("is_public", true)
+    .order("recorded_at", { ascending: false })
+    .limit(50);
+  if (error) console.error("getPublicResults:", error);
+  return ((data ?? []) as unknown as RawResultRow[]).map((r) => ({
+    id: r.id,
+    tournament_name: r.tournaments?.name ?? "—",
+    tournament_start_date: r.tournaments?.start_date ?? "",
+    placement: r.placement,
+    prize_earned: r.prize_earned,
+    recorded_at: r.recorded_at,
+    result_image_url: r.result_image_url,
+  }));
+}

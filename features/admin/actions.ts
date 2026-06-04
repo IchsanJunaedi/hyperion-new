@@ -466,6 +466,42 @@ export async function toggleNewsPostStatusAction(
   return { ok: true };
 }
 
+// ── Results Public Control ─────────────────────────────────────────────────────
+
+export async function toggleResultPublicAction(
+  resultId: string,
+  nextValue: boolean
+): Promise<ActionResult> {
+  const auth = await verifyAdminAccess();
+  if (!auth.ok) return auth;
+  const admin = createAdminClient();
+  const { error } = await admin
+    .from("tournament_results")
+    .update({ is_public: nextValue })
+    .eq("id", resultId);
+  if (error) return { ok: false, message: error.message };
+  revalidatePath("/results");
+  revalidatePath("/admin/results");
+  return { ok: true };
+}
+
+export async function updateResultImageAction(
+  resultId: string,
+  imageUrl: string | null
+): Promise<ActionResult> {
+  const auth = await verifyAdminAccess();
+  if (!auth.ok) return auth;
+  const admin = createAdminClient();
+  const { error } = await admin
+    .from("tournament_results")
+    .update({ result_image_url: imageUrl })
+    .eq("id", resultId);
+  if (error) return { ok: false, message: error.message };
+  revalidatePath("/results");
+  revalidatePath("/admin/results");
+  return { ok: true };
+}
+
 // ── About Alumni ─────────────────────────────────────────────────────────────
 
 export async function createAboutAlumnusAction(data: {
