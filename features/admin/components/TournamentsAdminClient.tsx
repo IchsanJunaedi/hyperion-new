@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import { CalendarRange } from "lucide-react";
-import { toggleHeroTournamentAction } from "@/features/admin/actions";
+import { toggleHeroTournamentAction, toggleTournamentScheduleAction } from "@/features/admin/actions";
 import type { AdminTournament } from "@/features/admin/queries";
 
 interface Props {
@@ -14,14 +14,11 @@ const TournamentsAdminClient = ({ tournaments: initial }: Props) => {
   const [tournaments, setTournaments] = useState(initial);
   const [pending, startTransition] = useTransition();
 
-  const handleToggle = (id: string, currentlyActive: boolean) => {
+  const handleToggleHero = (id: string, currentlyActive: boolean) => {
     const nextValue = !currentlyActive;
-
-    // Optimistic update — independent per tournament
     setTournaments((prev) =>
       prev.map((t) => (t.id === id ? { ...t, show_in_hero: nextValue } : t))
     );
-
     startTransition(async () => {
       const result = await toggleHeroTournamentAction(id, nextValue);
       if (!result.ok) {
@@ -30,14 +27,31 @@ const TournamentsAdminClient = ({ tournaments: initial }: Props) => {
           prev.map((t) => (t.id === id ? { ...t, show_in_hero: currentlyActive } : t))
         );
       } else {
-        toast.success(
-          nextValue ? "Tournament ditampilkan di hero" : "Tournament disembunyikan dari hero"
-        );
+        toast.success(nextValue ? "Ditampilkan di hero" : "Disembunyikan dari hero");
       }
     });
   };
 
-  const activeCount = tournaments.filter((t) => t.show_in_hero).length;
+  const handleToggleSchedule = (id: string, currentlyActive: boolean) => {
+    const nextValue = !currentlyActive;
+    setTournaments((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, show_on_schedule: nextValue } : t))
+    );
+    startTransition(async () => {
+      const result = await toggleTournamentScheduleAction(id, nextValue);
+      if (!result.ok) {
+        toast.error(result.message);
+        setTournaments((prev) =>
+          prev.map((t) => (t.id === id ? { ...t, show_on_schedule: currentlyActive } : t))
+        );
+      } else {
+        toast.success(nextValue ? "Tournament dipublikasikan ke schedule" : "Tournament disembunyikan dari schedule");
+      }
+    });
+  };
+
+  const heroCount = tournaments.filter((t) => t.show_in_hero).length;
+  const scheduleCount = tournaments.filter((t) => t.show_on_schedule).length;
 
   return (
     <div>
@@ -47,14 +61,17 @@ const TournamentsAdminClient = ({ tournaments: initial }: Props) => {
             Tournaments
           </h1>
           <p className="mt-1 text-xs text-[#6B6A68]">
-            Aktifkan satu atau lebih tournament untuk ditampilkan sebagai countdown di hero section.
-            Hanya tournament yang sudah dikonfirmasi pendaftarannya yang muncul di sini.
+            Toggle <span className="text-white/60">Hero</span> untuk countdown di landing page.
+            Toggle <span className="text-[#F5C400]/80">Publik</span> untuk tampil di /schedule dan upcoming matches.
           </p>
-          {activeCount > 0 && (
-            <p className="mt-1.5 text-xs font-semibold text-[#F5C400]">
-              {activeCount} tournament aktif di hero
-            </p>
-          )}
+          <div className="mt-1.5 flex items-center gap-4">
+            {heroCount > 0 && (
+              <p className="text-xs font-semibold text-white/50">{heroCount} di hero</p>
+            )}
+            {scheduleCount > 0 && (
+              <p className="text-xs font-semibold text-[#F5C400]">{scheduleCount} publik</p>
+            )}
+          </div>
         </div>
       </div>
 
@@ -75,7 +92,7 @@ const TournamentsAdminClient = ({ tournaments: initial }: Props) => {
           <div
             key={t.id}
             className={`flex items-center justify-between rounded border px-4 py-3 transition ${
-              t.show_in_hero
+              t.show_on_schedule
                 ? "border-[#F5C400]/30 bg-[#1a1800]"
                 : "border-[#2D2D2D] bg-[#1a1a1a]"
             }`}
@@ -89,22 +106,37 @@ const TournamentsAdminClient = ({ tournaments: initial }: Props) => {
               </p>
             </div>
 
-            <button
-              onClick={() => handleToggle(t.id, t.show_in_hero)}
-              disabled={pending}
-              className={`ml-4 shrink-0 cursor-pointer px-4 py-1.5 text-xs font-bold uppercase tracking-wider transition ${
-                t.show_in_hero
-                  ? "border border-[#F5C400] bg-[#F5C400] text-black hover:bg-transparent hover:text-[#F5C400]"
-                  : "border border-[#2D2D2D] text-[#6B6A68] hover:border-[#F5C400] hover:text-[#F5C400]"
-              } disabled:opacity-50`}
-            >
-              {t.show_in_hero ? "Aktif di Hero" : "Tampilkan"}
-            </button>
+            <div className="ml-4 flex shrink-0 items-center gap-2">
+              {/* Hero toggle */}
+              <button
+                onClick={() => handleToggleHero(t.id, t.show_in_hero)}
+                disabled={pending}
+                className={`cursor-pointer px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider transition disabled:opacity-50 ${
+                  t.show_in_hero
+                    ? "border border-white/40 bg-white/10 text-white"
+                    : "border border-[#2D2D2D] text-[#6B6A68] hover:border-white/30 hover:text-white/60"
+                }`}
+              >
+                {t.show_in_hero ? "Hero ✓" : "Hero"}
+              </button>
+
+              {/* Schedule / Publik toggle */}
+              <button
+                onClick={() => handleToggleSchedule(t.id, t.show_on_schedule)}
+                disabled={pending}
+                className={`cursor-pointer px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider transition disabled:opacity-50 ${
+                  t.show_on_schedule
+                    ? "border border-[#F5C400] bg-[#F5C400] text-black"
+                    : "border border-[#2D2D2D] text-[#6B6A68] hover:border-[#F5C400]/50 hover:text-[#F5C400]"
+                }`}
+              >
+                {t.show_on_schedule ? "Publik ✓" : "Publik"}
+              </button>
+            </div>
           </div>
         ))}
       </div>
     </div>
   );
 };
-
 export { TournamentsAdminClient };
