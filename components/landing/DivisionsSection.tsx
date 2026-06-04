@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export async function DivisionsSection() {
@@ -5,7 +6,7 @@ export async function DivisionsSection() {
 
   const { data: divisions } = await admin
     .from("divisions")
-    .select("id, name, game, description, logo_url")
+    .select("id, name, slug, game, description, logo_url")
     .eq("is_public", true)
     .eq("is_active", true)
     .order("name")
@@ -31,8 +32,9 @@ export async function DivisionsSection() {
         </div>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {items.map((div) => (
-            <div
+            <Link
               key={div.id}
+              href={`/divisions/${div.slug}`}
               className="group flex flex-col gap-3 border border-white/10 bg-[#071428] p-5 transition-all duration-200 hover:border-[#F5C400]/50 hover:bg-[#0C1E3C] sm:p-6"
             >
               <div className="flex items-start justify-between">
@@ -56,7 +58,7 @@ export async function DivisionsSection() {
                   <p className="mt-0.5 text-[11px] uppercase tracking-wider text-white/45">{div.game}</p>
                 )}
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>
