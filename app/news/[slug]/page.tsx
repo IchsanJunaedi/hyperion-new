@@ -68,7 +68,7 @@ const NewsDetailPage = async ({ params }: { params: Promise<{ slug: string }> })
 
           {/* Cover image — constrained to article width, 16:9 */}
           {post.cover_image_url && (
-            <div className="mb-10 aspect-video w-full overflow-hidden border border-white/10">
+            <div className="mb-10 aspect-video w-full overflow-hidden">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={post.cover_image_url}
