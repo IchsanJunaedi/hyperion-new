@@ -478,3 +478,45 @@ export async function getPublicResults(): Promise<PublicResult[]> {
     result_image_url: r.result_image_url,
   }));
 }
+
+// ── Sponsors ──────────────────────────────────────────────────────────────────
+
+export type AdminSponsor = {
+  id: string;
+  name: string;
+  logo_url: string | null;
+  status: string;
+  is_public: boolean;
+  public_sort_order: number;
+};
+
+export type PublicSponsor = {
+  id: string;
+  name: string;
+  logo_url: string;
+  public_sort_order: number;
+};
+
+export async function getSponsorsForAdmin(): Promise<AdminSponsor[]> {
+  const admin = createAdminClient();
+  const { data, error } = await admin
+    .from("sponsors")
+    .select("id, name, logo_url, status, is_public, public_sort_order")
+    .order("public_sort_order", { ascending: true })
+    .limit(100);
+  if (error) console.error("getSponsorsForAdmin:", error);
+  return (data ?? []) as AdminSponsor[];
+}
+
+export async function getPublicSponsors(): Promise<PublicSponsor[]> {
+  const admin = createAdminClient();
+  const { data, error } = await admin
+    .from("sponsors")
+    .select("id, name, logo_url, public_sort_order")
+    .eq("is_public", true)
+    .not("logo_url", "is", null)
+    .order("public_sort_order", { ascending: true })
+    .limit(50);
+  if (error) console.error("getPublicSponsors:", error);
+  return (data ?? []) as unknown as PublicSponsor[];
+}

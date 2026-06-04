@@ -544,3 +544,39 @@ export async function deleteAboutAlumnusAction(id: string): Promise<ActionResult
   revalidatePath("/admin/about");
   return { ok: true };
 }
+
+// ── Sponsor Public Control ─────────────────────────────────────────────────────
+
+export async function toggleSponsorPublicAction(
+  sponsorId: string,
+  nextValue: boolean
+): Promise<ActionResult> {
+  const auth = await verifyAdminAccess();
+  if (!auth.ok) return auth;
+  const admin = createAdminClient();
+  const { error } = await admin
+    .from("sponsors")
+    .update({ is_public: nextValue })
+    .eq("id", sponsorId);
+  if (error) return { ok: false, message: error.message };
+  revalidatePath("/sponsors");
+  revalidatePath("/admin/sponsor-control");
+  return { ok: true };
+}
+
+export async function updateSponsorSortAction(
+  sponsorId: string,
+  newOrder: number
+): Promise<ActionResult> {
+  const auth = await verifyAdminAccess();
+  if (!auth.ok) return auth;
+  const admin = createAdminClient();
+  const { error } = await admin
+    .from("sponsors")
+    .update({ public_sort_order: newOrder })
+    .eq("id", sponsorId);
+  if (error) return { ok: false, message: error.message };
+  revalidatePath("/sponsors");
+  revalidatePath("/admin/sponsor-control");
+  return { ok: true };
+}
