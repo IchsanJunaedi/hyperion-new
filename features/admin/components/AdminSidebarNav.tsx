@@ -33,6 +33,7 @@ const NAV_GROUPS = [
       { href: "/admin/tournaments", Icon: CalendarRange, label: "Tournaments & Schedule" },
       { href: "/admin/results", Icon: Medal, label: "Results" },
       { href: "/admin/sponsor-control", Icon: Handshake, label: "Sponsors Publik" },
+      { href: "/admin/players", Icon: Users, label: "Players Publik" },
       { href: "/admin/partners", Icon: Layers, label: "Partners" },
       { href: "/admin/testimonials", Icon: MessageSquare, label: "Testimonials" },
       { href: "/admin/divisions", Icon: Grid3x3, label: "Divisions" },
