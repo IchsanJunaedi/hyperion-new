@@ -54,7 +54,7 @@ const HeroSection = ({ slides, settings, featuredTournaments = [], heroBackgroun
   if (slides.length === 0) return null;
 
   return (
-    <section className="relative flex min-h-screen flex-col overflow-hidden bg-black">
+    <section className="relative flex min-h-screen flex-col overflow-hidden bg-[#040D1C]">
       {/* Background */}
       {heroBackground ? (
         /* Custom uploaded background — full color, higher opacity */
@@ -68,7 +68,7 @@ const HeroSection = ({ slides, settings, featuredTournaments = [], heroBackgroun
             style={{ opacity: hasTournament ? 0.45 : 0.18 }}
           />
           {/* Dark gradient overlay for text readability */}
-          <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.5) 100%)" }} />
+          <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(4,13,28,0.35) 0%, rgba(4,13,28,0.6) 100%)" }} />
         </div>
       ) : (
         /* Fallback — gallery slides, grayscale, barely visible */
