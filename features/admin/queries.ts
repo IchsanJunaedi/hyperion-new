@@ -47,6 +47,7 @@ export async function getDivisionsWithMembers(): Promise<DivisionWithMembers[]> 
     .in("division_id", divisionIds)
     .in("role", ["captain", "member", "coach"])
     .eq("is_active", true)
+    .eq("is_public", true)
     .limit(500);
   if (memErr) console.error("getDivisionsWithMembers members:", memErr);
 
@@ -519,4 +520,67 @@ export async function getPublicSponsors(): Promise<PublicSponsor[]> {
     .limit(50);
   if (error) console.error("getPublicSponsors:", error);
   return (data ?? []) as unknown as PublicSponsor[];
+}
+
+// ── Player Visibility ─────────────────────────────────────────────────────────
+
+export type AdminPlayerMember = {
+  id: string;
+  user_id: string;
+  role: string;
+  position: string | null;
+  jersey_number: number | null;
+  division_id: string | null;
+  division_name: string | null;
+  is_public: boolean;
+  display_name: string | null;
+  avatar_url: string | null;
+};
+
+type RawMemberRow = {
+  id: string;
+  user_id: string;
+  role: string;
+  position: string | null;
+  jersey_number: number | null;
+  division_id: string | null;
+  is_public: boolean;
+  divisions: { name: string } | null;
+};
+
+export async function getMembersForAdmin(): Promise<AdminPlayerMember[]> {
+  const admin = createAdminClient();
+  const { data: members, error: memErr } = await admin
+    .from("team_members")
+    .select("id, user_id, role, position, jersey_number, division_id, is_public, divisions(name)")
+    .eq("is_active", true)
+    .order("role")
+    .limit(200);
+  if (memErr) console.error("getMembersForAdmin:", memErr);
+
+  const userIds = [...new Set((members ?? []).map((m) => m.user_id))];
+  let profileMap = new Map<string, { display_name: string | null; avatar_url: string | null }>();
+
+  if (userIds.length > 0) {
+    const { data: profiles, error: profErr } = await admin
+      .from("profiles")
+      .select("id, display_name, avatar_url")
+      .in("id", userIds)
+      .limit(200);
+    if (profErr) console.error("getMembersForAdmin profiles:", profErr);
+    profileMap = new Map((profiles ?? []).map((p) => [p.id, p]));
+  }
+
+  return ((members ?? []) as unknown as RawMemberRow[]).map((m) => ({
+    id: m.id,
+    user_id: m.user_id,
+    role: m.role,
+    position: m.position,
+    jersey_number: m.jersey_number,
+    division_id: m.division_id,
+    division_name: m.divisions?.name ?? null,
+    is_public: m.is_public,
+    display_name: profileMap.get(m.user_id)?.display_name ?? null,
+    avatar_url: profileMap.get(m.user_id)?.avatar_url ?? null,
+  }));
 }

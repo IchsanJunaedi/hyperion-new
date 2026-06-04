@@ -580,3 +580,22 @@ export async function updateSponsorSortAction(
   revalidatePath("/admin/sponsor-control");
   return { ok: true };
 }
+
+// ── Player Visibility ─────────────────────────────────────────────────────────
+
+export async function togglePlayerPublicAction(
+  memberId: string,
+  nextValue: boolean
+): Promise<ActionResult> {
+  const auth = await verifyAdminAccess();
+  if (!auth.ok) return auth;
+  const admin = createAdminClient();
+  const { error } = await admin
+    .from("team_members")
+    .update({ is_public: nextValue })
+    .eq("id", memberId);
+  if (error) return { ok: false, message: error.message };
+  revalidatePath("/divisions");
+  revalidatePath("/admin/players");
+  return { ok: true };
+}
