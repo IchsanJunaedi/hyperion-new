@@ -1117,8 +1117,9 @@ export type Database = {
           excerpt: string | null
           content: string | null
           cover_image_url: string | null
-          status: string
+          status: 'draft' | 'published'
           published_at: string | null
+          updated_at: string
           created_at: string
           created_by: string | null
         }
@@ -1129,8 +1130,9 @@ export type Database = {
           excerpt?: string | null
           content?: string | null
           cover_image_url?: string | null
-          status?: string
+          status?: 'draft' | 'published'
           published_at?: string | null
+          updated_at?: string
           created_at?: string
           created_by?: string | null
         }
@@ -1141,8 +1143,9 @@ export type Database = {
           excerpt?: string | null
           content?: string | null
           cover_image_url?: string | null
-          status?: string
+          status?: 'draft' | 'published'
           published_at?: string | null
+          updated_at?: string
           created_at?: string
           created_by?: string | null
         }
