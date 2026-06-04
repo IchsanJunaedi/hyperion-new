@@ -2664,6 +2664,7 @@ export type Database = {
           registration_fee: string | null
           registration_url: string | null
           show_in_hero: boolean
+          show_on_schedule: boolean
           start_date: string
           start_time: string | null
           status: string
@@ -2690,6 +2691,7 @@ export type Database = {
           registration_fee?: string | null
           registration_url?: string | null
           show_in_hero?: boolean | null
+          show_on_schedule?: boolean | null
           start_date: string
           start_time?: string | null
           status?: string
@@ -2716,6 +2718,7 @@ export type Database = {
           registration_fee?: string | null
           registration_url?: string | null
           show_in_hero?: boolean | null
+          show_on_schedule?: boolean | null
           start_date?: string
           start_time?: string | null
           status?: string
