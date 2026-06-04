@@ -351,6 +351,26 @@ export async function toggleHeroTournamentAction(
   return { ok: true };
 }
 
+export async function toggleTournamentScheduleAction(
+  tournamentId: string,
+  nextValue: boolean
+): Promise<ActionResult> {
+  const auth = await verifyAdminAccess();
+  if (!auth.ok) return auth;
+  const admin = createAdminClient();
+
+  const { error } = await admin
+    .from("tournaments")
+    .update({ show_on_schedule: nextValue })
+    .eq("id", tournamentId);
+  if (error) return { ok: false, message: error.message };
+
+  revalidatePath("/");
+  revalidatePath("/schedule");
+  revalidatePath("/admin/tournaments");
+  return { ok: true };
+}
+
 // ── About Alumni ─────────────────────────────────────────────────────────────
 
 export async function createAboutAlumnusAction(data: {
