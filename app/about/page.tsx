@@ -43,10 +43,10 @@ export default async function AboutPage() {
   return (
     <>
       <Header />
-      <main className="flex-1 bg-[#070707]">
+      <main className="flex-1 bg-[#040D1C]">
         {/* Hero Banner */}
         <section className="mx-auto max-w-7xl px-4 pt-12 md:pt-20">
-          <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl border border-white/5">
+          <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl border border-white/12">
             <div className="absolute inset-0" style={{ backgroundImage: "radial-gradient(circle, rgba(245,196,0,0.12) 1px, transparent 1px)", backgroundSize: "28px 28px" }} />
             <div className="relative flex h-full flex-col items-center justify-center px-6 text-center">
               <Image src="/brand/logo.jpg" alt="Hyperion Team" width={96} height={96} className="mb-6 h-20 w-20 rounded-xl object-cover sm:h-24 sm:w-24" />
@@ -79,10 +79,10 @@ export default async function AboutPage() {
               <div
                 key={card.title}
                 className="rounded-2xl p-6"
-                style={{ backgroundColor: "#2E2E2E" }}
+                style={{ backgroundColor: "#0C1E3C" }}
               >
                 <h3 className="mb-4 text-xl font-bold text-[#F5C400]">{card.title}</h3>
-                <p className="text-justify leading-relaxed text-gray-300">{card.body}</p>
+                <p className="text-justify leading-relaxed text-white/70">{card.body}</p>
               </div>
             ))}
           </div>
@@ -115,7 +115,7 @@ export default async function AboutPage() {
                     className="h-full w-full object-cover"
                     loading="lazy"
                   />
-                  <div className="absolute bottom-0 w-full bg-gradient-to-t from-black/80 to-transparent p-5">
+                  <div className="absolute bottom-0 w-full bg-gradient-to-t from-[#040D1C]/90 to-transparent p-5">
                     <p className="text-2xl font-bold tracking-wide text-white">
                       {member.name}
                     </p>
@@ -129,7 +129,7 @@ export default async function AboutPage() {
 
         {/* CTA */}
         <section className="px-6 pb-24 pt-8 sm:px-10 lg:px-16">
-          <div className="mx-auto max-w-7xl border-t border-white/5 pt-12 text-center">
+          <div className="mx-auto max-w-7xl border-t border-white/12 pt-12 text-center">
             <p className="text-sm text-white/40">Tertarik bergabung?{" "}<Link href="/#join" className="text-[#F5C400] hover:underline">Lihat kesempatan bergabung →</Link></p>
           </div>
         </section>
