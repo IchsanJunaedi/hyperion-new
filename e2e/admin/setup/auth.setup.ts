@@ -10,6 +10,6 @@ setup("authenticate as admin", async ({ page }) => {
     "E2E_ADMIN_EMAIL / E2E_ADMIN_PASSWORD not configured"
   );
   await loginAsAdmin(page);
-  await page.waitForURL(/\/admin/);
+  await page.waitForURL(/\/admin(?!\/login)/);
   await page.context().storageState({ path: authFile });
 });
