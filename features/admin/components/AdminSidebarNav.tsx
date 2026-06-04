@@ -20,6 +20,7 @@ import {
   Menu,
   Newspaper,
   Medal,
+  Handshake,
 } from "lucide-react";
 
 const NAV_GROUPS = [
@@ -31,6 +32,7 @@ const NAV_GROUPS = [
       { href: "/admin/news", Icon: Newspaper, label: "News" },
       { href: "/admin/tournaments", Icon: CalendarRange, label: "Tournaments & Schedule" },
       { href: "/admin/results", Icon: Medal, label: "Results" },
+      { href: "/admin/sponsor-control", Icon: Handshake, label: "Sponsors Publik" },
       { href: "/admin/partners", Icon: Layers, label: "Partners" },
       { href: "/admin/testimonials", Icon: MessageSquare, label: "Testimonials" },
       { href: "/admin/divisions", Icon: Grid3x3, label: "Divisions" },
