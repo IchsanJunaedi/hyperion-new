@@ -85,8 +85,11 @@ test.describe("Admin — News", () => {
   });
 
   test("published article appears on public /news page", async ({ page }) => {
-    await page.goto("/news");
-    await expect(page.getByText(`${E2E_PREFIX} E2E Test Article`)).toBeVisible({ timeout: 8_000 });
+    // /news is server-rendered, so re-navigate until the freshly-published row shows up.
+    await expect(async () => {
+      await page.goto("/news");
+      await expect(page.getByText(`${E2E_PREFIX} E2E Test Article`)).toBeVisible({ timeout: 3_000 });
+    }).toPass({ timeout: 15_000 });
   });
 
   test("edit article title", async ({ page }) => {
@@ -101,8 +104,10 @@ test.describe("Admin — News", () => {
   });
 
   test("updated title on /news public page", async ({ page }) => {
-    await page.goto("/news");
-    await expect(page.getByText(`${E2E_PREFIX} E2E Test Article Updated`)).toBeVisible({ timeout: 8_000 });
+    await expect(async () => {
+      await page.goto("/news");
+      await expect(page.getByText(`${E2E_PREFIX} E2E Test Article Updated`)).toBeVisible({ timeout: 3_000 });
+    }).toPass({ timeout: 15_000 });
   });
 
   test("delete article", async ({ page }) => {
