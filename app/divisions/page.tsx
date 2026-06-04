@@ -41,9 +41,9 @@ export default async function DivisionsPage() {
   return (
     <>
       <Header />
-      <main className="flex-1 bg-[#070707]">
+      <main className="flex-1 bg-[#040D1C]">
         {/* Hero */}
-        <section className="relative overflow-hidden border-b border-white/5 px-6 py-20 sm:px-10 lg:px-16">
+        <section className="relative overflow-hidden border-b border-white/12 px-6 py-20 sm:px-10 lg:px-16">
           <div
             className="pointer-events-none absolute inset-0 opacity-15"
             style={{
@@ -61,7 +61,7 @@ export default async function DivisionsPage() {
             <h1 className="text-4xl font-black uppercase tracking-tight text-white sm:text-5xl lg:text-6xl">
               DIVISIONS
             </h1>
-            <p className="mt-4 max-w-lg text-sm leading-relaxed text-white/40 sm:text-base">
+            <p className="mt-4 max-w-lg text-sm leading-relaxed text-white/55 sm:text-base">
               Hyperion Team berlaga di berbagai game kompetitif. Pilih divisi untuk melihat roster tim.
             </p>
           </div>
@@ -77,7 +77,7 @@ export default async function DivisionsPage() {
                   <Link
                     key={div.id}
                     href={`/divisions/${div.slug}`}
-                    className="group relative overflow-hidden border border-white/5 bg-[#0D0D0D] transition-all hover:border-white/10"
+                    className="group relative overflow-hidden border border-white/12 bg-[#071428] transition-all hover:border-[#F5C400]/30"
                     style={div.is_active ? { borderColor: `${meta.color}22` } : {}}
                   >
                     <div className="h-1 w-full" style={{ background: div.is_active ? meta.color : "rgba(255,255,255,0.06)" }} />
@@ -88,10 +88,10 @@ export default async function DivisionsPage() {
                       >
                         {meta.abbr}
                       </p>
-                      <p className="mt-2 text-xs font-semibold uppercase tracking-wider text-white/30">
+                      <p className="mt-2 text-xs font-semibold uppercase tracking-wider text-white/50">
                         {div.name}
                       </p>
-                      <p className="mt-4 text-sm leading-relaxed text-white/45">
+                      <p className="mt-4 text-sm leading-relaxed text-white/65">
                         {div.description ?? "Divisi kompetitif aktif di turnamen nasional & regional."}
                       </p>
                       <div className="mt-6 flex items-center gap-2 text-xs font-bold uppercase tracking-wider transition-all group-hover:gap-3"
@@ -104,7 +104,7 @@ export default async function DivisionsPage() {
               })}
 
               {items.length === 0 && (
-                <p className="col-span-3 py-20 text-center text-sm text-white/30">
+                <p className="col-span-3 py-20 text-center text-sm text-white/50">
                   Belum ada divisi tersedia.
                 </p>
               )}

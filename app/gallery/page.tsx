@@ -27,9 +27,9 @@ export default async function GalleryPage() {
   return (
     <>
       <Header />
-      <main className="flex-1 bg-[#070707]">
+      <main className="flex-1 bg-[#040D1C]">
         {/* Hero */}
-        <section className="relative overflow-hidden border-b border-white/5 px-6 py-20 sm:px-10 lg:px-16">
+        <section className="relative overflow-hidden border-b border-white/12 px-6 py-20 sm:px-10 lg:px-16">
           <div
             className="pointer-events-none absolute inset-0 opacity-15"
             style={{
@@ -48,7 +48,7 @@ export default async function GalleryPage() {
             <h1 className="text-4xl font-black uppercase tracking-tight text-white sm:text-5xl lg:text-6xl">
               ACHIEVEMENT
             </h1>
-            <p className="mt-4 max-w-lg text-sm leading-relaxed text-white/40">
+            <p className="mt-4 max-w-lg text-sm leading-relaxed text-white/55">
               Prestasi dan pencapaian Hyperion Team di berbagai turnamen nasional dan regional.
             </p>
           </div>
@@ -61,7 +61,7 @@ export default async function GalleryPage() {
               {galleries.map((gallery) => (
                 <div
                   key={gallery.slug}
-                  className="relative flex flex-col border border-white/5 bg-[#0D0D0D] p-5"
+                  className="relative flex flex-col border border-white/12 bg-[#071428] p-5"
                 >
                   {/* Title + logo */}
                   <div className="mb-3 flex items-start justify-between gap-2">
@@ -79,7 +79,7 @@ export default async function GalleryPage() {
                   </div>
 
                   {/* Meta */}
-                  <ul className="mb-4 space-y-1 text-xs text-white/40">
+                  <ul className="mb-4 space-y-1 text-xs text-white/55">
                     <li>Divisi Hyperion: {gallery.division}</li>
                     <li>Tanggal Tournament: {gallery.tournament_date}</li>
                     <li>Juara: {gallery.position}</li>
@@ -89,7 +89,7 @@ export default async function GalleryPage() {
                   {/* Preview images */}
                   <div className="mb-16 grid grid-cols-2 gap-2">
                     {gallery.preview_images.map((src, i) => (
-                      <div key={i} className="aspect-video overflow-hidden bg-white/5">
+                      <div key={i} className="aspect-video overflow-hidden bg-white/8">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={src}
@@ -100,7 +100,7 @@ export default async function GalleryPage() {
                       </div>
                     ))}
                     {gallery.preview_images.length === 1 && (
-                      <div className="aspect-video bg-white/[0.03]" />
+                      <div className="aspect-video bg-white/[0.06]" />
                     )}
                   </div>
 
@@ -108,7 +108,7 @@ export default async function GalleryPage() {
                   <div className="absolute bottom-5 right-5">
                     <Link
                       href={`/gallery/${gallery.slug}`}
-                      className="inline-flex items-center border border-white/10 px-4 py-2 text-xs font-bold uppercase tracking-wider text-white/50 transition hover:border-[#F5C400]/40 hover:text-[#F5C400]"
+                      className="inline-flex items-center border border-white/20 px-4 py-2 text-xs font-bold uppercase tracking-wider text-white/60 transition hover:border-[#F5C400]/40 hover:text-[#F5C400]"
                     >
                       View More
                     </Link>

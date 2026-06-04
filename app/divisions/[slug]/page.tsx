@@ -116,9 +116,9 @@ export default async function DivisionDetailPage({ params }: Props) {
   return (
     <>
       <Header />
-      <main className="flex-1 bg-[#070707]">
+      <main className="flex-1 bg-[#040D1C]">
         {/* Hero */}
-        <section className="relative overflow-hidden border-b border-white/5 px-6 py-20 sm:px-10 lg:px-16">
+        <section className="relative overflow-hidden border-b border-white/12 px-6 py-20 sm:px-10 lg:px-16">
           <div
             className="pointer-events-none absolute inset-0 opacity-10"
             style={{
@@ -133,7 +133,7 @@ export default async function DivisionDetailPage({ params }: Props) {
           <div className="relative mx-auto max-w-7xl">
             <Link
               href="/divisions"
-              className="mb-8 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-white/30 transition hover:text-white"
+              className="mb-8 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-white/50 transition hover:text-white"
             >
               <ArrowLeft className="h-3 w-3" /> All Divisions
             </Link>
@@ -151,11 +151,11 @@ export default async function DivisionDetailPage({ params }: Props) {
                 >
                   {meta.abbr}
                 </p>
-                <p className="mt-2 text-sm font-semibold uppercase tracking-wider text-white/30">
+                <p className="mt-2 text-sm font-semibold uppercase tracking-wider text-white/55">
                   {division.name}
                 </p>
                 {division.description && (
-                  <p className="mt-4 max-w-lg text-sm leading-relaxed text-white/45">
+                  <p className="mt-4 max-w-lg text-sm leading-relaxed text-white/65">
                     {division.description}
                   </p>
                 )}
@@ -168,8 +168,8 @@ export default async function DivisionDetailPage({ params }: Props) {
         <section className="px-6 py-16 sm:px-10 lg:px-16">
           <div className="mx-auto max-w-7xl">
             <div className="mb-8 flex items-center gap-3">
-              <Users className="h-4 w-4 text-white/30" />
-              <h2 className="text-sm font-bold uppercase tracking-widest text-white/30">
+              <Users className="h-4 w-4 text-white/50" />
+              <h2 className="text-sm font-bold uppercase tracking-widest text-white/50">
                 Tim dalam divisi ini
               </h2>
             </div>
@@ -182,7 +182,7 @@ export default async function DivisionDetailPage({ params }: Props) {
                     <Link
                       key={team.id}
                       href={`/divisions/${slug}/${team.slug}`}
-                      className="group flex flex-col gap-4 border border-white/5 bg-[#0D0D0D] p-5 transition hover:border-white/10"
+                      className="group flex flex-col gap-4 border border-white/12 bg-[#071428] p-5 transition hover:border-[#F5C400]/30"
                     >
                       {/* Team header */}
                       <div className="flex items-center gap-4">
@@ -212,7 +212,7 @@ export default async function DivisionDetailPage({ params }: Props) {
 
                       {/* Player preview */}
                       {players.length > 0 && (
-                        <div className="flex flex-col gap-1.5 border-t border-white/5 pt-3">
+                        <div className="flex flex-col gap-1.5 border-t border-white/12 pt-3">
                           {players.map((p, i) => (
                             <div key={i} className="flex items-center gap-2">
                               {p.avatar_url ? (
@@ -223,7 +223,7 @@ export default async function DivisionDetailPage({ params }: Props) {
                                   className="h-5 w-5 shrink-0 rounded-full object-cover"
                                 />
                               ) : (
-                                <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#2C2C2C] text-[8px] font-bold text-white/50">
+                                <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#0C1E3C] text-[8px] font-bold text-white/60">
                                   {(p.display_name ?? "?").slice(0, 1).toUpperCase()}
                                 </div>
                               )}
@@ -247,9 +247,9 @@ export default async function DivisionDetailPage({ params }: Props) {
                 })}
               </div>
             ) : (
-              <div className="border border-white/5 bg-[#0D0D0D] py-20 text-center">
-                <p className="text-sm text-white/30">Roster sedang dalam persiapan.</p>
-                <p className="mt-2 text-xs text-white/20">Stay tuned — tim akan segera diumumkan.</p>
+              <div className="border border-white/12 bg-[#071428] py-20 text-center">
+                <p className="text-sm text-white/50">Roster sedang dalam persiapan.</p>
+                <p className="mt-2 text-xs text-white/38">Stay tuned — tim akan segera diumumkan.</p>
               </div>
             )}
           </div>
