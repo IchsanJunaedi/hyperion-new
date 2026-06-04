@@ -88,7 +88,7 @@ const AchievementRow = ({ item, index, onImageClick }: RowProps) => {
       onClick={isClickable ? handleClick : undefined}
       style={isClickable ? { cursor: "pointer" } : undefined}
     >
-      <div className={`group relative overflow-hidden border-b border-white/8 transition-colors${isClickable ? " hover:bg-white/[0.02]" : ""}`}>
+      <div className={`group relative overflow-hidden border-b border-white/12 transition-colors${isClickable ? " hover:bg-white/[0.04]" : ""}`}>
         {/* Hover-reveal photo */}
         {item.image_url && (
           <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100">
@@ -105,7 +105,7 @@ const AchievementRow = ({ item, index, onImageClick }: RowProps) => {
         )}
 
         <div className="relative grid grid-cols-[3rem_1fr] items-center gap-4 py-7 sm:grid-cols-[4rem_1fr_auto] sm:gap-8 sm:py-8">
-          <span className="text-3xl font-black tabular-nums text-white/12 sm:text-4xl">
+          <span className="text-3xl font-black tabular-nums text-white/18 sm:text-4xl">
             {String(index + 1).padStart(2, "0")}
           </span>
 
@@ -114,7 +114,7 @@ const AchievementRow = ({ item, index, onImageClick }: RowProps) => {
               {item.title}
             </h3>
             {item.description && (
-              <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-white/32 sm:text-sm">
+              <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-white/55 sm:text-sm">
                 {item.description}
               </p>
             )}
@@ -126,7 +126,7 @@ const AchievementRow = ({ item, index, onImageClick }: RowProps) => {
                 {PLACEMENT_LABEL[item.placement] ?? `Juara ${item.placement}`}
               </span>
             )}
-            <span className="text-[10px] font-bold uppercase tracking-widest text-white/28">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-white/45">
               {item.achieved_at.slice(0, 4)}
             </span>
           </div>
@@ -149,18 +149,18 @@ const AchievementsSection = ({ entries }: AchievementsSectionProps) => {
 
   return (
     <>
-      <section id="achievements" className="scroll-mt-14 bg-black px-5 py-20 sm:px-8 lg:px-10">
+      <section id="achievements" className="scroll-mt-14 bg-[#040D1C] px-5 py-20 sm:px-8 lg:px-10">
         <div className="mx-auto max-w-7xl">
           <motion.div
             ref={headerRef}
             initial={{ opacity: 0, y: 16 }}
             animate={headerInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5 }}
-            className="mb-0 border-b border-white/8 pb-8"
+            className="mb-0 border-b border-white/12 pb-8"
           >
             <div className="flex flex-wrap items-end justify-between gap-4">
               <div>
-                <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.4em] text-white/28">
+                <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.4em] text-white/40">
                   01 — Trophy Room
                 </p>
                 <h2 className="text-3xl font-black uppercase tracking-tight text-white sm:text-4xl lg:text-5xl">

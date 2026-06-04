@@ -30,7 +30,7 @@ const TestimonialsSection = ({ testimonials }: TestimonialsSectionProps) => {
   return (
     <section
       ref={sectionRef}
-      className="bg-black px-5 py-20 sm:px-8 lg:px-10"
+      className="bg-[#040D1C] px-5 py-20 sm:px-8 lg:px-10"
     >
       <div className="mx-auto max-w-7xl">
         {/* Header */}
@@ -38,9 +38,9 @@ const TestimonialsSection = ({ testimonials }: TestimonialsSectionProps) => {
           initial={{ opacity: 0, y: 16 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5 }}
-          className="mb-0 border-b border-white/8 pb-8"
+          className="mb-0 border-b border-white/12 pb-8"
         >
-          <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.4em] text-white/28">
+          <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.4em] text-white/40">
             03 — Alumni
           </p>
           <h2 className="text-3xl font-black uppercase tracking-tight text-white sm:text-4xl lg:text-5xl">
@@ -54,7 +54,7 @@ const TestimonialsSection = ({ testimonials }: TestimonialsSectionProps) => {
             initial={{ opacity: 0 }}
             animate={inView ? { opacity: 1 } : {}}
             transition={{ duration: 0.7, delay: 0.15 }}
-            className="border-b border-white/8 py-10 lg:border-b-0 lg:border-r lg:py-14 lg:pr-16"
+            className="border-b border-white/12 py-10 lg:border-b-0 lg:border-r lg:py-14 lg:pr-16"
           >
             <div className="relative h-64 w-full sm:h-80">
               <AnimatePresence mode="wait">
@@ -88,7 +88,7 @@ const TestimonialsSection = ({ testimonials }: TestimonialsSectionProps) => {
             className="flex flex-col justify-center py-10 lg:py-14 lg:pl-16"
           >
             {/* Large faint quotation mark */}
-            <p className="mb-4 text-8xl font-black leading-none text-white/6 sm:text-9xl">
+            <p className="mb-4 text-8xl font-black leading-none text-white/10 sm:text-9xl">
               &ldquo;
             </p>
 
@@ -100,7 +100,7 @@ const TestimonialsSection = ({ testimonials }: TestimonialsSectionProps) => {
                 exit={{ opacity: 0, y: -12 }}
                 transition={{ duration: 0.28, ease: "easeOut" }}
               >
-                <p className="text-sm leading-relaxed text-white/55 sm:text-base">
+                <p className="text-sm leading-relaxed text-white/65 sm:text-base">
                   {testimonials[active]?.content ?? ""}
                 </p>
                 <div className="mt-6 border-l-2 border-[#F5C400] pl-4">
@@ -120,7 +120,7 @@ const TestimonialsSection = ({ testimonials }: TestimonialsSectionProps) => {
                 type="button"
                 onClick={handlePrev}
                 aria-label="Previous"
-                className="flex h-9 w-9 cursor-pointer items-center justify-center border border-white/12 text-white/35 transition hover:border-white/35 hover:text-white"
+                className="flex h-9 w-9 cursor-pointer items-center justify-center border border-white/20 text-white/50 transition hover:border-white/50 hover:text-white"
               >
                 <ArrowLeft className="h-4 w-4" />
               </button>
@@ -128,7 +128,7 @@ const TestimonialsSection = ({ testimonials }: TestimonialsSectionProps) => {
                 type="button"
                 onClick={handleNext}
                 aria-label="Next"
-                className="flex h-9 w-9 cursor-pointer items-center justify-center border border-white/12 text-white/35 transition hover:border-white/35 hover:text-white"
+                className="flex h-9 w-9 cursor-pointer items-center justify-center border border-white/20 text-white/50 transition hover:border-white/50 hover:text-white"
               >
                 <ArrowRight className="h-4 w-4" />
               </button>

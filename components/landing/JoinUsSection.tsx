@@ -21,9 +21,9 @@ const JoinUsSection = ({ settings }: JoinUsSectionProps) => {
   const inView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
-    <section className="bg-black px-5 py-24 sm:px-8 lg:px-10">
+    <section className="bg-[#040D1C] px-5 py-24 sm:px-8 lg:px-10">
       <div className="mx-auto max-w-7xl" ref={ref}>
-        <div className="border-b border-t border-white/8 py-20">
+        <div className="border-b border-t border-white/12 py-20">
           <div className="grid items-center gap-10 lg:grid-cols-[1fr_auto]">
             {/* Left: headline */}
             <motion.div
@@ -31,7 +31,7 @@ const JoinUsSection = ({ settings }: JoinUsSectionProps) => {
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.55 }}
             >
-              <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.4em] text-white/28">
+              <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.4em] text-white/45">
                 {settings.join_eyebrow}
               </p>
               <h2 className="text-4xl font-black uppercase leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl">
@@ -39,7 +39,7 @@ const JoinUsSection = ({ settings }: JoinUsSectionProps) => {
                 <br />
                 <span className="text-[#F5C400]">{settings.join_title_line2}</span>
               </h2>
-              <p className="mt-5 max-w-lg text-sm leading-relaxed text-white/35 sm:text-[15px]">
+              <p className="mt-5 max-w-lg text-sm leading-relaxed text-white/55 sm:text-[15px]">
                 {settings.join_description}
               </p>
             </motion.div>
