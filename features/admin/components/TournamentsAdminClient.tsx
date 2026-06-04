@@ -58,11 +58,12 @@ const TournamentsAdminClient = ({ tournaments: initial }: Props) => {
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-xl font-black uppercase tracking-tight text-white">
-            Tournaments
+            Tournaments & Schedule
           </h1>
           <p className="mt-1 text-xs text-[#6B6A68]">
-            Toggle <span className="text-white/60">Hero</span> untuk countdown di landing page.
-            Toggle <span className="text-[#F5C400]/80">Publik</span> untuk tampil di /schedule dan upcoming matches.
+            Toggle <span className="text-white/60">Hero</span> untuk countdown di landing page.{" "}
+            Toggle <span className="text-[#F5C400]/80">Publik</span> untuk tampil di halaman{" "}
+            <span className="text-white/50">/schedule</span> dan upcoming matches di homepage.
           </p>
           <div className="mt-1.5 flex items-center gap-4">
             {heroCount > 0 && (

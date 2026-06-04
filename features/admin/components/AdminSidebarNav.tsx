@@ -26,7 +26,7 @@ const NAV_GROUPS = [
     items: [
       { href: "/admin/gallery", Icon: Image, label: "Gallery & Achievement" },
       { href: "/admin/achievements", Icon: Trophy, label: "Achievements" },
-      { href: "/admin/tournaments", Icon: CalendarRange, label: "Tournaments" },
+      { href: "/admin/tournaments", Icon: CalendarRange, label: "Tournaments & Schedule" },
       { href: "/admin/partners", Icon: Layers, label: "Partners" },
       { href: "/admin/testimonials", Icon: MessageSquare, label: "Testimonials" },
       { href: "/admin/divisions", Icon: Grid3x3, label: "Divisions" },
