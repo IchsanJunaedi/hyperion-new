@@ -25,7 +25,7 @@ export default async function PollsPage({ params }: PollsPageProps) {
   } = await supabase.auth.getUser();
 
   const currentUserRole = await getCurrentUserRole(organization.id);
-  const canManage = ["captain", "manager", "owner"].includes(currentUserRole ?? "");
+  const canManage = ["captain", "coach", "manager", "owner"].includes(currentUserRole ?? "");
 
   const polls = await listPolls(organization.id);
 

@@ -58,7 +58,7 @@ export async function createPollAction(
     return {
       ok: false,
       message: error.code === "42501"
-        ? "Hanya captain atau manager yang bisa membuat poll"
+        ? "Hanya captain, coach, atau manager yang bisa membuat poll"
         : error.message,
     };
   }
@@ -161,7 +161,7 @@ export async function createAvailabilityPollAction(
     return {
       ok: false,
       message: error.code === "42501"
-        ? "Hanya captain atau manager yang bisa membuat poll"
+        ? "Hanya captain, coach, atau manager yang bisa membuat poll"
         : error.message,
     };
   }
