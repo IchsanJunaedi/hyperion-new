@@ -25,6 +25,9 @@ setup.skip(
 );
 
 setup("seed workspace data and save auth states", async () => {
+  // Heavy setup: admin API calls + 5 sequential form logins (each can be slow
+  // on a cold dev server). Give it plenty of headroom beyond the global 30s.
+  setup.setTimeout(180_000);
   fs.mkdirSync(AUTH_DIR, { recursive: true });
 
   const admin = createClient(SUPABASE_URL, SERVICE_KEY, {
@@ -124,11 +127,15 @@ setup("seed workspace data and save auth states", async () => {
   }
   const divisionId = div.id;
 
-  // 5. Assign roles in team_members idempotently
+  // 5. Assign roles in team_members idempotently.
+  // Self-healing: if a row already exists, ensure its role + division_id match
+  // the intended seed state (older rows may have drifted, e.g. captain with a
+  // null division_id from a previous seed version).
   for (const r of ROLES) {
+    const wantDivision = r.role === "captain" ? divisionId : null;
     const { data: existing } = await admin
       .from("team_members")
-      .select("id")
+      .select("id, role, division_id")
       .eq("user_id", userIds[r.name])
       .eq("organization_id", orgId)
       .maybeSingle();
@@ -139,10 +146,17 @@ setup("seed workspace data and save auth states", async () => {
         organization_id: orgId,
         role: r.role,
         is_active: true,
-        division_id: r.role === "captain" ? divisionId : null,
+        division_id: wantDivision,
       });
       if (error) throw new Error(`Assign ${r.name}: ${error.message}`);
       console.log(`  [seed] assigned ${r.name}`);
+    } else if (existing.role !== r.role || existing.division_id !== wantDivision) {
+      const { error } = await admin
+        .from("team_members")
+        .update({ role: r.role, is_active: true, division_id: wantDivision })
+        .eq("id", existing.id);
+      if (error) throw new Error(`Update ${r.name}: ${error.message}`);
+      console.log(`  [seed] corrected ${r.name} (role/division)`);
     } else {
       console.log(`  [seed] ${r.name} already assigned`);
     }
