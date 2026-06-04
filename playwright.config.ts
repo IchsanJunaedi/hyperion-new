@@ -31,6 +31,21 @@ export default defineConfig({
       name: "chromium",
       use: { ...devices["Desktop Chrome"] },
     },
+    {
+      name: "admin-setup",
+      testMatch: "**/admin/setup/auth.setup.ts",
+      use: { ...devices["Desktop Chrome"] },
+    },
+    {
+      name: "admin-tests",
+      testDir: "./e2e/admin",
+      testMatch: "**/*.spec.ts",
+      dependencies: ["admin-setup"],
+      use: {
+        ...devices["Desktop Chrome"],
+        storageState: "e2e/.auth/admin.json",
+      },
+    },
   ],
 
   // Auto-start Next.js dev server for local runs

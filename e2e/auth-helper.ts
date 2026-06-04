@@ -16,3 +16,16 @@ export async function loginAsOwner(page: Page) {
     timeout: 15_000,
   });
 }
+
+export const ADMIN_EMAIL = process.env.E2E_ADMIN_EMAIL ?? "";
+export const ADMIN_PASSWORD = process.env.E2E_ADMIN_PASSWORD ?? "";
+
+export async function loginAsAdmin(page: Page) {
+  await page.goto("/admin/login");
+  await page.getByLabel(/email/i).fill(ADMIN_EMAIL);
+  await page.getByLabel(/password/i).fill(ADMIN_PASSWORD);
+  await page.getByRole("button", { name: /masuk|login|sign in/i }).click();
+  await page.waitForURL((url) => !url.pathname.startsWith("/admin/login"), {
+    timeout: 15_000,
+  });
+}
