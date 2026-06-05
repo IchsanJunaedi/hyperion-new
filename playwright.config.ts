@@ -70,8 +70,12 @@ const adminProjects: Project[] = HAS_ADMIN_CREDS
 const workspaceProjects: Project[] = HAS_ALL_ROLE_CREDS
   ? [
       {
+        // Depends on owner-setup so the single owner login (owner.json) happens
+        // first; seed then only logs in the 4 role accounts. No concurrent
+        // same-account owner login → owner.json stays valid.
         name: "workspace-seed",
         testMatch: "**/workspace/setup/seed.ts",
+        dependencies: ["owner-setup"],
         use: { ...devices["Desktop Chrome"] },
       },
       {
@@ -124,12 +128,16 @@ export default defineConfig({
   expect: { timeout: 10_000 },
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  // CI runs serially (workers: 1) so it retries 2×. Local runs go parallel
-  // against a cold dev server that compiles routes on-demand; concurrent
-  // form-logins as the same owner can race and bounce to /login on the first
-  // hit. One local retry absorbs that startup flake without masking real bugs.
-  retries: process.env.CI ? 2 : 1,
-  workers: process.env.CI ? 1 : undefined,
+  // Locally we cap parallelism: the whole suite drives a single `next dev`
+  // server that compiles routes on-demand, and unbounded workers (all CPU cores)
+  // overwhelm it — turbopack resets connections and logins time out. 50% keeps
+  // it stable. Retries match CI (2×): the few multi-step create flows
+  // (server-action submit → redirect → assert) can be slow under full-suite load
+  // even though they pass deterministically in isolation, so they need the same
+  // retry headroom CI has. CI itself runs serially (workers: 1) and never hits
+  // this, since only the legacy specs run there.
+  retries: 2,
+  workers: process.env.CI ? 1 : "50%",
 
   reporter: [
     ["list"],
@@ -145,15 +153,33 @@ export default defineConfig({
 
   projects: [
     {
-      // Legacy self-authenticating specs at the e2e root (auth, dashboard,
-      // announcement, vod-review). These log in inside the test via the
-      // auth-helper, so they need no storageState. The workspace/ and admin/
-      // subtrees have their own dedicated projects with proper auth + seeding,
-      // so they MUST be ignored here or they would run a second time
-      // unauthenticated and fail.
+      // The auth-flow specs (login/logout/redirect). This is the ONLY spec that
+      // logs out, and the app's signOut() is global-scope — it revokes ALL of
+      // the owner's sessions. So it must run FIRST, before owner.json is
+      // created, or its global logout would invalidate the shared owner session
+      // that every authed spec relies on. It logs in itself → needs no state.
+      name: "auth-flow",
+      testMatch: "**/auth.spec.ts",
+      use: { ...devices["Desktop Chrome"] },
+    },
+    {
+      // Logs the owner in once → e2e/.auth/owner.json, AFTER auth-flow's global
+      // logout has already happened. The authed legacy specs and dashboard-tests
+      // both reuse this single session, so it must not be revoked mid-run.
+      name: "owner-setup",
+      testMatch: "**/setup/owner-auth.setup.ts",
+      dependencies: ["auth-flow"],
+      use: { ...devices["Desktop Chrome"] },
+    },
+    {
+      // Legacy root specs that need an authenticated owner (dashboard,
+      // announcement, vod-review). They reuse owner.json via test.use(). auth.spec
+      // is excluded (it has its own project above); workspace/ and admin/ have
+      // their own dedicated projects, so they're ignored here too.
       name: "chromium",
       testMatch: "**/*.spec.ts",
-      testIgnore: ["**/workspace/**", "**/admin/**"],
+      testIgnore: ["**/workspace/**", "**/admin/**", "**/auth.spec.ts"],
+      dependencies: ["owner-setup"],
       use: { ...devices["Desktop Chrome"] },
     },
     ...adminProjects,

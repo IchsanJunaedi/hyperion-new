@@ -2,6 +2,11 @@ import { test, expect } from "@playwright/test";
 import { loginAsOwner, OWNER_EMAIL, OWNER_PASSWORD } from "./auth-helper";
 
 test.describe("Authentication Flow", () => {
+  // This file intentionally drives real login/logout (it's testing the auth
+  // flow), so it can't reuse a stored session. Run serially so its two
+  // owner-login tests never log in concurrently → no same-account race.
+  test.describe.configure({ mode: "serial" });
+
   test("should redirect unauthenticated user to /login from /manage", async ({ page }) => {
     await page.goto("/manage");
     await expect(page).toHaveURL(/\/login/);

@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { loginAsOwner, OWNER_EMAIL, OWNER_PASSWORD } from "./auth-helper";
+import { OWNER_EMAIL, OWNER_PASSWORD } from "./auth-helper";
 
 /**
  * Prerequisites (set in .env.local or environment):
@@ -12,12 +12,15 @@ const SCRIM_ID = process.env.E2E_SCRIM_ID ?? "";
 const RESULTS_URL = `/${TEAM_SLUG}/scrim/${SCRIM_ID}/results`;
 
 test.describe("VOD Review — results page", () => {
+  // Reuse the owner session captured once by the owner-setup project instead of
+  // logging in per test (avoids concurrent-login races under parallel workers).
+  test.use({ storageState: "e2e/.auth/owner.json" });
+  test.skip(
+    !OWNER_EMAIL || !OWNER_PASSWORD || !TEAM_SLUG || !SCRIM_ID,
+    "Set E2E_OWNER_EMAIL, E2E_OWNER_PASSWORD, E2E_TEAM_SLUG, E2E_SCRIM_ID to run VOD tests",
+  );
+
   test.beforeEach(async ({ page }) => {
-    test.skip(
-      !OWNER_EMAIL || !OWNER_PASSWORD || !TEAM_SLUG || !SCRIM_ID,
-      "Set E2E_OWNER_EMAIL, E2E_OWNER_PASSWORD, E2E_TEAM_SLUG, E2E_SCRIM_ID to run VOD tests",
-    );
-    await loginAsOwner(page);
     await page.goto(RESULTS_URL);
     await page.waitForLoadState("networkidle");
   });
