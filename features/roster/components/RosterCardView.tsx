@@ -1,7 +1,17 @@
 "use client";
 
+import { ExternalLink } from "lucide-react";
+
 import { cn } from "@/lib/utils/cn";
 import type { RosterMember } from "../queries";
+import { attendanceBucket } from "../logic";
+
+const ATTENDANCE_COLORS: Record<string, string> = {
+  high: "text-emerald-400",
+  mid: "text-yellow-400",
+  low: "text-rose-400",
+  none: "text-white/30",
+};
 
 const ROLE_COLORS: Record<string, string> = {
   owner:   "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
@@ -72,9 +82,30 @@ function PlayerCard({ m }: { m: RosterMember }) {
         )}
       </div>
 
+      {/* Attendance rate */}
+      <div className="mt-2 flex items-center justify-center gap-1 text-[10px]">
+        <span className="text-white/40">Kehadiran</span>
+        <span className={cn("font-semibold tabular-nums", ATTENDANCE_COLORS[attendanceBucket(m.attendance_rate)])}>
+          {m.attendance_rate === null ? "—" : `${m.attendance_rate}%`}
+        </span>
+      </div>
+
       {/* Division */}
       {m.division_name && (
-        <p className="mt-2 truncate text-[10px] text-white/30">{m.division_name}</p>
+        <p className="mt-1 truncate text-[10px] text-white/30">{m.division_name}</p>
+      )}
+
+      {/* Public profile link */}
+      {m.username && (
+        <a
+          href={`/players/${m.username}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-3 inline-flex items-center gap-1 rounded-md border border-white/10 px-2 py-1 text-[10px] text-white/50 transition hover:bg-white/5 hover:text-white"
+        >
+          <ExternalLink className="h-3 w-3" />
+          Profil Publik
+        </a>
       )}
     </div>
   );

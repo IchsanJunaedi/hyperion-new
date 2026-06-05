@@ -7,6 +7,7 @@ import { OverviewTab } from "./tabs/OverviewTab";
 import { DraftAnalyticsTab } from "./tabs/DraftAnalyticsTab";
 import { PlayerStatsTab } from "./tabs/PlayerStatsTab";
 import { StatisticsTab } from "./tabs/StatisticsTab";
+import { OpponentTab } from "./tabs/OpponentTab";
 import type {
   OverviewStats,
   FormatStat,
@@ -15,13 +16,14 @@ import type {
   DraftAnalyticsData,
 } from "@/features/analytics/queries";
 
-type TabKey = "overview" | "statistics" | "draft" | "players";
+type TabKey = "overview" | "statistics" | "draft" | "players" | "opponents";
 
 const TABS: Array<{ key: TabKey; label: string }> = [
   { key: "overview",   label: "Overview" },
   { key: "statistics", label: "Statistics" },
   { key: "draft",      label: "Draft Analytics" },
   { key: "players",    label: "Player Stats" },
+  { key: "opponents",  label: "Lawan" },
 ];
 
 interface AnalyticsDashboardProps {
@@ -88,6 +90,7 @@ const AnalyticsDashboard = ({
       {activeTab === "statistics" && <StatisticsTab orgId={orgId} />}
       {activeTab === "draft" && <DraftAnalyticsTab data={draftData} />}
       {activeTab === "players" && <PlayerStatsTab playerStats={playerStats} orgId={orgId} />}
+      {activeTab === "opponents" && <OpponentTab orgId={orgId} />}
     </div>
   );
 };

@@ -5,6 +5,7 @@ import {
   filterMembersByDivision,
   getMemberDisplayName,
   canAssignRole,
+  attendanceBucket,
 } from "../logic";
 import type { RosterMember } from "../queries";
 
@@ -33,6 +34,7 @@ const makeMember = (
   avatar_url: null,
   phone_wa: null,
   game_ids: {},
+  attendance_rate: null,
 });
 
 describe("sortMembersByRole", () => {
@@ -142,6 +144,27 @@ describe("getMemberDisplayName", () => {
       jersey_number: 0,
     });
     expect(name).toBe("#0 Lemon");
+  });
+});
+
+describe("attendanceBucket", () => {
+  it("returns 'none' for null", () => {
+    expect(attendanceBucket(null)).toBe("none");
+  });
+
+  it("returns 'high' for ≥75%", () => {
+    expect(attendanceBucket(75)).toBe("high");
+    expect(attendanceBucket(100)).toBe("high");
+  });
+
+  it("returns 'mid' for 50–74%", () => {
+    expect(attendanceBucket(50)).toBe("mid");
+    expect(attendanceBucket(74)).toBe("mid");
+  });
+
+  it("returns 'low' for <50%", () => {
+    expect(attendanceBucket(49)).toBe("low");
+    expect(attendanceBucket(0)).toBe("low");
   });
 });
 

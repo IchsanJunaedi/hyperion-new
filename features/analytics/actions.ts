@@ -5,8 +5,12 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import {
   getHeroStatistics,
   getHeroDetail,
+  getOpponentSummary,
+  getPlayerTrendByMonth,
   type HeroStatRow,
   type HeroDetailData,
+  type OpponentSummary,
+  type PlayerMonthlyTrend,
 } from "@/features/analytics/queries";
 
 export interface PlayerHeroStatExtended {
@@ -222,5 +226,28 @@ export async function getHeroDetailAction(
     return { ok: true, data };
   } catch (e) {
     return { ok: false, message: e instanceof Error ? e.message : "Gagal memuat detail hero" };
+  }
+}
+
+export async function getOpponentSummaryAction(
+  orgId: string,
+): Promise<{ ok: true; data: OpponentSummary[] } | { ok: false; message: string }> {
+  try {
+    const data = await getOpponentSummary(orgId);
+    return { ok: true, data };
+  } catch (e) {
+    return { ok: false, message: e instanceof Error ? e.message : "Gagal memuat data lawan" };
+  }
+}
+
+export async function getPlayerTrendAction(
+  orgId: string,
+  userId: string,
+): Promise<{ ok: true; data: PlayerMonthlyTrend[] } | { ok: false; message: string }> {
+  try {
+    const data = await getPlayerTrendByMonth(orgId, userId);
+    return { ok: true, data };
+  } catch (e) {
+    return { ok: false, message: e instanceof Error ? e.message : "Gagal memuat tren player" };
   }
 }

@@ -12,6 +12,9 @@ const EXPORTS = [
   { key: "scrims", label: "Semua Scrim", description: "Lawan, jadwal, format, status" },
   { key: "results", label: "Hasil Scrim", description: "Score, W/L, catatan" },
   { key: "announcements", label: "Pengumuman", description: "Judul, isi, tanggal" },
+  { key: "finances", label: "Keuangan", description: "Pemasukan & pengeluaran" },
+  { key: "salaries", label: "Kontrak Salary", description: "Kontrak player & gaji bulanan" },
+  { key: "sponsors", label: "Sponsor", description: "Daftar sponsor & nilai deal" },
 ] as const;
 
 const ExportButtons = () => {
@@ -44,6 +47,18 @@ const ExportButtons = () => {
         const { data } = await supabase.from("announcements").select("title, body, is_pinned, created_at");
         if (!data || data.length === 0) { notifyError("Tidak ada data"); setLoading(null); return; }
         csv = toCsv(data, ["Judul", "Isi", "Pinned", "Dibuat"]);
+      } else if (key === "finances") {
+        const { data } = await supabase.from("finances").select("type, amount, category, description, date, created_at");
+        if (!data || data.length === 0) { notifyError("Tidak ada data"); setLoading(null); return; }
+        csv = toCsv(data, ["Tipe", "Jumlah", "Kategori", "Deskripsi", "Tanggal", "Dibuat"]);
+      } else if (key === "salaries") {
+        const { data } = await supabase.from("player_contracts").select("user_id, monthly_salary, bonus_percentage, status, start_date, end_date, notes");
+        if (!data || data.length === 0) { notifyError("Tidak ada data"); setLoading(null); return; }
+        csv = toCsv(data, ["Player ID", "Gaji Bulanan", "Bonus %", "Status", "Mulai", "Berakhir", "Catatan"]);
+      } else if (key === "sponsors") {
+        const { data } = await supabase.from("sponsors").select("name, status, deal_value, currency, start_date, end_date, notes");
+        if (!data || data.length === 0) { notifyError("Tidak ada data"); setLoading(null); return; }
+        csv = toCsv(data, ["Nama", "Status", "Nilai Deal", "Mata Uang", "Mulai", "Berakhir", "Catatan"]);
       }
 
       if (!csv) { notifyError("Gagal export"); setLoading(null); return; }

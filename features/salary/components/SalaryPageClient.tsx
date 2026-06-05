@@ -1,11 +1,12 @@
 "use client";
 
-import { AlertTriangle, Plus, Users, Wallet } from "lucide-react";
+import { AlertTriangle, CheckCircle2, CircleDashed, Plus, Users, Wallet } from "lucide-react";
 import { useState } from "react";
 
 import { SalaryCard } from "@/features/salary/components/SalaryCard";
 import { SalaryFormModal } from "@/features/salary/components/SalaryFormModal";
 import type { ContractWithProfile, PayrollSummary } from "@/features/salary/queries";
+import type { MonthlySpend } from "@/features/salary/logic";
 
 interface Member {
   user_id: string;
@@ -27,6 +28,47 @@ function formatRupiah(n: number) {
     currency: "IDR",
     maximumFractionDigits: 0,
   }).format(n);
+}
+
+function formatCompact(n: number) {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(n >= 10_000_000 ? 0 : 1)}jt`;
+  if (n >= 1_000) return `${Math.round(n / 1_000)}rb`;
+  return String(n);
+}
+
+function SpendChart({ data }: { data: MonthlySpend[] }) {
+  const max = Math.max(1, ...data.map((d) => d.total));
+  const hasData = data.some((d) => d.total > 0);
+
+  return (
+    <div className="rounded-xl border border-[#2D2D2D] bg-[#202020] p-4">
+      <div className="flex items-center gap-2 text-[#6B6A68]">
+        <Wallet className="h-4 w-4" />
+        <span className="text-xs uppercase tracking-wide">Pengeluaran Gaji 6 Bulan</span>
+      </div>
+      {hasData ? (
+        <div className="mt-3 flex h-24 items-end justify-between gap-2">
+          {data.map((d) => (
+            <div key={d.month} className="flex flex-1 flex-col items-center gap-1">
+              <span className="text-[9px] text-[#6B6A68]">
+                {d.total > 0 ? formatCompact(d.total) : ""}
+              </span>
+              <div
+                className="w-full rounded-t bg-emerald-500/60"
+                style={{ height: `${Math.max(2, (d.total / max) * 72)}px` }}
+                title={formatRupiah(d.total)}
+              />
+              <span className="text-[10px] text-[#9B9A97]">{d.label}</span>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="mt-6 text-center text-xs text-[#6B6A68]">
+          Belum ada pembayaran tercatat.
+        </p>
+      )}
+    </div>
+  );
 }
 
 const SalaryPageClient = ({
@@ -83,6 +125,31 @@ const SalaryPageClient = ({
             {summary.expiringCount} kontrak
           </p>
         </div>
+      </div>
+
+      {/* Cashflow overview: paid this month, outstanding, 6-month spend chart */}
+      <div className="grid gap-3 lg:grid-cols-[1fr_1fr_2fr]">
+        <div className="rounded-xl border border-[#2D2D2D] bg-[#202020] p-4">
+          <div className="flex items-center gap-2 text-[#6B6A68]">
+            <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+            <span className="text-xs uppercase tracking-wide">Dibayar Bulan Ini</span>
+          </div>
+          <p className="mt-2 text-xl font-bold text-emerald-400">
+            {formatRupiah(summary.paidThisMonth)}
+          </p>
+        </div>
+
+        <div className={`rounded-xl border p-4 ${summary.outstandingThisMonth > 0 ? "border-rose-500/40 bg-rose-500/5" : "border-[#2D2D2D] bg-[#202020]"}`}>
+          <div className="flex items-center gap-2 text-[#6B6A68]">
+            <CircleDashed className={`h-4 w-4 ${summary.outstandingThisMonth > 0 ? "text-rose-400" : ""}`} />
+            <span className="text-xs uppercase tracking-wide">Outstanding</span>
+          </div>
+          <p className={`mt-2 text-xl font-bold ${summary.outstandingThisMonth > 0 ? "text-rose-400" : "text-[#E5E2E1]"}`}>
+            {formatRupiah(summary.outstandingThisMonth)}
+          </p>
+        </div>
+
+        <SpendChart data={summary.monthlySpend} />
       </div>
 
       {/* Actions */}

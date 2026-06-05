@@ -2085,6 +2085,7 @@ export type Database = {
       }
       scrims: {
         Row: {
+          coach_summary: string | null
           created_at: string
           created_by: string
           day_reminder_sent_at: string | null
@@ -2092,6 +2093,7 @@ export type Database = {
           format: Database["public"]["Enums"]["match_format"]
           h24_reminder_sent_at: string | null
           h30_reminder_sent_at: string | null
+          h60_reminder_sent_at: string | null
           id: string
           notes: string | null
           opponent_contact: string | null
@@ -2106,6 +2108,7 @@ export type Database = {
           vod_link: string | null
         }
         Insert: {
+          coach_summary?: string | null
           created_at?: string
           created_by: string
           day_reminder_sent_at?: string | null
@@ -2113,6 +2116,7 @@ export type Database = {
           format?: Database["public"]["Enums"]["match_format"]
           h24_reminder_sent_at?: string | null
           h30_reminder_sent_at?: string | null
+          h60_reminder_sent_at?: string | null
           id?: string
           notes?: string | null
           opponent_contact?: string | null
@@ -2127,6 +2131,7 @@ export type Database = {
           vod_link?: string | null
         }
         Update: {
+          coach_summary?: string | null
           created_at?: string
           created_by?: string
           day_reminder_sent_at?: string | null
@@ -2134,6 +2139,7 @@ export type Database = {
           format?: Database["public"]["Enums"]["match_format"]
           h24_reminder_sent_at?: string | null
           h30_reminder_sent_at?: string | null
+          h60_reminder_sent_at?: string | null
           id?: string
           notes?: string | null
           opponent_contact?: string | null

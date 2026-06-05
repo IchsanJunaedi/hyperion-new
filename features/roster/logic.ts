@@ -48,6 +48,22 @@ export function getMemberDisplayName(
   return baseName;
 }
 
+export type AttendanceBucket = "high" | "mid" | "low" | "none";
+
+/**
+ * Buckets an attendance percentage for color-coding in the roster UI.
+ * - high: ≥75%  (green)
+ * - mid:  50–74% (yellow)
+ * - low:  <50%  (red)
+ * - none: no data yet (null)
+ */
+export function attendanceBucket(rate: number | null): AttendanceBucket {
+  if (rate === null) return "none";
+  if (rate >= 75) return "high";
+  if (rate >= 50) return "mid";
+  return "low";
+}
+
 /**
  * Validates if a current user role is authorized to assign a target role to another member.
  * Rules:

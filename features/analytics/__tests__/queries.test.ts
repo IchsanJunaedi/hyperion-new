@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { getHeroStatistics, getHeroDetail, getOverviewStats, getRecentScrims, getDraftAnalytics, getEnterprisePlayerStats } from "../queries";
+import { getHeroStatistics, getHeroDetail, getOverviewStats, getRecentScrims, getDraftAnalytics, getEnterprisePlayerStats, getOpponentSummary, getPlayerTrendByMonth } from "../queries";
 import { createClient } from "@/lib/supabase/server";
 
 vi.mock("server-only", () => ({}));
@@ -638,5 +638,112 @@ describe("getEnterprisePlayerStats", () => {
     expect(result[0]!.heroPool[0]!.hero_name).toBe("Layla");
     expect(result[0]!.heroPool[0]!.picks).toBe(2);
     expect(result[0]!.heroPool[0]!.winRate).toBe(50);
+  });
+});
+
+describe("getOpponentSummary", () => {
+  const makeThenable = (data: any, error: any = null) => {
+    const q: any = {};
+    for (const m of ["select", "eq", "limit"]) q[m] = vi.fn().mockReturnValue(q);
+    q.then = (resolve: any) => resolve({ data, error });
+    return q;
+  };
+
+  beforeEach(() => vi.clearAllMocks());
+
+  it("returns empty array on query error", async () => {
+    vi.mocked(createClient).mockResolvedValue({
+      from: vi.fn().mockReturnValue(makeThenable(null, { message: "boom" })),
+    } as any);
+
+    const result = await getOpponentSummary("org-1");
+    expect(result).toEqual([]);
+  });
+
+  it("aggregates wins/losses/draws per opponent and sorts by total", async () => {
+    const scrims = [
+      { opponent_name: "Alpha", scrim_results: [{ is_win: true }] },
+      { opponent_name: "Alpha", scrim_results: [{ is_win: false }] },
+      { opponent_name: "Alpha", scrim_results: [{ is_win: null }] },
+      { opponent_name: "Beta", scrim_results: [{ is_win: true }] },
+      { opponent_name: "  ", scrim_results: [{ is_win: true }] }, // skipped (blank)
+    ];
+    vi.mocked(createClient).mockResolvedValue({
+      from: vi.fn().mockReturnValue(makeThenable(scrims)),
+    } as any);
+
+    const result = await getOpponentSummary("org-1");
+    expect(result).toHaveLength(2);
+    // Alpha has most matches → first
+    expect(result[0]!.opponent_name).toBe("Alpha");
+    expect(result[0]!.total).toBe(3);
+    expect(result[0]!.wins).toBe(1);
+    expect(result[0]!.losses).toBe(1);
+    expect(result[0]!.draws).toBe(1);
+    expect(result[0]!.winRate).toBe(50); // 1 of 2 decided
+    expect(result[1]!.opponent_name).toBe("Beta");
+    expect(result[1]!.winRate).toBe(100);
+  });
+
+  it("handles null data without throwing", async () => {
+    vi.mocked(createClient).mockResolvedValue({
+      from: vi.fn().mockReturnValue(makeThenable(null)),
+    } as any);
+    const result = await getOpponentSummary("org-1");
+    expect(result).toEqual([]);
+  });
+});
+
+describe("getPlayerTrendByMonth", () => {
+  const makeThenable = (data: any, error: any = null) => {
+    const q: any = {};
+    for (const m of ["select", "eq", "in", "gte", "limit"]) q[m] = vi.fn().mockReturnValue(q);
+    q.then = (resolve: any) => resolve({ data, error });
+    return q;
+  };
+
+  beforeEach(() => vi.clearAllMocks());
+
+  it("returns six empty buckets when there are no scrims", async () => {
+    vi.mocked(createClient).mockResolvedValue({
+      from: vi.fn().mockReturnValue(makeThenable([])),
+    } as any);
+
+    const result = await getPlayerTrendByMonth("org-1", "user-1");
+    expect(result).toHaveLength(6);
+    expect(result.every((b) => b.scrims === 0 && b.attendanceRate === 0 && b.winRate === 0)).toBe(true);
+  });
+
+  it("computes attendance and win rate for the player's confirmed scrims", async () => {
+    const now = new Date();
+    const key = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+    const iso = now.toISOString();
+
+    const scrims = [
+      { id: "s1", scheduled_at: iso, scrim_results: [{ is_win: true }] },
+      { id: "s2", scheduled_at: iso, scrim_results: [{ is_win: false }] },
+      { id: "s3", scheduled_at: iso, scrim_results: [{ is_win: true }] },
+    ];
+    const attendances = [
+      { scrim_id: "s1", status: "confirmed" },
+      { scrim_id: "s2", status: "confirmed" },
+      { scrim_id: "s3", status: "declined" },
+    ];
+
+    vi.mocked(createClient).mockResolvedValue({
+      from: vi.fn().mockImplementation((table: string) => {
+        if (table === "scrims") return makeThenable(scrims);
+        if (table === "scrim_attendances") return makeThenable(attendances);
+        return makeThenable([]);
+      }),
+    } as any);
+
+    const result = await getPlayerTrendByMonth("org-1", "user-1");
+    const bucket = result.find((b) => b.month === key)!;
+    expect(bucket.scrims).toBe(3);
+    // present = 2 of 3 → 67%
+    expect(bucket.attendanceRate).toBe(67);
+    // decided present games: s1 win, s2 loss → 1/2 = 50%
+    expect(bucket.winRate).toBe(50);
   });
 });

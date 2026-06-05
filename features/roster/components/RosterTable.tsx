@@ -1,19 +1,28 @@
 "use client";
 
-import { UserPlus } from "lucide-react";
+import { ExternalLink, UserPlus } from "lucide-react";
 import { useState } from "react";
 
 import { AvailabilityBadge } from "@/features/roster/components/AvailabilityBadge";
 import { AvailabilitySelector } from "@/features/roster/components/AvailabilitySelector";
 import { MainRoleBadge, MainRoleSelector } from "@/features/roster/components/MainRoleSelector";
+import { cn } from "@/lib/utils/cn";
 import type { MemberRole } from "@/types/database";
 
 import type { RosterMember } from "../queries";
+import { attendanceBucket } from "../logic";
 import { InviteForm } from "./InviteForm";
 import { KickMemberButton } from "./KickMemberButton";
 import { RoleBadge } from "./RoleBadge";
 import { RoleSelector } from "./RoleSelector";
 import type { MainRole } from "../actions/updateMainRole";
+
+const ATTENDANCE_COLORS: Record<string, string> = {
+  high: "text-emerald-400",
+  mid: "text-yellow-400",
+  low: "text-rose-400",
+  none: "text-white/30",
+};
 
 interface RosterTableProps {
   members: RosterMember[];
@@ -134,12 +143,26 @@ const RosterTable = ({
                   </div>
                 )}
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-medium text-white">
-                    {m.display_name ?? m.username ?? "Unnamed"}
+                  <p className="flex items-center gap-1.5 truncate text-sm font-medium text-white">
+                    <span className="truncate">
+                      {m.display_name ?? m.username ?? "Unnamed"}
+                    </span>
                     {isSelf && (
-                      <span className="ml-1.5 text-xs font-normal text-white/40">
+                      <span className="text-xs font-normal text-white/40">
                         (Saya)
                       </span>
+                    )}
+                    {m.username && (
+                      <a
+                        href={`/players/${m.username}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        title="Buka profil publik"
+                        className="shrink-0 text-white/30 transition hover:text-white"
+                      >
+                        <ExternalLink className="h-3.5 w-3.5" />
+                      </a>
                     )}
                   </p>
                   <p className="flex flex-wrap items-center gap-x-1.5 text-xs text-white/50">
@@ -162,6 +185,19 @@ const RosterTable = ({
 
               {/* Grid-aligned Actions Segment */}
               <div className="flex flex-wrap items-center gap-4 sm:flex-nowrap">
+                {/* Attendance rate */}
+                <div className="flex shrink-0 flex-col items-start justify-center sm:w-16">
+                  <span className="text-[10px] uppercase tracking-wide text-white/30">Hadir</span>
+                  <span
+                    className={cn(
+                      "text-sm font-semibold tabular-nums",
+                      ATTENDANCE_COLORS[attendanceBucket(m.attendance_rate)],
+                    )}
+                  >
+                    {m.attendance_rate === null ? "—" : `${m.attendance_rate}%`}
+                  </span>
+                </div>
+
                 {/* Role */}
                 <div className="flex shrink-0 items-center justify-start sm:w-24">
                   {canEditRole ? (

@@ -10,6 +10,7 @@ import { FinishScrimSection } from "@/features/scrim/components/FinishScrimSecti
 import { ScrimReviewSection } from "@/features/scrim/components/ScrimReviewSection";
 import { ScrimStatusBadge } from "@/features/scrim/components/StatusBadge";
 import { ScrimVodLinkSection } from "@/features/scrim/components/ScrimVodLinkSection";
+import { CoachSummarySection } from "@/features/scrim/components/CoachSummarySection";
 import { getCurrentUserRole } from "@/features/roster/queries";
 import {
   getScrimDetail,
@@ -182,6 +183,12 @@ export default async function ScrimDetailPage({
               canEdit={canManageScrims || isCoach}
             />
           )}
+
+          <CoachSummarySection
+            scrimId={scrim.id}
+            initialSummary={scrim.coach_summary}
+            canEdit={canManageScrims || isCoach}
+          />
         </section>
 
         <aside className="space-y-6">
