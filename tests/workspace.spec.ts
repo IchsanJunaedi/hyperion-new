@@ -202,8 +202,8 @@ test("Workspace Features E2E Flow", async ({ page }) => {
   await expect(page.locator("text=Pilih Map Terbaik")).toBeVisible();
 
   await page.click("button:has-text('Split')");
-  await expect(page.locator("text=Vote berhasil!")).toBeVisible();
-  await expect(page.locator("text=Split ✓")).toBeVisible();
+  await expect(page.locator("text=Vote berhasil!").first()).toBeVisible();
+  await expect(page.locator("text=Split ✓").first()).toBeVisible();
 
   // 9. Collaterals: Strategy Note CRUD
   await page.goto(`/${uniqueTeamSlug}/strategy`);
@@ -238,6 +238,6 @@ test("Workspace Features E2E Flow", async ({ page }) => {
   const fileChooser = await fileChooserPromise;
   await fileChooser.setFiles([filePayload]);
 
-  await expect(page.locator("text=File berhasil diupload")).toBeVisible();
-  await expect(page.locator("text=e2e_strategy_doc.txt")).toBeVisible();
+  await expect(page.locator("text=File berhasil diupload").first()).toBeVisible();
+  await expect(page.locator("text=e2e_strategy_doc.txt").first()).toBeVisible();
 });
