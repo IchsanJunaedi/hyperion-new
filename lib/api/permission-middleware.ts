@@ -76,6 +76,27 @@ export async function validateRequest(
       };
     }
 
+    // Verify membership: user must be active member of the organization OR be the global owner
+    const isGlobalOwner = isOwner(user.email || "");
+    if (!isGlobalOwner) {
+      const { data: membership } = await supabase
+        .from("team_members")
+        .select("id")
+        .eq("organization_id", org.id)
+        .eq("user_id", user.id)
+        .eq("is_active", true)
+        .maybeSingle();
+
+      if (!membership) {
+        return {
+          valid: false,
+          user: { id: user.id, email: user.email || "" },
+          orgId: null,
+          error: "Forbidden: Not a member of this organization",
+        };
+      }
+    }
+
     return {
       valid: true,
       user: { id: user.id, email: user.email || "" },
@@ -301,9 +322,6 @@ export async function requireCalendarPermission(
   }
 }
 
-// Rate limiting storage (in production, use Redis or similar)
-const rateLimitStore = new Map<string, { count: number; resetAt: number }>();
-
 /**
  * Apply rate limiting to API calls
  *
@@ -327,36 +345,71 @@ export async function applyRateLimit(
   remaining?: number;
   resetAt?: number;
 }> {
-  const now = Date.now();
-  const key = `rate-limit:${userId}`;
+  const now = new Date();
+  const identifier = `api:${userId}`;
+  const windowMs = 60 * 1000; // 60 seconds
 
-  let record = rateLimitStore.get(key);
+  try {
+    const admin = createAdminClient();
 
-  // Reset if window expired
-  if (!record || record.resetAt < now) {
-    record = {
-      count: 0,
-      resetAt: now + 60 * 1000, // 60 seconds
-    };
-    rateLimitStore.set(key, record);
-  }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data } = await (admin as any)
+      .from("login_rate_limits")
+      .select("attempts, updated_at, locked_until")
+      .eq("identifier", identifier)
+      .maybeSingle();
 
-  // Increment counter
-  record.count++;
+    const lastUpdate = data?.updated_at ? new Date(data.updated_at) : null;
+    const isWindowExpired =
+      !lastUpdate || now.getTime() - lastUpdate.getTime() > windowMs;
 
-  if (record.count > limit) {
+    let newAttempts = 1;
+    let resetAt = now.getTime() + windowMs;
+
+    if (!isWindowExpired && data) {
+      newAttempts = data.attempts + 1;
+      resetAt = lastUpdate.getTime() + windowMs;
+    }
+
+    if (newAttempts > limit) {
+      // Upsert to record rate limit exceeded
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (admin as any).from("login_rate_limits").upsert({
+        identifier,
+        attempts: newAttempts,
+        locked_until: new Date(resetAt).toISOString(),
+        updated_at: isWindowExpired ? now.toISOString() : data.updated_at,
+      });
+
+      return {
+        allowed: false,
+        remaining: 0,
+        resetAt,
+      };
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (admin as any).from("login_rate_limits").upsert({
+      identifier,
+      attempts: newAttempts,
+      locked_until: null,
+      updated_at: isWindowExpired ? now.toISOString() : data.updated_at,
+    });
+
     return {
-      allowed: false,
-      remaining: 0,
-      resetAt: record.resetAt,
+      allowed: true,
+      remaining: limit - newAttempts,
+      resetAt,
+    };
+  } catch (err) {
+    console.error("Rate limit DB error:", err);
+    // Fail-safe to allow request in case of database connectivity issues
+    return {
+      allowed: true,
+      remaining: 1,
+      resetAt: now.getTime() + windowMs,
     };
   }
-
-  return {
-    allowed: true,
-    remaining: limit - record.count,
-    resetAt: record.resetAt,
-  };
 }
 
 /**

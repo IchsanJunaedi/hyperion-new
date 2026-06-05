@@ -1,13 +1,66 @@
 "use server";
 
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
+import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { registerSchema, type RegisterInput } from "@/lib/validations/auth";
 
 export interface SignUpResult {
   error?: string;
   needsEmailConfirmation?: boolean;
+}
+
+const REGISTRATION_MAX_ATTEMPTS = 3;
+const REGISTRATION_WINDOW_MS = 60 * 60 * 1000; // 1 hour
+
+async function checkRegisterRateLimit(email: string): Promise<{ allowed: boolean; message?: string }> {
+  try {
+    const headerList = await headers();
+    const ip = headerList.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown-ip";
+
+    const admin = createAdminClient();
+    const now = new Date();
+
+    const identifiers = [`register:email:${email}`, `register:ip:${ip}`];
+
+    for (const identifier of identifiers) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data } = await (admin as any)
+        .from("login_rate_limits")
+        .select("attempts, locked_until")
+        .eq("identifier", identifier)
+        .maybeSingle();
+
+      if (data?.locked_until && new Date(data.locked_until) > now) {
+        const minutesLeft = Math.ceil((new Date(data.locked_until).getTime() - now.getTime()) / 60_000);
+        return {
+          allowed: false,
+          message: `Terlalu banyak pendaftaran. Coba lagi dalam ${minutesLeft} menit.`,
+        };
+      }
+
+      const lockExpired = !data?.locked_until || new Date(data.locked_until) <= now;
+      const prevAttempts = lockExpired ? 0 : (data?.attempts ?? 0);
+      const newAttempts = prevAttempts + 1;
+      const lockedUntil = newAttempts >= REGISTRATION_MAX_ATTEMPTS
+        ? new Date(now.getTime() + REGISTRATION_WINDOW_MS).toISOString()
+        : null;
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (admin as any).from("login_rate_limits").upsert({
+        identifier,
+        attempts: newAttempts,
+        locked_until: lockedUntil,
+        updated_at: now.toISOString(),
+      });
+    }
+  } catch (err) {
+    console.error("Register rate limit check error:", err);
+  }
+
+  return { allowed: true };
 }
 
 export async function signUpAction(
@@ -17,6 +70,12 @@ export async function signUpAction(
   if (!parsed.success) {
     const first = parsed.error.issues[0];
     return { error: first?.message ?? "Input tidak valid" };
+  }
+
+  // Rate Limit check
+  const rateLimit = await checkRegisterRateLimit(parsed.data.email);
+  if (!rateLimit.allowed) {
+    return { error: rateLimit.message ?? "Terlalu banyak pendaftaran." };
   }
 
   const supabase = await createClient();

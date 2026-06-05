@@ -35,15 +35,6 @@ export default async function DashboardSponsorDetailPage({ params }: Props) {
 
   return (
     <>
-      <header className="sticky top-0 z-40 flex h-12 items-center border-b border-[#2D2D2D] bg-[#191919] px-6">
-        <div className="flex items-center gap-2 text-sm text-[#9B9A97]">
-          <Link href="/dashboard" className="hover:text-[#D4D4D4]">Home</Link>
-          <span className="text-[#6B6A68]">/</span>
-          <Link href="/dashboard/sponsors" className="hover:text-[#D4D4D4]">Sponsor</Link>
-          <span className="text-[#6B6A68]">/</span>
-          <span className="truncate text-[#D4D4D4]">{sponsor.name}</span>
-        </div>
-      </header>
       <main className="mx-auto w-full max-w-5xl flex-1 px-8 py-10">
         <SponsorDetailClient
           sponsor={sponsor}

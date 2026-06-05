@@ -28,14 +28,6 @@ export default async function DashboardDivisionsPage() {
 
   return (
     <>
-      <header className="border-b border-white/5">
-        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
-          <div className="flex items-center gap-3">
-            <Link href="/dashboard" className="text-xs text-white/50 hover:text-white">← Dashboard</Link>
-            <span className="text-sm font-bold text-yellow-400">Kelola Divisi</span>
-          </div>
-        </div>
-      </header>
       <main className="mx-auto max-w-7xl px-4 py-6 space-y-6">
         <header>
           <h1 className="text-2xl font-bold text-white">Divisi</h1>

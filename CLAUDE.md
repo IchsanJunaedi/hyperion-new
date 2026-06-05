@@ -381,3 +381,44 @@ Quick summary (as of 2026-05-27):
 - 68 migrations applied
 - Dead features (do not revive): scouting, AI insights, matchmaking, reports (not public)
 - Performance Batch 2 items remaining: B2-1, B2-2, B2-7, B2-9 (see progress.md)
+
+## Graphify Knowledge Graph
+
+Knowledge graph codebase ini sudah dibangun di `graphify-out/`. Gunakan untuk navigasi dan explorasi arsitektur.
+
+### Setup (sekali saja)
+```powershell
+# Install graphify (sudah dilakukan)
+python -m pipx install "graphifyy[gemini]" --force
+
+# Set API key (dapatkan gratis di aistudio.google.com/apikey)
+$env:GEMINI_API_KEY = "your-gemini-api-key"
+```
+
+### Menggunakan Graphify
+
+**Skill (ketik di chat):**
+- `/graphify .` — rebuild graph penuh
+- `/graphify query "bagaimana alur auth bekerja?"` — query graph
+- `/graphify explain "useNotify"` — jelaskan satu node
+- `/graphify path "supabase" "dashboard"` — jalur terpendek antar dua node
+
+**CLI langsung:**
+```powershell
+$env:PATH += ";C:\Users\jokil\AppData\Roaming\Python\Python310\Scripts"
+$env:GEMINI_API_KEY = "your-key"
+
+graphify . --backend gemini --update   # update incremental (hanya file berubah)
+graphify . --backend gemini            # rebuild penuh
+graphify query "pertanyaan tentang kode"
+graphify explain "NamaNode"
+graphify path "NodeA" "NodeB"
+```
+
+**Visualisasi:**
+- Buka `graphify-out/graph.html` di browser untuk visualisasi interaktif
+- `graphify-out/GRAPH_REPORT.md` — ringkasan communities dan god nodes
+
+### Kapan Update Graph
+- Setelah menambah fitur besar atau refactor
+- Jalankan `graphify . --backend gemini --update` (incremental, hanya file berubah)
