@@ -128,15 +128,12 @@ export default defineConfig({
   expect: { timeout: 10_000 },
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  // Locally we cap parallelism: the whole suite drives a single `next dev`
-  // server that compiles routes on-demand, and unbounded workers (all CPU cores)
-  // overwhelm it — turbopack resets connections and logins time out. 50% keeps
-  // it stable. Retries match CI (2×): the few multi-step create flows
-  // (server-action submit → redirect → assert) can be slow under full-suite load
-  // even though they pass deterministically in isolation, so they need the same
-  // retry headroom CI has. CI itself runs serially (workers: 1) and never hits
-  // this, since only the legacy specs run there.
-  retries: 2,
+  // Local runs use a production server (see webServer below) with pre-compiled
+  // routes, so the on-demand-compile latency that previously made multi-step
+  // create flows flaky is gone → zero local retries. CI keeps a small safety net
+  // for transient network blips to Supabase. Workers are capped at 50% to keep
+  // memory/CPU comfortable for the single server under the full suite.
+  retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : "50%",
 
   reporter: [
@@ -186,11 +183,21 @@ export default defineConfig({
     ...workspaceProjects,
   ],
 
-  // Auto-start Next.js dev server for local runs
+  // E2E runs against a PRODUCTION build by default: `next start` serves
+  // pre-compiled routes, eliminating the on-demand-compile latency and
+  // turbopack instability of `next dev` that caused create-flow flakes — this
+  // is what makes zero retries possible. CI builds in its own workflow step, so
+  // there we only `start`. For quick local iteration against the dev server
+  // (faster startup, but flaky), set E2E_DEV_SERVER=1.
   webServer: {
-    command: "npm run dev",
+    command: process.env.E2E_DEV_SERVER
+      ? "npm run dev"
+      : process.env.CI
+        ? "npm run start"
+        : "npm run build && npm run start",
     url: BASE_URL,
     reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
+    // Generous: a cold production build can take a couple of minutes.
+    timeout: 300_000,
   },
 });
