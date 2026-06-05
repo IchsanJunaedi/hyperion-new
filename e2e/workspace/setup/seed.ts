@@ -9,11 +9,6 @@ const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 const AUTH_DIR = path.join(__dirname, "../../.auth");
 
-// Password the seed enforces on the owner account so form login is reliable.
-// Use the value the rest of the suite logs in with (auth-helper / owner.json)
-// so seed and login never drift apart.
-const OWNER_E2E_PASSWORD = process.env.E2E_OWNER_PASSWORD!;
-
 const ROLES = [
   { name: "manager",  email: process.env.E2E_MANAGER_EMAIL!,  password: process.env.E2E_MANAGER_PASSWORD!,  role: "manager"  },
   { name: "coach",    email: process.env.E2E_COACH_EMAIL!,    password: process.env.E2E_COACH_PASSWORD!,    role: "coach"    },
@@ -27,8 +22,11 @@ setup.skip(
 );
 
 setup("seed workspace data and save auth states", async () => {
-  // Heavy setup: admin API calls + 5 sequential form logins (each can be slow
+  // Heavy setup: admin API calls + 4 sequential form logins (each can be slow
   // on a cold dev server). Give it plenty of headroom beyond the global 30s.
+  // The owner session (owner.json) is produced by the `owner-setup` project,
+  // which this project depends on — seed never logs the owner in or touches the
+  // owner password, so it can't invalidate that session.
   setup.setTimeout(180_000);
   fs.mkdirSync(AUTH_DIR, { recursive: true });
 
@@ -36,15 +34,11 @@ setup("seed workspace data and save auth states", async () => {
     auth: { autoRefreshToken: false, persistSession: false },
   });
 
-  // 1. Find owner user
+  // 1. Find owner user (needed as organizations.owner_id)
   const ownerEmail = process.env.E2E_OWNER_EMAIL!;
   const { data: { users: allUsers } } = await admin.auth.admin.listUsers({ perPage: 1000 });
   const ownerUser = allUsers.find((u) => u.email === ownerEmail);
   if (!ownerUser) throw new Error(`Owner user not found: ${ownerEmail}`);
-
-  // Set a known temporary password on the owner account for E2E testing
-  await admin.auth.admin.updateUserById(ownerUser.id, { password: OWNER_E2E_PASSWORD });
-  console.log(`  [seed] owner password synced to E2E_OWNER_PASSWORD`);
 
   // 2. Create 4 test users idempotently
   const userIds: Record<string, string> = {};
@@ -164,25 +158,13 @@ setup("seed workspace data and save auth states", async () => {
     }
   }
 
-  // 6. Save storage states via form-based login (most reliable for @supabase/ssr cookie setting)
+  // 6. Save storage states via form-based login (most reliable for @supabase/ssr
+  // cookie setting). Owner is handled by the owner-setup project; here we only
+  // log in the 4 role accounts (distinct users → no same-account contention).
   console.log("  [seed] saving storage states via form login...");
   const browser = await chromium.launch();
 
-  // Owner — form login at /login with temp password
-  {
-    const ctx = await browser.newContext();
-    const page = await ctx.newPage();
-    await page.goto(`${BASE_URL}/login`);
-    await page.getByLabel(/email/i).fill(ownerEmail);
-    await page.getByLabel(/password/i).fill(OWNER_E2E_PASSWORD);
-    await page.getByRole("button", { name: /masuk/i }).click();
-    await page.waitForURL((url) => !url.pathname.startsWith("/login"), { timeout: 15_000 });
-    await ctx.storageState({ path: path.join(AUTH_DIR, "owner.json") });
-    await ctx.close();
-    console.log("  [seed] saved owner.json");
-  }
-
-  // Other roles — form login at /login with their passwords
+  // Role accounts — form login at /login with their passwords
   for (const r of ROLES) {
     const ctx = await browser.newContext();
     const page = await ctx.newPage();
@@ -190,7 +172,8 @@ setup("seed workspace data and save auth states", async () => {
     await page.getByLabel(/email/i).fill(r.email);
     await page.getByLabel(/password/i).fill(r.password);
     await page.getByRole("button", { name: /masuk/i }).click();
-    await page.waitForURL((url) => !url.pathname.startsWith("/login"), { timeout: 15_000 });
+    // Cold dev-server route compiles can be slow; allow generous headroom.
+    await page.waitForURL((url) => !url.pathname.startsWith("/login"), { timeout: 30_000 });
     await ctx.storageState({ path: path.join(AUTH_DIR, `${r.name}.json`) });
     await ctx.close();
     console.log(`  [seed] saved ${r.name}.json`);

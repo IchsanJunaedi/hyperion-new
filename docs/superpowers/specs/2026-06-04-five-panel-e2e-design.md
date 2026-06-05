@@ -270,3 +270,33 @@ Step 3: (where applicable) Login as Role C → verify isolation / access denied
 ## Known Bug Fixed During Design
 
 - **polls — coach cannot create**: RLS policy and `canManage` UI check excluded `coach`. Fixed in migration `20260604150000_polls_coach_permission.sql`. Coach now correctly included in poll creation flow.
+
+---
+
+## Delivery Log
+
+### Plan 1 — Dashboard (owner) ✅
+16 specs, 70 tests. Seed infra (4 users + org + division + roles + 5 storage states). Bug fixed: polls coach permission.
+
+### Plan 2 — Manage (manager) ✅ (2026-06-05)
+10 specs, project `manage-tests`. Manager panel operates on `[E2E] Org` (manager's only org) → safe full CRUD for finances/sponsors/content; view-level for divisions/captains (those are read-only in `/manage`); form-interactive for assign/salaries; create+verify for development.
+- **assign.spec** proves the 1-captain-max rule: the seeded org already has a captain, so the role dropdown offers only "Member".
+- **Seed hardening**: `seed.ts` now self-heals drifted `team_members` rows (an older captain row had `division_id = null`); it corrects role/division on every run. Also bumped the seed test timeout (5 sequential logins exceed the 30s default on a cold dev server).
+
+### Plan 3 — Workspace (coach/captain/member) ✅ (2026-06-05)
+14 specs, project `workspace-tests`. Per-role storage states via `test.use()`.
+- **Access control was grounded in the *actual* RLS + page gating, not the aspirational matrix** — several intended-vs-real mismatches were found and the tests assert reality:
+  - Files upload: `owner/manager/coach` only — **captain cannot upload** (matrix said captain ✓).
+  - Trials manage: `manager/coach/owner` — **captain cannot manage** (matrix said captain ✓); all members can *view*.
+  - VOD "Tambah Timestamp": gated by `canEdit = manager/coach/captain` — **captain CAN add** (matrix said captain ✗); `isCoach` only governs delete.
+  - Scrim create: `captain/manager/owner` (coach ✗). Calendar create: adds coach. Tournaments create: captain only.
+- **Bug fixed — announcements coach permission**: INSERT/UPDATE/DELETE used `is_captain_or_above()` which excludes `coach`, yet the "Buat pengumuman" button is shown to all and the role model intends coach to manage announcements. Migration `20260605120000_announcements_coach_permission.sql` adds `coach` (same class as the polls fix). Member remains correctly blocked (security boundary verified).
+- Strategy note create requires a division (the form coerces an unselected division to `""`, which is rejected by the uuid column).
+
+### Plan 4 — Cross-panel integration ✅ (2026-06-05)
+8 specs, 20 tests, project `integration-tests`. Flows: role-assignment chain, finance-sync (manage→dashboard via the org switcher `?org=`), development (manager→member workspace), announcement read-receipt, scrim VOD (coach→member), poll create/vote/count, strategy note→comment, calendar visibility (management event hidden from member).
+- Where optimistic UI / textarea values would false-positive (`getByText` matching a retained textarea value), assertions verify persistence via a service-role **DB poll** instead.
+- Create-and-navigate flows are serialized; timeouts are generous to absorb dev-server compile under parallel load.
+
+### Running
+Each plan is its own Playwright project depending on `workspace-seed`; run per project (e.g. `npx playwright test --project=workspace-tests`). The default `chromium` catch-all project has no storage state and is not used for these suites.

@@ -72,8 +72,12 @@ const adminProjects: Project[] = HAS_ADMIN_CREDS
 const workspaceProjects: Project[] = HAS_ALL_ROLE_CREDS
   ? [
       {
+        // Depends on owner-setup so the single owner login (owner.json) happens
+        // first; seed then only logs in the 4 role accounts. No concurrent
+        // same-account owner login → owner.json stays valid.
         name: "workspace-seed",
         testMatch: "**/workspace/setup/seed.ts",
+        dependencies: ["owner-setup"],
         use: { ...devices["Desktop Chrome"] },
       },
       {
@@ -126,12 +130,13 @@ export default defineConfig({
   expect: { timeout: 90_000 },
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
-  // CI runs serially (workers: 1) so it retries 2×. Local runs go parallel
-  // against a cold dev server that compiles routes on-demand; concurrent
-  // form-logins as the same owner can race and bounce to /login on the first
-  // hit. One local retry absorbs that startup flake without masking real bugs.
-  retries: process.env.CI ? 2 : 1,
-  workers: process.env.CI ? 1 : undefined,
+  // Local runs use a production server (see webServer below) with pre-compiled
+  // routes, so the on-demand-compile latency that previously made multi-step
+  // create flows flaky is gone → zero local retries. CI keeps a small safety net
+  // for transient network blips to Supabase. Workers are capped at 50% to keep
+  // memory/CPU comfortable for the single server under the full suite.
+  retries: process.env.CI ? 2 : 0,
+  workers: process.env.CI ? 1 : "50%",
 
   // Cleans test dummy data before each run (tests/ folder self-registering specs)
   globalSetup: "./tests/global-setup.ts",
@@ -147,31 +152,63 @@ export default defineConfig({
     trace: "on-first-retry",
     screenshot: "only-on-failure",
     video: "retain-on-failure",
+    // Opt-in slow motion for watching a run with --headed: each Playwright
+    // action waits this many ms so you can see what it types/clicks. Default 0
+    // (no effect on CI / normal runs). Example: E2E_SLOWMO=800
+    launchOptions: { slowMo: Number(process.env.E2E_SLOWMO) || 0 },
   },
 
   projects: [
     // Workspace / auth tests (tests/ folder)
     {
-      // Legacy self-authenticating specs at the e2e root (auth, dashboard,
-      // announcement, vod-review). These log in inside the test via the
-      // auth-helper, so they need no storageState. The workspace/ and admin/
-      // subtrees have their own dedicated projects with proper auth + seeding,
-      // so they MUST be ignored here or they would run a second time
-      // unauthenticated and fail.
+      // The auth-flow specs (login/logout/redirect). This is the ONLY spec that
+      // logs out, and the app's signOut() is global-scope — it revokes ALL of
+      // the owner's sessions. So it must run FIRST, before owner.json is
+      // created, or its global logout would invalidate the shared owner session
+      // that every authed spec relies on. It logs in itself → needs no state.
+      name: "auth-flow",
+      testMatch: "**/auth.spec.ts",
+      use: { ...devices["Desktop Chrome"] },
+    },
+    {
+      // Logs the owner in once → e2e/.auth/owner.json, AFTER auth-flow's global
+      // logout has already happened. The authed legacy specs and dashboard-tests
+      // both reuse this single session, so it must not be revoked mid-run.
+      name: "owner-setup",
+      testMatch: "**/setup/owner-auth.setup.ts",
+      dependencies: ["auth-flow"],
+      use: { ...devices["Desktop Chrome"] },
+    },
+    {
+      // Legacy root specs that need an authenticated owner (dashboard,
+      // announcement, vod-review). They reuse owner.json via test.use(). auth.spec
+      // is excluded (it has its own project above); workspace/ and admin/ have
+      // their own dedicated projects, so they're ignored here too.
       name: "chromium",
       testMatch: "**/*.spec.ts",
-      testIgnore: ["**/workspace/**", "**/admin/**"],
+      testIgnore: ["**/workspace/**", "**/admin/**", "**/auth.spec.ts"],
+      dependencies: ["owner-setup"],
       use: { ...devices["Desktop Chrome"] },
     },
     ...adminProjects,
     ...workspaceProjects,
   ],
 
-  // Auto-start Next.js dev server for local runs
+  // E2E runs against a PRODUCTION build by default: `next start` serves
+  // pre-compiled routes, eliminating the on-demand-compile latency and
+  // turbopack instability of `next dev` that caused create-flow flakes — this
+  // is what makes zero retries possible. CI builds in its own workflow step, so
+  // there we only `start`. For quick local iteration against the dev server
+  // (faster startup, but flaky), set E2E_DEV_SERVER=1.
   webServer: {
-    command: "npm run dev",
+    command: process.env.E2E_DEV_SERVER
+      ? "npm run dev"
+      : process.env.CI
+        ? "npm run start"
+        : "npm run build && npm run start",
     url: BASE_URL,
     reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
+    // Generous: a cold production build can take a couple of minutes.
+    timeout: 300_000,
   },
 });

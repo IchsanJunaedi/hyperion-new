@@ -1,4 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/admin";
+import { getStoragePathFromUrl } from "@/lib/utils/file";
 
 export interface TrialRow {
   id: string;
@@ -108,8 +109,61 @@ export async function listApplicants(trialId: string): Promise<ApplicantRow[]> {
     .eq("trial_id", trialId)
     .order("created_at", { ascending: false })
     .limit(200);
-  if (error) console.error("listApplicants:", error);
-  return (data as ApplicantRow[]) ?? [];
+
+  if (error) {
+    console.error("listApplicants:", error);
+    return [];
+  }
+
+  const applicants = (data as ApplicantRow[]) ?? [];
+  const pathsToSign: string[] = [];
+
+  applicants.forEach((app) => {
+    const screenshotPath = getStoragePathFromUrl(app.screenshot_url);
+    if (screenshotPath) pathsToSign.push(screenshotPath);
+
+    const cvPath = getStoragePathFromUrl(app.cv_url);
+    if (cvPath) pathsToSign.push(cvPath);
+  });
+
+  if (pathsToSign.length === 0) {
+    return applicants;
+  }
+
+  try {
+    const { data: signedData, error: signError } = await admin.storage
+      .from("trial-screenshots")
+      .createSignedUrls(pathsToSign, 600); // 10 minutes expiry
+
+    if (!signError && signedData) {
+      const signedMap = new Map<string, string>();
+      signedData.forEach((item) => {
+        if (item.error) {
+          console.error("Signing error for path:", item.path, item.error);
+        } else if (item.signedUrl && item.path) {
+          // Supabase createSignedUrls returns the relative path as item.path,
+          // but let's make sure it matches what we get from getStoragePathFromUrl.
+          signedMap.set(item.path, item.signedUrl);
+        }
+      });
+
+      applicants.forEach((app) => {
+        const screenshotPath = getStoragePathFromUrl(app.screenshot_url);
+        if (screenshotPath) {
+          app.screenshot_url = signedMap.get(screenshotPath) ?? app.screenshot_url;
+        }
+
+        const cvPath = getStoragePathFromUrl(app.cv_url);
+        if (cvPath) {
+          app.cv_url = signedMap.get(cvPath) ?? app.cv_url;
+        }
+      });
+    }
+  } catch (err) {
+    console.error("Batch signing failed:", err);
+  }
+
+  return applicants;
 }
 
 export interface PublicTrial extends TrialRow {

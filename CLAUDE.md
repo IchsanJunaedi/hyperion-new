@@ -213,10 +213,17 @@ FONNTE_WEBHOOK_SECRET=
 ### Pre-Commit CI Gate (WAJIB sebelum setiap commit/push)
 Sebelum `git commit`, SELALU jalankan ketiga perintah ini dan pastikan semua lulus:
 ```bash
-npm run lint        # ← tidak boleh ada "error" (warning OK)
-npm run typecheck   # ← harus exit 0
-npm run test:unit   # ← semua tests harus pass
+npm run lint              # ← tidak boleh ada "error" (warning OK)
+npm run typecheck         # ← harus exit 0
+npm run test:unit:coverage  # ← semua tests pass + threshold coverage terpenuhi
 ```
+**Penting:** gunakan `test:unit:coverage`, BUKAN `test:unit`. CI menjalankan
+`test:unit:coverage` yang menegakkan threshold (statements 80%, branches 75%,
+functions 80%, lines 80% — lihat `vitest.config.ts`). `test:unit` saja bisa hijau
+padahal CI merah karena coverage turun di bawah threshold (mis. menambah file
+logika baru di scope coverage tanpa test → branch coverage anjlok). File logika
+murni baru di `lib/` / `features/*/queries.ts` WAJIB punya unit test.
+
 Jika ada yang gagal, **perbaiki dulu sebelum commit**. Jangan commit kode yang bakal merahkan CI.
 
 ### Code Quality
@@ -381,3 +388,44 @@ Quick summary (as of 2026-05-27):
 - 68 migrations applied
 - Dead features (do not revive): scouting, AI insights, matchmaking, reports (not public)
 - Performance Batch 2 items remaining: B2-1, B2-2, B2-7, B2-9 (see progress.md)
+
+## Graphify Knowledge Graph
+
+Knowledge graph codebase ini sudah dibangun di `graphify-out/`. Gunakan untuk navigasi dan explorasi arsitektur.
+
+### Setup (sekali saja)
+```powershell
+# Install graphify (sudah dilakukan)
+python -m pipx install "graphifyy[gemini]" --force
+
+# Set API key (dapatkan gratis di aistudio.google.com/apikey)
+$env:GEMINI_API_KEY = "your-gemini-api-key"
+```
+
+### Menggunakan Graphify
+
+**Skill (ketik di chat):**
+- `/graphify .` — rebuild graph penuh
+- `/graphify query "bagaimana alur auth bekerja?"` — query graph
+- `/graphify explain "useNotify"` — jelaskan satu node
+- `/graphify path "supabase" "dashboard"` — jalur terpendek antar dua node
+
+**CLI langsung:**
+```powershell
+$env:PATH += ";C:\Users\jokil\AppData\Roaming\Python\Python310\Scripts"
+$env:GEMINI_API_KEY = "your-key"
+
+graphify . --backend gemini --update   # update incremental (hanya file berubah)
+graphify . --backend gemini            # rebuild penuh
+graphify query "pertanyaan tentang kode"
+graphify explain "NamaNode"
+graphify path "NodeA" "NodeB"
+```
+
+**Visualisasi:**
+- Buka `graphify-out/graph.html` di browser untuk visualisasi interaktif
+- `graphify-out/GRAPH_REPORT.md` — ringkasan communities dan god nodes
+
+### Kapan Update Graph
+- Setelah menambah fitur besar atau refactor
+- Jalankan `graphify . --backend gemini --update` (incremental, hanya file berubah)

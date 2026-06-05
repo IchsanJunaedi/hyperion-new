@@ -38,11 +38,11 @@ export async function submitCoachNotesAction(
     }
   }
 
-  // Use admin client to bypass RLS for the update
-  const admin = createAdminClient();
+  // Use admin client if owner, otherwise use user client to enforce RLS
+  const db = isOwnerByEmail ? createAdminClient() : supabase;
 
   // Try to update existing result first, then insert if none exists
-  const { data: existing } = await admin
+  const { data: existing } = await db
     .from("scrim_results")
     .select("id")
     .eq("scrim_id", scrimId)
@@ -51,7 +51,7 @@ export async function submitCoachNotesAction(
   let error;
   if (existing) {
     // Update only the coach_notes field
-    const result = await admin
+    const result = await db
       .from("scrim_results")
       .update({ coach_notes: coachNotes })
       .eq("scrim_id", scrimId);
@@ -59,7 +59,7 @@ export async function submitCoachNotesAction(
   } else {
     // No result yet - insert a minimal row so coach_notes can be stored
     // This should only happen in rare edge cases; scores default to 0
-    const result = await admin
+    const result = await db
       .from("scrim_results")
       .insert({
         scrim_id: scrimId,

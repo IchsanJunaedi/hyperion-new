@@ -110,14 +110,12 @@ export async function signInAction(
     }
 
     const remaining = MAX_ATTEMPTS - newAttempts;
-    if (error.message.toLowerCase().includes("invalid login")) {
+    if (
+      error.message.toLowerCase().includes("invalid login") ||
+      error.message.toLowerCase().includes("email not confirmed")
+    ) {
       return {
         error: `Email atau password salah. Sisa percobaan: ${remaining}.`,
-      };
-    }
-    if (error.message.toLowerCase().includes("email not confirmed")) {
-      return {
-        error: "Email belum dikonfirmasi. Cek inbox kamu untuk link aktivasi.",
       };
     }
     return { error: error.message };

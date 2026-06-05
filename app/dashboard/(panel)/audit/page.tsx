@@ -52,15 +52,6 @@ export default async function DashboardAuditPage({ searchParams }: Props) {
 
   return (
     <>
-      <header className="h-12 flex items-center px-6 sticky top-0 bg-[#191919] z-40 border-b border-[#2D2D2D]">
-        <div className="flex items-center gap-2 text-[#9B9A97] text-sm">
-          <Link href="/dashboard" className="hover:text-[#D4D4D4]">
-            Home
-          </Link>
-          <span className="text-[#6B6A68]">/</span>
-          <span className="text-[#D4D4D4]">Audit Log</span>
-        </div>
-      </header>
       <main className="mx-auto max-w-7xl px-4 py-6">
         <AuditDashboard
           items={items}

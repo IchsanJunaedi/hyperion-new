@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Instrument_Sans, Geist_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 
@@ -27,6 +27,20 @@ export const metadata: Metadata = {
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
   ),
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    title: "Hyperion",
+    statusBarStyle: "black-translucent",
+  },
+  icons: {
+    icon: "/icons/icon-192.png",
+    apple: "/icons/apple-touch-icon.png",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#191919",
 };
 
 export default function RootLayout({

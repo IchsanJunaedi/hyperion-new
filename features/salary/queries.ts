@@ -2,6 +2,7 @@ import "server-only";
 
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { Database } from "@/types/database";
+import { computePayrollSpend, type MonthlySpend } from "./logic";
 
 export type PlayerContract = Database["public"]["Tables"]["player_contracts"]["Row"];
 export type SalaryPayment = Database["public"]["Tables"]["salary_payments"]["Row"];
@@ -28,6 +29,9 @@ export interface PayrollSummary {
   totalMonthlyPayroll: number;
   activeCount: number;
   expiringCount: number; // contracts ending within 30 days
+  paidThisMonth: number; // sum of "paid" salary_payments in the current month
+  outstandingThisMonth: number; // totalMonthlyPayroll - paidThisMonth (≥ 0)
+  monthlySpend: MonthlySpend[]; // trailing 6 months of paid spend
 }
 
 /** Returns all contracts for an org with profile data and last 6 months of payments. */
@@ -114,12 +118,39 @@ export async function listContracts(orgId: string): Promise<ContractWithProfile[
 
 export async function getPayrollSummary(orgId: string): Promise<PayrollSummary> {
   const admin = createAdminClient();
-  const { data: contracts } = await admin
-    .from("player_contracts")
-    .select("monthly_salary, status, end_date")
-    .eq("organization_id", orgId);
 
-  if (!contracts) return { totalMonthlyPayroll: 0, activeCount: 0, expiringCount: 0 };
+  // 6 months back (first of that month) for the spend chart.
+  const sixMonthsAgo = new Date();
+  sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 5);
+  sixMonthsAgo.setDate(1);
+  const since = sixMonthsAgo.toISOString().slice(0, 10);
+
+  const [contractsRes, paymentsRes] = await Promise.all([
+    admin
+      .from("player_contracts")
+      .select("monthly_salary, status, end_date")
+      .eq("organization_id", orgId),
+    admin
+      .from("salary_payments")
+      .select("pay_period, amount, status")
+      .eq("organization_id", orgId)
+      .gte("pay_period", since)
+      .limit(1000),
+  ]);
+
+  const contracts = contractsRes.data;
+  const { paidThisMonth, monthlySpend } = computePayrollSpend(paymentsRes.data ?? []);
+
+  if (!contracts) {
+    return {
+      totalMonthlyPayroll: 0,
+      activeCount: 0,
+      expiringCount: 0,
+      paidThisMonth,
+      outstandingThisMonth: 0,
+      monthlySpend,
+    };
+  }
 
   const now = new Date();
   const in30Days = new Date();
@@ -140,5 +171,12 @@ export async function getPayrollSummary(orgId: string): Promise<PayrollSummary> 
     }
   }
 
-  return { totalMonthlyPayroll, activeCount, expiringCount };
+  return {
+    totalMonthlyPayroll,
+    activeCount,
+    expiringCount,
+    paidThisMonth,
+    outstandingThisMonth: Math.max(0, totalMonthlyPayroll - paidThisMonth),
+    monthlySpend,
+  };
 }

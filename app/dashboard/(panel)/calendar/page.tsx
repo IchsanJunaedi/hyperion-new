@@ -180,16 +180,6 @@ export default async function DashboardCalendarPage({
 
   return (
     <>
-      <header className="h-12 flex items-center px-6 sticky top-0 bg-[#191919] z-40 border-b border-[#2D2D2D]">
-        <div className="flex items-center gap-2 text-[#9B9A97] text-sm">
-          <Link href="/dashboard" className="hover:text-[#D4D4D4]">
-            Home
-          </Link>
-          <span className="text-[#6B6A68]">/</span>
-          <span className="text-[#D4D4D4]">Kalender</span>
-        </div>
-      </header>
-
       <main className="flex-1 px-8 py-6">
         <div className="mb-6 flex items-center justify-between gap-4">
           <h1 className="text-2xl font-bold text-white sm:text-3xl">

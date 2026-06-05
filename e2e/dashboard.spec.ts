@@ -1,10 +1,13 @@
 import { test, expect } from "@playwright/test";
-import { loginAsOwner, OWNER_EMAIL, OWNER_PASSWORD } from "./auth-helper";
+import { OWNER_EMAIL, OWNER_PASSWORD } from "./auth-helper";
 
 test.describe("Dashboard", () => {
+  // Reuse the owner session captured once by the owner-setup project instead of
+  // logging in per test (avoids concurrent-login races under parallel workers).
+  test.use({ storageState: "e2e/.auth/owner.json" });
+  test.skip(!OWNER_EMAIL || !OWNER_PASSWORD, "E2E credentials not configured");
+
   test.beforeEach(async ({ page }) => {
-    test.skip(!OWNER_EMAIL || !OWNER_PASSWORD, "E2E credentials not configured");
-    await loginAsOwner(page);
     await page.goto("/dashboard");
     await page.waitForLoadState("networkidle");
     // Verify that we successfully land on the dashboard and are not redirected

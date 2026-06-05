@@ -10,7 +10,7 @@ test.describe("Manage — Overview (manager)", () => {
     await expect(page).toHaveURL(/\/login/);
   });
 
-  test("page loads with Manager Panel heading", async ({ page }) => {
+  test("page loads with Manager Panel heading", { tag: "@smoke" }, async ({ page }) => {
     await page.goto("/manage");
     await expect(page.getByRole("heading", { name: /manager panel/i })).toBeVisible();
   });
@@ -26,7 +26,7 @@ test.describe("Manage — Access control (coach)", () => {
   test.use({ storageState: "e2e/.auth/coach.json" });
   test.skip(!CREDENTIALS.coach.email, "Coach credentials not configured");
 
-  test("coach cannot access /manage", async ({ page }) => {
+  test("coach cannot access /manage", { tag: "@smoke" }, async ({ page }) => {
     await page.goto("/manage");
     await expect(page).not.toHaveURL(/\/manage(\/|$)/);
   });

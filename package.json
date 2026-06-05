@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
@@ -16,9 +16,7 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
-    "test:e2e:clean": "playwright test --project=chromium",
-    "test:e2e:workspace": "playwright test --project=workspace-seed --project=dashboard-tests --project=manage-tests --project=workspace-tests --project=integration-tests",
-    "test:e2e:admin": "playwright test --project=admin-setup --project=admin-tests"
+    "test:e2e:smoke": "playwright test --grep @smoke"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

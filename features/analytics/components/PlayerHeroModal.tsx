@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { X, Swords, TrendingUp, Gamepad2, Star } from "lucide-react";
+import { X, Swords, TrendingUp, Gamepad2, Star, CalendarRange } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { ROLE_LABELS } from "@/features/scrim/data/mlbb-heroes";
 import { getHeroImageUrl } from "@/features/scrim/data/mlbb-heroes";
-import { fetchPlayerHeroHistory } from "@/features/analytics/actions";
-import type { EnterprisePlayerStat } from "@/features/analytics/queries";
+import { fetchPlayerHeroHistory, getPlayerTrendAction } from "@/features/analytics/actions";
+import type { EnterprisePlayerStat, PlayerMonthlyTrend } from "@/features/analytics/queries";
 import type { PlayerHeroHistory, PlayerHeroStatExtended, PlayerScrimGame, PlayerRatingEntry } from "@/features/analytics/actions";
 
 interface PlayerHeroModalProps {
@@ -79,6 +79,7 @@ function groupByScrim(games: PlayerScrimGame[]): { scrim_id: string; opponent_na
 
 const PlayerHeroModal = ({ player, orgId, onClose }: PlayerHeroModalProps) => {
   const [data, setData] = useState<PlayerHeroHistory | null>(null);
+  const [trend, setTrend] = useState<PlayerMonthlyTrend[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [sortKey, setSortKey] = useState<"picks" | "winRate">("picks");
 
@@ -86,9 +87,14 @@ const PlayerHeroModal = ({ player, orgId, onClose }: PlayerHeroModalProps) => {
     if (!player) return;
     setLoading(true);
     setData(null);
+    setTrend(null);
     try {
-      const result = await fetchPlayerHeroHistory(orgId, player.user_id);
+      const [result, trendRes] = await Promise.all([
+        fetchPlayerHeroHistory(orgId, player.user_id),
+        getPlayerTrendAction(orgId, player.user_id),
+      ]);
       setData(result);
+      setTrend(trendRes.ok ? trendRes.data : null);
     } finally {
       setLoading(false);
     }
@@ -99,6 +105,7 @@ const PlayerHeroModal = ({ player, orgId, onClose }: PlayerHeroModalProps) => {
       load();
     } else {
       setData(null);
+      setTrend(null);
     }
   }, [player, load]);
 
@@ -194,8 +201,13 @@ const PlayerHeroModal = ({ player, orgId, onClose }: PlayerHeroModalProps) => {
             </div>
           )}
 
-          {!loading && data && (data.heroStats.length > 0 || data.ratingHistory.length > 0) && (
+          {!loading && data && (data.heroStats.length > 0 || data.ratingHistory.length > 0 || (trend?.some((t) => t.scrims > 0) ?? false)) && (
             <div className="space-y-6 p-6">
+              {/* ── Monthly Trend (attendance + win rate) ── */}
+              {trend && trend.some((t) => t.scrims > 0) && (
+                <MonthlyTrendSection trend={trend} />
+              )}
+
               {/* ── Rating Trend ── */}
               {data.ratingHistory.length > 0 && (
                 <RatingTrendSection ratingHistory={data.ratingHistory} avgRating={player.avgRating} />
@@ -372,6 +384,48 @@ const PlayerHeroModal = ({ player, orgId, onClose }: PlayerHeroModalProps) => {
   );
 };
 export { PlayerHeroModal };
+
+function MonthlyTrendSection({ trend }: { trend: PlayerMonthlyTrend[] }) {
+  return (
+    <section>
+      <div className="mb-3 flex items-center gap-2">
+        <CalendarRange className="h-4 w-4 text-[#9B9A97]" />
+        <h3 className="text-sm font-semibold text-[#E5E2E1]">Tren 6 Bulan</h3>
+        <span className="ml-auto flex items-center gap-3 text-[10px] text-[#6B6A68]">
+          <span className="flex items-center gap-1">
+            <span className="h-2 w-2 rounded-sm bg-sky-400/70" /> Kehadiran
+          </span>
+          <span className="flex items-center gap-1">
+            <span className="h-2 w-2 rounded-sm bg-emerald-400/70" /> Win Rate
+          </span>
+        </span>
+      </div>
+
+      <div className="flex items-end justify-between gap-2 rounded-xl border border-[#2D2D2D] bg-[#1C1C1C] p-4">
+        {trend.map((m) => (
+          <div key={m.month} className="flex flex-1 flex-col items-center gap-1">
+            <div className="flex h-24 w-full items-end justify-center gap-1">
+              <div
+                className="w-2.5 rounded-t bg-sky-400/70"
+                style={{ height: `${Math.max(2, (m.attendanceRate / 100) * 88)}px` }}
+                title={`Kehadiran ${m.attendanceRate}%`}
+              />
+              <div
+                className="w-2.5 rounded-t bg-emerald-400/70"
+                style={{ height: `${Math.max(2, (m.winRate / 100) * 88)}px` }}
+                title={`Win rate ${m.winRate}%`}
+              />
+            </div>
+            <span className="text-[10px] text-[#9B9A97]">{m.label}</span>
+            <span className="text-[9px] tabular-nums text-[#6B6A68]">
+              {m.scrims > 0 ? `${m.attendanceRate}/${m.winRate}` : "—"}
+            </span>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
 
 function RatingTrendSection({
   ratingHistory,

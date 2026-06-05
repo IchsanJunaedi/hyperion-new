@@ -10,6 +10,7 @@ import { DashboardSettingsButton } from "@/components/layout/DashboardSettingsBu
 import { NotificationBell } from "@/features/notifications/components/NotificationBell";
 import { NotificationRealtimeProvider } from "@/features/notifications/components/NotificationRealtimeProvider";
 import { DashboardSidebarNav } from "@/components/layout/DashboardSidebarNav";
+import { DashboardHeader } from "@/components/layout/DashboardHeader";
 
 export const dynamic = "force-dynamic";
 
@@ -60,6 +61,8 @@ export default async function DashboardLayout({
     orgLogoUrl = (org as unknown as { name?: string; logo_url?: string | null }).logo_url ?? null;
   }
 
+  const workspaceName = profile?.full_name ?? profile?.display_name ?? orgName;
+
   return (
     <NotifyProvider>
       <div className="flex min-h-screen bg-[#191919] text-[#E5E2E1]">
@@ -77,11 +80,11 @@ export default async function DashboardLayout({
                   <img src={orgLogoUrl} alt="Logo" className="h-5 w-5 rounded object-cover" />
                 ) : (
                   <div className="grid h-5 w-5 place-items-center rounded bg-[#353434] text-xs font-semibold text-[#E5E2E1]">
-                    {orgName.slice(0, 1).toUpperCase()}
+                    {workspaceName.slice(0, 1).toUpperCase()}
                   </div>
                 )}
                 <p className="min-w-0 flex-1 truncate text-sm font-medium text-[#D4D4D4]">
-                  {orgName}
+                  {workspaceName}
                 </p>
                 <span className="shrink-0 text-[10px] font-bold uppercase tracking-widest text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.5)]">
                   owner
@@ -93,11 +96,11 @@ export default async function DashboardLayout({
                   <img src={orgLogoUrl} alt="Logo" className="h-5 w-5 rounded object-cover" />
                 ) : (
                   <div className="grid h-5 w-5 place-items-center rounded bg-[#353434] text-xs font-semibold text-[#E5E2E1]">
-                    {orgName.slice(0, 1).toUpperCase()}
+                    {workspaceName.slice(0, 1).toUpperCase()}
                   </div>
                 )}
                 <p className="min-w-0 flex-1 truncate text-sm font-medium text-[#D4D4D4]">
-                  {orgName}
+                  {workspaceName}
                 </p>
                 <span className="shrink-0 text-[10px] font-bold uppercase tracking-widest text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.5)]">
                   owner
@@ -151,9 +154,11 @@ export default async function DashboardLayout({
         {/* Main content */}
         <div className="flex-1 ml-[280px] flex flex-col min-h-screen">
           <NotificationRealtimeProvider userId={user?.id ?? ""}>
-            <header className="sticky top-0 z-40 flex h-12 items-center justify-end border-b border-[#2D2D2D] bg-[#191919] px-6">
-              <NotificationBell userId={user.id} orgSlug={orgSlug} />
-            </header>
+            <DashboardHeader
+              workspaceName={workspaceName}
+              userId={user.id}
+              orgSlug={orgSlug}
+            />
             {children}
           </NotificationRealtimeProvider>
         </div>

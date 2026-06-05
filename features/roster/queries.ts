@@ -19,6 +19,8 @@ export type RosterMember = {
   avatar_url: string | null;
   phone_wa: string | null;
   game_ids: Json;
+  /** Confirmed-attendance percentage over the org's recent scrims, or null when no data. */
+  attendance_rate: number | null;
 };
 
 export async function getRosterMembers(orgId: string): Promise<RosterMember[]> {
@@ -61,6 +63,40 @@ export async function getRosterMembers(orgId: string): Promise<RosterMember[]> {
     (divisionsRes.data ?? []).map((d) => [d.id, d]),
   );
 
+  // Attendance rate: over the org's 50 most recent scrims, percent of a
+  // member's attendance rows marked "confirmed". Batch-fetched to avoid N+1.
+  const attendanceRateMap = new Map<string, number>();
+  const { data: recentScrims } = await supabase
+    .from("scrims")
+    .select("id")
+    .eq("organization_id", orgId)
+    .order("scheduled_at", { ascending: false })
+    .limit(50);
+
+  const scrimIds = (recentScrims ?? []).map((s) => s.id);
+  if (scrimIds.length > 0) {
+    const { data: attendances, error: attErr } = await supabase
+      .from("scrim_attendances")
+      .select("user_id, status")
+      .in("scrim_id", scrimIds)
+      .in("user_id", userIds)
+      .limit(2000);
+    if (attErr) console.error("getRosterMembers attendances:", attErr);
+
+    const tally = new Map<string, { present: number; total: number }>();
+    for (const a of attendances ?? []) {
+      const t = tally.get(a.user_id) ?? { present: 0, total: 0 };
+      t.total += 1;
+      if (a.status === "confirmed") t.present += 1;
+      tally.set(a.user_id, t);
+    }
+    for (const [uid, t] of tally) {
+      if (t.total > 0) {
+        attendanceRateMap.set(uid, Math.round((t.present / t.total) * 100));
+      }
+    }
+  }
+
   return members.map((m) => {
     const profile = profileMap.get(m.user_id);
     const division = m.division_id ? divisionMap.get(m.division_id) : null;
@@ -80,6 +116,7 @@ export async function getRosterMembers(orgId: string): Promise<RosterMember[]> {
       avatar_url: profile?.avatar_url ?? null,
       phone_wa: profile?.phone_wa ?? null,
       game_ids: profile?.game_ids ?? {},
+      attendance_rate: attendanceRateMap.get(m.user_id) ?? null,
     };
   });
 }

@@ -430,3 +430,167 @@ export async function getEnterprisePlayerStats(orgId: string): Promise<Enterpris
     return { ...base, main_role: mainRoleMap.get(base.user_id) ?? null, avgRating, heroPool };
   });
 }
+
+// ─── Head-to-Head Opponent Summary ────────────────────────────────────────────
+
+export interface OpponentSummary {
+  opponent_name: string;
+  total: number;
+  wins: number;
+  losses: number;
+  draws: number;
+  winRate: number; // over decided games (wins + losses)
+}
+
+/**
+ * Aggregate record vs every opponent the team has played a completed scrim
+ * against. Sorted by total matches descending.
+ */
+export async function getOpponentSummary(orgId: string): Promise<OpponentSummary[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("scrims")
+    .select("opponent_name, scrim_results(is_win)")
+    .eq("organization_id", orgId)
+    .eq("status", "completed")
+    .limit(500);
+
+  if (error) {
+    console.error("[getOpponentSummary]", error);
+    return [];
+  }
+
+  const map = new Map<string, { wins: number; losses: number; draws: number }>();
+  for (const s of data ?? []) {
+    const name = (s.opponent_name ?? "").trim();
+    if (!name) continue;
+    const isWin = extractIsWin(s.scrim_results);
+    const entry = map.get(name) ?? { wins: 0, losses: 0, draws: 0 };
+    if (isWin === true) entry.wins++;
+    else if (isWin === false) entry.losses++;
+    else entry.draws++;
+    map.set(name, entry);
+  }
+
+  return Array.from(map.entries())
+    .map(([opponent_name, { wins, losses, draws }]) => {
+      const decided = wins + losses;
+      return {
+        opponent_name,
+        total: wins + losses + draws,
+        wins,
+        losses,
+        draws,
+        winRate: decided === 0 ? 0 : Math.round((wins / decided) * 100),
+      };
+    })
+    .sort((a, b) => b.total - a.total || b.winRate - a.winRate);
+}
+
+// ─── Player Monthly Trend (attendance + win rate) ─────────────────────────────
+
+export interface PlayerMonthlyTrend {
+  month: string; // "YYYY-MM"
+  label: string; // short month label
+  scrims: number; // scrims the player had an attendance row for that month
+  attendanceRate: number; // confirmed / total rows * 100
+  winRate: number; // wins / decided games while present * 100
+}
+
+const TREND_MONTH_LABELS = [
+  "Jan", "Feb", "Mar", "Apr", "Mei", "Jun",
+  "Jul", "Agu", "Sep", "Okt", "Nov", "Des",
+];
+
+/**
+ * 6-month attendance + win-rate trend for one player. Win rate is measured
+ * only over scrims the player actually attended (confirmed).
+ */
+export async function getPlayerTrendByMonth(
+  orgId: string,
+  userId: string,
+): Promise<PlayerMonthlyTrend[]> {
+  const supabase = await createClient();
+
+  const sixMonthsAgo = new Date();
+  sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 5);
+  sixMonthsAgo.setDate(1);
+
+  const { data: scrims, error } = await supabase
+    .from("scrims")
+    .select("id, scheduled_at, scrim_results(is_win)")
+    .eq("organization_id", orgId)
+    .eq("status", "completed")
+    .gte("scheduled_at", sixMonthsAgo.toISOString())
+    .limit(300);
+
+  if (error) console.error("[getPlayerTrendByMonth]", error);
+  if (!scrims?.length) return buildEmptyTrend(sixMonthsAgo);
+
+  const scrimIds = scrims.map((s) => s.id);
+  const { data: attendances } = await supabase
+    .from("scrim_attendances")
+    .select("scrim_id, status")
+    .in("scrim_id", scrimIds)
+    .eq("user_id", userId)
+    .limit(500);
+
+  const statusByScrim = new Map(
+    (attendances ?? []).map((a) => [a.scrim_id, a.status]),
+  );
+
+  // monthKey → tallies
+  const buckets = buildEmptyTrend(sixMonthsAgo);
+  const idx = new Map(buckets.map((b, i) => [b.month, i]));
+
+  for (const s of scrims) {
+    const d = new Date(s.scheduled_at);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+    const i = idx.get(key);
+    if (i === undefined) continue;
+    const status = statusByScrim.get(s.id);
+    if (status === undefined) continue; // player not on the sheet for this scrim
+
+    const b = buckets[i]!;
+    b.scrims += 1;
+    if (status === "confirmed") {
+      b._present = (b._present ?? 0) + 1;
+      const isWin = extractIsWin(s.scrim_results);
+      if (isWin === true) {
+        b._wins = (b._wins ?? 0) + 1;
+        b._decided = (b._decided ?? 0) + 1;
+      } else if (isWin === false) {
+        b._decided = (b._decided ?? 0) + 1;
+      }
+    }
+  }
+
+  return buckets.map((b) => ({
+    month: b.month,
+    label: b.label,
+    scrims: b.scrims,
+    attendanceRate: b.scrims === 0 ? 0 : Math.round(((b._present ?? 0) / b.scrims) * 100),
+    winRate: (b._decided ?? 0) === 0 ? 0 : Math.round(((b._wins ?? 0) / b._decided!) * 100),
+  }));
+}
+
+type TrendBucket = PlayerMonthlyTrend & {
+  _present?: number;
+  _wins?: number;
+  _decided?: number;
+};
+
+function buildEmptyTrend(start: Date): TrendBucket[] {
+  const buckets: TrendBucket[] = [];
+  for (let i = 0; i < 6; i++) {
+    const d = new Date(start.getFullYear(), start.getMonth() + i, 1);
+    buckets.push({
+      month: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`,
+      label: TREND_MONTH_LABELS[d.getMonth()]!,
+      scrims: 0,
+      attendanceRate: 0,
+      winRate: 0,
+    });
+  }
+  return buckets;
+}
