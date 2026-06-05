@@ -58,10 +58,31 @@
 - RLS on all tables — `createAdminClient()` bypasses, `createClient()` respects
 - Login rate limiting
 
-### Automated Testing (last updated 2026-05-23)
-- **642 unit tests** across 30 test files — all passing
+### Automated Testing (last updated 2026-06-05)
+- **682 unit tests** across 40 test files — all passing
 - Coverage thresholds met: Statements 90.4% / Branches 77.9% / Functions 97.3% / Lines 90.6% (thresholds: 80%/75%/80%/80%)
 - CI enforces coverage on every push via `test:unit:coverage` script
+
+### E2E Test Architecture (Test God Mode)
+- **`tests/`** — self-authenticating specs (auth + workspace full flow CRUD):
+  - `tests/auth.spec.ts` — form validation, registration, onboarding redirects
+  - `tests/workspace.spec.ts` — full CRUD: scrim, calendar, roster, announcements, polls, strategy, files
+  - `tests/global-setup.ts` ✅ **NEW** — DB cleaner (hapus @hyperion.com users + test orgs sebelum run)
+  - `tests/global-teardown.ts` ✅ **NEW** — post-run cleanup untuk CI
+  - Run: `npm run test:e2e:clean` — bisa dijalankan berkali-kali tanpa data numpuk
+- **`e2e/admin/`** — admin panel E2E (18 pages, requires `E2E_ADMIN_*` creds)
+  - Run: `npm run test:e2e:admin`
+- **`e2e/workspace/`** — 5-panel full suite (dashboard/manage/workspace/integration):
+  - Plan 1: Dashboard owner (69 specs)
+  - Plan 2: Manage manager (10 specs)
+  - Plan 3: Workspace roles coach/captain/member (14 specs)
+  - Plan 4: Cross-panel integration (8 flows, 20 specs)
+  - Requires: `E2E_OWNER_*`, `E2E_MANAGER_*`, `E2E_COACH_*`, `E2E_CAPTAIN_*`, `E2E_MEMBER_*` in `.env.local`
+  - Run: `npm run test:e2e:workspace`
+
+### DB Migrations Pending (perlu `npx supabase db push` saat Docker jalan)
+- `20260604150000_polls_coach_permission.sql` — coach bisa buat polls
+- `20260605120000_announcements_coach_permission.sql` — coach bisa buat announcements
 
 ---
 
