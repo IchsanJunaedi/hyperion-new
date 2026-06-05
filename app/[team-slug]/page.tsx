@@ -62,6 +62,18 @@ export default async function TeamSlugPage({ params }: TeamSlugPageProps) {
       ? await getPersonalPlayerStats(organization.id, user.id)
       : null;
 
+  // Fetch current user's attendance for the next scrim (to power the quick-RSVP button)
+  let myNextScrimAttendanceStatus: string | undefined = undefined;
+  if (data.nextScrim && !isOwner) {
+    const { data: att } = await supabase
+      .from("scrim_attendances")
+      .select("status")
+      .eq("scrim_id", data.nextScrim.id)
+      .eq("user_id", user.id)
+      .maybeSingle();
+    myNextScrimAttendanceStatus = att?.status ?? "pending";
+  }
+
   return (
     <div className="flex min-h-screen flex-1">
       <WorkspaceSidebar
@@ -90,7 +102,7 @@ export default async function TeamSlugPage({ params }: TeamSlugPageProps) {
           className="hidden md:flex"
         />
         <main className="flex-1">
-          <TeamHome data={data} canManageScrims={canManageScrims} personalStats={personalStats} />
+          <TeamHome data={data} canManageScrims={canManageScrims} personalStats={personalStats} myNextScrimAttendanceStatus={myNextScrimAttendanceStatus} />
         </main>
         <MobileBottomNav orgSlug={organization.slug} />
       </div>

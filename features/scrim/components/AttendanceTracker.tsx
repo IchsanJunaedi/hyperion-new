@@ -2,6 +2,7 @@
 
 import { Check, Loader2, X } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 
 import { updateAttendanceAction } from "@/features/scrim/actions";
 import { createClient } from "@/lib/supabase/client";
@@ -41,8 +42,7 @@ const AttendanceTracker = ({
   initialStatus,
   locked,
 }: AttendanceTrackerProps) => {
-  // Optimistic value the user just clicked; falls back to server value
-  // after the action resolves.
+  const router = useRouter();
   const [status, setStatus] = useState<AttendanceStatus>(initialStatus);
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -86,6 +86,8 @@ const AttendanceTracker = ({
       if (!res.ok) {
         setStatus(prev);
         setError(res.message);
+      } else {
+        router.refresh();
       }
     });
   };

@@ -24,10 +24,12 @@ const TeamHome = ({
   data,
   canManageScrims,
   personalStats,
+  myNextScrimAttendanceStatus,
 }: {
   data: TeamHomeData;
   canManageScrims: boolean;
   personalStats?: PersonalPlayerStats | null;
+  myNextScrimAttendanceStatus?: string;
 }) => {
   const slug = data.organization.slug;
 
@@ -140,7 +142,7 @@ const TeamHome = ({
       {/* Top row: next scrim + quick stats */}
       <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
         {data.nextScrim ? (
-          <ScrimCountdown scrim={data.nextScrim} orgSlug={slug} />
+          <ScrimCountdown scrim={data.nextScrim} orgSlug={slug} myAttendanceStatus={myNextScrimAttendanceStatus} />
         ) : (
           <article className="rounded-xl border border-dashed border-[#2D2D2D] bg-[#141414] p-6 text-sm text-white/60">
             <div className="mb-2 flex items-center gap-2 text-xs uppercase tracking-wide text-white/45">
