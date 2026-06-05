@@ -47,6 +47,12 @@ const AttendanceTracker = ({
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
+  // Sync local state when server re-renders with new initialStatus (e.g. after
+  // ScrimCountdown quick-RSVP calls router.refresh()).
+  useEffect(() => {
+    if (!pending) setStatus(initialStatus);
+  }, [initialStatus, pending]);
+
   // Subscribe to realtime updates so other members' RSVP changes
   // re-render the parent (the parent revalidates on action; here we
   // just clear any optimistic state when the server pushes our own).
