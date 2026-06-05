@@ -170,7 +170,7 @@ test("Workspace Features E2E Flow", async ({ page }) => {
 
   await page.click("button:has-text('Aktif')");
   await page.click("button:has-text('Hiatus')");
-  await expect(page.locator("text=Status ketersediaan diperbarui")).toBeVisible();
+  await expect(page.locator("text=Status ketersediaan diperbarui").first()).toBeVisible();
 
   // 7. Collaterals: Announcements CRUD
   await page.goto(`/${uniqueTeamSlug}/announcements`);
