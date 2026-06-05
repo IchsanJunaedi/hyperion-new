@@ -133,6 +133,10 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 1,
   workers: process.env.CI ? 1 : undefined,
 
+  // Cleans test dummy data before each run (tests/ folder self-registering specs)
+  globalSetup: "./tests/global-setup.ts",
+  globalTeardown: "./tests/global-teardown.ts",
+
   reporter: [
     ["list"],
     ["html", { outputFolder: "playwright-report", open: "never" }],
