@@ -24,8 +24,10 @@ test.describe("Authentication Flow", () => {
     await loginAsOwner(page);
     // Open settings modal
     await page.getByRole("button", { name: /settings/i }).click();
-    // Find and click the logout button inside the settings modal
-    const logoutBtn = page.getByRole("button", { name: /logout/i });
+    // Click the logout button inside the settings modal. The panel header also
+    // has an icon-only logout button (aria-label="Logout", no text), so target
+    // the modal's visible "Logout" text to avoid a strict-mode match on both.
+    const logoutBtn = page.getByText("Logout", { exact: true });
     await logoutBtn.click();
     await expect(page).toHaveURL(/\/login|\/$/);
   });

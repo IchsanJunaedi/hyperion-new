@@ -9,8 +9,10 @@ const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 const AUTH_DIR = path.join(__dirname, "../../.auth");
 
-// Temporary password set on owner account for E2E testing
-const OWNER_E2E_PASSWORD = "E2eOwnerTemp001!";
+// Password the seed enforces on the owner account so form login is reliable.
+// Use the value the rest of the suite logs in with (auth-helper / owner.json)
+// so seed and login never drift apart.
+const OWNER_E2E_PASSWORD = process.env.E2E_OWNER_PASSWORD!;
 
 const ROLES = [
   { name: "manager",  email: process.env.E2E_MANAGER_EMAIL!,  password: process.env.E2E_MANAGER_PASSWORD!,  role: "manager"  },
@@ -42,7 +44,7 @@ setup("seed workspace data and save auth states", async () => {
 
   // Set a known temporary password on the owner account for E2E testing
   await admin.auth.admin.updateUserById(ownerUser.id, { password: OWNER_E2E_PASSWORD });
-  console.log(`  [seed] owner password set to E2E temp value`);
+  console.log(`  [seed] owner password synced to E2E_OWNER_PASSWORD`);
 
   // 2. Create 4 test users idempotently
   const userIds: Record<string, string> = {};
@@ -196,6 +198,4 @@ setup("seed workspace data and save auth states", async () => {
 
   await browser.close();
   console.log("✅ Workspace seed complete");
-  console.log("⚠️  Note: owner account password has been changed to E2E temp value.");
-  console.log("    Update E2E_OWNER_PASSWORD=E2eOwnerTemp001! in .env.local for future runs.");
 });
