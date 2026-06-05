@@ -146,6 +146,10 @@ export default defineConfig({
     trace: "on-first-retry",
     screenshot: "only-on-failure",
     video: "retain-on-failure",
+    // Opt-in slow motion for watching a run with --headed: each Playwright
+    // action waits this many ms so you can see what it types/clicks. Default 0
+    // (no effect on CI / normal runs). Example: E2E_SLOWMO=800
+    launchOptions: { slowMo: Number(process.env.E2E_SLOWMO) || 0 },
   },
 
   projects: [
