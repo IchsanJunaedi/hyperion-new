@@ -40,14 +40,30 @@ export async function createTournamentAction(
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, message: "Anda harus login" };
 
-  const { data: org } = await supabase
+  const admin = createAdminClient();
+  const { data: org } = await admin
     .from("organizations")
     .select("id")
     .eq("slug", orgSlug)
     .maybeSingle();
   if (!org) return { ok: false, message: "Organisasi tidak ditemukan" };
 
-  const { data: tournament, error } = await supabase
+  // Server-side authorization: owner by email, or captain/manager in team_members
+  const ownerEmail = process.env.OWNER_EMAIL || process.env.E2E_OWNER_EMAIL;
+  const isOwner = Boolean(ownerEmail && user.email === ownerEmail);
+  if (!isOwner) {
+    const { data: membership } = await admin
+      .from("team_members")
+      .select("role")
+      .eq("organization_id", org.id)
+      .eq("user_id", user.id)
+      .eq("is_active", true)
+      .maybeSingle();
+    const canCreate = membership?.role && ["captain", "manager", "owner"].includes(membership.role);
+    if (!canCreate) return { ok: false, message: "Hanya captain atau manager yang bisa menambah turnamen" };
+  }
+
+  const { data: tournament, error } = await admin
     .from("tournaments")
     .insert({
       organization_id: org.id,
@@ -70,9 +86,7 @@ export async function createTournamentAction(
   if (error || !tournament) {
     return {
       ok: false,
-      message: error?.code === "42501"
-        ? "Hanya captain atau manager yang bisa menambah turnamen"
-        : (error?.message ?? "Gagal membuat turnamen"),
+      message: error?.message ?? "Gagal membuat turnamen",
     };
   }
 
@@ -106,7 +120,8 @@ export async function updateTournamentAction(
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, message: "Anda harus login" };
 
-  const { error } = await supabase
+  const admin = createAdminClient();
+  const { error } = await admin
     .from("tournaments")
     .update({
       division_id: parsed.data.division_id,
@@ -150,13 +165,14 @@ export async function deleteTournamentAction(
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, message: "Anda harus login" };
 
-  const { error } = await supabase
+  const admin = createAdminClient();
+  const { error } = await admin
     .from("tournaments")
     .delete()
     .eq("id", tournamentId);
 
   if (error) {
-    return { ok: false, message: error.code === "42501" ? "Akses ditolak" : error.message };
+    return { ok: false, message: error.message };
   }
 
   await logAudit({
@@ -181,9 +197,11 @@ export async function updateTournamentStatusAction(
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, message: "Anda harus login" };
 
+  const admin = createAdminClient();
+
   // Guard: block registration confirmation if deadline has passed
   if (status === "ongoing") {
-    const { data: existing } = await supabase
+    const { data: existing } = await admin
       .from("tournaments")
       .select("status, registration_deadline")
       .eq("id", tournamentId)
@@ -198,7 +216,7 @@ export async function updateTournamentStatusAction(
   }
 
   // DB uses text check: upcoming/ongoing/completed/cancelled
-  const { error } = await supabase
+  const { error } = await admin
     .from("tournaments")
     .update({ status: status as "upcoming" | "ongoing" | "completed" | "cancelled" })
     .eq("id", tournamentId);
@@ -207,7 +225,7 @@ export async function updateTournamentStatusAction(
 
   // When confirming registration (upcoming → ongoing)
   if (status === "ongoing") {
-    const { data: tournament } = await supabase
+    const { data: tournament } = await admin
       .from("tournaments")
       .select("organization_id, name, organizer, start_date, registration_fee, prize_pool")
       .eq("id", tournamentId)
@@ -218,7 +236,7 @@ export async function updateTournamentStatusAction(
       if (tournament.registration_fee) {
         const amount = parseInt(tournament.registration_fee.replace(/\D/g, ""), 10);
         if (amount > 0) {
-          await supabase.from("finances").insert({
+          await admin.from("finances").insert({
             organization_id: tournament.organization_id,
             type: "expense",
             amount,
@@ -231,7 +249,7 @@ export async function updateTournamentStatusAction(
       }
 
       // WA + in-app notification blast to all members
-      fanOutRegistrationNotification(createAdminClient(), {
+      fanOutRegistrationNotification(admin, {
         tournamentId,
         orgId: tournament.organization_id,
         orgSlug,
