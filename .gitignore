@@ -72,3 +72,6 @@ scratch/
 /*.webp
 /*.gif
 
+# Tooling scratch — generated knowledge graph + superpowers brainstorm artifacts (not source)
+graphify-out/
+.superpowers/

@@ -213,10 +213,17 @@ FONNTE_WEBHOOK_SECRET=
 ### Pre-Commit CI Gate (WAJIB sebelum setiap commit/push)
 Sebelum `git commit`, SELALU jalankan ketiga perintah ini dan pastikan semua lulus:
 ```bash
-npm run lint        # ← tidak boleh ada "error" (warning OK)
-npm run typecheck   # ← harus exit 0
-npm run test:unit   # ← semua tests harus pass
+npm run lint              # ← tidak boleh ada "error" (warning OK)
+npm run typecheck         # ← harus exit 0
+npm run test:unit:coverage  # ← semua tests pass + threshold coverage terpenuhi
 ```
+**Penting:** gunakan `test:unit:coverage`, BUKAN `test:unit`. CI menjalankan
+`test:unit:coverage` yang menegakkan threshold (statements 80%, branches 75%,
+functions 80%, lines 80% — lihat `vitest.config.ts`). `test:unit` saja bisa hijau
+padahal CI merah karena coverage turun di bawah threshold (mis. menambah file
+logika baru di scope coverage tanpa test → branch coverage anjlok). File logika
+murni baru di `lib/` / `features/*/queries.ts` WAJIB punya unit test.
+
 Jika ada yang gagal, **perbaiki dulu sebelum commit**. Jangan commit kode yang bakal merahkan CI.
 
 ### Code Quality
