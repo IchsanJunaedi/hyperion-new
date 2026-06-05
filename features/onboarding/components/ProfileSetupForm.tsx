@@ -36,27 +36,32 @@ const ProfileSetupForm = ({ lockedValues, defaultValues }: ProfileSetupFormProps
     setMlbbError(null);
     if (!mlbbId.trim() || !mlbbServer.trim()) return;
 
+    let mounted = true;
     if (timerRef.current) clearTimeout(timerRef.current);
     timerRef.current = setTimeout(async () => {
+      if (!mounted) return;
       setMlbbChecking(true);
       try {
         const res = await fetch(
-          `https://api.isan.eu.org/nickname/ml?id=${encodeURIComponent(mlbbId.trim())}&server=${encodeURIComponent(mlbbServer.trim())}`,
+          `/api/mlbb/nickname?userId=${encodeURIComponent(mlbbId.trim())}&zoneId=${encodeURIComponent(mlbbServer.trim())}`,
         );
-        const json = await res.json() as { success: boolean; name?: string };
-        if (json.success && json.name) {
-          setMlbbNickname(json.name);
+        const json = await res.json() as { nickname: string | null };
+        if (!mounted) return;
+        if (json.nickname) {
+          setMlbbNickname(json.nickname);
         } else {
           setMlbbError("ID atau Server tidak ditemukan");
         }
       } catch {
+        if (!mounted) return;
         setMlbbError("Gagal cek nickname, coba lagi");
       } finally {
-        setMlbbChecking(false);
+        if (mounted) setMlbbChecking(false);
       }
     }, 700);
 
     return () => {
+      mounted = false;
       if (timerRef.current) clearTimeout(timerRef.current);
     };
   }, [mlbbId, mlbbServer]);

@@ -280,6 +280,12 @@ const WorkspaceSidebar = ({
     user.role === "coach" ||
     user.role === "captain";
 
+  const hasTrialsAccess =
+    user.role === "owner" ||
+    user.role === "manager" ||
+    user.role === "coach" ||
+    user.role === "captain";
+
   const allGroups: NavGroup[] = (isManager
     ? [MANAGER_NAV_GROUP, ...WORKSPACE_NAV_GROUPS]
     : WORKSPACE_NAV_GROUPS)
@@ -288,6 +294,7 @@ const WorkspaceSidebar = ({
       items: group.items.filter((item) => {
         if (item.key === "files") return hasFilesAccess;
         if (item.key === "scouting") return hasScoutingAccess;
+        if (item.key === "trials") return hasTrialsAccess;
         return true;
       }),
     }));
