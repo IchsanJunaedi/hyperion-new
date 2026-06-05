@@ -142,24 +142,18 @@ test("Workspace Features E2E Flow", async ({ page }) => {
   await page.fill("input[name='title']", "Latihan Taktis A");
 
   // event_type uses PremiumSelect (custom dropdown — NOT a native <select>)
-  // Pattern: click the button trigger → click the option item by text
-  await page.locator("input[name='event_type']").evaluate((el) => {
-    // Set hidden input value directly for reliability
-    const nativeSetter = Object.getOwnPropertyDescriptor(
-      window.HTMLInputElement.prototype, "value"
-    )?.set;
-    nativeSetter?.call(el, "practice");
-    el.dispatchEvent(new Event("input", { bubbles: true }));
-    el.dispatchEvent(new Event("change", { bubbles: true }));
-  });
-  // Also click through the UI so the visible label updates
+  // Pattern: click the dropdown trigger → click the option inside the dropdown panel
   const eventTypeDropdown = page.locator("div[class*='relative']").filter({
     has: page.locator("input[name='event_type']"),
   });
+  // Click the trigger to open the dropdown
   await eventTypeDropdown.locator("button[type='button']").click();
+  await page.waitForTimeout(300);
+  // Click the "Latihan" (practice) option inside the open dropdown panel
+  // Use the dropdown div itself as scope to avoid strict mode (2 buttons match page-wide)
+  await eventTypeDropdown.locator("button[type='button']").filter({ hasText: /^Latihan$/ }).first().click();
   await page.waitForTimeout(200);
-  await page.locator("button[type='button']").filter({ hasText: /^Latihan$/ }).click();
-  await page.waitForTimeout(200);
+
 
   await setDatetimeLocal("input[name='starts_at']", futureStr);
   await page.fill("input[name='location']", "Discord Server");
