@@ -129,7 +129,14 @@ export default async function DashboardPage() {
         {/* Buat Tim */}
         <div className="border border-[#2D2D2D] rounded-lg p-6">
           <h2 className="text-lg font-semibold text-[#E5E2E1] mb-4">Buat Tim Baru</h2>
-          <CreateTeamForm existingDivisions={(allDivisions ?? []).filter((d) => !d.organization_id).map((d) => ({ id: d.id, name: d.name }))} />
+          <CreateTeamForm existingDivisions={(() => {
+              const usedNames = new Set(
+                (allDivisions ?? []).filter((d) => d.organization_id !== null).map((d) => d.name)
+              );
+              return (allDivisions ?? [])
+                .filter((d) => !d.organization_id && !usedNames.has(d.name))
+                .map((d) => ({ id: d.id, name: d.name }));
+            })()} />
         </div>
 
         {/* Manager — Tim & Divisi (max 7) */}
