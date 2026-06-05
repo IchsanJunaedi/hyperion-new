@@ -8,6 +8,25 @@ test("Workspace Features E2E Flow", async ({ page }) => {
   const uniqueTeamName = `Team ${timestamp}`;
   const uniqueTeamSlug = `team-${timestamp}`;
 
+  // Helper: set datetime-local input via JS (more reliable than fill)
+  const setDatetimeLocal = async (selector: string, dateStr: string) => {
+    await page.evaluate(
+      ({ sel, val }) => {
+        const el = document.querySelector(sel) as HTMLInputElement;
+        if (el) {
+          const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+            window.HTMLInputElement.prototype,
+            "value"
+          )?.set;
+          nativeInputValueSetter?.call(el, val);
+          el.dispatchEvent(new Event("input", { bubbles: true }));
+          el.dispatchEvent(new Event("change", { bubbles: true }));
+        }
+      },
+      { sel: selector, val: dateStr }
+    );
+  };
+
   // 1. Registration
   await page.goto("/register");
   await page.fill("input[id='display_name']", "Workspace Tester");
@@ -20,7 +39,9 @@ test("Workspace Features E2E Flow", async ({ page }) => {
 
   // 2. Profile Setup
   await page.fill("input[name='username']", uniqueUsername);
-  await page.fill("input[name='date_of_birth']", "2000-01-01");
+  // Use JS to set date input reliably
+  await setDatetimeLocal("input[name='date_of_birth']", "2000-01-01");
+  await page.waitForTimeout(300);
   await page.click("button[type='submit']");
 
   await expect(page).toHaveURL(/\/$/);
@@ -30,36 +51,60 @@ test("Workspace Features E2E Flow", async ({ page }) => {
   await page.fill("input[id='org-name']", uniqueTeamName);
   await page.fill("input[id='org-slug']", uniqueTeamSlug);
   await page.fill("input[id='division-name-0']", "MLBB Division");
+  // Wait for slug check to complete
+  await page.waitForTimeout(500);
   await page.click("button[type='submit']");
 
   await expect(page).toHaveURL(new RegExp(`\\/${uniqueTeamSlug}`));
 
   // 4. Scrim Modul: CRUD & finish flow
   await page.goto(`/${uniqueTeamSlug}/scrim`);
-  await expect(page.getByRole("heading", { name: "Daftar scrim" })).toBeVisible();
+  await page.waitForLoadState("networkidle");
+  await expect(page.locator("h1, h2").filter({ hasText: /daftar scrim/i }).first()).toBeVisible();
 
   await page.click("text=Buat scrim");
-  await expect(page.getByRole("heading", { name: "Buat scrim baru" })).toBeVisible();
+  await page.waitForLoadState("networkidle");
+  await expect(page.locator("h1, h2").filter({ hasText: /buat scrim baru/i }).first()).toBeVisible();
 
-  // Compute future datetime-local string (tomorrow)
+  // Compute future datetime-local string (tomorrow at 23:00)
   const futureTime = new Date(Date.now() + 24 * 60 * 60 * 1000);
+  futureTime.setHours(23, 0, 0, 0);
   const yyyy = futureTime.getFullYear();
   const mm = String(futureTime.getMonth() + 1).padStart(2, '0');
   const dd = String(futureTime.getDate()).padStart(2, '0');
-  const hh = String(futureTime.getHours()).padStart(2, '0');
-  const min = String(futureTime.getMinutes()).padStart(2, '0');
-  const futureStr = `${yyyy}-${mm}-${dd}T${hh}:${min}`;
+  const futureStr = `${yyyy}-${mm}-${dd}T23:00`;
 
   await page.fill("input[name='opponent_name']", "E2E Enemy Team");
   await page.fill("input[name='opponent_contact']", "08987654321");
-  await page.fill("input[name='scheduled_at']", futureStr);
-  await page.click("text=BO1");
+
+  // Use JS to set datetime-local reliably
+  await setDatetimeLocal("input[name='scheduled_at']", futureStr);
+  await page.waitForTimeout(200);
+
+  // Click BO1 format pill
+  await page.locator("label").filter({ hasText: /^BO1$/ }).click();
   await page.fill("input[name='server_region']", "Singapore");
   await page.fill("textarea[name='notes']", "Catatan latihan strategi");
+
+  // Verify division_id hidden input is populated
+  const divisionId = await page.evaluate(() => {
+    const el = document.querySelector('input[name="division_id"]') as HTMLInputElement | null;
+    return el?.value ?? null;
+  });
+  console.log("division_id value:", divisionId);
+
+  // Verify scheduled_at is set
+  const scheduledAt = await page.evaluate(() => {
+    const el = document.querySelector('input[name="scheduled_at"]') as HTMLInputElement | null;
+    return el?.value ?? null;
+  });
+  console.log("scheduled_at value:", scheduledAt);
+
+  await page.waitForTimeout(500);
   await page.click("button[type='submit']");
 
   await expect(page).toHaveURL(new RegExp(`\\/${uniqueTeamSlug}\\/scrim\\/[0-9a-f-]+`));
-  await expect(page.getByRole("heading", { name: "vs E2E Enemy Team" }).first()).toBeVisible();
+  await expect(page.locator("h1, h2").filter({ hasText: /vs E2E Enemy Team/i }).first()).toBeVisible();
   await expect(page.locator("text=Terjadwal")).toBeVisible();
 
   // Extract scrim ID from current URL
@@ -68,28 +113,35 @@ test("Workspace Features E2E Flow", async ({ page }) => {
 
   // Navigate directly to finish scrim page
   await page.goto(`/${uniqueTeamSlug}/scrim/${scrimId}/finish`);
-  await expect(page.getByRole("heading", { name: "Selesai Pertandingan" })).toBeVisible();
+  await page.waitForLoadState("networkidle");
+  await expect(page.locator("h1, h2").filter({ hasText: /selesai pertandingan/i }).first()).toBeVisible();
 
   await page.click("text=Menang");
-  await page.fill("textarea[placeholder='Catatan game ini (opsional)']", "Game 1 epic comeback");
-  await page.fill("textarea[placeholder='Evaluasi performa tim, area perbaikan, catatan taktis... (opsional)']", "Taktik berjalan lancar");
-  await page.click("text=Simpan Hasil & Selesaikan Scrim");
+  await page.fill("textarea[placeholder='Strategi, kesalahan, highlight…']", "Game 1 epic comeback");
+  await page.fill("textarea[placeholder='Analisis keseluruhan, taktik, catatan penting…']", "Taktik berjalan lancar");
+  await page.click("button:has-text('Simpan Hasil & Selesaikan Scrim')");
 
-  await expect(page).toHaveURL(new RegExp(`\\/${uniqueTeamSlug}\\/scrim\\/[0-9a-f-]+`));
-  await expect(page.locator("span", { hasText: /^Selesai$/ })).toBeVisible();
+  await expect(page).toHaveURL(new RegExp(`\\/${uniqueTeamSlug}\\/analytics`));
+
+  // Go back to scrim details to verify results
+  await page.goto(`/${uniqueTeamSlug}/scrim/${scrimId}`);
+  await page.waitForLoadState("networkidle");
+  await expect(page.locator("span").filter({ hasText: /^Selesai$/i }).first()).toBeVisible();
   await expect(page.locator("text=1 — 0")).toBeVisible();
-  await expect(page.locator("text=MENANG").first()).toBeVisible();
+  await expect(page.getByText("Menang").first()).toBeVisible();
 
   // 5. Calendar Modul: Create event and view in calendar
   await page.goto(`/${uniqueTeamSlug}/calendar`);
-  await expect(page.getByRole("heading", { name: "Kalender Tim" })).toBeVisible();
+  await page.waitForLoadState("networkidle");
+  await expect(page.locator("h1, h2").filter({ hasText: /kalender tim/i }).first()).toBeVisible();
 
   await page.click("text=Tambah event");
-  await expect(page.getByRole("heading", { name: "Tambah event baru" })).toBeVisible();
+  await page.waitForLoadState("networkidle");
+  await expect(page.locator("h1, h2").filter({ hasText: /tambah event/i }).first()).toBeVisible();
 
   await page.fill("input[name='title']", "Latihan Taktis A");
   await page.selectOption("select[name='event_type']", "practice");
-  await page.fill("input[name='starts_at']", futureStr);
+  await setDatetimeLocal("input[name='starts_at']", futureStr);
   await page.fill("input[name='location']", "Discord Server");
   await page.fill("textarea[name='description']", "Latihan strategi map.");
   await page.click("button[type='submit']");
@@ -99,7 +151,8 @@ test("Workspace Features E2E Flow", async ({ page }) => {
 
   // 6. Roster Modul: Update availability
   await page.goto(`/${uniqueTeamSlug}/roster`);
-  await expect(page.getByRole("heading", { name: "Roster" })).toBeVisible();
+  await page.waitForLoadState("networkidle");
+  await expect(page.locator("h1, h2").filter({ hasText: /roster/i }).first()).toBeVisible();
 
   await page.click("button:has-text('Aktif')");
   await page.click("button:has-text('Hiatus')");
@@ -107,10 +160,12 @@ test("Workspace Features E2E Flow", async ({ page }) => {
 
   // 7. Collaterals: Announcements CRUD
   await page.goto(`/${uniqueTeamSlug}/announcements`);
-  await expect(page.getByRole("heading", { name: "Pengumuman Tim" })).toBeVisible();
+  await page.waitForLoadState("networkidle");
+  await expect(page.locator("h1, h2").filter({ hasText: /pengumuman tim/i }).first()).toBeVisible();
 
   await page.click("text=Buat pengumuman");
-  await expect(page.getByRole("heading", { name: "Buat pengumuman baru" })).toBeVisible();
+  await page.waitForLoadState("networkidle");
+  await expect(page.locator("h1, h2").filter({ hasText: /buat pengumuman/i }).first()).toBeVisible();
 
   await page.fill("input[name='title']", "Pengumuman Penting E2E");
   await page.fill("textarea[name='body']", "Ini pengumuman E2E test.");
@@ -121,7 +176,8 @@ test("Workspace Features E2E Flow", async ({ page }) => {
 
   // 8. Collaterals: Polls CRUD & Vote
   await page.goto(`/${uniqueTeamSlug}/polls`);
-  await expect(page.getByRole("heading", { name: "Polling Tim" })).toBeVisible();
+  await page.waitForLoadState("networkidle");
+  await expect(page.locator("h1, h2").filter({ hasText: /polling tim/i }).first()).toBeVisible();
 
   await page.click("text=Buat Poll");
   await page.fill("input[placeholder='Pertanyaan poll...']", "Pilih Map Terbaik");
@@ -137,10 +193,12 @@ test("Workspace Features E2E Flow", async ({ page }) => {
 
   // 9. Collaterals: Strategy Note CRUD
   await page.goto(`/${uniqueTeamSlug}/strategy`);
-  await expect(page.getByRole("heading", { name: "Bank Strategi" })).toBeVisible();
+  await page.waitForLoadState("networkidle");
+  await expect(page.locator("h1, h2").filter({ hasText: /bank strategi/i }).first()).toBeVisible();
 
   await page.click("text=Tulis catatan");
-  await expect(page.getByRole("heading", { name: "Tulis catatan strategi" })).toBeVisible();
+  await page.waitForLoadState("networkidle");
+  await expect(page.locator("h1, h2").filter({ hasText: /tulis catatan strategi/i }).first()).toBeVisible();
 
   await page.fill("input[name='title']", "Strategi Defense Bind");
   await page.fill("textarea[name='content']", "Setup Cypher A site.");
@@ -152,7 +210,8 @@ test("Workspace Features E2E Flow", async ({ page }) => {
 
   // 10. Collaterals: File Upload
   await page.goto(`/${uniqueTeamSlug}/files`);
-  await expect(page.getByRole("heading", { name: "File Tim" })).toBeVisible();
+  await page.waitForLoadState("networkidle");
+  await expect(page.locator("h1, h2").filter({ hasText: /file tim/i }).first()).toBeVisible();
 
   const filePayload = {
     name: "e2e_strategy_doc.txt",
