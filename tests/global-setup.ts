@@ -11,6 +11,14 @@
 
 import { createClient } from "@supabase/supabase-js";
 import dotenv from "dotenv";
+import { WebSocket as WsWebSocket } from "ws";
+
+// Polyfill WebSocket for Node.js < 22 (Supabase realtime client requires it)
+// Node.js 20 lacks native WebSocket — this prevents the startup crash.
+if (!globalThis.WebSocket) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (globalThis as any).WebSocket = WsWebSocket;
+}
 
 // Load env vars (playwright config juga load ini, tapi global-setup jalan sendiri)
 dotenv.config({ path: ".env.local" });

@@ -140,7 +140,27 @@ test("Workspace Features E2E Flow", async ({ page }) => {
   await expect(page.locator("h1, h2").filter({ hasText: /tambah event/i }).first()).toBeVisible();
 
   await page.fill("input[name='title']", "Latihan Taktis A");
-  await page.selectOption("select[name='event_type']", "practice");
+
+  // event_type uses PremiumSelect (custom dropdown — NOT a native <select>)
+  // Pattern: click the button trigger → click the option item by text
+  await page.locator("input[name='event_type']").evaluate((el) => {
+    // Set hidden input value directly for reliability
+    const nativeSetter = Object.getOwnPropertyDescriptor(
+      window.HTMLInputElement.prototype, "value"
+    )?.set;
+    nativeSetter?.call(el, "practice");
+    el.dispatchEvent(new Event("input", { bubbles: true }));
+    el.dispatchEvent(new Event("change", { bubbles: true }));
+  });
+  // Also click through the UI so the visible label updates
+  const eventTypeDropdown = page.locator("div[class*='relative']").filter({
+    has: page.locator("input[name='event_type']"),
+  });
+  await eventTypeDropdown.locator("button[type='button']").click();
+  await page.waitForTimeout(200);
+  await page.locator("button[type='button']").filter({ hasText: /^Latihan$/ }).click();
+  await page.waitForTimeout(200);
+
   await setDatetimeLocal("input[name='starts_at']", futureStr);
   await page.fill("input[name='location']", "Discord Server");
   await page.fill("textarea[name='description']", "Latihan strategi map.");
