@@ -10,12 +10,12 @@ test.describe("Dashboard — Overview", () => {
     await expect(page).toHaveURL(/\/dashboard\/login/);
   });
 
-  test("page loads with Home heading", async ({ page }) => {
+  test("page loads with Home heading", { tag: "@smoke" }, async ({ page }) => {
     await page.goto("/dashboard");
     await expect(page.getByRole("heading", { name: /^home$/i })).toBeVisible();
   });
 
-  test("main content is visible", async ({ page }) => {
+  test("main content is visible", { tag: "@smoke" }, async ({ page }) => {
     await page.goto("/dashboard");
     await expect(page.locator("main")).toBeVisible();
   });

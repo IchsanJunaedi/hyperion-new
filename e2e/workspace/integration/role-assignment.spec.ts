@@ -9,7 +9,7 @@ test.describe("Integration — Role assignment chain (manager)", () => {
   test.use({ storageState: "e2e/.auth/manager.json" });
   test.skip(!CREDENTIALS.manager.email, "Manager credentials not configured");
 
-  test("manager can access /manage", async ({ page }) => {
+  test("manager can access /manage", { tag: "@smoke" }, async ({ page }) => {
     await page.goto("/manage");
     await expect(page.getByRole("heading", { name: /manager panel/i })).toBeVisible({ timeout: 8_000 });
   });

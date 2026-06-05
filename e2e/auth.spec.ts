@@ -12,12 +12,12 @@ test.describe("Authentication Flow", () => {
     await expect(page).toHaveURL(/\/login/);
   });
 
-  test("should redirect unauthenticated user to /login from /dashboard", async ({ page }) => {
+  test("should redirect unauthenticated user to /login from /dashboard", { tag: "@smoke" }, async ({ page }) => {
     await page.goto("/dashboard");
     await expect(page).toHaveURL(/\/dashboard\/login/);
   });
 
-  test("owner can log in and land on /manage or /onboarding", async ({ page }) => {
+  test("owner can log in and land on /manage or /onboarding", { tag: "@smoke" }, async ({ page }) => {
     test.skip(!OWNER_EMAIL || !OWNER_PASSWORD, "E2E credentials not configured");
     await loginAsOwner(page);
     // After login the owner is redirected to /manage or /onboarding
