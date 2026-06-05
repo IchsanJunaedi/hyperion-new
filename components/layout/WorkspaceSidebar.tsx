@@ -282,9 +282,7 @@ const WorkspaceSidebar = ({
 
   const hasTrialsAccess =
     user.role === "owner" ||
-    user.role === "manager" ||
-    user.role === "coach" ||
-    user.role === "captain";
+    user.role === "manager";
 
   const allGroups: NavGroup[] = (isManager
     ? [MANAGER_NAV_GROUP, ...WORKSPACE_NAV_GROUPS]
