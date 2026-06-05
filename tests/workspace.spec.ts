@@ -217,7 +217,10 @@ test("Workspace Features E2E Flow", async ({ page }) => {
   await page.fill("input[name='title']", "Strategi Defense Bind");
   await page.fill("textarea[name='content']", "Setup Cypher A site.");
   await page.fill("input[name='tags']", "bind, defense");
+  // Set visibility to 'public' so no division_id is needed (default 'division' may fail)
+  await page.selectOption("select[name='visibility']", "public");
   await page.click("button[type='submit']");
+  await page.waitForLoadState("networkidle");
 
   await expect(page).toHaveURL(new RegExp(`\\/${uniqueTeamSlug}\\/strategy\\/[0-9a-f-]+`));
   await expect(page.locator("text=Strategi Defense Bind")).toBeVisible();
