@@ -11,20 +11,30 @@ interface ManageBreadcrumbProps {
   userId: string;
 }
 
-const ROUTE_LABELS: Record<string, string> = {
-  "/manage": "Overview",
-  "/manage/assign": "Tambah Member",
-  "/manage/divisions": "Edit Divisi",
-  "/manage/captains": "Edit Captain",
-  "/manage/finances": "Kas Tim",
-  "/manage/content": "Konten",
-  "/manage/development": "Player Dev",
-  "/manage/reports": "Laporan",
+const SUB_ROUTE_LABELS: Record<string, string> = {
+  "": "Overview",
+  "/assign": "Tambah Member",
+  "/divisions": "Edit Divisi",
+  "/captains": "Edit Captain",
+  "/finances": "Kas Tim",
+  "/sponsors": "Sponsor",
+  "/content": "Konten",
+  "/development": "Player Dev",
+  "/salaries": "Salary Player",
+  "/reports": "Laporan",
 };
+
+function getManageLabel(pathname: string): string {
+  const match = pathname.match(/^\/manage\/[^/]+(\/.*)?$/);
+  if (!match) return "Manager Panel";
+  const sub = match[1] ?? "";
+  const topSub = sub.replace(/^(\/[^/]+).*$/, "$1");
+  return SUB_ROUTE_LABELS[topSub] ?? "Manager Panel";
+}
 
 const ManageBreadcrumb = ({ orgName, orgSlug, userId }: ManageBreadcrumbProps) => {
   const pathname = usePathname();
-  const activeLabel = ROUTE_LABELS[pathname ?? ""] ?? "Manager Panel";
+  const activeLabel = getManageLabel(pathname ?? "");
 
   return (
     <header className="sticky top-0 z-40 flex h-12 items-center justify-between border-b border-[#2D2D2D] bg-[#191919] px-6">
