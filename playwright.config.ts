@@ -1,7 +1,9 @@
 import { defineConfig, devices, type Project } from "@playwright/test";
 import dotenv from "dotenv";
 
+// Load .env.local first, then fall back to .env
 dotenv.config({ path: ".env.local" });
+dotenv.config({ path: ".env" });
 
 const BASE_URL = process.env.PLAYWRIGHT_TEST_BASE_URL ?? "http://localhost:3000";
 
@@ -123,10 +125,10 @@ const workspaceProjects: Project[] = HAS_ALL_ROLE_CREDS
   : [];
 
 export default defineConfig({
-  testDir: "./e2e",
-  timeout: 30_000,
-  expect: { timeout: 10_000 },
-  fullyParallel: true,
+  testDir: "./tests",
+  timeout: 300_000, // workspace E2E can take up to 5 minutes
+  expect: { timeout: 90_000 },
+  fullyParallel: false,
   forbidOnly: !!process.env.CI,
   // Local runs use a production server (see webServer below) with pre-compiled
   // routes, so the on-demand-compile latency that previously made multi-step
@@ -135,6 +137,10 @@ export default defineConfig({
   // memory/CPU comfortable for the single server under the full suite.
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : "50%",
+
+  // Cleans test dummy data before each run (tests/ folder self-registering specs)
+  globalSetup: "./tests/global-setup.ts",
+  globalTeardown: "./tests/global-teardown.ts",
 
   reporter: [
     ["list"],
@@ -153,6 +159,7 @@ export default defineConfig({
   },
 
   projects: [
+    // Workspace / auth tests (tests/ folder)
     {
       // The auth-flow specs (login/logout/redirect). This is the ONLY spec that
       // logs out, and the app's signOut() is global-scope — it revokes ALL of

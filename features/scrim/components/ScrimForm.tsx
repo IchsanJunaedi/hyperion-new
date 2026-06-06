@@ -53,7 +53,7 @@ const ScrimForm = ({ orgSlug, divisions }: ScrimFormProps) => {
             scheduled_at: fd.get("scheduled_at"),
             format: fd.get("format"),
             server_region: fd.get("server_region"),
-            room_info: roomInfo || null,
+            room_info: roomInfo || undefined,
             notes: fd.get("notes"),
           });
           if (!res.ok) {

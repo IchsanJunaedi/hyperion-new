@@ -47,8 +47,8 @@ export default async function CalendarPage({
   const isOwner = ownerEmail && user.email === ownerEmail;
   const role = member?.role ?? null;
 
-  // captain, manager, coach, owner can create events
-  const canCreate = isOwner || role === "captain" || role === "manager" || role === "coach";
+  // owner, captain, manager, coach can create events
+  const canCreate = isOwner || role === "owner" || role === "captain" || role === "manager" || role === "coach";
 
   const now = new Date();
   const year = sp.y ? parseInt(sp.y, 10) : now.getFullYear();
