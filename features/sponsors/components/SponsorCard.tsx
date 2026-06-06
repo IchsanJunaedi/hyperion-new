@@ -20,9 +20,10 @@ function daysUntil(date: string | null): number | null {
 interface SponsorCardProps {
   sponsor: SponsorWithStats;
   detailHref: string;
+  showOrgName?: boolean;
 }
 
-const SponsorCard = ({ sponsor, detailHref }: SponsorCardProps) => {
+const SponsorCard = ({ sponsor, detailHref, showOrgName = false }: SponsorCardProps) => {
   const days = daysUntil(sponsor.end_date);
   const formattedValue = formatCurrency(sponsor.deal_value, sponsor.currency);
   const progressPct =
@@ -45,6 +46,9 @@ const SponsorCard = ({ sponsor, detailHref }: SponsorCardProps) => {
         )}
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-semibold text-white">{sponsor.name}</p>
+          {showOrgName && sponsor.organizationName && (
+            <p className="truncate text-[10px] text-white/35 mt-0.5">{sponsor.organizationName}</p>
+          )}
           {formattedValue && (
             <p className="text-xs font-medium text-yellow-400">{formattedValue}</p>
           )}

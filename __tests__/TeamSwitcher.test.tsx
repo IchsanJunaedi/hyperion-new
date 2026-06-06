@@ -27,7 +27,8 @@ describe("TeamSwitcher", () => {
   it("opens dropdown on click and shows all teams", () => {
     render(<TeamSwitcher teams={teams} currentSlug="rrq" />);
     fireEvent.click(screen.getByRole("button"));
-    expect(screen.getByText("RRQ Hoshi")).toBeInTheDocument();
+    // "RRQ Hoshi" appears twice when dropdown is open (trigger + list item)
+    expect(screen.getAllByText("RRQ Hoshi").length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText("EVOS Pride")).toBeInTheDocument();
   });
 

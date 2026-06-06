@@ -18,7 +18,6 @@ interface QuickAddEventModalProps {
 const EVENT_TYPES = [
   { value: "practice", label: "Latihan", color: "text-green-400" },
   { value: "meeting", label: "Meeting", color: "text-purple-400" },
-  { value: "bootcamp", label: "Bootcamp", color: "text-rose-400" },
   { value: "other", label: "Lainnya", color: "text-white/60" },
 ] as const;
 

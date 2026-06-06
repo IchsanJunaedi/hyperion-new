@@ -1,4 +1,6 @@
 import { redirect } from "next/navigation";
+import { Crown } from "lucide-react";
+
 import { createClient } from "@/lib/supabase/server";
 import { adminSignInAction } from "./actions";
 import { AdminLoginForm } from "@/features/admin/components/AdminLoginForm";
@@ -19,18 +21,15 @@ export default async function AdminLoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#0D0D0D]">
-      <div className="w-full max-w-sm">
-        <div className="mb-8 text-center">
-          <p className="text-[11px] font-bold uppercase tracking-[0.4em] text-[#F5C400]">
-            Hyperion Admin
-          </p>
-          <h1 className="mt-2 text-2xl font-black uppercase tracking-tight text-white">
-            Masuk
-          </h1>
+    <main className="flex min-h-screen items-center justify-center px-4 bg-[#191919]">
+      <div className="w-full max-w-sm space-y-6">
+        <div className="text-center">
+          <Crown className="h-12 w-12 mx-auto text-[#9B9A97] mb-4" />
+          <h1 className="text-2xl font-bold text-[#E5E2E1]">Hyperion Admin</h1>
+          <p className="mt-1 text-sm text-[#9B9A97]">Login untuk mengakses panel admin.</p>
         </div>
         <AdminLoginForm action={adminSignInAction} />
       </div>
-    </div>
+    </main>
   );
 }

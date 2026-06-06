@@ -21,41 +21,27 @@ graphify query "bagaimana struktur fitur analytics, roster, calendar, dan scrim 
 
 Setelah semua konteks terbaca, kita akan kerjakan fitur-fitur dari `backlog.md` satu per satu.
 
-**Urutan pengerjaan (dari yang paling cepat):**
+**Urutan pengerjaan (dari yang paling cepat & minim risiko):**
 
-1. **#10 — Link Public Profile dari Roster** (XS, <1 jam)
-   - Join `username` dari `profiles` ke query roster
-   - Tambah icon ExternalLink di `RosterTable.tsx` dan `RosterCardView.tsx`
+1. **#2 — Player True Impact Score** (XS, <1 jam)
+   - Buka `features/analytics/components/tabs/PlayerStatsTab.tsx`
+   - Sesuaikan fungsi `computeImpactScore` untuk menggunakan nilai rata-rata rating coach riil secara proporsional.
 
-2. **#9 — Export CSV Keuangan & Salary** (XS, <1 jam)
-   - Tambah 3 entry baru di `ExportButtons.tsx`: finances, salaries, sponsors
+2. **#3 — Respect Ban Tracker** (S, 2-3 jam)
+   - Buat query `getRespectBans(orgId)` di `features/analytics/queries.ts`
+   - Render top 5 hero ter-ban oleh lawan di dashboard.
 
-3. **#6 — Scrim Reminder H-60** (XS, <2 jam)
-   - Buat migration baru ikuti pola `20260517200000_h30_reminders.sql`
+3. **#1 — Rapor Pribadi (Player Performance View)** (S, half day)
+   - Buat page/tab baru `/performance` khusus player untuk melihat evaluasi coach.
+   - Gunakan query filter `user_id = auth.uid()` pada `scrim_attendances`.
 
-4. **#5 — Scrim Coach Summary** (S, half day)
-   - Migration kolom `coach_summary TEXT` di tabel `scrims`
-   - Action `updateCoachSummaryAction` + komponen `CoachSummarySection`
+4. **#4 — VOD Mistake Heatmap** (S, half day)
+   - Kelompokkan timestamp VOD di `VodReviewSection.tsx` ke dalam fase early/mid/late.
+   - Buat heatmap bar atau visualisasi sederhana.
 
-5. **#4 — Attendance Rate di Roster** (S, half day)
-   - Batch-fetch attendance di `roster/queries.ts`
-   - Tambah kolom kehadiran di `RosterTable.tsx` dan `RosterCardView.tsx`
-
-6. **#1 — RSVP Count Badge di Calendar Grid** (S, half day)
-   - Batch-fetch confirmed count dari `calendar_event_rsvps`
-   - Tampilkan badge di tile event `CalendarGrid.tsx`
-
-7. **#8 — Salary Dashboard Chart** (M, 1–2 hari)
-   - Query `getSalaryOverview` + stat cards + mini bar chart di `SalaryPageClient.tsx`
-
-8. **#3 — Head-to-Head Opponent Tab** (M, 1–2 hari)
-   - Query `getOpponentSummary` + tab baru "Lawan" + `OpponentTab.tsx`
-
-9. **#2 — Player Performance Trend Chart** (M, 1–2 hari)
-   - Query `getPlayerTrendByMonth` + sparkline di `PlayerStatsTab.tsx`
-
-10. **#7 — PWA Setup** (S, half day)
-    - Buat `public/manifest.json` + meta tags di `app/layout.tsx` + icons
+5. **#5 — Draft Archetype Win Rate** (M, 1-2 hari)
+   - Terapkan rule-based classification pada picks tim di `queries.ts` / `computations.ts`.
+   - Hitung win rate masing-masing archetype komposisi tim dan tampilkan di Draft Analytics.
 
 ---
 
@@ -65,5 +51,5 @@ Setelah semua konteks terbaca, kita akan kerjakan fitur-fitur dari `backlog.md` 
 - Jalankan: `npm run test:unit:coverage` → semua pass + threshold terpenuhi
 - Commit pakai `rtk commit` (JANGAN `git commit` manual)
 
-**Mulai dari fitur #10 dulu.** Baca detail spesifikasi lengkapnya di `backlog.md` sebelum coding.
+**Mulai dari fitur #2 dulu.** Baca detail spesifikasi lengkapnya di `backlog.md` sebelum coding.
 ```

@@ -3,11 +3,22 @@
 import { useEffect, useRef, useState, useTransition } from "react";
 import { ImagePlus, Loader2, X } from "lucide-react";
 import { notify } from "@/features/dashboard/components/NotifyModal";
-import { NumberInput } from "@/components/ui/number-input";
 import { cn } from "@/lib/utils/cn";
 import { createClient } from "@/lib/supabase/client";
 import { createSponsorAction, updateSponsorAction } from "../actions";
 import type { Sponsor, SponsorStatus } from "../queries";
+
+/** Format angka jadi 1.000.000 (pemisah ribuan titik) untuk display */
+function formatThousands(raw: string): string {
+  const digits = raw.replace(/\D/g, "");
+  if (!digits) return "";
+  return Number(digits).toLocaleString("id-ID");
+}
+
+/** Ambil angka murni dari string berformat (hapus titik) */
+function stripThousands(formatted: string): string {
+  return formatted.replace(/\./g, "");
+}
 
 const STATUS_OPTIONS: Array<{ value: SponsorStatus; label: string }> = [
   { value: "prospect", label: "Prospek" },
@@ -28,13 +39,21 @@ interface SponsorFormModalProps {
   orgId: string;
   editing?: Sponsor | null;
   onSaved: (id: string) => void;
+  /** Pass when owner is creating from multi-org context so modal can show a team selector. */
+  organizations?: Array<{ id: string; name: string }>;
 }
 
-const SponsorFormModal = ({ open, onClose, orgId, editing, onSaved }: SponsorFormModalProps) => {
+const SponsorFormModal = ({ open, onClose, orgId, editing, onSaved, organizations }: SponsorFormModalProps) => {
   const [pending, startTransition] = useTransition();
   const [form, setForm] = useState(EMPTY);
   const [logoUploading, setLogoUploading] = useState(false);
+  const [selectedOrgId, setSelectedOrgId] = useState(orgId);
   const logoInputRef = useRef<HTMLInputElement>(null);
+
+  // Sync selectedOrgId when orgId prop changes (tab switch)
+  useEffect(() => {
+    setSelectedOrgId(orgId);
+  }, [orgId]);
 
   async function handleLogoUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -47,7 +66,7 @@ const SponsorFormModal = ({ open, onClose, orgId, editing, onSaved }: SponsorFor
     try {
       const supabase = createClient();
       const ext = file.name.split(".").pop() ?? "png";
-      const path = `${orgId}/sponsors/${Date.now()}.${ext}`;
+      const path = `${selectedOrgId}/sponsors/${Date.now()}.${ext}`;
       const { error } = await supabase.storage.from("org-logos").upload(path, file, { upsert: true });
       if (error) throw new Error(error.message);
       const { data } = supabase.storage.from("org-logos").getPublicUrl(path);
@@ -70,7 +89,7 @@ const SponsorFormModal = ({ open, onClose, orgId, editing, onSaved }: SponsorFor
           contact_name: editing.contact_name ?? "",
           contact_email: editing.contact_email ?? "",
           contact_phone: editing.contact_phone ?? "",
-          deal_value: editing.deal_value?.toString() ?? "",
+          deal_value: editing.deal_value ? formatThousands(editing.deal_value.toString()) : "",
           currency: editing.currency,
           start_date: editing.start_date ?? "",
           end_date: editing.end_date ?? "",
@@ -90,9 +109,12 @@ const SponsorFormModal = ({ open, onClose, orgId, editing, onSaved }: SponsorFor
 
   function handleSave() {
     if (!form.name.trim()) { notify.error("Nama sponsor tidak boleh kosong"); return; }
+    const targetOrgId = editing ? orgId : selectedOrgId;
+    // Strip thousand-separator dots before sending to server
+    const payload = { ...form, deal_value: stripThousands(form.deal_value) };
     startTransition(async () => {
       if (editing) {
-        const res = await updateSponsorAction(orgId, editing.id, form);
+        const res = await updateSponsorAction(targetOrgId, editing.id, payload);
         if (res.ok) {
           notify.success("Sponsor diperbarui");
           onSaved(editing.id);
@@ -101,7 +123,7 @@ const SponsorFormModal = ({ open, onClose, orgId, editing, onSaved }: SponsorFor
           notify.error(res.message);
         }
       } else {
-        const res = await createSponsorAction(orgId, form);
+        const res = await createSponsorAction(targetOrgId, payload);
         if (res.ok) {
           notify.success("Sponsor ditambahkan");
           onSaved(res.id!);
@@ -129,6 +151,24 @@ const SponsorFormModal = ({ open, onClose, orgId, editing, onSaved }: SponsorFor
         </div>
 
         <div className="space-y-4 p-5">
+          {/* Org selector — only in create mode with multiple orgs */}
+          {!editing && organizations && organizations.length > 1 && (
+            <div>
+              <label className={labelCls}>Tim / Organisasi *</label>
+              <select
+                value={selectedOrgId}
+                onChange={(e) => setSelectedOrgId(e.target.value)}
+                className="w-full rounded-md border border-[#2D2D2D] bg-[#141414] px-3 py-2 text-sm text-white outline-none focus:border-white/30 cursor-pointer"
+              >
+                {organizations.map((org) => (
+                  <option key={org.id} value={org.id} className="bg-zinc-900">
+                    {org.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
           {/* Name */}
           <div>
             <label className={labelCls}>Nama Sponsor *</label>
@@ -213,12 +253,19 @@ const SponsorFormModal = ({ open, onClose, orgId, editing, onSaved }: SponsorFor
             <div className="grid grid-cols-3 gap-2">
               <div className="col-span-2">
                 <label className={labelCls}>Nilai Deal</label>
-                <NumberInput
-                  value={form.deal_value}
-                  onChange={(e) => set("deal_value", e.target.value)}
-                  min="0"
-                  className="bg-[#141414] text-white focus:border-white/30 h-10"
-                />
+                <div className="relative">
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    placeholder="0"
+                    value={form.deal_value}
+                    onChange={(e) => {
+                      const formatted = formatThousands(e.target.value);
+                      set("deal_value", formatted);
+                    }}
+                    className={cn(inputCls, "pr-3")}
+                  />
+                </div>
               </div>
               <div>
                 <label className={labelCls}>Mata Uang</label>

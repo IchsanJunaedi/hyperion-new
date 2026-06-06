@@ -70,7 +70,7 @@ const LoginForm = ({ next = "/" }: LoginFormProps) => {
             type={showPassword ? "text" : "password"}
             autoComplete="current-password"
             aria-invalid={errors.password ? "true" : undefined}
-            className="pr-10"
+            className="pr-10 [&::-ms-reveal]:hidden [&::-ms-clear]:hidden"
             {...register("password")}
           />
           <button

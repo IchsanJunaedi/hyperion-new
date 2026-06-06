@@ -59,7 +59,7 @@ const DashboardLoginForm = () => {
             placeholder=""
             value={passwordValue}
             onChange={(e) => setPasswordValue(e.target.value)}
-            className="h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 pr-10 text-sm text-white focus:border-yellow-400 focus:outline-none"
+            className="h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 pr-10 text-sm text-white focus:border-yellow-400 focus:outline-none [&::-ms-reveal]:hidden [&::-ms-clear]:hidden"
           />
           {passwordValue && (
             <button

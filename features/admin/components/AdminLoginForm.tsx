@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState } from "react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { useState, useActionState } from "react";
 import type { AdminSignInResult } from "@/app/admin/login/actions";
 
 interface Props {
@@ -16,42 +17,68 @@ const AdminLoginForm = ({ action }: Props) => {
     {}
   );
 
+  const [showPassword, setShowPassword] = useState(false);
+  const [passwordValue, setPasswordValue] = useState("");
+
   return (
-    <form action={formAction} className="space-y-4">
-      <div>
-        <label className="mb-1.5 block text-xs font-medium text-[#9B9A97]">
+    <form
+      action={formAction}
+      className="space-y-4 rounded-xl border border-white/10 bg-zinc-900/60 p-6"
+    >
+      <div className="space-y-1">
+        <label htmlFor="email" className="text-xs font-medium text-white/70">
           Email
         </label>
         <input
-          type="email"
           name="email"
+          type="email"
           required
           autoComplete="email"
-          className="w-full border border-[#2D2D2D] bg-[#191919] px-3 py-2.5 text-sm text-[#E5E2E1] outline-none transition focus:border-[#F5C400]/50 placeholder:text-[#6B6A68]"
-          placeholder="admin@example.com"
+          className="h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
         />
       </div>
-      <div>
-        <label className="mb-1.5 block text-xs font-medium text-[#9B9A97]">
+
+      <div className="space-y-1">
+        <label htmlFor="password" className="text-xs font-medium text-white/70">
           Password
         </label>
-        <input
-          type="password"
-          name="password"
-          required
-          autoComplete="current-password"
-          className="w-full border border-[#2D2D2D] bg-[#191919] px-3 py-2.5 text-sm text-[#E5E2E1] outline-none transition focus:border-[#F5C400]/50"
-        />
+        <div className="relative">
+          <input
+            name="password"
+            type={showPassword ? "text" : "password"}
+            required
+            autoComplete="current-password"
+            value={passwordValue}
+            onChange={(e) => setPasswordValue(e.target.value)}
+            className="h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 pr-10 text-sm text-white focus:border-yellow-400 focus:outline-none [&::-ms-reveal]:hidden [&::-ms-clear]:hidden"
+          />
+          {passwordValue && (
+            <button
+              type="button"
+              onClick={() => setShowPassword((v) => !v)}
+              tabIndex={-1}
+              aria-label={showPassword ? "Sembunyikan password" : "Tampilkan password"}
+              className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer opacity-70 hover:opacity-100"
+            >
+              {showPassword ? <EyeOff size={16} color="white" /> : <Eye size={16} color="white" />}
+            </button>
+          )}
+        </div>
       </div>
+
       {state?.error && (
-        <p className="text-xs text-red-400">{state.error}</p>
+        <p className="rounded-md border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-sm text-rose-300">
+          {state.error}
+        </p>
       )}
+
       <button
         type="submit"
         disabled={pending}
-        className="w-full cursor-pointer border border-[#F5C400] bg-transparent py-2.5 text-xs font-black uppercase tracking-widest text-[#F5C400] transition hover:bg-[#F5C400] hover:text-black disabled:opacity-50"
+        className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-md bg-yellow-400 px-5 text-sm font-semibold text-black transition hover:bg-yellow-300 disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {pending ? "Masuk..." : "Masuk"}
+        {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+        Masuk
       </button>
     </form>
   );

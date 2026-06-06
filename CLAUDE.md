@@ -389,6 +389,20 @@ Quick summary (as of 2026-05-27):
 - Dead features (do not revive): scouting, AI insights, matchmaking, reports (not public)
 - Performance Batch 2 items remaining: B2-1, B2-2, B2-7, B2-9 (see progress.md)
 
+## Caveman — Token Compression
+
+Caveman skill sudah terinstall. Hemat ~65% output tokens, akurasi teknis tetap 100%.
+
+**Trigger:** ketik `/caveman` untuk aktifkan. Stop dengan "normal mode".
+
+| Skill | Fungsi |
+|-------|--------|
+| `/caveman [lite\|full\|ultra\|wenyan]` | Kompres semua reply. Level nempel sampai session selesai. |
+| `/caveman-commit` | Conventional commit message, ≤50 char, fokus WHY bukan WHAT. |
+| `/caveman-review` | PR review satu baris: `L42: 🔴 bug: user null. Add guard.` |
+| `/caveman-stats` | Lihat token usage + total penghematan + USD sesi ini. |
+| `/caveman-compress <file>` | Rewrite file memory (mis. CLAUDE.md) jadi caveman-speak — hemat ~46% input tokens setiap session. |
+
 ## Graphify Knowledge Graph
 
 Knowledge graph codebase ini sudah dibangun di `graphify-out/`. Gunakan untuk navigasi dan explorasi arsitektur.

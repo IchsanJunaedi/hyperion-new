@@ -1,11 +1,11 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useState, useTransition, useRef, useEffect } from "react";
 import {
   ArrowLeft, Pencil, Trash2, Plus, CheckCircle2, Clock,
   Loader2, XCircle, Calendar, FileText, Share2, Tag, Package,
-  X as XIcon,
+  X as XIcon, ChevronDown,
 } from "lucide-react";
 import Link from "next/link";
 import { notify } from "@/features/dashboard/components/NotifyModal";
@@ -30,11 +30,18 @@ const STATUS_CYCLE: Record<DeliverableStatus, DeliverableStatus> = {
   cancelled: "pending",
 };
 
+const STATUS_PILL: Record<DeliverableStatus, string> = {
+  pending:     "border-white/10 bg-white/5 text-white/40",
+  in_progress: "border-blue-500/30 bg-blue-500/10 text-blue-400",
+  done:        "border-green-500/30 bg-green-500/10 text-green-400",
+  cancelled:   "border-red-500/30 bg-red-500/10 text-red-400",
+};
+
 const STATUS_ICON: Record<DeliverableStatus, React.ReactNode> = {
-  pending:     <Clock className="h-4 w-4 text-white/40" />,
-  in_progress: <Loader2 className="h-4 w-4 text-blue-400" />,
-  done:        <CheckCircle2 className="h-4 w-4 text-green-400" />,
-  cancelled:   <XCircle className="h-4 w-4 text-red-400" />,
+  pending:     <Clock className="h-3 w-3" />,
+  in_progress: <Loader2 className="h-3 w-3" />,
+  done:        <CheckCircle2 className="h-3 w-3" />,
+  cancelled:   <XCircle className="h-3 w-3" />,
 };
 
 const STATUS_LABEL: Record<DeliverableStatus, string> = {
@@ -88,6 +95,20 @@ const SponsorDetailClient = ({ sponsor: initial, orgId, backHref, listHref }: Sp
   const [dlForm, setDlForm] = useState({ title: "", description: "", category: "content" as DeliverableCategory, due_date: "" });
   const [showDlForm, setShowDlForm] = useState(false);
   const [newNote, setNewNote] = useState("");
+  const [openStatusId, setOpenStatusId] = useState<string | null>(null);
+  const statusMenuRef = useRef<HTMLDivElement>(null);
+
+  // Close status dropdown on outside click
+  useEffect(() => {
+    if (!openStatusId) return;
+    function handleClick(e: MouseEvent) {
+      if (statusMenuRef.current && !statusMenuRef.current.contains(e.target as Node)) {
+        setOpenStatusId(null);
+      }
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [openStatusId]);
 
   function handleDelete() {
     startTransition(async () => {
@@ -102,8 +123,7 @@ const SponsorDetailClient = ({ sponsor: initial, orgId, backHref, listHref }: Sp
     });
   }
 
-  function handleStatusCycle(dl: SponsorDeliverable) {
-    const next = STATUS_CYCLE[dl.status as DeliverableStatus] ?? "pending";
+  function handleStatusChange(dl: SponsorDeliverable, next: DeliverableStatus) {
     startTransition(async () => {
       const res = await updateDeliverableStatusAction(orgId, dl.id, next);
       if (res.ok) {
@@ -296,32 +316,90 @@ const SponsorDetailClient = ({ sponsor: initial, orgId, backHref, listHref }: Sp
           </div>
         )}
 
-        <div className="overflow-hidden rounded-xl border border-[#2D2D2D] divide-y divide-[#2D2D2D]">
+        <div className="rounded-xl border border-[#2D2D2D] divide-y divide-[#2D2D2D]">
           {deliverables.length === 0 ? (
             <p className="py-6 text-center text-xs text-white/30">Belum ada deliverable</p>
           ) : (
-            deliverables.map((dl) => (
-              <div key={dl.id} className="flex items-start gap-3 px-4 py-3 hover:bg-white/[0.02]">
-                <button type="button" onClick={() => handleStatusCycle(dl)}
-                  title={`${STATUS_LABEL[dl.status]} — klik untuk ubah`}
-                  className="mt-0.5 shrink-0 cursor-pointer">
-                  {STATUS_ICON[dl.status]}
-                </button>
+            deliverables.map((dl, i) => (
+              <div
+                key={dl.id}
+                className={cn(
+                  "flex items-center gap-3 px-4 py-3 hover:bg-white/[0.02]",
+                  i === 0 && "rounded-t-xl",
+                  i === deliverables.length - 1 && "rounded-b-xl",
+                )}
+              >
+                {/* Left: title + meta */}
                 <div className="min-w-0 flex-1">
-                  <p className={cn("text-sm text-white/80", dl.status === "done" && "text-white/40 line-through")}>{dl.title}</p>
-                  <div className="mt-0.5 flex items-center gap-2">
+                  <p className={cn("text-sm font-medium", dl.status === "done" ? "text-white/35 line-through" : "text-white/80")}>
+                    {dl.title}
+                  </p>
+                  <div className="mt-0.5 flex flex-wrap items-center gap-2">
                     <span className="inline-flex items-center gap-1 text-[10px] text-white/30">
                       {CATEGORY_ICON[dl.category]}
                       {CATEGORY_OPTIONS.find((c) => c.value === dl.category)?.label}
                     </span>
                     {dl.due_date && <span className="text-[10px] text-white/30">Due: {formatDate(dl.due_date)}</span>}
+                    {dl.description && <span className="text-[10px] text-white/40">{dl.description}</span>}
                   </div>
-                  {dl.description && <p className="mt-1 text-xs text-white/40">{dl.description}</p>}
                 </div>
-                <button type="button" onClick={() => handleDeleteDeliverable(dl.id)}
-                  className="shrink-0 cursor-pointer text-white/20 transition hover:text-red-400">
-                  <XIcon className="h-3.5 w-3.5" />
-                </button>
+
+                {/* Right: status pill + delete */}
+                <div className="flex shrink-0 items-center gap-2">
+                  {/* Custom status dropdown */}
+                  <div className="relative" ref={openStatusId === dl.id ? statusMenuRef : undefined}>
+                    <button
+                      type="button"
+                      onClick={() => setOpenStatusId((id) => id === dl.id ? null : dl.id)}
+                      className={cn(
+                        "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium transition hover:brightness-110",
+                        STATUS_PILL[dl.status as DeliverableStatus]
+                      )}
+                    >
+                      {STATUS_ICON[dl.status as DeliverableStatus]}
+                      <span>{STATUS_LABEL[dl.status as DeliverableStatus]}</span>
+                      <ChevronDown className={cn("h-2.5 w-2.5 transition-transform", openStatusId === dl.id && "rotate-180")} />
+                    </button>
+
+                    {openStatusId === dl.id && (
+                      <ul className="absolute right-0 top-full z-50 mt-1.5 min-w-[140px] overflow-hidden rounded-lg border border-[#2D2D2D] bg-[#1C1C1C] py-1 shadow-xl shadow-black/40">
+                        {(Object.keys(STATUS_LABEL) as DeliverableStatus[]).map((s) => (
+                          <li key={s}>
+                            <button
+                              type="button"
+                              disabled={pending}
+                              onClick={() => {
+                                handleStatusChange(dl, s);
+                                setOpenStatusId(null);
+                              }}
+                              className={cn(
+                                "flex w-full items-center gap-2.5 px-3 py-2 text-xs transition hover:bg-white/5",
+                                dl.status === s ? "text-white" : "text-white/50"
+                              )}
+                            >
+                              <span className={cn(
+                                "h-1.5 w-1.5 shrink-0 rounded-full",
+                                s === "pending"     && "bg-white/30",
+                                s === "in_progress" && "bg-blue-400",
+                                s === "done"        && "bg-green-400",
+                                s === "cancelled"   && "bg-red-400",
+                              )} />
+                              {STATUS_LABEL[s]}
+                              {dl.status === s && (
+                                <CheckCircle2 className="ml-auto h-3 w-3 text-white/30" />
+                              )}
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+
+                  <button type="button" onClick={() => handleDeleteDeliverable(dl.id)}
+                    className="shrink-0 cursor-pointer text-white/20 transition hover:text-red-400">
+                    <XIcon className="h-3.5 w-3.5" />
+                  </button>
+                </div>
               </div>
             ))
           )}
@@ -331,14 +409,29 @@ const SponsorDetailClient = ({ sponsor: initial, orgId, backHref, listHref }: Sp
       {/* Notes timeline */}
       <div className="space-y-3">
         <h2 className="text-sm font-semibold text-white">Catatan / Histori</h2>
-        <div className="flex gap-2">
-          <textarea value={newNote} onChange={(e) => setNewNote(e.target.value)} rows={2}
+
+        {/* Unified input card */}
+        <div className="rounded-xl border border-[#2D2D2D] bg-[#1C1C1C] focus-within:border-white/20 transition">
+          <textarea
+            value={newNote}
+            onChange={(e) => setNewNote(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) handleAddNote();
+            }}
+            rows={3}
             placeholder="Tulis catatan baru..."
-            className={cn(inputCls, "flex-1 resize-none")} />
-          <button type="button" onClick={handleAddNote} disabled={pending || !newNote.trim()}
-            className="cursor-pointer self-end rounded-md bg-yellow-400 px-4 py-2 text-xs font-semibold text-black transition hover:bg-yellow-300 disabled:opacity-50">
-            Kirim
-          </button>
+            className="w-full resize-none bg-transparent px-4 pt-3 pb-2 text-sm text-white placeholder-white/30 outline-none"
+          />
+          <div className="flex items-center justify-end border-t border-[#2D2D2D] px-3 py-2">
+            <button
+              type="button"
+              onClick={handleAddNote}
+              disabled={pending || !newNote.trim()}
+              className="cursor-pointer rounded-md bg-yellow-400 px-4 py-1.5 text-xs font-semibold text-black transition hover:bg-yellow-300 disabled:opacity-40"
+            >
+              Kirim
+            </button>
+          </div>
         </div>
 
         <div className="space-y-2">

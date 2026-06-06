@@ -193,12 +193,17 @@ function MediaKit({ sponsors, orgName }: MediaKitProps) {
 
 interface SponsorListClientProps {
   sponsors: SponsorWithStats[];
+  /** Always required – the org used as default for new sponsor creation. */
   orgId: string;
   orgName?: string;
   detailBasePath: string;
+  /** When true, shows multi-org aggregated view (Semua Tim). */
+  isAllOrgs?: boolean;
+  /** Full list of orgs; passed to SponsorFormModal for org picker dropdown. */
+  organizations?: Array<{ id: string; name: string }>;
 }
 
-const SponsorListClient = ({ sponsors, orgId, orgName, detailBasePath }: SponsorListClientProps) => {
+const SponsorListClient = ({ sponsors, orgId, orgName, detailBasePath, isAllOrgs = false, organizations }: SponsorListClientProps) => {
   const router = useRouter();
   const [modalOpen, setModalOpen] = useState(false);
   const [printMode, setPrintMode] = useState(false);
@@ -273,7 +278,7 @@ const SponsorListClient = ({ sponsors, orgId, orgName, detailBasePath }: Sponsor
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {sponsors.map((s) => (
-            <SponsorCard key={s.id} sponsor={s} detailHref={`${detailBasePath}/${s.id}`} />
+            <SponsorCard key={s.id} sponsor={s} detailHref={`${detailBasePath}/${s.id}`} showOrgName={isAllOrgs} />
           ))}
         </div>
       )}
@@ -283,6 +288,7 @@ const SponsorListClient = ({ sponsors, orgId, orgName, detailBasePath }: Sponsor
         onClose={() => setModalOpen(false)}
         orgId={orgId}
         onSaved={handleSaved}
+        organizations={isAllOrgs ? organizations : undefined}
       />
     </div>
   );

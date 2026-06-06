@@ -11,6 +11,7 @@ export type DeliverableCategory = SponsorDeliverable["category"];
 export interface SponsorWithStats extends Sponsor {
   deliverableTotal: number;
   deliverableDone: number;
+  organizationName: string | null;
 }
 
 export interface SponsorDetail extends Sponsor {
@@ -25,7 +26,7 @@ export async function getSponsors(orgIds: string[]): Promise<SponsorWithStats[]>
 
   const { data: sponsors } = await admin
     .from("sponsors")
-    .select("id, name, status, logo_url, deal_value, currency, start_date, end_date, contact_name, organization_id")
+    .select("id, name, status, logo_url, deal_value, currency, start_date, end_date, contact_name, organization_id, organizations(name)")
     .in("organization_id", orgIds)
     .order("status")
     .order("name");
@@ -47,11 +48,15 @@ export async function getSponsors(orgIds: string[]): Promise<SponsorWithStats[]>
     });
   }
 
-  return sponsors.map((s) => ({
-    ...s,
-    deliverableTotal: dlMap.get(s.id)?.total ?? 0,
-    deliverableDone: dlMap.get(s.id)?.done ?? 0,
-  })) as unknown as SponsorWithStats[];
+  return sponsors.map((s) => {
+    const orgRel = (s as unknown as { organizations?: { name: string } | null }).organizations;
+    return {
+      ...s,
+      deliverableTotal: dlMap.get(s.id)?.total ?? 0,
+      deliverableDone: dlMap.get(s.id)?.done ?? 0,
+      organizationName: orgRel?.name ?? null,
+    };
+  }) as unknown as SponsorWithStats[];
 }
 
 export async function getSponsorDetail(id: string): Promise<SponsorDetail | null> {

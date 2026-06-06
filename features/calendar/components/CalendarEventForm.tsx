@@ -14,7 +14,6 @@ interface CalendarEventFormProps {
 const EVENT_TYPES = [
   { value: "practice", label: "Latihan" },
   { value: "meeting", label: "Meeting" },
-  { value: "bootcamp", label: "Bootcamp" },
   { value: "other", label: "Lainnya" },
 ] as const;
 
