@@ -1,4 +1,3 @@
-import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { ManagerAssignForm } from "@/features/dashboard/components/ManagerAssignForm";
 
@@ -10,8 +9,6 @@ interface Props {
 
 const ManageAssignPage = async ({ params }: Props) => {
   const { orgSlug } = await params;
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
 
   const admin = createAdminClient();
 
@@ -54,8 +51,6 @@ const ManageAssignPage = async ({ params }: Props) => {
   if ((captainsRes.data ?? []).length > 0) {
     orgHasCaptain[org.id] = true;
   }
-
-  void user;
 
   return (
     <div className="space-y-6">
