@@ -43,16 +43,12 @@ export async function createScrimAction(
   orgSlug: string,
   raw: unknown,
 ): Promise<ActionError | CreateScrimResult> {
-  // DEBUG: log raw input and validation errors
-  console.log("[createScrimAction] raw input:", JSON.stringify(raw));
   const parsed = createScrimSchema.safeParse(raw);
   if (!parsed.success) {
-    const fieldErrors = z.flattenError(parsed.error).fieldErrors;
-    console.log("[createScrimAction] Zod errors:", JSON.stringify(fieldErrors));
     return {
       ok: false,
       message: "Form belum lengkap",
-      fieldErrors,
+      fieldErrors: z.flattenError(parsed.error).fieldErrors,
     };
   }
   const supabase = await createClient();
