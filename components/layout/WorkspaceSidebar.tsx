@@ -34,10 +34,18 @@ import { useEffect, useState } from "react";
 
 import { SettingsModal } from "@/features/settings/components/SettingsModal";
 import { useWorkspaceStore } from "@/stores/useWorkspaceStore";
+import { TeamSwitcher } from "@/components/layout/TeamSwitcher";
 
 interface SidebarDivision {
   id: string;
   name: string;
+}
+
+interface ManagedTeam {
+  id: string;
+  slug: string;
+  name: string;
+  logoUrl: string | null;
 }
 
 export interface WorkspaceSidebarProps {
@@ -46,6 +54,7 @@ export interface WorkspaceSidebarProps {
   orgName: string;
   orgLogoUrl: string | null;
   divisions: SidebarDivision[];
+  managedTeams?: ManagedTeam[];
   user: {
     displayName: string;
     avatarUrl: string | null;
@@ -72,14 +81,14 @@ interface NavGroup {
   items: NavItem[];
 }
 
-/** Manager panel group — absolute hrefs, shown only for manager/owner */
-const MANAGER_NAV_GROUP: NavGroup = {
+/** Manager panel group — absolute hrefs scoped to orgSlug, shown only for manager/owner */
+const getManagerNavGroup = (orgSlug: string): NavGroup => ({
   label: "MANAGER PANEL",
   items: [
     {
       key: "manage-overview",
       href: "",
-      absoluteHref: "/manage",
+      absoluteHref: `/manage/${orgSlug}`,
       label: "Overview",
       Icon: LayoutDashboard,
       exactMatch: true,
@@ -87,68 +96,68 @@ const MANAGER_NAV_GROUP: NavGroup = {
     {
       key: "manage-assign",
       href: "",
-      absoluteHref: "/manage/assign",
+      absoluteHref: `/manage/${orgSlug}/assign`,
       label: "Tambah Member",
       Icon: UserPlus,
     },
     {
       key: "manage-divisions",
       href: "",
-      absoluteHref: "/manage/divisions",
+      absoluteHref: `/manage/${orgSlug}/divisions`,
       label: "Edit Divisi",
       Icon: Tags,
     },
     {
       key: "manage-captains",
       href: "",
-      absoluteHref: "/manage/captains",
+      absoluteHref: `/manage/${orgSlug}/captains`,
       label: "Edit Captain",
       Icon: Shield,
     },
     {
       key: "manage-finances",
       href: "",
-      absoluteHref: "/manage/finances",
+      absoluteHref: `/manage/${orgSlug}/finances`,
       label: "Kas Tim",
       Icon: DollarSign,
     },
     {
       key: "manage-sponsors",
       href: "",
-      absoluteHref: "/manage/sponsors",
+      absoluteHref: `/manage/${orgSlug}/sponsors`,
       label: "Sponsor",
       Icon: Handshake,
     },
     {
       key: "manage-content",
       href: "",
-      absoluteHref: "/manage/content",
+      absoluteHref: `/manage/${orgSlug}/content`,
       label: "Konten",
       Icon: CalendarClock,
     },
     {
       key: "manage-development",
       href: "",
-      absoluteHref: "/manage/development",
+      absoluteHref: `/manage/${orgSlug}/development`,
       label: "Player Dev",
       Icon: TrendingUp,
     },
     {
       key: "manage-salaries",
       href: "",
-      absoluteHref: "/manage/salaries",
+      absoluteHref: `/manage/${orgSlug}/salaries`,
       label: "Salary Player",
       Icon: Banknote,
     },
     {
       key: "manage-reports",
       href: "",
-      absoluteHref: "/manage/reports",
+      absoluteHref: `/manage/${orgSlug}/reports`,
       label: "Laporan",
       Icon: BarChart3,
     },
   ],
-};
+});
 
 /** Workspace groups — relative hrefs prefixed with orgSlug */
 const WORKSPACE_NAV_GROUPS: NavGroup[] = [
@@ -236,6 +245,7 @@ const WorkspaceSidebar = ({
   orgName,
   orgLogoUrl,
   divisions,
+  managedTeams,
   user,
 }: WorkspaceSidebarProps) => {
   const pathname = usePathname();
@@ -285,7 +295,7 @@ const WorkspaceSidebar = ({
     user.role === "manager";
 
   const allGroups: NavGroup[] = (isManager
-    ? [MANAGER_NAV_GROUP, ...WORKSPACE_NAV_GROUPS]
+    ? [getManagerNavGroup(orgSlug), ...WORKSPACE_NAV_GROUPS]
     : WORKSPACE_NAV_GROUPS)
     .map((group) => ({
       ...group,
@@ -331,6 +341,11 @@ const WorkspaceSidebar = ({
           )}
         </Link>
       </div>
+
+      {/* Team switcher — only for managers with multiple teams */}
+      {managedTeams && managedTeams.length > 1 && (
+        <TeamSwitcher teams={managedTeams} currentSlug={orgSlug} />
+      )}
 
       {/* Division switcher */}
       {divisions.length > 1 && (
@@ -451,4 +466,4 @@ const WorkspaceSidebar = ({
     </aside>
   );
 };
-export { WorkspaceSidebar };
+export { WorkspaceSidebar, getManagerNavGroup };
