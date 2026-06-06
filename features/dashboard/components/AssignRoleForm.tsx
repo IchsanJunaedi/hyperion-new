@@ -12,7 +12,8 @@ interface AssignRoleFormProps {
   users: Array<{ id: string; label: string }>;
   organizations: Array<{ id: string; name: string; slug: string }>;
   divisions: Array<{ id: string; organizationId: string; name: string }>;
-  orgFilledRoles: Record<string, string[]>; // org_id → list of roles already filled
+  orgFilledRoles: Record<string, string[]>; // org_id → roles already filled
+  orgAssignedUserIds: Record<string, string[]>; // org_id → user_ids already in that org
 }
 
 const ALL_ROLES: Array<{ value: MemberRole; label: string }> = [
@@ -27,6 +28,7 @@ const AssignRoleForm = ({
   organizations,
   divisions,
   orgFilledRoles,
+  orgAssignedUserIds,
 }: AssignRoleFormProps) => {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -41,11 +43,18 @@ const AssignRoleForm = ({
     [users],
   );
 
+  // Orgs where the selected user doesn't have a role yet
+  const availableOrgs = useMemo(() => {
+    if (!selectedUser) return organizations;
+    return organizations.filter(
+      (o) => !(orgAssignedUserIds[o.id] ?? []).includes(selectedUser),
+    );
+  }, [selectedUser, organizations, orgAssignedUserIds]);
+
   const filteredDivisions = divisions.filter((d) => d.organizationId === selectedOrg);
 
   const availableRoles: Array<{ value: MemberRole; label: string }> = useMemo(() => {
     const filled = selectedOrg ? (orgFilledRoles[selectedOrg] ?? []) : [];
-    // Filter out roles that are already filled (except member which can be many)
     return ALL_ROLES.filter((r) => r.value === "member" || !filled.includes(r.value));
   }, [selectedOrg, orgFilledRoles]);
 
@@ -120,10 +129,13 @@ const AssignRoleForm = ({
             className={selectCls}
           >
             <option value="" disabled>Pilih tim...</option>
-            {organizations.map((o) => (
+            {availableOrgs.map((o) => (
               <option key={o.id} value={o.id}>{o.name}</option>
             ))}
           </select>
+          {availableOrgs.length === 0 && (
+            <p className="mt-1 text-xs text-[#6B6A68]">User ini sudah ada di semua tim.</p>
+          )}
         </Field>
       )}
 

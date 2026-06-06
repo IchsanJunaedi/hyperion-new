@@ -19,14 +19,19 @@ export default async function AssignRolePage() {
     .select("user_id, organization_id, role")
     .eq("is_active", true);
 
-  const assignedUserIds = new Set(allActiveMembers?.map((m) => m.user_id) ?? []);
-
   const ownerEmail = process.env.OWNER_EMAIL;
-  const filteredProfiles = (profiles ?? []).filter((p) => {
-    if (p.email === ownerEmail) return false;
-    if (assignedUserIds.has(p.id)) return false;
-    return true;
-  });
+  // Exclude only the owner — everyone else can be assigned to any org they're not yet in
+  const filteredProfiles = (profiles ?? []).filter(
+    (p) => p.email !== ownerEmail,
+  );
+
+  // org_id → user_ids already active in that org (for per-org filtering in the form)
+  const orgAssignedUserIds: Record<string, string[]> = {};
+  for (const m of allActiveMembers ?? []) {
+    if (!m.organization_id) continue;
+    if (!orgAssignedUserIds[m.organization_id]) orgAssignedUserIds[m.organization_id] = [];
+    orgAssignedUserIds[m.organization_id]!.push(m.user_id);
+  }
 
   const { data: orgs } = await admin
     .from("organizations")
@@ -81,6 +86,7 @@ export default async function AssignRolePage() {
               name: d.name,
             }))}
           orgFilledRoles={orgFilledRoles}
+          orgAssignedUserIds={orgAssignedUserIds}
         />
       </main>
     </>
