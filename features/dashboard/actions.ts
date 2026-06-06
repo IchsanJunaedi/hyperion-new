@@ -152,7 +152,11 @@ export async function assignRoleAction(input: {
       .maybeSingle();
 
     if (existingRole && existingRole.user_id !== input.userId) {
-      return { ok: false, message: `Tim ini sudah punya ${input.role}. Hanya 1 per tim.` };
+      // Demote old holder to member so the new user can take the role
+      await adminForCheck
+        .from("team_members")
+        .update({ role: "member" })
+        .eq("id", existingRole.id);
     }
   }
 

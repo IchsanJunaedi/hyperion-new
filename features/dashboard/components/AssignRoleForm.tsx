@@ -12,7 +12,7 @@ interface AssignRoleFormProps {
   users: Array<{ id: string; label: string }>;
   organizations: Array<{ id: string; name: string; slug: string }>;
   divisions: Array<{ id: string; organizationId: string; name: string }>;
-  orgFilledRoles: Record<string, string[]>; // org_id → roles already filled
+  orgRoleHolders: Record<string, Record<string, string>>; // org_id → role → holder name
   orgAssignedUserIds: Record<string, string[]>; // org_id → user_ids already in that org
 }
 
@@ -27,7 +27,7 @@ const AssignRoleForm = ({
   users,
   organizations,
   divisions,
-  orgFilledRoles,
+  orgRoleHolders,
   orgAssignedUserIds,
 }: AssignRoleFormProps) => {
   const router = useRouter();
@@ -53,10 +53,20 @@ const AssignRoleForm = ({
 
   const filteredDivisions = divisions.filter((d) => d.organizationId === selectedOrg);
 
-  const availableRoles: Array<{ value: MemberRole; label: string }> = useMemo(() => {
-    const filled = selectedOrg ? (orgFilledRoles[selectedOrg] ?? []) : [];
-    return ALL_ROLES.filter((r) => r.value === "member" || !filled.includes(r.value));
-  }, [selectedOrg, orgFilledRoles]);
+  // All roles always available — action will demote old holder if needed
+  const availableRoles = ALL_ROLES;
+
+  // Warning: role already held by someone else in selected org + selected user isn't that person
+  const replaceWarning = useMemo(() => {
+    if (!selectedOrg || !selectedRole || !selectedUser) return null;
+    const holders = orgRoleHolders[selectedOrg] ?? {};
+    const holderName = holders[selectedRole];
+    if (!holderName) return null;
+    // Check if selected user IS the current holder (no warning needed)
+    const holderEntry = users.find((u) => u.label === holderName);
+    if (holderEntry?.id === selectedUser) return null;
+    return holderName;
+  }, [selectedOrg, selectedRole, selectedUser, orgRoleHolders, users]);
 
   function handleUserChange(v: string) {
     setSelectedUser(v);
@@ -169,9 +179,9 @@ const AssignRoleForm = ({
               <option key={r.value} value={r.value}>{r.label}</option>
             ))}
           </select>
-          {(orgFilledRoles[selectedOrg]?.length ?? 0) > 0 && (
-            <p className="mt-1 text-xs text-[#6B6A68]">
-              Role yang sudah terisi: {orgFilledRoles[selectedOrg]?.join(", ")}
+          {replaceWarning && (
+            <p className="mt-1 text-xs text-amber-400/80">
+              ⚠ {selectedRole} tim ini sudah diisi oleh <strong>{replaceWarning}</strong> — akan di-replace ke member.
             </p>
           )}
         </Field>

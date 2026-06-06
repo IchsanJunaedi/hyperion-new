@@ -44,17 +44,16 @@ export default async function AssignRolePage() {
     .eq("is_active", true)
     .order("name", { ascending: true });
 
-  // Determine which roles are already filled per org (manager, captain, coach = max 1 each)
-  const orgFilledRoles: Record<string, string[]> = {};
+  // org_id → role → holder display name (for "will replace" warning in form)
+  const profileMap = new Map(
+    (profiles ?? []).map((p) => [p.id, p.full_name ?? p.display_name ?? p.username ?? p.id]),
+  );
+  const orgRoleHolders: Record<string, Record<string, string>> = {};
   for (const m of allActiveMembers ?? []) {
-    if (m.organization_id && ["manager", "captain", "coach"].includes(m.role)) {
-      const orgId = m.organization_id;
-      if (!orgFilledRoles[orgId]) orgFilledRoles[orgId] = [];
-      const roles = orgFilledRoles[orgId]!; // Use non-null assertion or local var
-      if (!roles.includes(m.role)) {
-        roles.push(m.role);
-      }
-    }
+    if (!m.organization_id) continue;
+    if (!["manager", "captain", "coach"].includes(m.role)) continue;
+    if (!orgRoleHolders[m.organization_id]) orgRoleHolders[m.organization_id] = {};
+    orgRoleHolders[m.organization_id]![m.role] = profileMap.get(m.user_id) ?? "—";
   }
 
   return (
@@ -85,7 +84,7 @@ export default async function AssignRolePage() {
               organizationId: d.organization_id as string,
               name: d.name,
             }))}
-          orgFilledRoles={orgFilledRoles}
+          orgRoleHolders={orgRoleHolders}
           orgAssignedUserIds={orgAssignedUserIds}
         />
       </main>
