@@ -265,7 +265,7 @@ const WorkspaceSidebar = ({
   const activeDivision =
     divisions.find((d) => d.id === activeDivisionId) ?? divisions[0] ?? null;
 
-  const isManager = user.role === "manager" || user.role === "owner";
+  const isManager = user.role === "manager";
 
   /** Resolve full href for a nav item */
   const getHref = (item: NavItem) =>
