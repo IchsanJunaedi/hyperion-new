@@ -270,7 +270,7 @@ export async function updateTournamentStatusAction(
 
   revalidatePath(`/${orgSlug}/tournaments`);
   revalidatePath(`/${orgSlug}/tournaments/${tournamentId}`);
-  revalidatePath("/manage/finances");
+  revalidatePath("/manage", "layout");
   revalidatePath("/dashboard/finances");
   return { ok: true };
 }
@@ -630,9 +630,8 @@ export async function completeTournamentAction(
 
   revalidatePath(`/${orgSlug}/tournaments`);
   revalidatePath(`/${orgSlug}/tournaments/${tournamentId}`);
-  revalidatePath("/manage/finances");
+  revalidatePath("/manage", "layout");
   revalidatePath("/dashboard/finances");
-  revalidatePath("/manage/salaries");
   revalidatePath("/dashboard/salaries");
   return { ok: true };
 }

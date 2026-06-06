@@ -72,7 +72,7 @@ export async function createSponsorAction(
 
   if (error) return { ok: false, message: error.message };
   revalidatePath("/dashboard/sponsors");
-  revalidatePath("/manage/sponsors");
+  revalidatePath("/manage", "layout");
   return { ok: true, id: created.id };
 }
 
@@ -105,7 +105,7 @@ export async function updateSponsorAction(
 
   if (error) return { ok: false, message: error.message };
   revalidatePath("/dashboard/sponsors");
-  revalidatePath("/manage/sponsors");
+  revalidatePath("/manage", "layout");
   return { ok: true };
 }
 
@@ -117,7 +117,7 @@ export async function deleteSponsorAction(orgId: string, sponsorId: string): Pro
   const { error } = await admin.from("sponsors").delete().eq("id", sponsorId);
   if (error) return { ok: false, message: error.message };
   revalidatePath("/dashboard/sponsors");
-  revalidatePath("/manage/sponsors");
+  revalidatePath("/manage", "layout");
   return { ok: true };
 }
 

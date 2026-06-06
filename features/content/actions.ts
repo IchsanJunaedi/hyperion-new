@@ -67,7 +67,7 @@ export async function createContentAction(
     metadata: { title: parsed.data.title, platform: parsed.data.platform },
   });
 
-  revalidatePath("/manage/content");
+  revalidatePath("/manage", "layout");
   revalidatePath("/dashboard/content");
   return { ok: true };
 }
@@ -128,7 +128,7 @@ export async function updateContentStatusAction(
     metadata: { to: newStatus },
   });
 
-  revalidatePath("/manage/content");
+  revalidatePath("/manage", "layout");
   revalidatePath("/dashboard/content");
   return { ok: true };
 }
@@ -185,7 +185,7 @@ export async function deleteContentAction(
     entityId: contentId,
   });
 
-  revalidatePath("/manage/content");
+  revalidatePath("/manage", "layout");
   revalidatePath("/dashboard/content");
   return { ok: true };
 }
