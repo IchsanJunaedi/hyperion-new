@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { WorkspaceSidebar } from "@/components/layout/WorkspaceSidebar";
 import { NotifyProvider } from "@/features/dashboard/components/NotifyModal";
+import { QueryProvider } from "@/components/providers/QueryProvider";
 
 export const dynamic = "force-dynamic";
 
@@ -67,6 +68,7 @@ const ManageCalendarLayout = async ({ children }: { children: React.ReactNode })
   }));
 
   return (
+    <QueryProvider>
     <NotifyProvider>
       <div className="flex min-h-screen bg-[#191919] text-[#E5E2E1]">
         <WorkspaceSidebar
@@ -91,6 +93,7 @@ const ManageCalendarLayout = async ({ children }: { children: React.ReactNode })
         </div>
       </div>
     </NotifyProvider>
+    </QueryProvider>
   );
 };
 export default ManageCalendarLayout;

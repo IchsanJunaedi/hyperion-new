@@ -4,6 +4,7 @@ import { notFound, redirect } from "next/navigation";
 import { WorkspaceSidebar } from "@/components/layout/WorkspaceSidebar";
 import { ManageBreadcrumb } from "@/components/layout/ManageBreadcrumb";
 import { NotifyProvider } from "@/features/dashboard/components/NotifyModal";
+import { QueryProvider } from "@/components/providers/QueryProvider";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -95,6 +96,7 @@ const ManageTeamLayout = async ({ children, params }: ManageTeamLayoutProps) => 
     "Akun saya";
 
   return (
+    <QueryProvider>
     <NotifyProvider>
       <div className="flex min-h-screen bg-[#191919] text-[#E5E2E1]">
         <WorkspaceSidebar
@@ -124,6 +126,7 @@ const ManageTeamLayout = async ({ children, params }: ManageTeamLayoutProps) => 
         </div>
       </div>
     </NotifyProvider>
+    </QueryProvider>
   );
 };
 export default ManageTeamLayout;
