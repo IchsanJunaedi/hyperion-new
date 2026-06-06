@@ -27,6 +27,10 @@ const STATUS_LABEL: Record<string, string> = {
   tentative: "❓ *Mungkin Hadir*",
 };
 
+export async function GET(): Promise<NextResponse> {
+  return NextResponse.json({ ok: true, service: "hyperion-wa-webhook" });
+}
+
 export async function POST(req: NextRequest): Promise<NextResponse> {
   // Verify secret from query param: /api/wa/webhook?secret=...
   const secret = req.nextUrl.searchParams.get("secret");
