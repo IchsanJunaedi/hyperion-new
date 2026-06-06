@@ -41,7 +41,7 @@ const DashboardLoginForm = () => {
           name="email"
           type="email"
           required
-          placeholder="owner@email.com"
+          placeholder=""
           className="h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
         />
       </div>
