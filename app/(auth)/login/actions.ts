@@ -31,9 +31,9 @@ async function recordFailedAttempt(email: string, current: RateLimitRow | null):
   const admin = createAdminClient();
   const now = new Date();
 
-  // If previous lock has expired, treat as a fresh window
+  // Only reset window if a lock previously existed AND has now expired
   const lockExpired =
-    current?.locked_until ? new Date(current.locked_until) <= now : true;
+    current?.locked_until != null && new Date(current.locked_until) <= now;
   const prevAttempts = lockExpired ? 0 : (current?.attempts ?? 0);
   const newAttempts = prevAttempts + 1;
   const lockedUntil =
@@ -97,9 +97,9 @@ export async function signInAction(
 
     // Check if this attempt just triggered a lock
     const prevAttempts = rateLimit?.attempts ?? 0;
-    const lockExpired = rateLimit?.locked_until
-      ? new Date(rateLimit.locked_until) <= new Date()
-      : true;
+    const lockExpired =
+      rateLimit?.locked_until != null &&
+      new Date(rateLimit.locked_until) <= new Date();
     const effectivePrev = lockExpired ? 0 : prevAttempts;
     const newAttempts = effectivePrev + 1;
 
