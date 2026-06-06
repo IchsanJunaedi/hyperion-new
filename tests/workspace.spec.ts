@@ -217,7 +217,9 @@ test("Workspace Features E2E Flow", async ({ page }) => {
   await page.fill("input[name='title']", "Strategi Defense Bind");
   await page.fill("textarea[name='content']", "Setup Cypher A site.");
   await page.fill("input[name='tags']", "bind, defense");
-  // Set visibility to 'public' so no division_id is needed (default 'division' may fail)
+  // Select a valid division since the database enforces NOT NULL constraint on division_id
+  await page.selectOption("select[name='division_id']", { label: "MLBB Division" });
+  // Set visibility to 'public'
   await page.selectOption("select[name='visibility']", "public");
   await page.click("button[type='submit']");
   await page.waitForLoadState("networkidle");
