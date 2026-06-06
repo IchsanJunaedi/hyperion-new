@@ -67,6 +67,39 @@ export default async function WorkspaceLayout({
   const { divisions } = teamData;
   const userRole: string | undefined = isOwner ? "owner" : (membershipRow.data?.role ?? undefined);
 
+  // Phase 3: if manager, fetch all their managed teams for team switcher
+  const isManager = userRole === "manager";
+  let managedTeams: Array<{ id: string; slug: string; name: string; logoUrl: string | null }> = [];
+
+  if (isManager) {
+    const { data: allMemberships } = await supabase
+      .from("team_members")
+      .select("organization_id")
+      .eq("user_id", user.id)
+      .eq("role", "manager")
+      .eq("is_active", true)
+      .limit(20);
+
+    const allOrgIds = [
+      ...new Set((allMemberships ?? []).map((m) => m.organization_id)),
+    ];
+
+    if (allOrgIds.length > 1) {
+      const { data: orgsData } = await supabase
+        .from("organizations")
+        .select("id, slug, name, logo_url")
+        .in("id", allOrgIds)
+        .limit(20);
+
+      managedTeams = (orgsData ?? []).map((o) => ({
+        id: o.id,
+        slug: o.slug,
+        name: o.name,
+        logoUrl: o.logo_url,
+      }));
+    }
+  }
+
   return (
     <div className="flex min-h-screen flex-1">
       <WorkspaceSidebar
@@ -75,6 +108,7 @@ export default async function WorkspaceLayout({
         orgName={organization.name}
         orgLogoUrl={organization.logo_url}
         divisions={divisions.map((d) => ({ id: d.id, name: d.name }))}
+        managedTeams={managedTeams.length > 1 ? managedTeams : undefined}
         user={{
           displayName:
             (user.user_metadata?.["display_name"] as string | undefined) ??
