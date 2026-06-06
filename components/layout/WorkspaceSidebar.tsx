@@ -94,6 +94,13 @@ const getManagerNavGroup = (orgSlug: string): NavGroup => ({
       exactMatch: true,
     },
     {
+      key: "manage-calendar",
+      href: "",
+      absoluteHref: "/manage/calendar",
+      label: "Kalender Semua Tim",
+      Icon: Calendar,
+    },
+    {
       key: "manage-assign",
       href: "",
       absoluteHref: `/manage/${orgSlug}/assign`,
