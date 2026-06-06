@@ -181,7 +181,7 @@ const AssignRoleForm = ({
           </select>
           {replaceWarning && (
             <p className="mt-1 text-xs text-amber-400/80">
-              ⚠ {selectedRole} tim ini sudah diisi oleh <strong>{replaceWarning}</strong> — akan di-replace ke member.
+              ⚠ {selectedRole} tim ini sudah diisi oleh <strong>{replaceWarning}</strong> — akses mereka akan dicabut.
             </p>
           )}
         </Field>

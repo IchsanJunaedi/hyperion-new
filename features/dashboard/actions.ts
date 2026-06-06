@@ -152,10 +152,10 @@ export async function assignRoleAction(input: {
       .maybeSingle();
 
     if (existingRole && existingRole.user_id !== input.userId) {
-      // Demote old holder to member so the new user can take the role
+      // Remove old holder entirely — they lose all access to this org
       await adminForCheck
         .from("team_members")
-        .update({ role: "member" })
+        .delete()
         .eq("id", existingRole.id);
     }
   }
