@@ -55,27 +55,77 @@ const ManageCalendarPage = async ({ searchParams }: Props) => {
     );
   }
 
-  const [orgsRes, eventsRes] = await Promise.all([
-    admin
-      .from("organizations")
-      .select("id, slug, name")
-      .in("id", orgIds)
-      .limit(20),
+  const monthStart = startOfMonth(targetDate).toISOString();
+  const monthEnd = endOfMonth(targetDate).toISOString();
+
+  const [orgsRes, eventsRes, tournamentsRes, scrimsRes] = await Promise.all([
+    admin.from("organizations").select("id, slug, name").in("id", orgIds).limit(20),
     admin
       .from("calendar_events")
       .select("id, title, starts_at, ends_at, event_type, organization_id")
       .in("organization_id", orgIds)
-      .gte("starts_at", startOfMonth(targetDate).toISOString())
-      .lte("starts_at", endOfMonth(targetDate).toISOString())
+      .gte("starts_at", monthStart)
+      .lte("starts_at", monthEnd)
       .order("starts_at", { ascending: true })
       .limit(200),
+    admin
+      .from("tournaments")
+      .select("id, name, start_date, organization_id")
+      .in("organization_id", orgIds)
+      .gte("start_date", monthStart.slice(0, 10))
+      .lte("start_date", monthEnd.slice(0, 10))
+      .limit(100),
+    admin
+      .from("scrims")
+      .select("id, opponent_name, scheduled_at, organization_id")
+      .in("organization_id", orgIds)
+      .in("status", ["scheduled", "ongoing"])
+      .gte("scheduled_at", monthStart)
+      .lte("scheduled_at", monthEnd)
+      .limit(100),
   ]);
 
   if (orgsRes.error) console.error("[manage/calendar] orgs:", orgsRes.error);
   if (eventsRes.error) console.error("[manage/calendar] events:", eventsRes.error);
 
   const orgs = orgsRes.data ?? [];
-  const events = eventsRes.data ?? [];
+
+  type UnifiedEvent = {
+    id: string;
+    title: string;
+    starts_at: string;
+    ends_at: string | null;
+    event_type: string;
+    organization_id: string;
+    detailPath: string | null;
+  };
+
+  // Deduplicate: calendar_events already linked to a tournament/scrim via ref_id
+  // (not tracked here, so just merge all — duplicates rare in cross-team agenda view)
+  const events: UnifiedEvent[] = [
+    ...(eventsRes.data ?? []).map((e) => ({
+      ...e,
+      detailPath: `/${orgsRes.data?.find((o) => o.id === e.organization_id)?.slug}/calendar/${e.id}`,
+    })),
+    ...(tournamentsRes.data ?? []).map((t) => ({
+      id: `tournament-${t.id}`,
+      title: `Turnamen: ${t.name}`,
+      starts_at: new Date(t.start_date).toISOString(),
+      ends_at: null,
+      event_type: "tournament",
+      organization_id: t.organization_id,
+      detailPath: `/${orgsRes.data?.find((o) => o.id === t.organization_id)?.slug}/tournaments/${t.id}`,
+    })),
+    ...(scrimsRes.data ?? []).map((s) => ({
+      id: `scrim-${s.id}`,
+      title: `Scrim vs ${s.opponent_name}`,
+      starts_at: s.scheduled_at,
+      ends_at: null,
+      event_type: "scrim",
+      organization_id: s.organization_id,
+      detailPath: `/${orgsRes.data?.find((o) => o.id === s.organization_id)?.slug}/scrim/${s.id}`,
+    })),
+  ].sort((a, b) => new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime());
 
   const orgMap = new Map(
     orgs.map((o, i) => [
@@ -165,9 +215,9 @@ const ManageCalendarPage = async ({ searchParams }: Props) => {
                     {org.name}
                   </span>
                 )}
-                {org && (
+                {org && event.detailPath && (
                   <Link
-                    href={`/${org.slug}/calendar/${event.id}`}
+                    href={event.detailPath}
                     className="shrink-0 text-xs text-[#9B9A97] hover:text-[#D4D4D4] transition"
                   >
                     Detail →
