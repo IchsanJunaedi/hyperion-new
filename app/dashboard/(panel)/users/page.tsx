@@ -5,6 +5,7 @@ import { Users } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { RemoveMemberButton } from "@/features/dashboard/components/RemoveMemberButton";
+import { EditRoleButton } from "@/features/dashboard/components/EditRoleButton";
 import { UserSearch } from "@/features/dashboard/components/UserSearch";
 
 export const dynamic = "force-dynamic";
@@ -152,7 +153,7 @@ export default async function DashboardUsersPage({ searchParams }: UsersPageProp
 
         <div className="flex flex-col">
           {/* Header */}
-          <div className="grid grid-cols-[1fr_120px_1fr_110px_110px_80px_80px_40px] gap-3 px-3 py-2 text-xs font-medium text-[#6B6A68] border-b border-[#2D2D2D]">
+          <div className="grid grid-cols-[1fr_120px_1fr_110px_110px_80px_80px_72px] gap-3 px-3 py-2 text-xs font-medium text-[#6B6A68] border-b border-[#2D2D2D]">
             <span>Nama</span>
             <span>Username</span>
             <span>Email</span>
@@ -167,7 +168,7 @@ export default async function DashboardUsersPage({ searchParams }: UsersPageProp
           {filteredRows.map((row) => (
             <div
               key={row.key}
-              className="grid grid-cols-[1fr_120px_1fr_110px_110px_80px_80px_40px] gap-3 px-3 py-4 items-center border-b border-[#2D2D2D] hover:bg-[#1A1A1A] transition-colors group text-sm"
+              className="grid grid-cols-[1fr_120px_1fr_110px_110px_80px_80px_72px] gap-3 px-3 py-4 items-center border-b border-[#2D2D2D] hover:bg-[#1A1A1A] transition-colors group text-sm"
             >
               <span className="text-[#D4D4D4] truncate font-medium">{row.name}</span>
               <span className="text-[#9B9A97] truncate text-xs">{row.username}</span>
@@ -184,7 +185,10 @@ export default async function DashboardUsersPage({ searchParams }: UsersPageProp
               }`}>
                 {row.role}
               </span>
-              <div className="flex justify-end pr-2">
+              <div className="flex justify-end gap-0.5 pr-1">
+                {row.memberId && row.role !== "owner" && (
+                  <EditRoleButton memberId={row.memberId} currentRole={row.role} name={row.name} />
+                )}
                 {row.memberId && (
                   <RemoveMemberButton memberId={row.memberId} name={row.name} />
                 )}
