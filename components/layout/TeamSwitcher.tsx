@@ -47,9 +47,7 @@ const TeamSwitcher = ({ teams, currentSlug }: TeamSwitcherProps) => {
               {current.name.slice(0, 1).toUpperCase()}
             </div>
           )}
-          {!open && (
-            <span className="truncate text-[#D4D4D4]">{current.name}</span>
-          )}
+          <span className="truncate text-[#D4D4D4]">{current.name}</span>
         </div>
         <ChevronDown
           className={`h-4 w-4 shrink-0 transition ${open ? "rotate-180" : ""}`}
