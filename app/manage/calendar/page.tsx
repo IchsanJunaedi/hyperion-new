@@ -59,7 +59,8 @@ const ManageCalendarPage = async ({ searchParams }: Props) => {
     admin
       .from("organizations")
       .select("id, slug, name")
-      .in("id", orgIds),
+      .in("id", orgIds)
+      .limit(20),
     admin
       .from("calendar_events")
       .select("id, title, starts_at, ends_at, event_type, organization_id")
@@ -69,6 +70,9 @@ const ManageCalendarPage = async ({ searchParams }: Props) => {
       .order("starts_at", { ascending: true })
       .limit(200),
   ]);
+
+  if (orgsRes.error) console.error("[manage/calendar] orgs:", orgsRes.error);
+  if (eventsRes.error) console.error("[manage/calendar] events:", eventsRes.error);
 
   const orgs = orgsRes.data ?? [];
   const events = eventsRes.data ?? [];
@@ -161,12 +165,14 @@ const ManageCalendarPage = async ({ searchParams }: Props) => {
                     {org.name}
                   </span>
                 )}
-                <Link
-                  href={`/${org?.slug}/calendar/${event.id}`}
-                  className="shrink-0 text-xs text-[#9B9A97] hover:text-[#D4D4D4] transition"
-                >
-                  Detail →
-                </Link>
+                {org && (
+                  <Link
+                    href={`/${org.slug}/calendar/${event.id}`}
+                    className="shrink-0 text-xs text-[#9B9A97] hover:text-[#D4D4D4] transition"
+                  >
+                    Detail →
+                  </Link>
+                )}
               </div>
             );
           })}

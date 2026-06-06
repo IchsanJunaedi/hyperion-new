@@ -36,13 +36,17 @@ const ManageCalendarLayout = async ({ children }: { children: React.ReactNode })
     admin
       .from("organizations")
       .select("id, slug, name, logo_url")
-      .in("id", orgIds),
+      .in("id", orgIds)
+      .limit(20),
     supabase
       .from("profiles")
       .select("display_name, avatar_url")
       .eq("id", user.id)
       .maybeSingle(),
   ]);
+
+  if (orgsRes.error) console.error("[manage/calendar] orgs:", orgsRes.error);
+  if (profileRes.error) console.error("[manage/calendar] profile:", profileRes.error);
 
   const orgs = orgsRes.data ?? [];
   const firstOrg = orgs[0];
