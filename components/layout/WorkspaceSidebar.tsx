@@ -20,7 +20,6 @@ import {
   Settings,
   Shield,
   Swords,
-  Tags,
   TrendingUp,
   Trophy,
   UserPlus,
@@ -106,13 +105,6 @@ const getManagerNavGroup = (orgSlug: string): NavGroup => ({
       absoluteHref: `/manage/${orgSlug}/assign`,
       label: "Tambah Member",
       Icon: UserPlus,
-    },
-    {
-      key: "manage-divisions",
-      href: "",
-      absoluteHref: `/manage/${orgSlug}/divisions`,
-      label: "Edit Divisi",
-      Icon: Tags,
     },
     {
       key: "manage-captains",
