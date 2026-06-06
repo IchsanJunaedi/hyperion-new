@@ -93,9 +93,9 @@ export async function dashboardLoginAction(input: {
     await recordFailedAttempt(email, rateLimit);
 
     const prevAttempts = rateLimit?.attempts ?? 0;
-    const lockExpired = rateLimit?.locked_until
-      ? new Date(rateLimit.locked_until) <= new Date()
-      : true;
+    const lockExpired =
+      rateLimit?.locked_until != null &&
+      new Date(rateLimit.locked_until) <= new Date();
     const effectivePrev = lockExpired ? 0 : prevAttempts;
     const newAttempts = effectivePrev + 1;
 

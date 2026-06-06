@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader2 } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
@@ -10,6 +10,7 @@ const DashboardLoginForm = () => {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   return (
     <form
@@ -49,13 +50,24 @@ const DashboardLoginForm = () => {
         <label htmlFor="password" className="text-xs font-medium text-white/70">
           Password
         </label>
-        <input
-          name="password"
-          type="password"
-          required
-          placeholder="••••••••"
-          className="h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
-        />
+        <div className="relative">
+          <input
+            name="password"
+            type={showPassword ? "text" : "password"}
+            required
+            placeholder="••••••••"
+            className="h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 pr-10 text-sm text-white focus:border-yellow-400 focus:outline-none"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword((v) => !v)}
+            tabIndex={-1}
+            aria-label={showPassword ? "Sembunyikan password" : "Tampilkan password"}
+            className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer opacity-70 hover:opacity-100"
+          >
+            {showPassword ? <EyeOff size={16} color="white" /> : <Eye size={16} color="white" />}
+          </button>
+        </div>
       </div>
 
       {error && (
