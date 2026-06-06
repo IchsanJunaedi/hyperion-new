@@ -71,7 +71,7 @@ export async function createCalendarEventAction(
 
   const { data: org, error: orgError } = await db
     .from("organizations")
-    .select("id")
+    .select("id, name")
     .eq("slug", orgSlug)
     .maybeSingle();
   if (orgError || !org)
@@ -107,9 +107,79 @@ export async function createCalendarEventAction(
     };
   }
 
+  // Fan-out bell notifications (fire-and-forget)
+  fanOutCalendarNotifications(event, user.id, org.name, org.id).catch((e) =>
+    console.error("[calendar] fanOut error:", e),
+  );
+
   revalidatePath(`/${orgSlug}/calendar`);
   revalidatePath(`/dashboard/calendar`);
   return { ok: true, event };
+}
+
+async function fanOutCalendarNotifications(
+  event: CalendarEvent,
+  creatorId: string,
+  orgName: string,
+  orgId: string,
+): Promise<void> {
+  if (event.visibility === "private") return;
+
+  const admin = createAdminClient();
+
+  type MemberRole = "owner" | "captain" | "member" | "coach" | "manager";
+  const roleFilter: MemberRole[] =
+    event.visibility === "management"
+      ? ["manager"]
+      : event.visibility === "coach_up"
+        ? ["coach", "manager"]
+        : ["manager", "coach", "captain", "member"];
+
+  const { data: members } = await admin
+    .from("team_members")
+    .select("user_id")
+    .eq("organization_id", orgId)
+    .eq("is_active", true)
+    .in("role", roleFilter)
+    .neq("user_id", creatorId)
+    .limit(200);
+
+  if (!members || members.length === 0) return;
+
+  const TYPE_LABELS: Record<string, string> = {
+    practice: "Latihan",
+    meeting: "Meeting",
+    tournament: "Turnamen",
+    bootcamp: "Bootcamp",
+    other: "Event",
+  };
+  const typeLabel = TYPE_LABELS[event.event_type] ?? "Event";
+
+  const startsAt = new Date(event.starts_at);
+  const dateStr = startsAt.toLocaleDateString("id-ID", {
+    weekday: "long", day: "numeric", month: "long", year: "numeric",
+    timeZone: "Asia/Jakarta",
+  });
+  const timeStr = startsAt.toLocaleTimeString("id-ID", {
+    hour: "2-digit", minute: "2-digit", timeZone: "Asia/Jakarta",
+  });
+
+  const title = `[${orgName}] ${typeLabel}: ${event.title}`;
+  const body = event.is_all_day
+    ? dateStr
+    : `${dateStr} · ${timeStr} WIB${event.location ? ` · ${event.location}` : ""}`;
+
+  const rows = members.map((m) => ({
+    organization_id: orgId,
+    user_id: m.user_id,
+    type: "system" as const,
+    title,
+    body,
+    ref_id: event.id,
+    ref_type: "calendar",
+  }));
+
+  await admin.from("notifications").insert(rows);
 }
 
 /**
