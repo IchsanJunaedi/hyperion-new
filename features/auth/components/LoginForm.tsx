@@ -80,7 +80,7 @@ const LoginForm = ({ next = "/" }: LoginFormProps) => {
             tabIndex={-1}
             aria-label={showPassword ? "Sembunyikan password" : "Tampilkan password"}
           >
-            {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+            {showPassword ? <EyeOff size={16} color="white" /> : <Eye size={16} color="white" />}
           </button>
         </div>
         <div className="absolute right-0 top-0">
