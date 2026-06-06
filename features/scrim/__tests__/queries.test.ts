@@ -18,6 +18,7 @@ const makeRow = (userId: string, status: AttStatus): AttendanceRow => ({
     avatar_url: null,
     jersey_number: null,
     position: null,
+    main_role: null,
   },
 });
 

@@ -302,6 +302,7 @@ const WorkspaceSidebar = ({
         if (item.key === "files") return hasFilesAccess;
         if (item.key === "scouting") return hasScoutingAccess;
         if (item.key === "trials") return hasTrialsAccess;
+        if (item.key === "development") return !isManager;
         return true;
       }),
     }));

@@ -73,7 +73,10 @@ export function buildScrimWaMessage(data: ScrimWaData): string {
   }
 
   lines.push("");
-  lines.push("Konfirmasi kehadiran di:");
+  lines.push("Konfirmasi kehadiranmu dengan *balas pesan ini*:");
+  lines.push("*1* - Hadir  |  *2* - Tidak Hadir  |  *3* - Mungkin");
+  lines.push("");
+  lines.push("Atau buka aplikasi:");
   lines.push(data.scrimUrl);
 
   return lines.join("\n");

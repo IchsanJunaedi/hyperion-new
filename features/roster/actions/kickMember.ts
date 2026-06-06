@@ -91,6 +91,14 @@ export async function kickMemberAction(
     return { ok: false, message: error.message };
   }
 
+  // Terminate active contracts for the removed member
+  await admin
+    .from("player_contracts")
+    .update({ status: "terminated" })
+    .eq("organization_id", targetMember.organization_id)
+    .eq("user_id", targetMember.user_id)
+    .eq("status", "active");
+
   // Create Audit Log
   const targetName = profile?.display_name ?? profile?.username ?? "Unnamed Member";
   await logAudit({

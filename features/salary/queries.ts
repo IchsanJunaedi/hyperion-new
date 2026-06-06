@@ -105,14 +105,16 @@ export async function listContracts(orgId: string): Promise<ContractWithProfile[
     bonusByContract.set(b.contract_id, list);
   }
 
-  return contracts.map((c) => ({
-    ...(c as PlayerContract),
-    display_name: profileMap.get(c.user_id)?.display_name ?? null,
-    avatar_url: profileMap.get(c.user_id)?.avatar_url ?? null,
-    role: memberMap.get(c.user_id) ?? null,
-    payments: paymentsByContract.get(c.id) ?? [],
-    bonusDistributions: bonusByContract.get(c.id) ?? [],
-  }));
+  return contracts
+    .filter((c) => memberMap.has(c.user_id))
+    .map((c) => ({
+      ...(c as PlayerContract),
+      display_name: profileMap.get(c.user_id)?.display_name ?? null,
+      avatar_url: profileMap.get(c.user_id)?.avatar_url ?? null,
+      role: memberMap.get(c.user_id) ?? null,
+      payments: paymentsByContract.get(c.id) ?? [],
+      bonusDistributions: bonusByContract.get(c.id) ?? [],
+    }));
 }
 
 
@@ -125,10 +127,10 @@ export async function getPayrollSummary(orgId: string): Promise<PayrollSummary> 
   sixMonthsAgo.setDate(1);
   const since = sixMonthsAgo.toISOString().slice(0, 10);
 
-  const [contractsRes, paymentsRes] = await Promise.all([
+  const [contractsRes, paymentsRes, activeMembersRes] = await Promise.all([
     admin
       .from("player_contracts")
-      .select("monthly_salary, status, end_date")
+      .select("user_id, monthly_salary, status, end_date")
       .eq("organization_id", orgId),
     admin
       .from("salary_payments")
@@ -136,12 +138,19 @@ export async function getPayrollSummary(orgId: string): Promise<PayrollSummary> 
       .eq("organization_id", orgId)
       .gte("pay_period", since)
       .limit(1000),
+    admin
+      .from("team_members")
+      .select("user_id")
+      .eq("organization_id", orgId)
+      .eq("is_active", true)
+      .limit(100),
   ]);
 
-  const contracts = contractsRes.data;
+  const activeMemberIds = new Set((activeMembersRes.data ?? []).map((m) => m.user_id));
+  const contracts = (contractsRes.data ?? []).filter((c) => activeMemberIds.has(c.user_id));
   const { paidThisMonth, monthlySpend } = computePayrollSpend(paymentsRes.data ?? []);
 
-  if (!contracts) {
+  if (!contracts.length) {
     return {
       totalMonthlyPayroll: 0,
       activeCount: 0,

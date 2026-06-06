@@ -8,6 +8,17 @@ import { createClient } from "@/lib/supabase/client";
 import type { ScrimDetail } from "@/features/scrim/queries";
 import type { AttendanceStatus } from "@/types/database";
 
+const ROLE_LABELS: Record<string, string> = {
+  mid_lane: "Mid Lane",
+  gold_lane: "Gold Lane",
+  exp_lane: "Exp Lane",
+  jungler: "Jungler",
+  roamer: "Roamer",
+};
+
+const formatMainRole = (role: string | null | undefined): string =>
+  role ? (ROLE_LABELS[role] ?? role) : "—";
+
 interface AttendanceListProps {
   scrimId: string;
   rows: ScrimDetail["attendances"];
@@ -98,7 +109,7 @@ const AttendanceList = ({ scrimId, rows }: AttendanceListProps) => {
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-medium text-white">{name}</p>
               <p className="truncate text-xs text-white/55">
-                {row.member.position ?? "—"}
+                {row.member.position ?? formatMainRole(row.member.main_role)}
                 {row.member.jersey_number !== null
                   ? ` · #${row.member.jersey_number}`
                   : ""}

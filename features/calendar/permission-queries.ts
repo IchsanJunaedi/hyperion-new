@@ -396,6 +396,7 @@ export async function getCalendarAuditLogsAction(
     .select("role")
     .eq("user_id", user.id)
     .eq("organization_id", org.id)
+    .eq("is_active", true)
     .maybeSingle();
 
   const ownerEmail = process.env.OWNER_EMAIL;

@@ -29,6 +29,7 @@ const ManagePlayerDevelopmentPage = async ({ params }: Props) => {
       .select("user_id")
       .eq("organization_id", org.id)
       .eq("is_active", true)
+      .in("role", ["captain", "member"])
       .limit(100),
   ]);
 

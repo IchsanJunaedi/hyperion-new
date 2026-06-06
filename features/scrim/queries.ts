@@ -30,6 +30,7 @@ export interface ScrimDetail {
       avatar_url: string | null;
       jersey_number: number | null;
       position: string | null;
+      main_role: string | null;
     };
   }>;
   result: ScrimResult | null;
@@ -141,7 +142,7 @@ export async function getScrimDetail(
         .maybeSingle(),
       supabase
         .from("team_members")
-        .select("user_id, jersey_number, position, role")
+        .select("user_id, jersey_number, position, main_role, role")
         .eq("organization_id", scrim.organization_id)
         .eq("division_id", scrim.division_id)
         .eq("is_active", true)
@@ -210,6 +211,7 @@ export async function getScrimDetail(
         avatar_url: profile.avatar_url,
         jersey_number: m.jersey_number,
         position: m.position,
+        main_role: m.main_role,
       },
     };
   });
@@ -230,6 +232,7 @@ export async function getScrimDetail(
         avatar_url: profile.avatar_url,
         jersey_number: null,
         position: null,
+        main_role: null,
       },
     });
   }
