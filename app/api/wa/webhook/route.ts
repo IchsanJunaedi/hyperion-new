@@ -71,36 +71,40 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
   const admin = createAdminClient();
 
-  // Find profile by phone_wa (normalize stored numbers for comparison)
-  const { data: profiles } = await admin
+  // Step 1: get all profiles with matching phone
+  const { data: candidates } = await admin
     .from("profiles")
     .select("id, display_name, phone_wa")
     .not("phone_wa", "is", null)
     .limit(500);
 
-  const profile = (profiles ?? []).find(
-    (p) => !!p.phone_wa && normalizePhone(p.phone_wa) === senderNorm,
-  ) as { id: string; display_name: string | null; phone_wa: string } | undefined;
+  const matchingIds = (candidates ?? [])
+    .filter((p) => !!p.phone_wa && normalizePhone(p.phone_wa) === senderNorm)
+    .map((p) => p.id);
 
-  if (!profile) {
-    return NextResponse.json({ ok: true }); // unknown number, ignore
+  if (matchingIds.length === 0) {
+    return NextResponse.json({ ok: true }); // unknown number
   }
+
+  // Step 2: find which one has an active captain/member membership
+  const { data: membershipRows } = await admin
+    .from("team_members")
+    .select("user_id, organization_id, division_id")
+    .in("user_id", matchingIds)
+    .eq("is_active", true)
+    .in("role", ["captain", "member"])
+    .limit(1);
+
+  const membership = membershipRows?.[0] ?? null;
+
+  if (!membership) {
+    return NextResponse.json({ ok: true }); // no active team membership
+  }
+
+  const profile = (candidates ?? []).find((p) => p.id === membership.user_id)!;
 
   // Find the nearest upcoming scrim for this user's active membership
   const now = new Date().toISOString();
-
-  const { data: membership } = await admin
-    .from("team_members")
-    .select("organization_id, division_id")
-    .eq("user_id", profile.id)
-    .eq("is_active", true)
-    .in("role", ["captain", "member"])
-    .limit(1)
-    .maybeSingle();
-
-  if (!membership) {
-    return NextResponse.json({ ok: true });
-  }
 
   const { data: scrim } = await admin
     .from("scrims")
