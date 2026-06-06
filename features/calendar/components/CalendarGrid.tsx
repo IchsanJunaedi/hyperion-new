@@ -23,6 +23,8 @@ interface CalendarGridProps {
   /** Called when user clicks a day cell (when canCreate=true) */
   onDayClick?: (date: Date) => void;
   rsvpCounts?: RsvpCountMap;
+  /** Per-event href overrides — when provided, events are always rendered as Links */
+  eventHrefs?: Record<string, string>;
 }
 
 const DAY_NAMES = ["Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"];
@@ -45,6 +47,7 @@ const CalendarGrid = ({
   canCreate = false,
   onDayClick,
   rsvpCounts,
+  eventHrefs,
 }: CalendarGridProps) => {
   const router = useRouter();
   const [expandedDay, setExpandedDay] = useState<number | null>(null);
@@ -206,7 +209,10 @@ const CalendarGrid = ({
                     </>
                   );
 
-                  if (readOnly) {
+                  // Use override href if provided (e.g. cross-team "Semua Tim" view)
+                  const overrideHref = eventHrefs?.[ev.id];
+
+                  if (readOnly && !overrideHref) {
                     return (
                       <div
                         key={ev.id}
@@ -217,16 +223,15 @@ const CalendarGrid = ({
                     );
                   }
 
-                  let eventHref = `/${orgSlug}/calendar/${ev.id}`;
-                  const isScrim = ev.event_type === "scrim" || ev.ref_type === "scrim";
-                  const isTournament = ev.event_type === "tournament" || ev.ref_type === "tournament";
-
-                  if (isScrim) {
-                    const scrimId = ev.ref_id || ev.id.replace("scrim-", "");
-                    eventHref = `/${orgSlug}/scrim/${scrimId}`;
-                  } else if (isTournament) {
-                    const tournamentId = ev.ref_id || ev.id.replace("tournament-", "");
-                    eventHref = `/${orgSlug}/tournaments/${tournamentId}`;
+                  let eventHref = overrideHref ?? `/${orgSlug}/calendar/${ev.id}`;
+                  if (!overrideHref) {
+                    const isScrim = ev.event_type === "scrim" || ev.ref_type === "scrim";
+                    const isTournament = ev.event_type === "tournament" || ev.ref_type === "tournament";
+                    if (isScrim) {
+                      eventHref = `/${orgSlug}/scrim/${ev.ref_id || ev.id.replace("scrim-", "")}`;
+                    } else if (isTournament) {
+                      eventHref = `/${orgSlug}/tournaments/${ev.ref_id || ev.id.replace("tournament-", "")}`;
+                    }
                   }
 
                   return (
@@ -289,7 +294,9 @@ const CalendarGrid = ({
                     .toISOString()
                     .slice(11, 16);
 
-                  if (readOnly) {
+                  const overrideHref = eventHrefs?.[ev.id];
+
+                  if (readOnly && !overrideHref) {
                     return (
                       <div key={ev.id} className="flex items-center gap-2 px-4 py-2 text-sm text-white/80">
                         {dot}
@@ -299,11 +306,13 @@ const CalendarGrid = ({
                     );
                   }
 
-                  let href = `/${orgSlug}/calendar/${ev.id}`;
-                  if (ev.event_type === "scrim" || ev.ref_type === "scrim") {
-                    href = `/${orgSlug}/scrim/${ev.ref_id || ev.id.replace("scrim-", "")}`;
-                  } else if (ev.event_type === "tournament" || ev.ref_type === "tournament") {
-                    href = `/${orgSlug}/tournaments/${ev.ref_id || ev.id.replace("tournament-", "")}`;
+                  let href = overrideHref ?? `/${orgSlug}/calendar/${ev.id}`;
+                  if (!overrideHref) {
+                    if (ev.event_type === "scrim" || ev.ref_type === "scrim") {
+                      href = `/${orgSlug}/scrim/${ev.ref_id || ev.id.replace("scrim-", "")}`;
+                    } else if (ev.event_type === "tournament" || ev.ref_type === "tournament") {
+                      href = `/${orgSlug}/tournaments/${ev.ref_id || ev.id.replace("tournament-", "")}`;
+                    }
                   }
 
                   return (

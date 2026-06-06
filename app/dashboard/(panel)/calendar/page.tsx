@@ -256,6 +256,7 @@ const DashboardCalendarPage = async ({
                 readOnly={true}
                 canCreate={false}
                 navBasePath="/dashboard/calendar"
+                eventHrefs={Object.fromEntries(agendaEvents.map((e) => [e.id, e.detailPath]))}
               />
             </div>
 
