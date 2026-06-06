@@ -392,6 +392,17 @@ const WorkspaceSidebar = ({
         aria-label="Workspace"
         className="sidebar-scroll flex-1 overflow-y-auto px-2 pt-4 space-y-5"
       >
+        {user.role === "owner" && (
+          <div className="pb-1 border-b border-[#2D2D2D] mb-1">
+            <Link
+              href="/dashboard"
+              className="flex items-center gap-2 rounded px-3 py-1.5 text-xs text-[#6B6A68] hover:bg-[#2C2C2C] hover:text-[#9B9A97] transition"
+            >
+              <LayoutDashboard className="h-3.5 w-3.5 shrink-0" />
+              Owner Dashboard
+            </Link>
+          </div>
+        )}
         {allGroups.map((group) => (
           <div key={group.label}>
             <p className="mb-1.5 px-3 text-[11px] font-semibold uppercase tracking-wide text-[#6B6A68]">
