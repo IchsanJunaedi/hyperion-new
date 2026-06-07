@@ -45,7 +45,7 @@ const HeaderClient = ({
 
   return (
     <>
-      <header className="fixed top-0 z-50 w-full border-b border-white/12 bg-[#040D1C]">
+      <header className="fixed top-0 z-50 w-full border-b border-[#F5C400]/10 bg-[#0A0A0A]/88 backdrop-blur-md">
         <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-5 sm:px-8">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5" aria-label="Hyperion Team">
@@ -136,7 +136,7 @@ const HeaderClient = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
-            className="fixed inset-0 z-40 bg-[#040D1C]/80 md:hidden"
+            className="fixed inset-0 z-40 bg-[#0A0A0A]/80 md:hidden"
             onClick={() => setMobileOpen(false)}
           />
         )}
@@ -150,7 +150,7 @@ const HeaderClient = ({
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", stiffness: 340, damping: 34 }}
-            className="fixed right-0 top-0 z-50 flex h-full w-72 flex-col border-l border-white/12 bg-[#040D1C] md:hidden"
+            className="fixed right-0 top-0 z-50 flex h-full w-72 flex-col border-l border-[#F5C400]/10 bg-[#0A0A0A] md:hidden"
           >
             <div className="flex h-14 items-center justify-between border-b border-white/12 px-5">
               <span className="text-sm font-black uppercase tracking-wider text-white">
