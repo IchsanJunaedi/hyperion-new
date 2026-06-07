@@ -49,7 +49,6 @@ const AchievementCard = ({ item, index }: CardProps) => {
   return (
     <div
       className="achievement-card-wrapper shrink-0 select-none py-10"
-      style={{ transform: "translateY(0px) scale(0.95)" }}
     >
       <div
         className="group relative w-[280px] sm:w-[320px] aspect-[3/4] rounded-2xl overflow-hidden border border-white/5 bg-[#030813] shadow-2xl transition-all duration-500 hover:border-[#D4FF00]/40 hover:-translate-y-3 hover:scale-[1.02] active:scale-[0.99] cursor-pointer"
@@ -60,6 +59,7 @@ const AchievementCard = ({ item, index }: CardProps) => {
           src={imageSrc}
           alt={item.title}
           className="absolute inset-0 h-full w-full object-cover pointer-events-none transition-transform duration-700 group-hover:scale-105"
+          onError={(e) => { e.currentTarget.src = fallbackImage; }}
         />
 
         {/* Dark gradient overlay for typography readability */}
@@ -146,39 +146,27 @@ const AchievementsSection = ({ entries }: AchievementsSectionProps) => {
       const cards = container.querySelectorAll(".achievement-card-wrapper");
       if (cards.length === 0) return;
 
-      const containerRect = container.getBoundingClientRect();
-      const containerCenter = containerRect.left + containerRect.width / 2;
-      
-      // Dynamic range, ensuring it remains smooth on mobile as well
-      const range = Math.max(300, containerRect.width * 0.45);
+      const containerWidth = container.clientWidth;
+      const scrollCenter = container.scrollLeft + containerWidth / 2;
 
       cards.forEach((card) => {
-        const cardRect = card.getBoundingClientRect();
-        const cardCenter = cardRect.left + cardRect.width / 2;
-        const distanceFromCenter = cardCenter - containerCenter;
+        const cardEl = card as HTMLElement;
+        const cardCenter = cardEl.offsetLeft + cardEl.offsetWidth / 2;
 
-        // Normalize distance: goes from -1 (left edge of range) to +1 (right edge of range)
-        let ratio = distanceFromCenter / range;
-        // Clamp to [-1, 1]
-        ratio = Math.max(-1, Math.min(1, ratio));
+        // Active range extends to when the card's outer edge touches the viewport edge
+        // so that the card starts rising the exact moment it enters the screen.
+        const range = containerWidth / 2 + cardEl.offsetWidth / 2;
+        const xRaw = (cardCenter - scrollCenter) / range;
+        const x = Math.max(-1, Math.min(1, xRaw));
+        // Parabolic curve (quadratic) for immediate, continuous rise from edges to center peak
+        const curve = 1 - x * x;
+        const translateY = 180 - 360 * curve;
+        const scale = 0.85 + 0.15 * curve;
 
-        // Steeper wave using squared cosine: cos^2(0) = 1 (center), cos^2(pi/2) = 0 (sides)
-        const curve = Math.pow(Math.cos((ratio * Math.PI) / 2), 2.0);
-
-        // Center card is high (translateY = -120px), side cards are lower (translateY = 80px)
-        const translateY = -120 + (1 - curve) * 200;
-        
-        // Scale goes from 1.08 (center) to 0.82 (sides)
-        const scale = 0.82 + curve * 0.26;
-
-        // Use a short, responsive transition to filter out mouse jitter and ensure butter-smoothness
-        gsap.to(card, {
-          y: translateY,
-          scale: scale,
-          duration: 0.15,
-          ease: "power1.out",
-          overwrite: "auto"
-        });
+        // duration:0 always — prevents wrap-frame artifacts (mass card drop on scroll wrap)
+        // and guarantees Y tracks X in lock-step during drag and auto-scroll.
+        // We keep rotation at 0 so the cards remain perfectly upright (no tilting).
+        gsap.set(card, { y: translateY, scale: scale, rotation: 0 });
       });
     };
 
@@ -404,7 +392,7 @@ const AchievementsSection = ({ entries }: AchievementsSectionProps) => {
             <div
               ref={scrollContainerRef}
               onDragStart={(e) => e.preventDefault()}
-              className="flex gap-6 overflow-x-hidden scrollbar-none px-4 sm:px-8 pt-40 pb-28 select-none"
+              className="flex gap-6 overflow-hidden scrollbar-none px-4 sm:px-8 pt-64 pb-48 select-none"
             >
               {duplicatedEntries.map((item, i) => {
                 const setIndex = Math.floor(i / entries.length);
@@ -417,11 +405,6 @@ const AchievementsSection = ({ entries }: AchievementsSectionProps) => {
                   />
                 );
               })}
-            </div>
-            
-            {/* Action Tip indicator */}
-            <div className="mt-4 flex items-center justify-center gap-2 text-white/20 text-[9px] font-orbitron uppercase tracking-widest pointer-events-none">
-              <span>Press and drag to slide manually · Click cards to open gallery</span>
             </div>
           </div>
 

@@ -8,38 +8,121 @@ interface PartnersSectionProps {
   partners: Partner[];
 }
 
+const DEFAULT_PARTNERS = [
+  { id: "default-1", name: "PlayStation", logo_url: "https://cdn.simpleicons.org/playstation" },
+  { id: "default-2", name: "Xbox", logo_url: "https://cdn.simpleicons.org/xbox" },
+  { id: "default-3", name: "Nintendo", logo_url: "https://cdn.simpleicons.org/nintendo" },
+  { id: "default-4", name: "Ubisoft", logo_url: "https://cdn.simpleicons.org/ubisoft" },
+  { id: "default-5", name: "Steam", logo_url: "https://cdn.simpleicons.org/steam" },
+  { id: "default-6", name: "Epic Games", logo_url: "https://cdn.simpleicons.org/epicgames" },
+  { id: "default-7", name: "NVIDIA", logo_url: "https://cdn.simpleicons.org/nvidia" },
+  { id: "default-8", name: "Intel", logo_url: "https://cdn.simpleicons.org/intel" },
+  { id: "default-9", name: "AMD", logo_url: "https://cdn.simpleicons.org/amd" },
+  { id: "default-10", name: "Razer", logo_url: "https://cdn.simpleicons.org/razer" },
+  { id: "default-11", name: "Logitech G", logo_url: "https://cdn.simpleicons.org/logitech" },
+  { id: "default-12", name: "Corsair", logo_url: "https://cdn.simpleicons.org/corsair" },
+  { id: "default-13", name: "Unity", logo_url: "https://cdn.simpleicons.org/unity" },
+  { id: "default-14", name: "Unreal Engine", logo_url: "https://cdn.simpleicons.org/unrealengine" },
+  { id: "default-15", name: "Twitch", logo_url: "https://cdn.simpleicons.org/twitch" },
+  { id: "default-16", name: "Discord", logo_url: "https://cdn.simpleicons.org/discord" },
+];
+
 const PartnersSection = ({ partners }: PartnersSectionProps) => {
   const sectionRef = useRef<HTMLElement>(null);
 
+  // Combine database partners with default partners to get a full 4x4 grid of 16 partners
+  const dbPartnerNames = new Set(partners.map((p) => p.name.toLowerCase()));
+  const mergedPartners = [
+    ...partners,
+    ...DEFAULT_PARTNERS.filter((p) => !dbPartnerNames.has(p.name.toLowerCase())),
+  ].slice(0, 16);
+
   useGSAP(() => {
-    gsap.from(sectionRef.current, {
-      opacity: 0, duration: 0.6, ease: "power1.out",
-      scrollTrigger: { trigger: sectionRef.current, start: "top 88%", once: true },
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: sectionRef.current,
+        start: "top 85%",
+        once: true,
+      }
     });
+
+    tl.from(".partner-title", {
+      y: 20,
+      opacity: 0,
+      duration: 0.6,
+      ease: "power2.out",
+    });
+
+    tl.from(".partner-logo-item", {
+      scale: 0.9,
+      opacity: 0,
+      duration: 0.6,
+      ease: "power2.out",
+      stagger: 0.04,
+    }, "-=0.3");
+
+    tl.from(".partner-footer", {
+      y: 15,
+      opacity: 0,
+      duration: 0.5,
+      ease: "power2.out",
+    }, "-=0.2");
   }, { scope: sectionRef });
 
-  if (partners.length === 0) return null;
-
-  const doubled = [...partners, ...partners];
-
   return (
-    <section ref={sectionRef} className="border-y border-white/[0.07] bg-black py-6">
-      <div className="ticker-track overflow-hidden">
-        <div className="flex animate-ticker items-center gap-16">
-          {doubled.map((p, i) => (
-            <div key={`${p.id}-${i}`} className="inline-flex shrink-0 items-center justify-center">
+    <section
+      ref={sectionRef}
+      className="relative overflow-hidden bg-[#020202] py-24 sm:py-32 px-5 border-t border-white/5"
+    >
+      {/* Decorative subtle background mesh */}
+      <div className="absolute inset-0 pointer-events-none opacity-10 bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-white/5 via-transparent to-transparent" />
+
+      <div className="relative mx-auto max-w-7xl">
+        {/* Title */}
+        <div className="partner-title text-center mb-16">
+          <h2 className="text-3xl font-black uppercase tracking-tight text-white sm:text-4xl lg:text-5xl">
+            We partner with industry leaders
+          </h2>
+        </div>
+
+        {/* 4-Column Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-12 items-center justify-items-center max-w-5xl mx-auto">
+          {mergedPartners.map((p) => (
+            <div
+              key={p.id}
+              className="partner-logo-item flex items-center justify-center w-full h-16 hover:scale-105 transition-transform duration-300"
+            >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={p.logo_url ?? ""}
                 alt={p.name}
                 loading="lazy"
-                className="h-8 w-auto max-w-[120px] object-contain grayscale opacity-30 transition-all duration-500 hover:opacity-70 hover:grayscale-0"
+                className="h-8 md:h-10 w-auto max-w-[130px] object-contain opacity-40 hover:opacity-100 transition-opacity duration-300 brightness-0 invert"
+                onError={(e) => {
+                  const el = e.currentTarget;
+                  el.style.display = "none";
+                  const parent = el.parentElement;
+                  if (parent && !parent.querySelector(".partner-text-fallback")) {
+                    const span = document.createElement("span");
+                    span.className = "partner-text-fallback font-orbitron text-[9px] font-bold uppercase tracking-wider text-white/30";
+                    span.textContent = p.name;
+                    parent.appendChild(span);
+                  }
+                }}
               />
             </div>
           ))}
+        </div>
+
+        {/* Footer caption */}
+        <div className="partner-footer text-center mt-16">
+          <p className="text-xs sm:text-sm text-neutral-500 font-medium tracking-wide">
+            Their trust in our capabilities makes us super proud.
+          </p>
         </div>
       </div>
     </section>
   );
 };
+
 export { PartnersSection };
