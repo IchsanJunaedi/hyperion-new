@@ -35,7 +35,6 @@ const PolaroidCard = ({
   const hue = avatarHue(name);
   const initial = name?.[0]?.toUpperCase() ?? "?";
   const showPlaceholder = !image || imgFailed;
-
   return (
     <div
       className={`relative shrink-0 bg-white p-3 pb-8 shadow-[0_15px_35px_rgba(0,0,0,0.6)] border border-neutral-200/80 ${
