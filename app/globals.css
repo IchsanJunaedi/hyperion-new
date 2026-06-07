@@ -298,3 +298,25 @@ input[type="number"] {
   align-self: center;
 }
 
+/* ── Clip-path corner utilities (gaming aesthetic) ────────────────────────── */
+.clip-tr {
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
+}
+.clip-br {
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%);
+}
+.clip-bl {
+  clip-path: polygon(12px 0, 100% 0, 100% 100%, 0 100%, 0 12px);
+}
+.clip-tr-lg {
+  clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 0 100%);
+}
+
+/* ── Partners ticker (single row) ─────────────────────────────────────────── */
+@keyframes ticker {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.animate-ticker { animation: ticker 35s linear infinite; }
+.ticker-track:hover .animate-ticker { animation-play-state: paused; }
+

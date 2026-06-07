@@ -197,7 +197,7 @@ const HeaderClient = ({
                       <Link
                         href={authed.workspaceHref}
                         onClick={() => setMobileOpen(false)}
-                        className="flex h-10 items-center justify-center border border-[#F5C400] text-xs font-black uppercase tracking-widest text-[#F5C400] transition hover:bg-[#F5C400] hover:text-black"
+                        className="clip-tr flex h-10 items-center justify-center border border-[#F5C400] px-4 text-xs font-black uppercase tracking-widest text-[#F5C400] transition hover:bg-[#F5C400] hover:text-black"
                       >
                         Masuk ke Tim
                       </Link>
@@ -208,14 +208,14 @@ const HeaderClient = ({
                     <Link
                       href="/login"
                       onClick={() => setMobileOpen(false)}
-                      className="flex h-10 items-center justify-center border border-white/15 text-xs font-bold uppercase tracking-widest text-white/60 transition hover:border-white/40 hover:text-white"
+                      className="clip-tr flex h-10 items-center justify-center border border-white/15 px-4 text-xs font-bold uppercase tracking-widest text-white/60 transition hover:border-white/40 hover:text-white"
                     >
                       Login
                     </Link>
                     <Link
                       href="/register"
                       onClick={() => setMobileOpen(false)}
-                      className="flex h-10 items-center justify-center bg-[#F5C400] text-xs font-black uppercase tracking-widest text-black transition hover:bg-yellow-300"
+                      className="clip-tr flex h-10 items-center justify-center bg-[#F5C400] px-4 text-xs font-black uppercase tracking-widest text-black transition hover:bg-white"
                     >
                       Join Now
                     </Link>
