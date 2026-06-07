@@ -1,8 +1,7 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
-import { X, ArrowRight } from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
+import { useRef, useEffect } from "react";
+import { ArrowRight } from "lucide-react";
 import { gsap } from "gsap";
 import type { Achievement } from "@/features/admin/queries";
 import { GridTexture, GoldRadialGlow } from "@/components/landing/LandingTextures";
@@ -18,50 +17,12 @@ const FALLBACK_PORTRAITS = [
 
 const PLACEMENT_LABEL: Record<number, string> = { 1: "Champion", 2: "Runner Up", 3: "3rd Place" };
 
-const ImageLightbox = ({ src, title, onClose }: { src: string; title: string; onClose: () => void }) => {
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
-    document.addEventListener("keydown", handler);
-    return () => document.removeEventListener("keydown", handler);
-  }, [onClose]);
-
-  return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.2 }}
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
-        onClick={onClose}
-      >
-        <button type="button" onClick={onClose} className="absolute right-4 top-4 cursor-pointer text-white/50 transition hover:text-white" aria-label="Tutup">
-          <X className="h-6 w-6" />
-        </button>
-        <motion.div
-          initial={{ scale: 0.95, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0.95, opacity: 0 }}
-          transition={{ duration: 0.2 }}
-          className="relative max-h-[90vh] max-w-[90vw]"
-          onClick={(e) => e.stopPropagation()}
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={src} alt={title} className="max-h-[85vh] max-w-[88vw] rounded-xl object-contain shadow-2xl" />
-          {title && <p className="mt-3 text-center text-sm font-semibold text-white/60">{title}</p>}
-        </motion.div>
-      </motion.div>
-    </AnimatePresence>
-  );
-};
-
 interface CardProps {
   item: AchievementItem;
   index: number;
-  onCardClick: (e: React.MouseEvent) => void;
 }
 
-const AchievementCard = ({ item, index, onCardClick }: CardProps) => {
+const AchievementCard = ({ item, index }: CardProps) => {
   const fallbackImage = FALLBACK_PORTRAITS[index % FALLBACK_PORTRAITS.length] || "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=600&auto=format&fit=crop";
   const imageSrc = item.image_url || fallbackImage;
 
@@ -76,14 +37,10 @@ const AchievementCard = ({ item, index, onCardClick }: CardProps) => {
         "Puncak kompetisi esports"
       ];
     }
-    // Split by period, semicolon, or newline
     let parts = desc.split(/[.;\n]+/).map(p => p.trim()).filter(p => p.length > 3);
-    
-    // If we only have 1 part and it is long, try splitting by comma
     if (parts.length <= 1) {
       parts = desc.split(/[,;\n]+/).map(p => p.trim()).filter(p => p.length > 3);
     }
-    
     return parts.slice(0, 3);
   };
 
@@ -95,7 +52,6 @@ const AchievementCard = ({ item, index, onCardClick }: CardProps) => {
       style={{ transform: "translateY(0px) scale(0.95)" }}
     >
       <div
-        onClick={onCardClick}
         className="group relative w-[280px] sm:w-[320px] aspect-[3/4] rounded-2xl overflow-hidden border border-white/5 bg-[#030813] shadow-2xl transition-all duration-500 hover:border-[#D4FF00]/40 hover:-translate-y-3 hover:scale-[1.02] active:scale-[0.99] cursor-pointer"
       >
         {/* Background photo */}
@@ -153,218 +109,200 @@ interface AchievementsSectionProps {
 const AchievementsSection = ({ entries }: AchievementsSectionProps) => {
   const sectionRef = useRef<HTMLElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [lightbox, setLightbox] = useState<{ src: string; title: string } | null>(null);
-  
-  const loopRef = useRef<gsap.core.Tween | null>(null);
-  
-  // Drag states
-  const [isDown, setIsDown] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [scrollLeft, setScrollLeft] = useState(0);
-  const isDraggingRef = useRef(false);
-  const clickStartRef = useRef({ x: 0, y: 0 });
 
   // Duplicate achievements list three times to form a seamless infinite wrap-around
   const duplicatedEntries = [...entries, ...entries, ...entries];
 
-  // Mouse/Touch Drag-to-Scroll handlers
-  const startDrag = (pageX: number, pageY: number) => {
-    clickStartRef.current = { x: pageX, y: pageY };
-    isDraggingRef.current = false;
-    
-    // Pause auto-scroll during drag
-    if (loopRef.current) loopRef.current.pause();
-
-    setIsDown(true);
-    const container = scrollContainerRef.current;
-    if (!container) return;
-    setStartX(pageX - container.offsetLeft);
-    setScrollLeft(container.scrollLeft);
-  };
-
-  const moveDrag = (pageX: number, pageY: number) => {
-    if (!isDown) return;
-    
-    const diffX = Math.abs(pageX - clickStartRef.current.x);
-    const diffY = Math.abs(pageY - clickStartRef.current.y);
-    if (diffX > 5 || diffY > 5) {
-      isDraggingRef.current = true;
-    }
-
-    const container = scrollContainerRef.current;
-    if (!container) return;
-    const x = pageX - container.offsetLeft;
-    const walk = (x - startX) * 1.5; // Drag speed factor
-
-    let newScroll = scrollLeft - walk;
-
-    // Handle seamless wraparound during manual drag
-    const cards = container.querySelectorAll(".achievement-card-wrapper");
-    const boundaryCard = cards[entries.length] as HTMLElement;
-    if (boundaryCard) {
-      const singleCycleWidth = boundaryCard.offsetLeft - (cards[0] as HTMLElement).offsetLeft;
-      if (newScroll >= singleCycleWidth) {
-        newScroll -= singleCycleWidth;
-        setScrollLeft(prev => prev - singleCycleWidth);
-        setStartX(prev => prev + singleCycleWidth);
-      } else if (newScroll <= 0) {
-        newScroll += singleCycleWidth;
-        setScrollLeft(prev => prev + singleCycleWidth);
-        setStartX(prev => prev - singleCycleWidth);
-      }
-    }
-
-    container.scrollLeft = newScroll;
-  };
-
-  const endDrag = () => {
-    setIsDown(false);
-    // Resume auto-scroll loop
-    if (loopRef.current) loopRef.current.play();
-  };
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    startDrag(e.pageX, e.pageY);
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    e.preventDefault();
-    moveDrag(e.pageX, e.pageY);
-  };
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    const touch = e.touches[0];
-    if (touch) startDrag(touch.pageX, touch.pageY);
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    const touch = e.touches[0];
-    if (touch) moveDrag(touch.pageX, touch.pageY);
-  };
-
-  const handleCardClick = (e: React.MouseEvent) => {
-    if (isDraggingRef.current) {
-      e.preventDefault();
-      e.stopPropagation();
-      return;
-    }
-    // Redirect to achievements page
-    window.location.href = "/gallery";
-  };
-
-  // GSAP scroll wave effect listener + Infinite Autoscrolling
   useEffect(() => {
     if (typeof window === "undefined") return;
 
     const container = scrollContainerRef.current;
     if (!container) return;
 
-    let loop: gsap.core.Tween;
+    // Direct DOM interaction refs (eliminates React render overhead entirely during drag)
+    const isDownRef = { current: false };
+    const startXRef = { current: 0 };
+    const scrollLeftRef = { current: 0 };
+    const isDraggingRef = { current: false };
+    const clickStartRef = { current: { x: 0, y: 0 } };
+    
+    // speed modifiers updated smoothly via vertical scroll direction
+    const timeScaleRef = { current: 1.0 };
+    const speed = 1.0; // Base marquee speed (px per frame)
+    let singleCycleWidth = 0;
 
-    const setupLoop = () => {
-      // Clean up previous animations on resize
-      if (loop) {
-        loop.kill();
-      }
+    const updateWave = () => {
+      const cards = container.querySelectorAll(".achievement-card-wrapper");
+      if (cards.length === 0) return;
 
+      const containerRect = container.getBoundingClientRect();
+      const containerCenter = containerRect.left + containerRect.width / 2;
+      const range = containerRect.width * 0.7;
+
+      cards.forEach((card) => {
+        const cardRect = card.getBoundingClientRect();
+        const cardCenter = cardRect.left + cardRect.width / 2;
+        const distanceFromCenter = Math.abs(cardCenter - containerCenter);
+
+        const factor = Math.max(0, 1 - distanceFromCenter / range);
+        const curve = Math.sin((factor * Math.PI) / 2);
+
+        const translateY = curve * -90;
+        const scale = 0.95 + curve * 0.05;
+
+        gsap.to(card, {
+          y: translateY,
+          scale: scale,
+          duration: 0.45,
+          ease: "power2.out",
+          overwrite: "auto"
+        });
+      });
+    };
+
+    const measureDimensions = () => {
       const cards = container.querySelectorAll(".achievement-card-wrapper");
       if (cards.length < entries.length * 2) return;
-
       const firstCard = cards[0] as HTMLElement;
       const boundaryCard = cards[entries.length] as HTMLElement;
-      if (!firstCard || !boundaryCard) return;
-
-      // Calculate width of one full cycle of cards
-      const singleCycleWidth = boundaryCard.offsetLeft - firstCard.offsetLeft;
-
-      // Start scroll position at 0
-      container.scrollLeft = 0;
-
-      const updateWave = () => {
-        const containerRect = container.getBoundingClientRect();
-        const containerCenter = containerRect.left + containerRect.width / 2;
-        const range = containerRect.width * 0.7; // Width range of wave effect
-
-        cards.forEach((card) => {
-          const cardRect = card.getBoundingClientRect();
-          const cardCenter = cardRect.left + cardRect.width / 2;
-          const distanceFromCenter = Math.abs(cardCenter - containerCenter);
-
-          // Wave factor goes from 1 (center) to 0 (borders)
-          const factor = Math.max(0, 1 - distanceFromCenter / range);
-          const curve = Math.sin((factor * Math.PI) / 2);
-
-          // Translate up by up to 90px in the center, and scale from 0.95 to 1.0
-          const translateY = curve * -90;
-          const scale = 0.95 + curve * 0.05;
-
-          gsap.to(card, {
-            y: translateY,
-            scale: scale,
-            duration: 0.45,
-            ease: "power2.out",
-            overwrite: "auto"
-          });
-        });
-      };
-
-      // Create infinite loop that automatically scrolls scrollLeft
-      loop = gsap.to(container, {
-        scrollLeft: singleCycleWidth,
-        ease: "none",
-        duration: entries.length * 8, // 8 seconds per card scroll speed
-        repeat: -1,
-        onUpdate: () => {
-          // Wrap around seamlessly
-          if (container.scrollLeft >= singleCycleWidth) {
-            container.scrollLeft -= singleCycleWidth;
-          } else if (container.scrollLeft <= 0) {
-            container.scrollLeft += singleCycleWidth;
-          }
-          updateWave();
-        }
-      });
-
-      loopRef.current = loop;
+      if (firstCard && boundaryCard) {
+        singleCycleWidth = boundaryCard.offsetLeft - firstCard.offsetLeft;
+      }
       updateWave();
     };
 
-    // Delay setup slightly to ensure DOM offset measurements are fully loaded
-    const timer = setTimeout(setupLoop, 100);
+    // Ticker logic for seamless, loop auto-scrolling
+    const tick = () => {
+      if (isDownRef.current || singleCycleWidth === 0) return;
 
-    const handleResize = () => {
-      setupLoop();
+      let newScroll = container.scrollLeft + speed * timeScaleRef.current;
+
+      // Wrap around boundary limits
+      if (newScroll >= singleCycleWidth) {
+        newScroll -= singleCycleWidth;
+      } else if (newScroll <= 0) {
+        newScroll += singleCycleWidth;
+      }
+
+      container.scrollLeft = newScroll;
+      updateWave();
     };
 
-    window.addEventListener("resize", handleResize);
+    // Drag-to-scroll implementations
+    const startDrag = (pageX: number, pageY: number) => {
+      clickStartRef.current = { x: pageX, y: pageY };
+      isDraggingRef.current = false;
 
-    // Track vertical page scroll to adjust auto-scroll direction/speed
+      container.style.cursor = "grabbing";
+      isDownRef.current = true;
+      startXRef.current = pageX - container.offsetLeft;
+      scrollLeftRef.current = container.scrollLeft;
+    };
+
+    const moveDrag = (pageX: number, pageY: number) => {
+      if (!isDownRef.current || singleCycleWidth === 0) return;
+      
+      const diffX = Math.abs(pageX - clickStartRef.current.x);
+      const diffY = Math.abs(pageY - clickStartRef.current.y);
+      if (diffX > 5 || diffY > 5) {
+        isDraggingRef.current = true;
+      }
+
+      const walk = (pageX - container.offsetLeft - startXRef.current) * 1.5;
+      let newScroll = scrollLeftRef.current - walk;
+
+      if (newScroll >= singleCycleWidth) {
+        newScroll -= singleCycleWidth;
+        scrollLeftRef.current -= singleCycleWidth;
+        startXRef.current += singleCycleWidth;
+      } else if (newScroll <= 0) {
+        newScroll += singleCycleWidth;
+        scrollLeftRef.current += singleCycleWidth;
+        startXRef.current -= singleCycleWidth;
+      }
+
+      container.scrollLeft = newScroll;
+      updateWave();
+    };
+
+    const endDrag = () => {
+      if (!isDownRef.current) return;
+      isDownRef.current = false;
+      container.style.cursor = "grab";
+    };
+
+    // Event listeners for Drag-to-Scroll
+    const handleMouseDown = (e: MouseEvent) => startDrag(e.pageX, e.pageY);
+    const handleMouseMove = (e: MouseEvent) => {
+      if (isDownRef.current) e.preventDefault();
+      moveDrag(e.pageX, e.pageY);
+    };
+    const handleMouseUp = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const isCardClick = target.closest(".achievement-card-wrapper");
+      
+      // If it is a card and wasn't dragged, redirect to /gallery
+      if (isCardClick && !isDraggingRef.current && isDownRef.current) {
+        window.location.href = "/gallery";
+      }
+      endDrag();
+    };
+
+    const handleTouchStart = (e: TouchEvent) => {
+      const touch = e.touches[0];
+      if (touch) startDrag(touch.pageX, touch.pageY);
+    };
+    const handleTouchMove = (e: TouchEvent) => {
+      const touch = e.touches[0];
+      if (touch) moveDrag(touch.pageX, touch.pageY);
+    };
+    const handleTouchEnd = () => endDrag();
+
+    container.addEventListener("mousedown", handleMouseDown);
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
+    
+    container.addEventListener("touchstart", handleTouchStart, { passive: true });
+    container.addEventListener("touchmove", handleTouchMove, { passive: true });
+    container.addEventListener("touchend", handleTouchEnd);
+
+    // Initial layouts
+    container.style.cursor = "grab";
+    
+    const timer = setTimeout(() => {
+      measureDimensions();
+      gsap.ticker.add(tick);
+    }, 100);
+
+    window.addEventListener("resize", measureDimensions);
+
+    // Page scroll direction tracking
     let lastScrollY = window.scrollY;
     const handleWindowScroll = () => {
       const currentScrollY = window.scrollY;
       const diff = currentScrollY - lastScrollY;
-      
       if (diff > 0) {
-        // Scroll down -> auto-scroll left (timeScale = 1.0)
-        if (loopRef.current) {
-          gsap.to(loopRef.current, { timeScale: 1.0, duration: 0.6, ease: "power1.out", overwrite: "auto" });
-        }
+        gsap.to(timeScaleRef, { current: 1.0, duration: 0.6, ease: "power1.out", overwrite: "auto" });
       } else if (diff < 0) {
-        // Scroll up -> auto-scroll right (timeScale = -1.0)
-        if (loopRef.current) {
-          gsap.to(loopRef.current, { timeScale: -1.0, duration: 0.6, ease: "power1.out", overwrite: "auto" });
-        }
+        gsap.to(timeScaleRef, { current: -1.0, duration: 0.6, ease: "power1.out", overwrite: "auto" });
       }
       lastScrollY = currentScrollY;
     };
-
     window.addEventListener("scroll", handleWindowScroll, { passive: true });
 
     return () => {
       clearTimeout(timer);
-      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("resize", measureDimensions);
       window.removeEventListener("scroll", handleWindowScroll);
-      if (loop) loop.kill();
+      gsap.ticker.remove(tick);
+
+      container.removeEventListener("mousedown", handleMouseDown);
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+      
+      container.removeEventListener("touchstart", handleTouchStart);
+      container.removeEventListener("touchmove", handleTouchMove);
+      container.removeEventListener("touchend", handleTouchEnd);
     };
   }, [entries]);
 
@@ -403,13 +341,6 @@ const AchievementsSection = ({ entries }: AchievementsSectionProps) => {
           <div className="relative w-full overflow-hidden">
             <div
               ref={scrollContainerRef}
-              onMouseDown={handleMouseDown}
-              onMouseMove={handleMouseMove}
-              onMouseUp={endDrag}
-              onMouseLeave={endDrag}
-              onTouchStart={handleTouchStart}
-              onTouchMove={handleTouchMove}
-              onTouchEnd={endDrag}
               onDragStart={(e) => e.preventDefault()}
               className="flex gap-6 overflow-x-hidden scrollbar-none px-4 sm:px-8 pt-32 pb-16 select-none"
             >
@@ -421,7 +352,6 @@ const AchievementsSection = ({ entries }: AchievementsSectionProps) => {
                     key={`${item.id}-${setIndex}-${originalIndex}`}
                     item={item}
                     index={originalIndex}
-                    onCardClick={handleCardClick}
                   />
                 );
               })}
@@ -435,10 +365,6 @@ const AchievementsSection = ({ entries }: AchievementsSectionProps) => {
 
         </div>
       </section>
-
-      {lightbox && (
-        <ImageLightbox src={lightbox.src} title={lightbox.title} onClose={() => setLightbox(null)} />
-      )}
     </>
   );
 };
