@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { useRef } from "react";
 import { Newspaper } from "lucide-react";
-import { motion, useInView } from "motion/react";
+import { gsap, useGSAP } from "@/lib/gsap";
 import type { NewsPost } from "@/features/admin/queries";
+import { GridTexture, PlusTexture } from "@/components/landing/LandingTextures";
 
 interface Props {
   posts: NewsPost[];
@@ -16,77 +17,88 @@ function formatDate(iso: string | null): string {
 }
 
 const LatestNewsSection = ({ posts }: Props) => {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-60px" });
+  const sectionRef = useRef<HTMLElement>(null);
+
+  useGSAP(() => {
+    gsap.from(".news-header", {
+      y: 16, opacity: 0, duration: 0.5, ease: "power2.out",
+      scrollTrigger: { trigger: sectionRef.current, start: "top 85%", once: true },
+    });
+    gsap.from(".news-card", {
+      y: 20, opacity: 0, duration: 0.5, stagger: 0.1, ease: "power2.out",
+      scrollTrigger: { trigger: ".news-card", start: "top 88%", once: true },
+    });
+  }, { scope: sectionRef });
 
   if (posts.length === 0) return null;
 
   return (
-    <section className="bg-[#040D1C] px-5 py-20 sm:px-8 lg:px-10">
-      <div className="mx-auto max-w-7xl" ref={ref}>
+    <section ref={sectionRef} className="relative overflow-hidden bg-[#0A0A0A] px-5 py-20 sm:px-8 lg:px-10">
+      <GridTexture opacity={0.03} />
+      <PlusTexture opacity={0.018} />
+      <div className="relative mx-auto max-w-7xl">
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5 }}
-          className="mb-8 flex flex-wrap items-end justify-between gap-4 border-b border-white/12 pb-8"
-        >
+        <div className="news-header mb-8 flex flex-wrap items-end justify-between gap-4 pb-8">
           <div>
-            <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.4em] text-white/40">
-              News & Updates
-            </p>
+            <div className="mb-2 flex items-center gap-3">
+              <div className="h-4 w-0.5 bg-[#F5C400]" />
+              <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#F5C400]">
+                News &amp; Updates
+              </p>
+            </div>
             <h2 className="text-3xl font-black uppercase tracking-tight text-white sm:text-4xl lg:text-5xl">
               Latest News
             </h2>
           </div>
           <Link
             href="/news"
-            className="text-[11px] font-bold uppercase tracking-widest text-[#F5C400] transition hover:text-[#F5C400]/70"
+            className="text-[11px] font-bold uppercase tracking-widest text-[#F5C400]/60 transition hover:text-[#F5C400]"
           >
-            Lihat semua berita →
+            Lihat semua →
           </Link>
-        </motion.div>
+        </div>
 
-        {/* Cards */}
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {posts.map((post, index) => (
-            <motion.div
-              key={post.id}
-              initial={{ opacity: 0, y: 16 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.45, delay: index * 0.1, ease: "easeOut" }}
-            >
+        {/* Cards — image-bg overlay (gamingonavax style) */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {posts.map((post) => (
+            <div key={post.id} className="news-card">
               <Link
                 href={`/news/${post.slug}`}
-                className="group flex h-full flex-col border border-white/10 bg-[#071428] transition-all duration-200 hover:border-[#F5C400]/40 hover:bg-[#0C1E3C]"
+                className="group relative flex h-64 overflow-hidden border border-white/[0.08] transition-all duration-300 hover:border-[#F5C400]/30"
               >
                 {post.cover_image_url ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={post.cover_image_url}
-                    alt={post.title}
-                    className="h-44 w-full object-cover"
+                    alt=""
+                    aria-hidden="true"
+                    loading="lazy"
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    style={{ filter: "brightness(0.55) saturate(0.7)" }}
                   />
                 ) : (
-                  <div className="flex h-44 w-full items-center justify-center bg-[#0A1628]">
-                    <Newspaper className="h-10 w-10 text-white/10" />
+                  <div className="absolute inset-0 bg-white/[0.03]">
+                    <Newspaper className="absolute left-1/2 top-1/2 h-10 w-10 -translate-x-1/2 -translate-y-1/2 text-white/10" />
                   </div>
                 )}
-                <div className="flex flex-1 flex-col gap-2 p-5">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-[#F5C400]/70">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-transparent" />
+                <div
+                  className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                  style={{ background: "radial-gradient(ellipse 80% 50% at 50% 100%, rgba(245,196,0,0.06) 0%, transparent 70%)" }}
+                />
+                <div className="absolute inset-x-0 bottom-0 flex flex-col gap-2 p-5">
+                  <span className="w-fit border border-[#F5C400]/25 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[#F5C400]/80">
                     {formatDate(post.published_at)}
-                  </p>
-                  <p className="font-black uppercase leading-tight tracking-tight text-white transition group-hover:text-[#F5C400]">
+                  </span>
+                  <p className="font-black uppercase leading-tight tracking-tight text-white transition-colors duration-200 group-hover:text-[#F5C400]">
                     {post.title}
                   </p>
                   {post.excerpt && (
-                    <p className="line-clamp-2 text-xs leading-relaxed text-white/45">
-                      {post.excerpt}
-                    </p>
+                    <p className="line-clamp-2 text-xs leading-relaxed text-white/50">{post.excerpt}</p>
                   )}
                 </div>
               </Link>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>
