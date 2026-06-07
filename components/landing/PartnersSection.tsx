@@ -9,22 +9,22 @@ interface PartnersSectionProps {
 }
 
 const DEFAULT_PARTNERS = [
-  { id: "default-1",  name: "PlayStation",   logo_url: null },
-  { id: "default-2",  name: "Xbox",          logo_url: null },
-  { id: "default-3",  name: "Nintendo",      logo_url: null },
-  { id: "default-4",  name: "Ubisoft",       logo_url: null },
-  { id: "default-5",  name: "Steam",         logo_url: null },
-  { id: "default-6",  name: "Epic Games",    logo_url: null },
-  { id: "default-7",  name: "NVIDIA",        logo_url: null },
-  { id: "default-8",  name: "Intel",         logo_url: null },
-  { id: "default-9",  name: "AMD",           logo_url: null },
-  { id: "default-10", name: "Razer",         logo_url: null },
-  { id: "default-11", name: "Logitech G",    logo_url: null },
-  { id: "default-12", name: "Corsair",       logo_url: null },
-  { id: "default-13", name: "Unity",         logo_url: null },
-  { id: "default-14", name: "Unreal Engine", logo_url: null },
-  { id: "default-15", name: "Twitch",        logo_url: null },
-  { id: "default-16", name: "Discord",       logo_url: null },
+  { id: "default-1",  name: "PlayStation",   logo_url: "/brand/logo.jpg" },
+  { id: "default-2",  name: "Xbox",          logo_url: "/brand/logo.jpg" },
+  { id: "default-3",  name: "Nintendo",      logo_url: "/brand/logo.jpg" },
+  { id: "default-4",  name: "Ubisoft",       logo_url: "/brand/logo.jpg" },
+  { id: "default-5",  name: "Steam",         logo_url: "/brand/logo.jpg" },
+  { id: "default-6",  name: "Epic Games",    logo_url: "/brand/logo.jpg" },
+  { id: "default-7",  name: "NVIDIA",        logo_url: "/brand/logo.jpg" },
+  { id: "default-8",  name: "Intel",         logo_url: "/brand/logo.jpg" },
+  { id: "default-9",  name: "AMD",           logo_url: "/brand/logo.jpg" },
+  { id: "default-10", name: "Razer",         logo_url: "/brand/logo.jpg" },
+  { id: "default-11", name: "Logitech G",    logo_url: "/brand/logo.jpg" },
+  { id: "default-12", name: "Corsair",       logo_url: "/brand/logo.jpg" },
+  { id: "default-13", name: "Unity",         logo_url: "/brand/logo.jpg" },
+  { id: "default-14", name: "Unreal Engine", logo_url: "/brand/logo.jpg" },
+  { id: "default-15", name: "Twitch",        logo_url: "/brand/logo.jpg" },
+  { id: "default-16", name: "Discord",       logo_url: "/brand/logo.jpg" },
 ];
 
 type PartnerItem = { id: string; name: string; logo_url: string | null };
