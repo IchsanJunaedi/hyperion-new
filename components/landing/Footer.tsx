@@ -1,6 +1,7 @@
 import { Instagram } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { GridTexture } from "@/components/landing/LandingTextures";
 
 const LINKS = {
   Team: [
@@ -35,8 +36,9 @@ interface FooterProps {
 
 const Footer = ({ settings = DEFAULT_FOOTER_SETTINGS }: FooterProps) => {
   return (
-    <footer className="border-t border-white/12 bg-[#040D1C] px-5 pb-10 pt-16 sm:px-8 lg:px-10">
-      <div className="mx-auto max-w-7xl">
+    <footer className="relative overflow-hidden border-t border-[#F5C400]/10 bg-[#0A0A0A] px-5 pb-10 pt-16 sm:px-8 lg:px-10">
+      <GridTexture opacity={0.025} />
+      <div className="relative mx-auto max-w-7xl">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.6fr_1fr_1fr_1fr]">
           {/* Brand */}
           <div>
@@ -93,11 +95,14 @@ const Footer = ({ settings = DEFAULT_FOOTER_SETTINGS }: FooterProps) => {
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-14 flex flex-col gap-2 border-t border-white/12 pt-6 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-14 flex flex-col gap-2 border-t border-[#F5C400]/8 pt-6 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-[10px] uppercase tracking-widest text-white/38">
             © {new Date().getFullYear()} Hyperion Team. All rights reserved.
           </p>
-          <p className="text-[10px] font-bold uppercase tracking-widest text-[#F5C400]/50">
+          <p
+            className="text-[10px] font-bold uppercase tracking-widest text-[#F5C400]/70"
+            style={{ textShadow: "0 0 12px rgba(245,196,0,0.35)" }}
+          >
             {settings.footer_hashtag}
           </p>
         </div>
