@@ -259,13 +259,34 @@ input[type="number"] {
   appearance: textfield;
 }
 
+/* ── Partners carousel ────────────────────────────────────────────────────── */
+@keyframes scroll-left {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@keyframes scroll-right {
+  from { transform: translateX(-50%); }
+  to   { transform: translateX(0); }
+}
+.animate-scroll-left  { animation: scroll-left  30s linear infinite; }
+.animate-scroll-right { animation: scroll-right 35s linear infinite; }
+
+/* Pause on hover of the outer track container */
+.partners-track:hover .animate-scroll-left,
+.partners-track:hover .animate-scroll-right {
+  animation-play-state: paused;
+}
+
 /* Hero Countdown */
 .countdown-num {
   font-size: clamp(64px, 11vw, 130px);
   font-weight: 900;
   color: #fff;
   letter-spacing: -0.03em;
-  text-shadow: 0 0 80px rgba(245, 196, 0, 0.1), 0 4px 40px rgba(0, 0, 0, 0.4);
+  text-shadow:
+    0 0 60px rgba(245, 196, 0, 0.30),
+    0 0 120px rgba(245, 196, 0, 0.10),
+    0 4px 40px rgba(0, 0, 0, 0.4);
   font-variant-numeric: tabular-nums;
 }
 .countdown-dot {
