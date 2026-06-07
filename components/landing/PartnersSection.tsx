@@ -9,22 +9,22 @@ interface PartnersSectionProps {
 }
 
 const DEFAULT_PARTNERS = [
-  { id: "default-1", name: "PlayStation", logo_url: "https://cdn.simpleicons.org/playstation" },
-  { id: "default-2", name: "Xbox", logo_url: "https://cdn.simpleicons.org/xbox" },
-  { id: "default-3", name: "Nintendo", logo_url: "https://cdn.simpleicons.org/nintendo" },
-  { id: "default-4", name: "Ubisoft", logo_url: "https://cdn.simpleicons.org/ubisoft" },
-  { id: "default-5", name: "Steam", logo_url: "https://cdn.simpleicons.org/steam" },
-  { id: "default-6", name: "Epic Games", logo_url: "https://cdn.simpleicons.org/epicgames" },
-  { id: "default-7", name: "NVIDIA", logo_url: "https://cdn.simpleicons.org/nvidia" },
-  { id: "default-8", name: "Intel", logo_url: "https://cdn.simpleicons.org/intel" },
-  { id: "default-9", name: "AMD", logo_url: "https://cdn.simpleicons.org/amd" },
-  { id: "default-10", name: "Razer", logo_url: "https://cdn.simpleicons.org/razer" },
-  { id: "default-11", name: "Logitech G", logo_url: "https://cdn.simpleicons.org/logitech" },
-  { id: "default-12", name: "Corsair", logo_url: "https://cdn.simpleicons.org/corsair" },
-  { id: "default-13", name: "Unity", logo_url: "https://cdn.simpleicons.org/unity" },
-  { id: "default-14", name: "Unreal Engine", logo_url: "https://cdn.simpleicons.org/unrealengine" },
-  { id: "default-15", name: "Twitch", logo_url: "https://cdn.simpleicons.org/twitch" },
-  { id: "default-16", name: "Discord", logo_url: "https://cdn.simpleicons.org/discord" },
+  { id: "default-1",  name: "PlayStation",   logo_url: null },
+  { id: "default-2",  name: "Xbox",          logo_url: null },
+  { id: "default-3",  name: "Nintendo",      logo_url: null },
+  { id: "default-4",  name: "Ubisoft",       logo_url: null },
+  { id: "default-5",  name: "Steam",         logo_url: null },
+  { id: "default-6",  name: "Epic Games",    logo_url: null },
+  { id: "default-7",  name: "NVIDIA",        logo_url: null },
+  { id: "default-8",  name: "Intel",         logo_url: null },
+  { id: "default-9",  name: "AMD",           logo_url: null },
+  { id: "default-10", name: "Razer",         logo_url: null },
+  { id: "default-11", name: "Logitech G",    logo_url: null },
+  { id: "default-12", name: "Corsair",       logo_url: null },
+  { id: "default-13", name: "Unity",         logo_url: null },
+  { id: "default-14", name: "Unreal Engine", logo_url: null },
+  { id: "default-15", name: "Twitch",        logo_url: null },
+  { id: "default-16", name: "Discord",       logo_url: null },
 ];
 
 type PartnerItem = { id: string; name: string; logo_url: string | null };
