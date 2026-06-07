@@ -1,60 +1,80 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useInView } from "motion/react";
+import { gsap, useGSAP } from "@/lib/gsap";
 import type { Partner } from "@/features/admin/queries";
+import { GridTexture } from "@/components/landing/LandingTextures";
 
 interface PartnersSectionProps {
   partners: Partner[];
 }
 
 const PartnersSection = ({ partners }: PartnersSectionProps) => {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-80px" });
+  const sectionRef = useRef<HTMLElement>(null);
+
+  useGSAP(() => {
+    gsap.from(".partners-header", {
+      y: 16, opacity: 0, duration: 0.5, ease: "power2.out",
+      scrollTrigger: { trigger: sectionRef.current, start: "top 85%", once: true },
+    });
+    gsap.from(".partners-track", {
+      opacity: 0, duration: 0.7, delay: 0.2, ease: "power1.out",
+      scrollTrigger: { trigger: sectionRef.current, start: "top 80%", once: true },
+    });
+  }, { scope: sectionRef });
 
   if (partners.length === 0) return null;
 
-  return (
-    <section className="bg-[#040D1C] px-5 py-20 sm:px-8 lg:px-10">
-      <div className="mx-auto max-w-7xl" ref={ref}>
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5 }}
-          className="mb-0 border-b border-white/12 pb-8"
-        >
-          <div className="flex items-end gap-4">
-            <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-white/40">
-              04 — Partners &amp; Sponsors
-            </p>
-            <div className="mb-0.5 h-px flex-1 bg-white/12" />
-          </div>
-        </motion.div>
+  const row1 = [...partners, ...partners];
+  const row2 = [...partners].reverse().concat([...partners].reverse());
 
-        {/* Logo grid — separated by borders, no background fill */}
-        <div className="grid grid-cols-2 sm:grid-cols-4">
-          {partners.map((p, i) => (
-            <motion.div
-              key={p.id}
-              initial={{ opacity: 0 }}
-              animate={inView ? { opacity: 1 } : {}}
-              transition={{ duration: 0.4, delay: i * 0.04 }}
-              className={`group flex items-center justify-center p-8 ${
-                i % 2 === 0 ? "border-r border-white/12" : ""
-              } ${i < partners.length - 2 ? "border-b border-white/12" : ""} sm:${
-                i % 4 !== 3 ? "border-r border-white/12" : "border-r-0"
-              } sm:${i < partners.length - 4 ? "border-b border-white/12" : "border-b-0"}`}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={p.logo_url ?? ""}
-                alt={p.name}
-                loading="lazy"
-                className="max-h-9 w-auto object-contain opacity-25 grayscale transition-all duration-500 group-hover:opacity-80 group-hover:grayscale-0"
-              />
-            </motion.div>
-          ))}
+  return (
+    <section ref={sectionRef} className="relative overflow-hidden bg-[#0A0A0A] py-20">
+      <GridTexture opacity={0.025} />
+      <div className="relative">
+        <div className="partners-header mb-10 px-5 sm:px-8 lg:px-10">
+          <div className="mx-auto max-w-7xl">
+            <div className="mb-2 flex items-center gap-3">
+              <div className="h-4 w-0.5 bg-[#F5C400]" />
+              <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#F5C400]">
+                Partners &amp; Sponsors
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="partners-track flex flex-col gap-8">
+          {/* Row 1: scroll left */}
+          <div className="overflow-hidden">
+            <div className="flex animate-scroll-left items-center gap-16 whitespace-nowrap">
+              {row1.map((p, i) => (
+                <div key={`r1-${p.id}-${i}`} className="inline-flex shrink-0 items-center justify-center">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={p.logo_url ?? ""}
+                    alt={p.name}
+                    loading="lazy"
+                    className="h-9 w-auto max-w-[140px] object-contain grayscale opacity-25 transition-all duration-500 hover:opacity-75 hover:grayscale-0"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+          {/* Row 2: scroll right */}
+          <div className="overflow-hidden">
+            <div className="flex animate-scroll-right items-center gap-16 whitespace-nowrap">
+              {row2.map((p, i) => (
+                <div key={`r2-${p.id}-${i}`} className="inline-flex shrink-0 items-center justify-center">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={p.logo_url ?? ""}
+                    alt={p.name}
+                    loading="lazy"
+                    className="h-9 w-auto max-w-[140px] object-contain grayscale opacity-25 transition-all duration-500 hover:opacity-75 hover:grayscale-0"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </section>
