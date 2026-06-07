@@ -128,15 +128,19 @@ const AchievementCard = ({ item, index, onImageClick }: CardProps) => {
 
         {/* Bottom card details */}
         <div className="absolute inset-x-6 bottom-6 z-20 flex flex-col text-left">
-          <span className="font-serif italic text-white/40 text-xs mb-1">glory{" //"}</span>
-          <h3 className="font-sans font-bold text-lg sm:text-xl text-white tracking-wide uppercase leading-tight mb-2">
+          <span className="font-orbitron text-[9px] font-bold uppercase tracking-[0.15em] text-[#D4FF00]/70 mb-1">
+            glory{" //"}
+          </span>
+          <h3 className="font-bebas text-2xl font-black uppercase tracking-wide text-white leading-none mb-2 mt-0.5">
             {item.title}
           </h3>
 
           <div className="h-[1px] bg-white/10 w-full mb-3" />
 
           <div className="space-y-1.5">
-            <span className="font-serif italic text-white/40 text-[11px] block">highlights{" //"}</span>
+            <span className="font-orbitron text-[9px] font-bold uppercase tracking-[0.15em] text-white/40 block">
+              highlights{" //"}
+            </span>
             <ul className="space-y-1.5 text-left">
               {points.map((pt, idx) => (
                 <li key={idx} className="font-sans font-light text-white/80 text-[11px] leading-relaxed flex items-start gap-1.5">
@@ -160,89 +164,109 @@ const AchievementsSection = ({ entries }: AchievementsSectionProps) => {
   const sectionRef = useRef<HTMLElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [lightbox, setLightbox] = useState<{ src: string; title: string } | null>(null);
+  const loopRef = useRef<gsap.core.Tween | null>(null);
 
-  // Drag-to-scroll implementation
-  const [isDown, setIsDown] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [scrollLeft, setScrollLeft] = useState(0);
+  // Duplicate achievements list three times to form a seamless infinite wrap-around
+  const duplicatedEntries = [...entries, ...entries, ...entries];
 
-  const handleMouseDown = (e: React.MouseEvent) => {
+  // GSAP scroll wave effect listener + Infinite Autoscrolling
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
     const container = scrollContainerRef.current;
     if (!container) return;
-    setIsDown(true);
-    setStartX(e.pageX - container.offsetLeft);
-    setScrollLeft(container.scrollLeft);
+
+    let loop: gsap.core.Tween;
+
+    const setupLoop = () => {
+      // Clean up previous animations on resize
+      if (loop) {
+        loop.kill();
+      }
+
+      const cards = container.querySelectorAll(".achievement-card-wrapper");
+      if (cards.length < entries.length * 2) return;
+
+      const firstCard = cards[0] as HTMLElement;
+      const boundaryCard = cards[entries.length] as HTMLElement;
+      if (!firstCard || !boundaryCard) return;
+
+      // Calculate width of one full cycle of cards
+      const singleCycleWidth = boundaryCard.offsetLeft - firstCard.offsetLeft;
+
+      // Start scroll position at 0
+      container.scrollLeft = 0;
+
+      const updateWave = () => {
+        const containerRect = container.getBoundingClientRect();
+        const containerCenter = containerRect.left + containerRect.width / 2;
+        const range = containerRect.width * 0.7; // Width range of wave effect
+
+        cards.forEach((card) => {
+          const cardRect = card.getBoundingClientRect();
+          const cardCenter = cardRect.left + cardRect.width / 2;
+          const distanceFromCenter = Math.abs(cardCenter - containerCenter);
+
+          // Wave factor goes from 1 (center) to 0 (borders)
+          const factor = Math.max(0, 1 - distanceFromCenter / range);
+          const curve = Math.sin((factor * Math.PI) / 2);
+
+          // Translate up by up to 90px in the center, and scale from 0.95 to 1.0
+          const translateY = curve * -90;
+          const scale = 0.95 + curve * 0.05;
+
+          gsap.to(card, {
+            y: translateY,
+            scale: scale,
+            duration: 0.45,
+            ease: "power2.out",
+            overwrite: "auto"
+          });
+        });
+      };
+
+      // Create infinite loop that automatically scrolls scrollLeft
+      loop = gsap.to(container, {
+        scrollLeft: singleCycleWidth,
+        ease: "none",
+        duration: entries.length * 8, // 8 seconds per card scroll speed
+        repeat: -1,
+        onUpdate: () => {
+          // Wrap around seamlessly
+          if (container.scrollLeft >= singleCycleWidth) {
+            container.scrollLeft -= singleCycleWidth;
+          }
+          updateWave();
+        }
+      });
+
+      loopRef.current = loop;
+      updateWave();
+    };
+
+    // Delay setup slightly to ensure DOM offset measurements are fully loaded
+    const timer = setTimeout(setupLoop, 100);
+
+    const handleResize = () => {
+      setupLoop();
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("resize", handleResize);
+      if (loop) loop.kill();
+    };
+  }, [entries]);
+
+  const handleMouseEnter = () => {
+    if (loopRef.current) loopRef.current.pause();
   };
 
   const handleMouseLeave = () => {
-    setIsDown(false);
+    if (loopRef.current) loopRef.current.play();
   };
-
-  const handleMouseUp = () => {
-    setIsDown(false);
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDown) return;
-    e.preventDefault();
-    const container = scrollContainerRef.current;
-    if (!container) return;
-    const x = e.pageX - container.offsetLeft;
-    const walk = (x - startX) * 1.5; // Drag speed multiplier
-    container.scrollLeft = scrollLeft - walk;
-  };
-
-  // GSAP scroll wave effect listener
-  useEffect(() => {
-    const container = scrollContainerRef.current;
-    if (!container) return;
-
-    const updateWave = () => {
-      const cards = container.querySelectorAll(".achievement-card-wrapper");
-      if (cards.length === 0) return;
-
-      const containerRect = container.getBoundingClientRect();
-      const containerCenter = containerRect.left + containerRect.width / 2;
-      const range = containerRect.width * 0.7; // Width range of wave effect
-
-      cards.forEach((card) => {
-        const cardRect = card.getBoundingClientRect();
-        const cardCenter = cardRect.left + cardRect.width / 2;
-        const distanceFromCenter = Math.abs(cardCenter - containerCenter);
-
-        // Wave factor goes from 1 (center) to 0 (borders)
-        const factor = Math.max(0, 1 - distanceFromCenter / range);
-        const curve = Math.sin((factor * Math.PI) / 2);
-
-        // Translate up by up to 90px in the center, and scale from 0.95 to 1.0
-        const translateY = curve * -90;
-        const scale = 0.95 + curve * 0.05;
-
-        gsap.to(card, {
-          y: translateY,
-          scale: scale,
-          duration: 0.45,
-          ease: "power2.out",
-          overwrite: "auto"
-        });
-      });
-    };
-
-    // Initialize layout positions
-    updateWave();
-
-    container.addEventListener("scroll", updateWave, { passive: true });
-    window.addEventListener("resize", updateWave);
-    
-    // Sync periodically to avoid layout shifts or delayed mounts
-    const interval = setInterval(updateWave, 250);
-
-    return () => {
-      container.removeEventListener("scroll", updateWave);
-      window.removeEventListener("resize", updateWave);
-      clearInterval(interval);
-    };
-  }, [entries]);
 
   if (entries.length === 0) return null;
 
@@ -267,8 +291,8 @@ const AchievementsSection = ({ entries }: AchievementsSectionProps) => {
               </p>
               <div className="h-px w-8 bg-[#D4FF00]" />
             </div>
-            <h2 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-light text-white tracking-wide leading-tight">
-              The beginning of our <span className="italic">glory.</span>
+            <h2 className="font-bebas text-4xl sm:text-5xl lg:text-6xl font-black uppercase tracking-wide text-white leading-none">
+              The beginning of our <span className="text-[#D4FF00]">glory.</span>
             </h2>
             <p className="mt-4 max-w-2xl mx-auto text-xs sm:text-sm text-white/50 font-sans font-light leading-relaxed">
               Kita mulai dari apa yang paling kita impikan – bermain lebih gigih, berlatih lebih cerdas, menyatu lebih dalam, berpikir lebih jernih, dan menang bersama di setiap panggung kompetisi.
@@ -279,32 +303,29 @@ const AchievementsSection = ({ entries }: AchievementsSectionProps) => {
           <div className="relative w-full overflow-hidden">
             <div
               ref={scrollContainerRef}
-              onMouseDown={handleMouseDown}
+              onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
-              onMouseUp={handleMouseUp}
-              onMouseMove={handleMouseMove}
-              className={`flex gap-6 overflow-x-auto scrollbar-none px-4 sm:px-8 pt-32 pb-16 transition-all select-none ${
-                isDown ? "cursor-grabbing" : "cursor-grab"
-              }`}
-              style={{ scrollBehavior: isDown ? "auto" : "smooth" }}
+              onDragStart={(e) => e.preventDefault()}
+              className="flex gap-6 overflow-x-hidden scrollbar-none px-4 sm:px-8 pt-32 pb-16 select-none"
             >
-              {entries.map((item, i) => (
-                <AchievementCard
-                  key={item.id}
-                  item={item}
-                  index={i}
-                  onImageClick={(src, title) => setLightbox({ src, title })}
-                />
-              ))}
+              {duplicatedEntries.map((item, i) => {
+                const setIndex = Math.floor(i / entries.length);
+                const originalIndex = i % entries.length;
+                return (
+                  <AchievementCard
+                    key={`${item.id}-${setIndex}-${originalIndex}`}
+                    item={item}
+                    index={originalIndex}
+                    onImageClick={(src, title) => setLightbox({ src, title })}
+                  />
+                );
+              })}
             </div>
             
-            {/* Scroll Indicator */}
-            {entries.length > 3 && (
-              <div className="mt-4 flex items-center justify-center gap-2 text-white/30 text-[10px] font-orbitron uppercase tracking-widest pointer-events-none">
-                <span>Drag to explore</span>
-                <ArrowRight className="h-3 w-3 animate-pulse" />
-              </div>
-            )}
+            {/* Play/Pause Tip indicator */}
+            <div className="mt-4 flex items-center justify-center gap-2 text-white/20 text-[9px] font-orbitron uppercase tracking-widest pointer-events-none">
+              <span>Hover cards to freeze auto-motion</span>
+            </div>
           </div>
 
         </div>
