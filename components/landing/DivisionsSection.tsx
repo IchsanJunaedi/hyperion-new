@@ -54,23 +54,8 @@ function getGameLogo(game: string | null, logoUrl: string | null, name: string) 
   );
 }
 
-function getGameBackground(game: string | null) {
-  const key = (game ?? "").toLowerCase();
-  if (key === "mlbb" || key === "mobile legends" || key === "mobile_legends") {
-    return "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=600&auto=format&fit=crop";
-  }
-  if (key === "pubgm" || key === "pubg" || key === "pubg mobile") {
-    return "https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=600&auto=format&fit=crop";
-  }
-  if (key === "valorant") {
-    return "https://images.unsplash.com/photo-1560253023-3ec5d502959f?q=80&w=600&auto=format&fit=crop";
-  }
-  if (key === "free fire" || key === "freefire" || key === "ff") {
-    return "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?q=80&w=600&auto=format&fit=crop";
-  }
-  
-  // Generic fallback background
-  return "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=600&auto=format&fit=crop";
+function getGameBackground(_game: string | null) {
+  return "/brand/logo.jpg";
 }
 
 export async function DivisionsSection() {
