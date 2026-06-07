@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useRef } from "react";
-import { motion, useInView } from "motion/react";
+import { gsap, useGSAP } from "@/lib/gsap";
 import type { PublicTournament } from "@/features/admin/queries";
+import { GridTexture, PlusTexture } from "@/components/landing/LandingTextures";
 
 interface Props {
   tournaments: PublicTournament[];
@@ -16,74 +17,72 @@ function formatCardDate(dateStr: string, timeStr: string | null): string {
 }
 
 const UpcomingMatchesSection = ({ tournaments }: Props) => {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-60px" });
+  const sectionRef = useRef<HTMLElement>(null);
+
+  useGSAP(() => {
+    gsap.from(".um-header", {
+      y: 16, opacity: 0, duration: 0.5, ease: "power2.out",
+      scrollTrigger: { trigger: sectionRef.current, start: "top 85%", once: true },
+    });
+    gsap.from(".um-card", {
+      y: 16, opacity: 0, duration: 0.45, stagger: 0.1, ease: "power2.out",
+      scrollTrigger: { trigger: ".um-card", start: "top 88%", once: true },
+    });
+  }, { scope: sectionRef });
 
   if (tournaments.length === 0) return null;
 
   return (
-    <section className="bg-[#040D1C] px-5 py-20 sm:px-8 lg:px-10">
-      <div className="mx-auto max-w-7xl" ref={ref}>
+    <section ref={sectionRef} className="relative overflow-hidden bg-[#0A0A0A] px-5 py-20 sm:px-8 lg:px-10">
+      <GridTexture opacity={0.03} />
+      <PlusTexture opacity={0.018} />
+      <div className="relative mx-auto max-w-7xl">
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5 }}
-          className="mb-8 flex flex-wrap items-end justify-between gap-4 border-b border-white/12 pb-8"
-        >
+        <div className="um-header mb-8 flex flex-wrap items-end justify-between gap-4 pb-8">
           <div>
-            <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.4em] text-white/40">
-              05 — Schedule
-            </p>
+            <div className="mb-2 flex items-center gap-3">
+              <div className="h-4 w-0.5 bg-[#F5C400]" />
+              <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#F5C400]">
+                Upcoming Schedule
+              </p>
+            </div>
             <h2 className="text-3xl font-black uppercase tracking-tight text-white sm:text-4xl lg:text-5xl">
               Upcoming Matches
             </h2>
           </div>
           <Link
             href="/schedule"
-            className="text-[11px] font-bold uppercase tracking-widest text-[#F5C400] transition hover:text-[#F5C400]/70"
+            className="text-[11px] font-bold uppercase tracking-widest text-[#F5C400]/60 transition hover:text-[#F5C400]"
           >
-            View schedule page →
+            View schedule →
           </Link>
-        </motion.div>
+        </div>
 
         {/* Cards */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          {tournaments.map((t, index) => (
-            <motion.div
+          {tournaments.map((t) => (
+            <div
               key={t.id}
-              initial={{ opacity: 0, y: 16 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.45, delay: index * 0.1, ease: "easeOut" }}
-              className="group flex flex-col gap-3 border border-white/10 bg-[#071428] p-5 transition-all duration-200 hover:border-[#F5C400]/40 hover:bg-[#0C1E3C]"
+              className="um-card group flex flex-col gap-3 border border-white/[0.08] bg-white/[0.04] p-5 backdrop-blur-sm transition-all duration-300 hover:border-[#F5C400]/30 hover:shadow-[0_0_24px_rgba(245,196,0,0.07)]"
             >
-              {/* Date + game badge */}
               <div className="flex items-start justify-between gap-2">
                 <p className="text-[11px] font-bold uppercase tracking-wider text-[#F5C400]">
                   {formatCardDate(t.start_date, t.start_time)}
                 </p>
                 {t.game && (
-                  <span className="shrink-0 rounded bg-[#F5C400]/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[#F5C400]">
+                  <span className="shrink-0 border border-[#F5C400]/20 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[#F5C400]/70">
                     {t.game}
                   </span>
                 )}
               </div>
-
-              {/* Name */}
               <p className="font-black uppercase leading-tight tracking-tight text-white sm:text-lg">
                 {t.name}
               </p>
-
-              {/* Division + organizer */}
               <div className="flex flex-col gap-0.5">
-                {t.division_name && (
-                  <p className="text-xs text-white/45">{t.division_name}</p>
-                )}
-                {t.organizer && (
-                  <p className="text-xs text-white/35">{t.organizer}</p>
-                )}
+                {t.division_name && <p className="text-xs text-white/45">{t.division_name}</p>}
+                {t.organizer && <p className="text-xs text-white/35">{t.organizer}</p>}
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>
