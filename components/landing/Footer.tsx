@@ -1,7 +1,6 @@
 import { Instagram } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { GridTexture } from "@/components/landing/LandingTextures";
 
 const LINKS = {
   Team: [
@@ -36,8 +35,7 @@ interface FooterProps {
 
 const Footer = ({ settings = DEFAULT_FOOTER_SETTINGS }: FooterProps) => {
   return (
-    <footer className="relative overflow-hidden border-t border-[#F5C400]/10 bg-[#0A0A0A] px-5 pb-10 pt-16 sm:px-8 lg:px-10">
-      <GridTexture opacity={0.025} />
+    <footer className="relative overflow-hidden border-t border-[#F5C400]/10 bg-black px-5 pb-10 pt-16 sm:px-8 lg:px-10">
       <div className="relative mx-auto max-w-7xl">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.6fr_1fr_1fr_1fr]">
           {/* Brand */}

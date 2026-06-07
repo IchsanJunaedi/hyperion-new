@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useRef } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
 import type { PublicTournament } from "@/features/admin/queries";
-import { GridTexture, PlusTexture } from "@/components/landing/LandingTextures";
 
 interface Props {
   tournaments: PublicTournament[];
@@ -33,10 +32,8 @@ const UpcomingMatchesSection = ({ tournaments }: Props) => {
   if (tournaments.length === 0) return null;
 
   return (
-    <section ref={sectionRef} className="relative overflow-hidden bg-[#0A0A0A] px-5 py-20 sm:px-8 lg:px-10">
-      <GridTexture opacity={0.03} />
-      <PlusTexture opacity={0.018} />
-      <div className="relative mx-auto max-w-7xl">
+    <section ref={sectionRef} className="bg-[#000000] px-5 py-20 sm:px-8 lg:px-10">
+      <div className="mx-auto max-w-7xl">
         {/* Header */}
         <div className="um-header mb-8 flex flex-wrap items-end justify-between gap-4 pb-8">
           <div>
@@ -63,14 +60,14 @@ const UpcomingMatchesSection = ({ tournaments }: Props) => {
           {tournaments.map((t) => (
             <div
               key={t.id}
-              className="um-card group flex flex-col gap-3 border border-white/[0.08] bg-white/[0.04] p-5 backdrop-blur-sm transition-all duration-300 hover:border-[#F5C400]/30 hover:shadow-[0_0_24px_rgba(245,196,0,0.07)]"
+              className="um-card group flex flex-col gap-3 border border-white/[0.1] bg-[#111111] p-5 transition-all duration-300 hover:border-[#F5C400]/50 hover:bg-[#161616]"
             >
               <div className="flex items-start justify-between gap-2">
                 <p className="text-[11px] font-bold uppercase tracking-wider text-[#F5C400]">
                   {formatCardDate(t.start_date, t.start_time)}
                 </p>
                 {t.game && (
-                  <span className="shrink-0 border border-[#F5C400]/20 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[#F5C400]/70">
+                  <span className="clip-tr shrink-0 border border-[#F5C400]/20 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[#F5C400]/70">
                     {t.game}
                   </span>
                 )}

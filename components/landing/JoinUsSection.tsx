@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useRef } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { JoinModal } from "./JoinModal";
-import { GridTexture, PlusTexture, GoldRadialGlow } from "@/components/landing/LandingTextures";
 
 interface JoinSettings {
   join_eyebrow: string;
@@ -33,10 +32,11 @@ const JoinUsSection = ({ settings }: JoinUsSectionProps) => {
   }, { scope: sectionRef });
 
   return (
-    <section ref={sectionRef} className="relative overflow-hidden bg-[#0A0A0A] px-5 py-24 sm:px-8 lg:px-10">
-      <GridTexture opacity={0.04} />
-      <PlusTexture opacity={0.025} />
-      <GoldRadialGlow from="center" intensity={0.07} />
+    <section ref={sectionRef} className="relative overflow-hidden bg-black px-5 py-24 sm:px-8 lg:px-10">
+      {/* Gold diagonal stripe accent */}
+      <div className="absolute top-0 left-0 right-0 h-[3px] overflow-hidden">
+        <div className="h-full w-[108%] bg-[#F5C400]" style={{ marginLeft: "-4%", transform: "skewX(-8deg)", opacity: 0.6 }} />
+      </div>
       <div className="relative mx-auto max-w-7xl">
         <div className="border-b border-t border-[#F5C400]/15 py-20">
           <div className="grid items-center gap-10 lg:grid-cols-[1fr_auto]">
@@ -47,7 +47,7 @@ const JoinUsSection = ({ settings }: JoinUsSectionProps) => {
                   {settings.join_eyebrow}
                 </p>
               </div>
-              <h2 className="text-4xl font-black uppercase leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl">
+              <h2 className="text-5xl font-black uppercase leading-tight tracking-tight text-white sm:text-6xl lg:text-7xl">
                 {settings.join_title_line1}
                 <br />
                 <span

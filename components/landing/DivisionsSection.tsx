@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { GridTexture, PlusTexture } from "@/components/landing/LandingTextures";
 
 export async function DivisionsSection() {
   const admin = createAdminClient();
@@ -17,10 +16,8 @@ export async function DivisionsSection() {
   if (items.length === 0) return null;
 
   return (
-    <section className="relative overflow-hidden bg-[#0A0A0A] px-5 py-20 sm:px-8 lg:px-10">
-      <GridTexture opacity={0.03} />
-      <PlusTexture opacity={0.018} />
-      <div className="relative mx-auto max-w-7xl">
+    <section className="bg-[#000000] px-5 py-20 sm:px-8 lg:px-10">
+      <div className="mx-auto max-w-7xl">
         <div className="mb-8 pb-8">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
@@ -41,7 +38,7 @@ export async function DivisionsSection() {
             <Link
               key={div.id}
               href={`/divisions/${div.slug}`}
-              className="group flex flex-col gap-3 border border-white/[0.08] bg-white/[0.04] p-5 backdrop-blur-sm transition-all duration-300 hover:border-[#F5C400]/30 hover:shadow-[0_0_20px_rgba(245,196,0,0.06)] sm:p-6"
+              className="group flex flex-col gap-3 border border-white/[0.1] bg-[#111111] p-5 transition-all duration-300 hover:border-[#F5C400]/50 hover:bg-[#161616] sm:p-6"
             >
               <div className="flex items-start justify-between">
                 <div className="flex h-10 w-10 items-center justify-center overflow-hidden border border-white/[0.08] bg-white/[0.04]">
