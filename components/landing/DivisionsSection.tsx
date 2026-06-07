@@ -1,57 +1,93 @@
 import Link from "next/link";
+import { createAdminClient } from "@/lib/supabase/admin";
+
+function getGameLogo(game: string | null, logoUrl: string | null, name: string) {
+  const key = (game ?? "").toLowerCase();
+  
+  if (key === "mlbb" || key === "mobile legends" || key === "mobile_legends") {
+    return (
+      <svg className="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 2s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+        <path d="M12 6l1.5 3.5 3.5.5-2.5 2.5.5 3.5-3-2-3 2 .5-3.5-2.5-2.5 3.5-.5Z" fill="currentColor" />
+      </svg>
+    );
+  }
+  if (key === "pubgm" || key === "pubg" || key === "pubg mobile") {
+    return (
+      <svg className="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 2a9 9 0 0 0-9 9c0 2.5 1 4.8 2.8 6.4L5 21h14l-.8-3.6c1.8-1.6 2.8-3.9 2.8-6.4a9 9 0 0 0-9-9z" />
+        <path d="M7 10h10v2.5H7V10z" fill="currentColor" />
+        <path d="M9 15h6v1.5H9V15z" />
+      </svg>
+    );
+  }
+  if (key === "valorant") {
+    return (
+      <svg className="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 2L2 19h4.5L12 8.5 17.5 19H22L12 2z" fill="currentColor" />
+      </svg>
+    );
+  }
+  if (key === "free fire" || key === "freefire" || key === "ff") {
+    return (
+      <svg className="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 2c0 0-4 4.5-4 7.5s3 5.5 4 5.5 4-2.5 4-5.5S12 2 12 2z" fill="currentColor" />
+        <path d="M6 19c0-3 3-5 6-5s6 2 6 5v2H6v-2z" />
+      </svg>
+    );
+  }
+
+  // Fallback to custom logo_url from admin panel if uploaded
+  if (logoUrl) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img src={logoUrl} alt={name} className="h-8 w-8 object-contain" />
+    );
+  }
+  
+  // Generic controller icon fallback
+  return (
+    <svg className="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="6" width="20" height="12" rx="2" />
+      <path d="M12 12h.01M15 10h.01M17 12h.01M7 12h4M9 10v4" />
+    </svg>
+  );
+}
+
+function getGameBackground(game: string | null) {
+  const key = (game ?? "").toLowerCase();
+  if (key === "mlbb" || key === "mobile legends" || key === "mobile_legends") {
+    return "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=600&auto=format&fit=crop";
+  }
+  if (key === "pubgm" || key === "pubg" || key === "pubg mobile") {
+    return "https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=600&auto=format&fit=crop";
+  }
+  if (key === "valorant") {
+    return "https://images.unsplash.com/photo-1560253023-3ec5d502959f?q=80&w=600&auto=format&fit=crop";
+  }
+  if (key === "free fire" || key === "freefire" || key === "ff") {
+    return "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?q=80&w=600&auto=format&fit=crop";
+  }
+  
+  // Generic fallback background
+  return "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=600&auto=format&fit=crop";
+}
 
 export async function DivisionsSection() {
-  const items = [
-    {
-      id: "mlbb",
-      name: "Mobile Legends",
-      slug: "mobile-legends",
-      game: "MLBB",
-      image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=600&auto=format&fit=crop",
-      logo: (
-        <svg className="h-8 w-8" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-        </svg>
-      )
-    },
-    {
-      id: "pubg",
-      name: "PUBG Mobile",
-      slug: "pubg-mobile",
-      game: "PUBGM",
-      image: "https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=600&auto=format&fit=crop",
-      logo: (
-        <svg className="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="12" cy="12" r="10" />
-          <path d="M12 2v20M2 12h20" />
-        </svg>
-      )
-    },
-    {
-      id: "valorant",
-      name: "Valorant",
-      slug: "valorant",
-      game: "VALORANT",
-      image: "https://images.unsplash.com/photo-1560253023-3ec5d502959f?q=80&w=600&auto=format&fit=crop",
-      logo: (
-        <svg className="h-8 w-8" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 2L2 22h4l6-16 6 16h4z" />
-        </svg>
-      )
-    },
-    {
-      id: "freefire",
-      name: "Free Fire",
-      slug: "free-fire",
-      game: "FREE FIRE",
-      image: "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?q=80&w=600&auto=format&fit=crop",
-      logo: (
-        <svg className="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-        </svg>
-      )
-    }
-  ];
+  const admin = createAdminClient();
+
+  const { data: divisions, error } = await admin
+    .from("divisions")
+    .select("id, name, slug, game, description, logo_url")
+    .eq("is_public", true)
+    .eq("is_active", true)
+    .order("name")
+    .limit(20);
+
+  if (error) console.error("DivisionsSection dynamic fetch:", error);
+
+  const items = divisions ?? [];
+  if (items.length === 0) return null;
 
   return (
     <section className="bg-[#000000] px-5 py-24 sm:px-8 lg:px-10 border-t border-white/5">
@@ -85,38 +121,47 @@ export async function DivisionsSection() {
 
         {/* Division Cards Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {items.map((div) => (
-            <Link
-              key={div.id}
-              href={`/divisions/${div.slug}`}
-              className="group relative flex h-40 overflow-hidden border border-white/5 bg-white/[0.01] hover:border-[#D4FF00]/40 transition-all duration-500 clip-cyber-btn"
-            >
-              {/* Left Side: Photo (hidden by default, opens up on hover) */}
-              <div className="relative h-full w-0 group-hover:w-[68%] transition-all duration-500 ease-out overflow-hidden z-0">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={div.image}
-                  alt={div.name}
-                  className="h-full w-full object-cover min-w-[200px]"
-                />
-                {/* Gradient blend */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[#070707]/95 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              </div>
+          {items.map((div) => {
+            const logo = getGameLogo(div.game, div.logo_url, div.name);
+            const image = getGameBackground(div.game);
 
-              {/* Right Side: Logo & Info */}
-              <div className="flex-1 h-full flex flex-col items-center justify-center p-4 group-hover:bg-[#D4FF00] group-hover:text-black transition-all duration-500 z-10">
-                <span className="text-white group-hover:text-black transition-colors duration-500">
-                  {div.logo}
-                </span>
-                <span className="mt-3 font-bebas text-lg font-bold uppercase tracking-wider text-white group-hover:text-black transition-colors duration-500">
-                  {div.name}
-                </span>
-                <span className="font-orbitron text-[9px] font-bold uppercase tracking-widest text-white/40 group-hover:text-black/60 transition-colors duration-500">
-                  {div.game}
-                </span>
-              </div>
-            </Link>
-          ))}
+            return (
+              <Link
+                key={div.id}
+                href={`/divisions/${div.slug}`}
+                className="group relative flex h-44 overflow-hidden border border-white/5 bg-[#030c1b] hover:border-[#D4FF00]/40 transition-all duration-500 clip-cyber-btn"
+              >
+                {/* Left Side: Photo (slides open on hover) */}
+                <div className="absolute inset-y-0 left-0 w-0 group-hover:w-[76%] transition-all duration-500 ease-out overflow-hidden z-0">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={image}
+                    alt={div.name}
+                    className="h-full w-full object-cover min-w-[350px]"
+                  />
+                  {/* Dark overlay with gradient blend */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-black/10 via-black/50 to-[#030c1b] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  
+                  {/* Text details overlay showing on hover */}
+                  <div className="absolute bottom-4 left-5 z-20 opacity-0 group-hover:opacity-100 transition-all duration-500 delay-100 translate-y-3 group-hover:translate-y-0">
+                    <span className="font-orbitron text-[8px] font-bold uppercase tracking-[0.2em] text-[#D4FF00]">
+                      Division
+                    </span>
+                    <h3 className="font-bebas text-2xl font-black uppercase tracking-wide text-white leading-none mt-1">
+                      {div.name}
+                    </h3>
+                  </div>
+                </div>
+
+                {/* Right Side: Logo vertical stripe (covers full card initially, shrinks to stripe on hover) */}
+                <div className="absolute inset-y-0 right-0 w-full group-hover:w-[24%] transition-all duration-500 ease-out flex flex-col items-center justify-center bg-[#071428] group-hover:bg-[#0b1b33] border-l border-transparent group-hover:border-white/10 z-10">
+                  <span className="text-white/80 group-hover:text-[#D4FF00] transition-colors duration-500 scale-100 group-hover:scale-90">
+                    {logo}
+                  </span>
+                </div>
+              </Link>
+            );
+          })}
         </div>
 
       </div>
