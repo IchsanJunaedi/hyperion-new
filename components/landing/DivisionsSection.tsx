@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { GridTexture, PlusTexture } from "@/components/landing/LandingTextures";
 
 export async function DivisionsSection() {
   const admin = createAdminClient();
@@ -16,14 +17,19 @@ export async function DivisionsSection() {
   if (items.length === 0) return null;
 
   return (
-    <section className="bg-[#040D1C] px-5 py-20 sm:px-8 lg:px-10">
-      <div className="mx-auto max-w-7xl">
-        <div className="mb-8 border-b border-white/12 pb-8">
+    <section className="relative overflow-hidden bg-[#0A0A0A] px-5 py-20 sm:px-8 lg:px-10">
+      <GridTexture opacity={0.03} />
+      <PlusTexture opacity={0.018} />
+      <div className="relative mx-auto max-w-7xl">
+        <div className="mb-8 pb-8">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.4em] text-white/40">
-                02 — Our Teams
-              </p>
+              <div className="mb-2 flex items-center gap-3">
+                <div className="h-4 w-0.5 bg-[#F5C400]" />
+                <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#F5C400]">
+                  Our Teams
+                </p>
+              </div>
               <h2 className="text-3xl font-black uppercase tracking-tight text-white sm:text-4xl lg:text-5xl">
                 Divisions
               </h2>
@@ -35,10 +41,10 @@ export async function DivisionsSection() {
             <Link
               key={div.id}
               href={`/divisions/${div.slug}`}
-              className="group flex flex-col gap-3 border border-white/10 bg-[#071428] p-5 transition-all duration-200 hover:border-[#F5C400]/50 hover:bg-[#0C1E3C] sm:p-6"
+              className="group flex flex-col gap-3 border border-white/[0.08] bg-white/[0.04] p-5 backdrop-blur-sm transition-all duration-300 hover:border-[#F5C400]/30 hover:shadow-[0_0_20px_rgba(245,196,0,0.06)] sm:p-6"
             >
               <div className="flex items-start justify-between">
-                <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded border border-white/10 bg-white/5">
+                <div className="flex h-10 w-10 items-center justify-center overflow-hidden border border-white/[0.08] bg-white/[0.04]">
                   {div.logo_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={div.logo_url} alt={div.name} className="h-full w-full object-contain" />
