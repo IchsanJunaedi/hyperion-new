@@ -110,8 +110,15 @@ const AchievementsSection = ({ entries }: AchievementsSectionProps) => {
   const sectionRef = useRef<HTMLElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  // Duplicate achievements list three times to form a seamless infinite wrap-around
-  const duplicatedEntries = [...entries, ...entries, ...entries];
+  // Duplicate achievements list six times to form a seamless infinite wrap-around without bounds
+  const duplicatedEntries = [
+    ...entries,
+    ...entries,
+    ...entries,
+    ...entries,
+    ...entries,
+    ...entries,
+  ];
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -155,34 +162,37 @@ const AchievementsSection = ({ entries }: AchievementsSectionProps) => {
         // Clamp to [-1, 1]
         ratio = Math.max(-1, Math.min(1, ratio));
 
-        // Symmetric wave using cosine: cos(0) = 1 (center), cos(pi/2) = 0 (sides)
-        const curve = Math.cos((ratio * Math.PI) / 2);
+        // Steeper wave using squared cosine: cos^2(0) = 1 (center), cos^2(pi/2) = 0 (sides)
+        const curve = Math.pow(Math.cos((ratio * Math.PI) / 2), 2.0);
 
-        // Center card is high (translateY = -80px), side cards are lower (translateY = 40px)
-        const translateY = -80 + (1 - curve) * 120;
+        // Center card is high (translateY = -120px), side cards are lower (translateY = 80px)
+        const translateY = -120 + (1 - curve) * 200;
         
-        // Scale goes from 1.0 (center) to 0.90 (sides)
-        const scale = 0.90 + curve * 0.10;
+        // Scale goes from 1.08 (center) to 0.82 (sides)
+        const scale = 0.82 + curve * 0.26;
 
-        // Set properties instantly to prevent any lag or collision during drag
-        gsap.set(card, {
+        // Use a short, responsive transition to filter out mouse jitter and ensure butter-smoothness
+        gsap.to(card, {
           y: translateY,
-          scale: scale
+          scale: scale,
+          duration: 0.15,
+          ease: "power1.out",
+          overwrite: "auto"
         });
       });
     };
 
     const measureDimensions = () => {
       const cards = container.querySelectorAll(".achievement-card-wrapper");
-      if (cards.length < entries.length * 2) return;
+      if (cards.length < entries.length * 4) return;
       const firstCard = cards[0] as HTMLElement;
       const boundaryCard = cards[entries.length] as HTMLElement;
       if (firstCard && boundaryCard) {
         singleCycleWidth = boundaryCard.offsetLeft - firstCard.offsetLeft;
         
-        // Initialize scroll position to the middle cycle to give room for dragging left/right
-        if (container.scrollLeft === 0 || container.scrollLeft < singleCycleWidth) {
-          container.scrollLeft = singleCycleWidth;
+        // Initialize scroll position to the start of the 3rd cycle
+        if (container.scrollLeft === 0 || container.scrollLeft < 2 * singleCycleWidth) {
+          container.scrollLeft = 2 * singleCycleWidth;
         }
       }
       updateWave();
@@ -209,10 +219,10 @@ const AchievementsSection = ({ entries }: AchievementsSectionProps) => {
         newScroll += speed * timeScaleRef.current;
       }
 
-      // Robust wrapping bounds in the middle cycle
-      if (newScroll >= 2 * singleCycleWidth) {
+      // Robust wrapping bounds in the middle cycle (Cycle 3 & 4)
+      if (newScroll >= 3 * singleCycleWidth) {
         newScroll -= singleCycleWidth;
-      } else if (newScroll <= singleCycleWidth) {
+      } else if (newScroll <= 2 * singleCycleWidth) {
         newScroll += singleCycleWidth;
       }
 
@@ -256,9 +266,9 @@ const AchievementsSection = ({ entries }: AchievementsSectionProps) => {
       let newScroll = container.scrollLeft - dx;
 
       // Wrap around middle cycle bounds instantly
-      if (newScroll >= 2 * singleCycleWidth) {
+      if (newScroll >= 3 * singleCycleWidth) {
         newScroll -= singleCycleWidth;
-      } else if (newScroll <= singleCycleWidth) {
+      } else if (newScroll <= 2 * singleCycleWidth) {
         newScroll += singleCycleWidth;
       }
 
@@ -394,7 +404,7 @@ const AchievementsSection = ({ entries }: AchievementsSectionProps) => {
             <div
               ref={scrollContainerRef}
               onDragStart={(e) => e.preventDefault()}
-              className="flex gap-6 overflow-x-hidden scrollbar-none px-4 sm:px-8 pt-32 pb-16 select-none"
+              className="flex gap-6 overflow-x-hidden scrollbar-none px-4 sm:px-8 pt-40 pb-28 select-none"
             >
               {duplicatedEntries.map((item, i) => {
                 const setIndex = Math.floor(i / entries.length);
