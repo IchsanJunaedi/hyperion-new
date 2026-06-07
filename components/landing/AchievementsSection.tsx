@@ -1,10 +1,11 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
-import { motion, useInView, AnimatePresence } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
+import { gsap, useGSAP } from "@/lib/gsap";
 import type { Achievement } from "@/features/admin/queries";
+import { GridTexture, GoldRadialGlow } from "@/components/landing/LandingTextures";
 
 export type AchievementItem = Achievement & { href?: string };
 
@@ -27,12 +28,7 @@ const ImageLightbox = ({ src, title, onClose }: { src: string; title: string; on
         className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
         onClick={onClose}
       >
-        <button
-          type="button"
-          onClick={onClose}
-          className="absolute right-4 top-4 cursor-pointer text-white/50 transition hover:text-white"
-          aria-label="Tutup"
-        >
+        <button type="button" onClick={onClose} className="absolute right-4 top-4 cursor-pointer text-white/50 transition hover:text-white" aria-label="Tutup">
           <X className="h-6 w-6" />
         </button>
         <motion.div
@@ -44,14 +40,8 @@ const ImageLightbox = ({ src, title, onClose }: { src: string; title: string; on
           onClick={(e) => e.stopPropagation()}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={src}
-            alt={title}
-            className="max-h-[85vh] max-w-[88vw] rounded object-contain shadow-2xl"
-          />
-          {title && (
-            <p className="mt-3 text-center text-sm font-semibold text-white/60">{title}</p>
-          )}
+          <img src={src} alt={title} className="max-h-[85vh] max-w-[88vw] rounded object-contain shadow-2xl" />
+          {title && <p className="mt-3 text-center text-sm font-semibold text-white/60">{title}</p>}
         </motion.div>
       </motion.div>
     </AnimatePresence>
@@ -65,50 +55,43 @@ interface RowProps {
 }
 
 const AchievementRow = ({ item, index, onImageClick }: RowProps) => {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-40px" });
-  const router = useRouter();
+  const rowRef = useRef<HTMLDivElement>(null);
 
-  const handleClick = () => {
-    if (item.image_url) {
-      onImageClick(item.image_url, item.title);
-    } else if (item.href) {
-      router.push(item.href);
-    }
-  };
+  useGSAP(() => {
+    gsap.from(rowRef.current, {
+      y: 16,
+      opacity: 0,
+      duration: 0.5,
+      delay: index * 0.06,
+      ease: "power2.out",
+      scrollTrigger: { trigger: rowRef.current, start: "top 90%", once: true },
+    });
+  }, { scope: rowRef });
 
   const isClickable = !!(item.image_url || item.href);
 
+  const handleClick = () => {
+    if (item.image_url) onImageClick(item.image_url, item.title);
+    else if (item.href) window.location.href = item.href;
+  };
+
   return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 16 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.5, delay: index * 0.08, ease: "easeOut" }}
+    <div
+      ref={rowRef}
       onClick={isClickable ? handleClick : undefined}
       style={isClickable ? { cursor: "pointer" } : undefined}
     >
-      <div className={`group relative overflow-hidden border-b border-white/12 transition-colors${isClickable ? " hover:bg-white/[0.04]" : ""}`}>
-        {/* Hover-reveal photo */}
+      <div className={`group relative overflow-hidden border-b border-white/[0.06] transition-colors${isClickable ? " hover:bg-white/[0.03]" : ""}`}>
         {item.image_url && (
           <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={item.image_url}
-              alt=""
-              aria-hidden="true"
-              loading="lazy"
-              className="h-full w-full object-cover"
-              style={{ filter: "brightness(0.12) grayscale(60%)" }}
-            />
+            <img src={item.image_url} alt="" aria-hidden="true" loading="lazy" className="h-full w-full object-cover" style={{ filter: "brightness(0.12) grayscale(60%)" }} />
           </div>
         )}
-
         <div className="relative grid grid-cols-[3rem_1fr] items-center gap-4 py-7 sm:grid-cols-[4rem_1fr_auto] sm:gap-8 sm:py-8">
           <span className="text-3xl font-black tabular-nums text-white/18 sm:text-4xl">
             {String(index + 1).padStart(2, "0")}
           </span>
-
           <div className="min-w-0">
             <h3 className="text-base font-black uppercase leading-tight tracking-tight text-white sm:text-xl lg:text-2xl">
               {item.title}
@@ -119,10 +102,12 @@ const AchievementRow = ({ item, index, onImageClick }: RowProps) => {
               </p>
             )}
           </div>
-
           <div className="hidden flex-col items-end gap-2 sm:flex">
             {item.placement != null && (
-              <span className="text-[11px] font-black uppercase tracking-widest text-[#F5C400]">
+              <span
+                className="text-[11px] font-black uppercase tracking-widest text-[#F5C400]"
+                style={item.placement === 1 ? { textShadow: "0 0 16px rgba(245,196,0,0.6)" } : undefined}
+              >
                 {PLACEMENT_LABEL[item.placement] ?? `Juara ${item.placement}`}
               </span>
             )}
@@ -132,7 +117,7 @@ const AchievementRow = ({ item, index, onImageClick }: RowProps) => {
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 
@@ -141,35 +126,37 @@ interface AchievementsSectionProps {
 }
 
 const AchievementsSection = ({ entries }: AchievementsSectionProps) => {
-  const headerRef = useRef<HTMLDivElement>(null);
-  const headerInView = useInView(headerRef, { once: true });
+  const sectionRef = useRef<HTMLElement>(null);
   const [lightbox, setLightbox] = useState<{ src: string; title: string } | null>(null);
+
+  useGSAP(() => {
+    gsap.from(".ach-header", {
+      y: 16, opacity: 0, duration: 0.5, ease: "power2.out",
+      scrollTrigger: { trigger: sectionRef.current, start: "top 85%", once: true },
+    });
+  }, { scope: sectionRef });
 
   if (entries.length === 0) return null;
 
   return (
     <>
-      <section id="achievements" className="scroll-mt-14 bg-[#040D1C] px-5 py-20 sm:px-8 lg:px-10">
-        <div className="mx-auto max-w-7xl">
-          <motion.div
-            ref={headerRef}
-            initial={{ opacity: 0, y: 16 }}
-            animate={headerInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.5 }}
-            className="mb-0 border-b border-white/12 pb-8"
-          >
+      <section ref={sectionRef} id="achievements" className="relative scroll-mt-14 overflow-hidden bg-[#0A0A0A] px-5 py-20 sm:px-8 lg:px-10">
+        <GridTexture opacity={0.03} />
+        <GoldRadialGlow from="center" intensity={0.04} />
+        <div className="relative mx-auto max-w-7xl">
+          <div className="ach-header mb-0 pb-8">
             <div className="flex flex-wrap items-end justify-between gap-4">
               <div>
-                <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.4em] text-white/40">
-                  01 — Trophy Room
-                </p>
+                <div className="mb-2 flex items-center gap-3">
+                  <div className="h-4 w-0.5 bg-[#F5C400]" />
+                  <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#F5C400]">Trophy Room</p>
+                </div>
                 <h2 className="text-3xl font-black uppercase tracking-tight text-white sm:text-4xl lg:text-5xl">
                   Our Achievement
                 </h2>
               </div>
             </div>
-          </motion.div>
-
+          </div>
           <div>
             {entries.map((item, i) => (
               <AchievementRow
@@ -182,13 +169,8 @@ const AchievementsSection = ({ entries }: AchievementsSectionProps) => {
           </div>
         </div>
       </section>
-
       {lightbox && (
-        <ImageLightbox
-          src={lightbox.src}
-          title={lightbox.title}
-          onClose={() => setLightbox(null)}
-        />
+        <ImageLightbox src={lightbox.src} title={lightbox.title} onClose={() => setLightbox(null)} />
       )}
     </>
   );
