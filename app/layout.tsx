@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Instrument_Sans, Geist_Mono, Bebas_Neue, Orbitron } from "next/font/google";
+import { Instrument_Sans, Geist_Mono, Bebas_Neue, Orbitron, Cormorant_Garamond } from "next/font/google";
 import { Toaster } from "sonner";
 
 import { QueryProvider } from "@/components/providers/QueryProvider";
@@ -25,6 +25,13 @@ const bebasNeue = Bebas_Neue({
 
 const orbitron = Orbitron({
   variable: "--font-orbitron",
+  subsets: ["latin"],
+});
+
+const cormorantGaramond = Cormorant_Garamond({
+  variable: "--font-serif",
+  weight: ["300", "400", "500", "600", "700"],
+  style: ["normal", "italic"],
   subsets: ["latin"],
 });
 
@@ -62,7 +69,7 @@ export default function RootLayout({
   return (
     <html
       lang="id"
-      className={`dark ${instrumentSans.variable} ${geistMono.variable} ${bebasNeue.variable} ${orbitron.variable} h-full antialiased`}
+      className={`dark ${instrumentSans.variable} ${geistMono.variable} ${bebasNeue.variable} ${orbitron.variable} ${cormorantGaramond.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <QueryProvider>

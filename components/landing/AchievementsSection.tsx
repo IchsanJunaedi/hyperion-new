@@ -1,15 +1,22 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
-import { X } from "lucide-react";
+import { X, ArrowRight } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import { gsap, useGSAP } from "@/lib/gsap";
+import { gsap } from "gsap";
 import type { Achievement } from "@/features/admin/queries";
 import { GridTexture, GoldRadialGlow } from "@/components/landing/LandingTextures";
 
 export type AchievementItem = Achievement & { href?: string };
 
-const PLACEMENT_LABEL: Record<number, string> = { 1: "Juara 1", 2: "Juara 2", 3: "Juara 3" };
+const FALLBACK_PORTRAITS = [
+  "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=600&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=600&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1560253023-3ec5d502959f?q=80&w=600&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?q=80&w=600&auto=format&fit=crop"
+];
+
+const PLACEMENT_LABEL: Record<number, string> = { 1: "Champion", 2: "Runner Up", 3: "3rd Place" };
 
 const ImageLightbox = ({ src, title, onClose }: { src: string; title: string; onClose: () => void }) => {
   useEffect(() => {
@@ -40,7 +47,7 @@ const ImageLightbox = ({ src, title, onClose }: { src: string; title: string; on
           onClick={(e) => e.stopPropagation()}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={src} alt={title} className="max-h-[85vh] max-w-[88vw] rounded object-contain shadow-2xl" />
+          <img src={src} alt={title} className="max-h-[85vh] max-w-[88vw] rounded-xl object-contain shadow-2xl" />
           {title && <p className="mt-3 text-center text-sm font-semibold text-white/60">{title}</p>}
         </motion.div>
       </motion.div>
@@ -48,72 +55,96 @@ const ImageLightbox = ({ src, title, onClose }: { src: string; title: string; on
   );
 };
 
-interface RowProps {
+interface CardProps {
   item: AchievementItem;
   index: number;
   onImageClick: (src: string, title: string) => void;
 }
 
-const AchievementRow = ({ item, index, onImageClick }: RowProps) => {
-  const rowRef = useRef<HTMLDivElement>(null);
-
-  useGSAP(() => {
-    gsap.from(rowRef.current, {
-      y: 16,
-      opacity: 0,
-      duration: 0.5,
-      delay: index * 0.06,
-      ease: "power2.out",
-      scrollTrigger: { trigger: rowRef.current, start: "top 90%", once: true },
-    });
-  }, { scope: rowRef });
-
-  const isClickable = !!(item.image_url || item.href);
+const AchievementCard = ({ item, index, onImageClick }: CardProps) => {
+  const fallbackImage = FALLBACK_PORTRAITS[index % FALLBACK_PORTRAITS.length] || "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=600&auto=format&fit=crop";
+  const imageSrc = item.image_url || fallbackImage;
 
   const handleClick = () => {
-    if (item.image_url) onImageClick(item.image_url, item.title);
-    else if (item.href) window.location.href = item.href;
+    if (item.image_url) {
+      onImageClick(item.image_url, item.title);
+    } else if (item.href) {
+      window.location.href = item.href;
+    } else {
+      onImageClick(imageSrc, item.title);
+    }
   };
+
+  const label = item.placement ? (PLACEMENT_LABEL[item.placement] ?? `Juara ${item.placement}`) : "Achievement";
+
+  // Parse description sentences into a list of highlights (maximum 3 points)
+  const getBulletPoints = (desc: string | null) => {
+    if (!desc) {
+      return [
+        "Kerja keras & dedikasi tim",
+        "Hasrat tiada henti untuk menang",
+        "Puncak kompetisi esports"
+      ];
+    }
+    // Split by period, semicolon, or newline
+    let parts = desc.split(/[.;\n]+/).map(p => p.trim()).filter(p => p.length > 3);
+    
+    // If we only have 1 part and it is long, try splitting by comma
+    if (parts.length <= 1) {
+      parts = desc.split(/[,;\n]+/).map(p => p.trim()).filter(p => p.length > 3);
+    }
+    
+    return parts.slice(0, 3);
+  };
+
+  const points = getBulletPoints(item.description);
 
   return (
     <div
-      ref={rowRef}
-      onClick={isClickable ? handleClick : undefined}
-      style={isClickable ? { cursor: "pointer" } : undefined}
+      className="achievement-card-wrapper shrink-0 select-none py-10"
+      style={{ transform: "translateY(0px) scale(0.95)" }}
     >
-      <div className={`group relative overflow-hidden border-b border-white/[0.06] transition-colors${isClickable ? " hover:bg-white/[0.03]" : ""}`}>
-        {item.image_url && (
-          <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={item.image_url} alt="" aria-hidden="true" loading="lazy" className="h-full w-full object-cover" style={{ filter: "brightness(0.12) grayscale(60%)" }} />
-          </div>
-        )}
-        <div className="relative grid grid-cols-[3rem_1fr] items-center gap-4 py-7 sm:grid-cols-[4rem_1fr_auto] sm:gap-8 sm:py-8">
-          <span className="text-3xl font-black tabular-nums text-white/18 sm:text-4xl">
-            {String(index + 1).padStart(2, "0")}
+      <div
+        onClick={handleClick}
+        className="group relative w-[280px] sm:w-[320px] aspect-[3/4] rounded-2xl overflow-hidden border border-white/5 bg-[#030813] shadow-2xl transition-all duration-500 hover:border-[#D4FF00]/40 hover:-translate-y-3 hover:scale-[1.02] active:scale-[0.99] cursor-pointer"
+      >
+        {/* Background photo */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={imageSrc}
+          alt={item.title}
+          className="absolute inset-0 h-full w-full object-cover pointer-events-none transition-transform duration-700 group-hover:scale-105"
+        />
+
+        {/* Dark gradient overlay for typography readability */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent opacity-95 z-10" />
+
+        {/* Top left placement subtag */}
+        <div className="absolute top-6 left-6 z-20">
+          <span className="font-sans text-[10px] font-semibold uppercase tracking-[0.15em] text-white/60">
+            {label}{" // "}{item.achieved_at.slice(0, 4)}
           </span>
-          <div className="min-w-0">
-            <h3 className="text-base font-black uppercase leading-tight tracking-tight text-white sm:text-xl lg:text-2xl">
-              {item.title}
-            </h3>
-            {item.description && (
-              <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-white/55 sm:text-sm">
-                {item.description}
-              </p>
-            )}
-          </div>
-          <div className="hidden flex-col items-end gap-2 sm:flex">
-            {item.placement != null && (
-              <span
-                className="text-[11px] font-black uppercase tracking-widest text-[#F5C400]"
-                style={item.placement === 1 ? { textShadow: "0 0 16px rgba(245,196,0,0.6)" } : undefined}
-              >
-                {PLACEMENT_LABEL[item.placement] ?? `Juara ${item.placement}`}
-              </span>
-            )}
-            <span className="text-[10px] font-bold uppercase tracking-widest text-white/45">
-              {item.achieved_at.slice(0, 4)}
-            </span>
+        </div>
+
+        {/* Bottom card details */}
+        <div className="absolute inset-x-6 bottom-6 z-20 flex flex-col text-left">
+          <span className="font-serif italic text-white/40 text-xs mb-1">glory{" //"}</span>
+          <h3 className="font-sans font-bold text-lg sm:text-xl text-white tracking-wide uppercase leading-tight mb-2">
+            {item.title}
+          </h3>
+
+          <div className="h-[1px] bg-white/10 w-full mb-3" />
+
+          <div className="space-y-1.5">
+            <span className="font-serif italic text-white/40 text-[11px] block">highlights{" //"}</span>
+            <ul className="space-y-1.5 text-left">
+              {points.map((pt, idx) => (
+                <li key={idx} className="font-sans font-light text-white/80 text-[11px] leading-relaxed flex items-start gap-1.5">
+                  <span className="text-[#D4FF00] font-sans text-xs select-none mt-0.5">•</span>
+                  <span>{pt}</span>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </div>
@@ -127,52 +158,163 @@ interface AchievementsSectionProps {
 
 const AchievementsSection = ({ entries }: AchievementsSectionProps) => {
   const sectionRef = useRef<HTMLElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [lightbox, setLightbox] = useState<{ src: string; title: string } | null>(null);
 
-  useGSAP(() => {
-    gsap.from(".ach-header", {
-      y: 16, opacity: 0, duration: 0.5, ease: "power2.out",
-      scrollTrigger: { trigger: sectionRef.current, start: "top 85%", once: true },
-    });
-  }, { scope: sectionRef });
+  // Drag-to-scroll implementation
+  const [isDown, setIsDown] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+    setIsDown(true);
+    setStartX(e.pageX - container.offsetLeft);
+    setScrollLeft(container.scrollLeft);
+  };
+
+  const handleMouseLeave = () => {
+    setIsDown(false);
+  };
+
+  const handleMouseUp = () => {
+    setIsDown(false);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDown) return;
+    e.preventDefault();
+    const container = scrollContainerRef.current;
+    if (!container) return;
+    const x = e.pageX - container.offsetLeft;
+    const walk = (x - startX) * 1.5; // Drag speed multiplier
+    container.scrollLeft = scrollLeft - walk;
+  };
+
+  // GSAP scroll wave effect listener
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const updateWave = () => {
+      const cards = container.querySelectorAll(".achievement-card-wrapper");
+      if (cards.length === 0) return;
+
+      const containerRect = container.getBoundingClientRect();
+      const containerCenter = containerRect.left + containerRect.width / 2;
+      const range = containerRect.width * 0.7; // Width range of wave effect
+
+      cards.forEach((card) => {
+        const cardRect = card.getBoundingClientRect();
+        const cardCenter = cardRect.left + cardRect.width / 2;
+        const distanceFromCenter = Math.abs(cardCenter - containerCenter);
+
+        // Wave factor goes from 1 (center) to 0 (borders)
+        const factor = Math.max(0, 1 - distanceFromCenter / range);
+        const curve = Math.sin((factor * Math.PI) / 2);
+
+        // Translate up by up to 90px in the center, and scale from 0.95 to 1.0
+        const translateY = curve * -90;
+        const scale = 0.95 + curve * 0.05;
+
+        gsap.to(card, {
+          y: translateY,
+          scale: scale,
+          duration: 0.45,
+          ease: "power2.out",
+          overwrite: "auto"
+        });
+      });
+    };
+
+    // Initialize layout positions
+    updateWave();
+
+    container.addEventListener("scroll", updateWave, { passive: true });
+    window.addEventListener("resize", updateWave);
+    
+    // Sync periodically to avoid layout shifts or delayed mounts
+    const interval = setInterval(updateWave, 250);
+
+    return () => {
+      container.removeEventListener("scroll", updateWave);
+      window.removeEventListener("resize", updateWave);
+      clearInterval(interval);
+    };
+  }, [entries]);
 
   if (entries.length === 0) return null;
 
   return (
     <>
-      <section ref={sectionRef} id="achievements" className="relative scroll-mt-14 overflow-hidden bg-[#0A0A0A] px-5 py-20 sm:px-8 lg:px-10">
-        <GridTexture opacity={0.03} />
-        <GoldRadialGlow from="center" intensity={0.04} />
+      <section
+        ref={sectionRef}
+        id="achievements"
+        className="relative scroll-mt-14 overflow-hidden bg-[#020202] px-5 py-28 sm:px-8 lg:px-10 border-t border-white/5"
+      >
+        <GridTexture opacity={0.02} />
+        <GoldRadialGlow from="center" intensity={0.03} />
+
         <div className="relative mx-auto max-w-7xl">
-          <div className="ach-header mb-0 pb-8">
-            <div className="flex flex-wrap items-end justify-between gap-4">
-              <div>
-                <div className="mb-2 flex items-center gap-3">
-                  <div className="h-4 w-0.5 bg-[#F5C400]" />
-                  <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#F5C400]">Trophy Room</p>
-                </div>
-                <h2 className="text-3xl font-black uppercase tracking-tight text-white sm:text-4xl lg:text-5xl">
-                  Our Achievement
-                </h2>
-              </div>
+          
+          {/* Header Typography */}
+          <div className="mb-16 text-center">
+            <div className="mb-3 flex items-center justify-center gap-3">
+              <div className="h-px w-8 bg-[#D4FF00]" />
+              <p className="font-orbitron text-[9px] font-bold uppercase tracking-[0.3em] text-[#D4FF00]">
+                Trophy Room
+              </p>
+              <div className="h-px w-8 bg-[#D4FF00]" />
             </div>
+            <h2 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-light text-white tracking-wide leading-tight">
+              The beginning of our <span className="italic">glory.</span>
+            </h2>
+            <p className="mt-4 max-w-2xl mx-auto text-xs sm:text-sm text-white/50 font-sans font-light leading-relaxed">
+              Kita mulai dari apa yang paling kita impikan – bermain lebih gigih, berlatih lebih cerdas, menyatu lebih dalam, berpikir lebih jernih, dan menang bersama di setiap panggung kompetisi.
+            </p>
           </div>
-          <div>
-            {entries.map((item, i) => (
-              <AchievementRow
-                key={item.id}
-                item={item}
-                index={i}
-                onImageClick={(src, title) => setLightbox({ src, title })}
-              />
-            ))}
+
+          {/* Staggered Wave Scroll Container */}
+          <div className="relative w-full overflow-hidden">
+            <div
+              ref={scrollContainerRef}
+              onMouseDown={handleMouseDown}
+              onMouseLeave={handleMouseLeave}
+              onMouseUp={handleMouseUp}
+              onMouseMove={handleMouseMove}
+              className={`flex gap-6 overflow-x-auto scrollbar-none px-4 sm:px-8 pt-32 pb-16 transition-all select-none ${
+                isDown ? "cursor-grabbing" : "cursor-grab"
+              }`}
+              style={{ scrollBehavior: isDown ? "auto" : "smooth" }}
+            >
+              {entries.map((item, i) => (
+                <AchievementCard
+                  key={item.id}
+                  item={item}
+                  index={i}
+                  onImageClick={(src, title) => setLightbox({ src, title })}
+                />
+              ))}
+            </div>
+            
+            {/* Scroll Indicator */}
+            {entries.length > 3 && (
+              <div className="mt-4 flex items-center justify-center gap-2 text-white/30 text-[10px] font-orbitron uppercase tracking-widest pointer-events-none">
+                <span>Drag to explore</span>
+                <ArrowRight className="h-3 w-3 animate-pulse" />
+              </div>
+            )}
           </div>
+
         </div>
       </section>
+
       {lightbox && (
         <ImageLightbox src={lightbox.src} title={lightbox.title} onClose={() => setLightbox(null)} />
       )}
     </>
   );
 };
+
 export { AchievementsSection };

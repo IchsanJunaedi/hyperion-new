@@ -76,6 +76,7 @@
   --font-mono: var(--font-mono);
   --font-bebas: var(--font-bebas);
   --font-orbitron: var(--font-orbitron);
+  --font-serif: var(--font-serif);
   /* Brand yellow used on the marketing landing — matches the "HYPERION TEAM"
      wordmark on the live Laravel site (rgb(222, 179, 4)). */
   --color-brand-yellow: oklch(0.781 0.149 86.78);
