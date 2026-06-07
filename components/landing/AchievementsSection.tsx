@@ -119,14 +119,18 @@ const AchievementsSection = ({ entries }: AchievementsSectionProps) => {
     const container = scrollContainerRef.current;
     if (!container) return;
 
-    // Direct DOM interaction refs (eliminates React render overhead entirely during drag)
-    const isDownRef = { current: false };
-    const startXRef = { current: 0 };
-    const scrollLeftRef = { current: 0 };
+    // Direct interaction parameters
+    let isDown = false;
+    let isDecelerating = false;
+    let dragVelocity = 0;
+    let lastX = 0;
+    let lastTime = 0;
+    let tickerVelocity = 0;
+
     const isDraggingRef = { current: false };
     const clickStartRef = { current: { x: 0, y: 0 } };
     
-    // speed modifiers updated smoothly via vertical scroll direction
+    // Speed modifiers updated smoothly via vertical scroll direction
     const timeScaleRef = { current: 1.0 };
     const speed = 1.0; // Base marquee speed (px per frame)
     let singleCycleWidth = 0;
@@ -137,25 +141,33 @@ const AchievementsSection = ({ entries }: AchievementsSectionProps) => {
 
       const containerRect = container.getBoundingClientRect();
       const containerCenter = containerRect.left + containerRect.width / 2;
-      const range = containerRect.width * 0.7;
+      
+      // Dynamic range, ensuring it remains smooth on mobile as well
+      const range = Math.max(300, containerRect.width * 0.45);
 
       cards.forEach((card) => {
         const cardRect = card.getBoundingClientRect();
         const cardCenter = cardRect.left + cardRect.width / 2;
-        const distanceFromCenter = Math.abs(cardCenter - containerCenter);
+        const distanceFromCenter = cardCenter - containerCenter;
 
-        const factor = Math.max(0, 1 - distanceFromCenter / range);
-        const curve = Math.sin((factor * Math.PI) / 2);
+        // Normalize distance: goes from -1 (left edge of range) to +1 (right edge of range)
+        let ratio = distanceFromCenter / range;
+        // Clamp to [-1, 1]
+        ratio = Math.max(-1, Math.min(1, ratio));
 
-        const translateY = curve * -90;
-        const scale = 0.95 + curve * 0.05;
+        // Symmetric wave using cosine: cos(0) = 1 (center), cos(pi/2) = 0 (sides)
+        const curve = Math.cos((ratio * Math.PI) / 2);
 
-        gsap.to(card, {
+        // Center card is high (translateY = -80px), side cards are lower (translateY = 40px)
+        const translateY = -80 + (1 - curve) * 120;
+        
+        // Scale goes from 1.0 (center) to 0.90 (sides)
+        const scale = 0.90 + curve * 0.10;
+
+        // Set properties instantly to prevent any lag or collision during drag
+        gsap.set(card, {
           y: translateY,
-          scale: scale,
-          duration: 0.45,
-          ease: "power2.out",
-          overwrite: "auto"
+          scale: scale
         });
       });
     };
@@ -167,20 +179,40 @@ const AchievementsSection = ({ entries }: AchievementsSectionProps) => {
       const boundaryCard = cards[entries.length] as HTMLElement;
       if (firstCard && boundaryCard) {
         singleCycleWidth = boundaryCard.offsetLeft - firstCard.offsetLeft;
+        
+        // Initialize scroll position to the middle cycle to give room for dragging left/right
+        if (container.scrollLeft === 0 || container.scrollLeft < singleCycleWidth) {
+          container.scrollLeft = singleCycleWidth;
+        }
       }
       updateWave();
     };
 
-    // Ticker logic for seamless, loop auto-scrolling
+    // Ticker logic for seamless, loop auto-scrolling & inertia
     const tick = () => {
-      if (isDownRef.current || singleCycleWidth === 0) return;
+      if (isDown || singleCycleWidth === 0) return;
 
-      let newScroll = container.scrollLeft + speed * timeScaleRef.current;
+      let newScroll = container.scrollLeft;
 
-      // Wrap around boundary limits
-      if (newScroll >= singleCycleWidth) {
+      if (isDecelerating) {
+        newScroll -= tickerVelocity;
+        // Apply friction decay
+        tickerVelocity *= 0.92;
+        
+        // Target speed and direction of the normal auto-scroll
+        const targetSpeed = speed * timeScaleRef.current;
+        // If we decelerate below the target speed, transition back to normal auto-scroll
+        if (Math.abs(tickerVelocity) <= Math.abs(targetSpeed)) {
+          isDecelerating = false;
+        }
+      } else {
+        newScroll += speed * timeScaleRef.current;
+      }
+
+      // Robust wrapping bounds in the middle cycle
+      if (newScroll >= 2 * singleCycleWidth) {
         newScroll -= singleCycleWidth;
-      } else if (newScroll <= 0) {
+      } else if (newScroll <= singleCycleWidth) {
         newScroll += singleCycleWidth;
       }
 
@@ -194,13 +226,15 @@ const AchievementsSection = ({ entries }: AchievementsSectionProps) => {
       isDraggingRef.current = false;
 
       container.style.cursor = "grabbing";
-      isDownRef.current = true;
-      startXRef.current = pageX - container.offsetLeft;
-      scrollLeftRef.current = container.scrollLeft;
+      isDown = true;
+      isDecelerating = false;
+      lastX = pageX;
+      lastTime = performance.now();
+      dragVelocity = 0;
     };
 
     const moveDrag = (pageX: number, pageY: number) => {
-      if (!isDownRef.current || singleCycleWidth === 0) return;
+      if (!isDown || singleCycleWidth === 0) return;
       
       const diffX = Math.abs(pageX - clickStartRef.current.x);
       const diffY = Math.abs(pageY - clickStartRef.current.y);
@@ -208,17 +242,24 @@ const AchievementsSection = ({ entries }: AchievementsSectionProps) => {
         isDraggingRef.current = true;
       }
 
-      const walk = (pageX - container.offsetLeft - startXRef.current) * 1.5;
-      let newScroll = scrollLeftRef.current - walk;
+      const dx = pageX - lastX;
+      const now = performance.now();
+      const dt = now - lastTime;
+      if (dt > 0) {
+        const instantVelocity = dx / dt;
+        dragVelocity = dragVelocity * 0.6 + instantVelocity * 0.4;
+      }
+      lastX = pageX;
+      lastTime = now;
 
-      if (newScroll >= singleCycleWidth) {
+      // Scroll container by dragging delta
+      let newScroll = container.scrollLeft - dx;
+
+      // Wrap around middle cycle bounds instantly
+      if (newScroll >= 2 * singleCycleWidth) {
         newScroll -= singleCycleWidth;
-        scrollLeftRef.current -= singleCycleWidth;
-        startXRef.current += singleCycleWidth;
-      } else if (newScroll <= 0) {
+      } else if (newScroll <= singleCycleWidth) {
         newScroll += singleCycleWidth;
-        scrollLeftRef.current += singleCycleWidth;
-        startXRef.current -= singleCycleWidth;
       }
 
       container.scrollLeft = newScroll;
@@ -226,15 +267,26 @@ const AchievementsSection = ({ entries }: AchievementsSectionProps) => {
     };
 
     const endDrag = () => {
-      if (!isDownRef.current) return;
-      isDownRef.current = false;
+      if (!isDown) return;
+      isDown = false;
       container.style.cursor = "grab";
+
+      if (isDraggingRef.current) {
+        isDecelerating = true;
+        // Convert px/ms to px/frame (approx 16.67ms per frame at 60fps)
+        tickerVelocity = dragVelocity * 16.67;
+        
+        // Cap maximum velocity for smooth deceleration
+        const maxVelocity = 40;
+        if (tickerVelocity > maxVelocity) tickerVelocity = maxVelocity;
+        if (tickerVelocity < -maxVelocity) tickerVelocity = -maxVelocity;
+      }
     };
 
     // Event listeners for Drag-to-Scroll
     const handleMouseDown = (e: MouseEvent) => startDrag(e.pageX, e.pageY);
     const handleMouseMove = (e: MouseEvent) => {
-      if (isDownRef.current) e.preventDefault();
+      if (isDown) e.preventDefault();
       moveDrag(e.pageX, e.pageY);
     };
     const handleMouseUp = (e: MouseEvent) => {
@@ -242,7 +294,7 @@ const AchievementsSection = ({ entries }: AchievementsSectionProps) => {
       const isCardClick = target.closest(".achievement-card-wrapper");
       
       // If it is a card and wasn't dragged, redirect to /gallery
-      if (isCardClick && !isDraggingRef.current && isDownRef.current) {
+      if (isCardClick && !isDraggingRef.current && isDown) {
         window.location.href = "/gallery";
       }
       endDrag();
