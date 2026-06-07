@@ -18,6 +18,11 @@ interface PolaroidCardProps {
   disableTransition?: boolean;
 }
 
+function avatarHue(name: string | undefined) {
+  if (!name) return 220;
+  return (name.charCodeAt(0) * 47) % 360;
+}
+
 const PolaroidCard = ({
   image,
   name,
@@ -26,6 +31,11 @@ const PolaroidCard = ({
   isStack = false,
   disableTransition = false,
 }: PolaroidCardProps) => {
+  const [imgFailed, setImgFailed] = useState(false);
+  const hue = avatarHue(name);
+  const initial = name?.[0]?.toUpperCase() ?? "?";
+  const showPlaceholder = !image || imgFailed;
+
   return (
     <div
       className={`relative shrink-0 bg-white p-3 pb-8 shadow-[0_15px_35px_rgba(0,0,0,0.6)] border border-neutral-200/80 ${
@@ -38,14 +48,25 @@ const PolaroidCard = ({
     >
       {/* Photo area */}
       <div className="w-full h-[80%] overflow-hidden bg-neutral-100 relative">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={image || "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&q=80"}
-          alt={name || "Testimonial"}
-          className="w-full h-full object-cover filter saturate-[0.9] contrast-[1.05]"
-          loading="lazy"
-          onError={(e) => { e.currentTarget.src = "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&q=80"; }}
-        />
+        {showPlaceholder ? (
+          <div
+            className="w-full h-full flex items-center justify-center"
+            style={{ background: `hsl(${hue},45%,28%)` }}
+          >
+            <span className="font-black text-white/80 select-none" style={{ fontSize: isStack ? "72px" : "56px" }}>
+              {initial}
+            </span>
+          </div>
+        ) : (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={image!}
+            alt={name || "Testimonial"}
+            className="w-full h-full object-cover filter saturate-[0.9] contrast-[1.05]"
+            loading="lazy"
+            onError={() => setImgFailed(true)}
+          />
+        )}
       </div>
       {/* Handwritten name at the bottom */}
       {name && (
@@ -58,6 +79,46 @@ const PolaroidCard = ({
     </div>
   );
 };
+
+function AuthorAvatar({ testimonial }: { testimonial: Testimonial }) {
+  const [imgFailed, setImgFailed] = useState(false);
+  const hue = avatarHue(testimonial.author_name);
+  const initial = testimonial.author_name?.[0]?.toUpperCase() ?? "?";
+  const showPlaceholder = !testimonial.avatar_url || imgFailed;
+
+  return (
+    <div className="flex items-center gap-3">
+      <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full border border-white/10 bg-neutral-800 flex items-center justify-center">
+        {showPlaceholder ? (
+          <span
+            className="font-black text-white/80 text-lg leading-none select-none"
+            style={{ background: `hsl(${hue},45%,28%)`, width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}
+          >
+            {initial}
+          </span>
+        ) : (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={testimonial.avatar_url!}
+            alt={testimonial.author_name}
+            className="h-full w-full object-cover"
+            onError={() => setImgFailed(true)}
+          />
+        )}
+      </div>
+      <div className="flex flex-col">
+        <span className="text-xs font-bold uppercase tracking-wider text-white">
+          {testimonial.author_name}
+        </span>
+        {testimonial.author_role && (
+          <span className="text-[10px] font-bold uppercase tracking-widest text-[#F5C400]/70 mt-0.5">
+            {testimonial.author_role}
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
 
 const TestimonialsSection = ({ testimonials }: TestimonialsSectionProps) => {
   const sectionRef = useRef<HTMLElement>(null);
@@ -537,27 +598,7 @@ const TestimonialsSection = ({ testimonials }: TestimonialsSectionProps) => {
             <div className="quote-text-animate flex items-center justify-between border-t border-white/10 pt-6 mt-4">
               
               {/* Author profile */}
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full border border-white/10 bg-neutral-800">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={active.avatar_url || "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&q=80"}
-                    alt={active.author_name}
-                    className="h-full w-full object-cover"
-                    onError={(e) => { e.currentTarget.src = "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&q=80"; }}
-                  />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-xs font-bold uppercase tracking-wider text-white">
-                    {active.author_name}
-                  </span>
-                  {active.author_role && (
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-[#F5C400]/70 mt-0.5">
-                      {active.author_role}
-                    </span>
-                  )}
-                </div>
-              </div>
+              <AuthorAvatar testimonial={active} />
 
               {/* Slider control buttons */}
               {length > 1 && (

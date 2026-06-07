@@ -59,7 +59,7 @@ const AchievementCard = ({ item, index }: CardProps) => {
           src={imageSrc}
           alt={item.title}
           className="absolute inset-0 h-full w-full object-cover pointer-events-none transition-transform duration-700 group-hover:scale-105"
-          onError={(e) => { e.currentTarget.src = fallbackImage; }}
+          onError={(e) => { e.currentTarget.style.display = "none"; }}
         />
 
         {/* Dark gradient overlay for typography readability */}

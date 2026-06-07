@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
 import type { Partner } from "@/features/admin/queries";
 
@@ -26,6 +26,29 @@ const DEFAULT_PARTNERS = [
   { id: "default-15", name: "Twitch", logo_url: "https://cdn.simpleicons.org/twitch" },
   { id: "default-16", name: "Discord", logo_url: "https://cdn.simpleicons.org/discord" },
 ];
+
+type PartnerItem = { id: string; name: string; logo_url: string | null };
+
+function PartnerLogo({ partner }: { partner: PartnerItem }) {
+  const [failed, setFailed] = useState(false);
+  if (!partner.logo_url || failed) {
+    return (
+      <span className="font-orbitron text-[10px] font-bold uppercase tracking-wider text-white/40">
+        {partner.name}
+      </span>
+    );
+  }
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={partner.logo_url}
+      alt={partner.name}
+      loading="lazy"
+      className="h-8 md:h-10 w-auto max-w-[130px] object-contain opacity-40 hover:opacity-100 transition-opacity duration-300 brightness-0 invert"
+      onError={() => setFailed(true)}
+    />
+  );
+}
 
 const PartnersSection = ({ partners }: PartnersSectionProps) => {
   const sectionRef = useRef<HTMLElement>(null);
@@ -92,24 +115,7 @@ const PartnersSection = ({ partners }: PartnersSectionProps) => {
               key={p.id}
               className="partner-logo-item flex items-center justify-center w-full h-16 hover:scale-105 transition-transform duration-300"
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={p.logo_url ?? ""}
-                alt={p.name}
-                loading="lazy"
-                className="h-8 md:h-10 w-auto max-w-[130px] object-contain opacity-40 hover:opacity-100 transition-opacity duration-300 brightness-0 invert"
-                onError={(e) => {
-                  const el = e.currentTarget;
-                  el.style.display = "none";
-                  const parent = el.parentElement;
-                  if (parent && !parent.querySelector(".partner-text-fallback")) {
-                    const span = document.createElement("span");
-                    span.className = "partner-text-fallback font-orbitron text-[9px] font-bold uppercase tracking-wider text-white/30";
-                    span.textContent = p.name;
-                    parent.appendChild(span);
-                  }
-                }}
-              />
+              <PartnerLogo partner={p} />
             </div>
           ))}
         </div>
