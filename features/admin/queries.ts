@@ -584,3 +584,28 @@ export async function getMembersForAdmin(): Promise<AdminPlayerMember[]> {
     avatar_url: profileMap.get(m.user_id)?.avatar_url ?? null,
   }));
 }
+
+export type PublicScrim = {
+  id: string;
+  opponent_name: string;
+  scheduled_at: string;
+  status: string;
+  format: string;
+};
+
+export async function getNearestPublicScrim(): Promise<PublicScrim | null> {
+  const admin = createAdminClient();
+  const { data, error } = await admin
+    .from("scrims")
+    .select("id, opponent_name, scheduled_at, status, format")
+    .eq("status", "scheduled")
+    .gte("scheduled_at", new Date().toISOString())
+    .order("scheduled_at", { ascending: true })
+    .limit(1)
+    .maybeSingle();
+  if (error) {
+    console.error("getNearestPublicScrim:", error);
+    return null;
+  }
+  return data;
+}

@@ -74,6 +74,8 @@
   --radius-xl: calc(var(--radius) + 4px);
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
+  --font-bebas: var(--font-bebas);
+  --font-orbitron: var(--font-orbitron);
   /* Brand yellow used on the marketing landing — matches the "HYPERION TEAM"
      wordmark on the live Laravel site (rgb(222, 179, 4)). */
   --color-brand-yellow: oklch(0.781 0.149 86.78);
@@ -310,6 +312,30 @@ input[type="number"] {
 }
 .clip-tr-lg {
   clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 0 100%);
+}
+.clip-cyber-btn {
+  clip-path: polygon(
+    8px 0,
+    calc(100% - 8px) 0,
+    100% 8px,
+    100% calc(100% - 8px),
+    calc(100% - 8px) 100%,
+    8px 100%,
+    0 calc(100% - 8px),
+    0 8px
+  );
+}
+.clip-hero-card {
+  clip-path: polygon(
+    0 32px,
+    32px 0,
+    calc(100% - 32px) 0,
+    100% 32px,
+    100% calc(100% - 32px),
+    calc(100% - 32px) 100%,
+    32px 100%,
+    0 calc(100% - 32px)
+  );
 }
 
 /* ── Partners ticker (single row) ─────────────────────────────────────────── */

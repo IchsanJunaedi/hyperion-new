@@ -216,9 +216,16 @@ export async function updateTournamentStatusAction(
   }
 
   // DB uses text check: upcoming/ongoing/completed/cancelled
+  const updateFields: { status: "upcoming" | "ongoing" | "completed" | "cancelled"; is_registered?: boolean } = {
+    status: status as "upcoming" | "ongoing" | "completed" | "cancelled"
+  };
+  if (status === "ongoing") {
+    updateFields.is_registered = true;
+  }
+
   const { error } = await admin
     .from("tournaments")
-    .update({ status: status as "upcoming" | "ongoing" | "completed" | "cancelled" })
+    .update(updateFields)
     .eq("id", tournamentId);
 
   if (error) return { ok: false, message: error.message };
