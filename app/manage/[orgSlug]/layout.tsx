@@ -99,8 +99,8 @@ const ManageTeamLayout = async ({ children, params }: ManageTeamLayoutProps) => 
   let todoBadgeCount = 0;
   try {
     todoBadgeCount = await getTodoBadgeCount(org.id, user.id);
-  } catch {
-    // non-critical
+  } catch (err) {
+    console.error("[manage layout] getTodoBadgeCount:", err);
   }
 
   return (
