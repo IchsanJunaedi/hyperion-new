@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Plus } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { TodoStatsBar } from "./TodoStatsBar";
@@ -12,7 +12,7 @@ import { ManualTodoCard } from "./ManualTodoCard";
 import { AssignedOutCard } from "./AssignedOutCard";
 import { CreateTodoModal } from "./CreateTodoModal";
 import { groupTodos, filterTodos } from "../logic";
-import type { Todo, TodoFilters, ManualTodo, TodoTab } from "../types";
+import type { Todo, TodoFilters, ManualTodo, TodoTab, Manager } from "../types";
 
 interface AssignedOutTodo {
   id: string;
@@ -22,8 +22,6 @@ interface AssignedOutTodo {
   completed_at: string | null;
   assignee: { id: string; display_name: string | null; avatar_url: string | null } | null;
 }
-
-interface Manager { user_id: string; display_name: string | null }
 
 interface Props {
   orgId: string;
@@ -54,15 +52,23 @@ const TodosPage = ({ orgId, todos, assignedOutTodos, managers, isOwner, revalida
   };
 
   const isAssignedOutTab = activeTab === "assigned_out";
-  const filtered = isAssignedOutTab ? [] : filterTodos(todos, filters);
-  const groups = groupTodos(filtered);
 
-  const overdueCount = todos.filter((t) => t.urgency === "overdue").length;
-  const todayCount = todos.filter((t) => t.urgency === "today").length;
-  const totalCount = todos.filter((t) => {
-    if (t.source === "manual") return (t as ManualTodo).completed_at === null;
-    return true;
-  }).length;
+  const filtered = useMemo(
+    () => (isAssignedOutTab ? [] : filterTodos(todos, filters)),
+    [isAssignedOutTab, todos, filters],
+  );
+
+  const groups = useMemo(() => groupTodos(filtered), [filtered]);
+
+  const { overdueCount, todayCount, totalCount } = useMemo(() => {
+    const overdueCount = todos.filter((t) => t.urgency === "overdue").length;
+    const todayCount = todos.filter((t) => t.urgency === "today").length;
+    const totalCount = todos.filter((t) => {
+      if (t.source === "manual") return (t as ManualTodo).completed_at === null;
+      return true;
+    }).length;
+    return { overdueCount, todayCount, totalCount };
+  }, [todos]);
 
   return (
     <div className="space-y-6">

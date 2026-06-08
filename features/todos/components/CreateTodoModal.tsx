@@ -5,9 +5,7 @@ import { X } from "lucide-react";
 import { useNotify } from "@/features/dashboard/components/NotifyModal";
 import { CustomSelect } from "@/features/dashboard/components/CustomSelect";
 import { createManualTodoAction } from "../actions";
-import type { TodoPriority } from "../types";
-
-interface Manager { user_id: string; display_name: string | null }
+import type { TodoPriority, Manager } from "../types";
 
 interface Props {
   orgId: string;

@@ -48,3 +48,8 @@ export interface TodoFilters {
 }
 
 export type TodoTab = "all" | "smart" | "manual" | "assigned_out";
+
+export interface Manager {
+  user_id: string;
+  display_name: string | null;
+}
