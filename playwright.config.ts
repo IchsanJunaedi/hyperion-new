@@ -53,6 +53,7 @@ const adminProjects: Project[] = HAS_ADMIN_CREDS
   ? [
       {
         name: "admin-setup",
+        testDir: "./e2e",
         testMatch: "**/admin/setup/auth.setup.ts",
         use: { ...devices["Desktop Chrome"] },
       },
@@ -76,6 +77,7 @@ const workspaceProjects: Project[] = HAS_ALL_ROLE_CREDS
         // first; seed then only logs in the 4 role accounts. No concurrent
         // same-account owner login → owner.json stays valid.
         name: "workspace-seed",
+        testDir: "./e2e",
         testMatch: "**/workspace/setup/seed.ts",
         dependencies: ["owner-setup"],
         use: { ...devices["Desktop Chrome"] },
@@ -175,6 +177,7 @@ export default defineConfig({
       // logout has already happened. The authed legacy specs and dashboard-tests
       // both reuse this single session, so it must not be revoked mid-run.
       name: "owner-setup",
+      testDir: "./e2e",
       testMatch: "**/setup/owner-auth.setup.ts",
       dependencies: ["auth-flow"],
       use: { ...devices["Desktop Chrome"] },

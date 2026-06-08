@@ -170,7 +170,7 @@ setup("seed workspace data and save auth states", async () => {
     const page = await ctx.newPage();
     await page.goto(`${BASE_URL}/login`);
     await page.getByLabel(/email/i).fill(r.email);
-    await page.getByLabel(/password/i).fill(r.password);
+    await page.locator('input[name="password"]').fill(r.password);
     await page.getByRole("button", { name: /masuk/i }).click();
     // Cold dev-server route compiles can be slow; allow generous headroom.
     await page.waitForURL((url) => !url.pathname.startsWith("/login"), { timeout: 30_000 });
