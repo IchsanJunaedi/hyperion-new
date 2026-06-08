@@ -260,7 +260,7 @@ export async function dismissSmartTodoAction(
       smart_type: smart_type,
       entity_id: entity_id,
     },
-    { onConflict: "user_id,org_id,smart_type,entity_id" },
+    { onConflict: "user_id,smart_type,entity_id" },
   );
 
   if (error) {

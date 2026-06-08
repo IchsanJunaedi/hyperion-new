@@ -83,7 +83,7 @@ const DashboardTodosPage = async () => {
   }));
 
   return (
-    <div className="space-y-6">
+    <main className="max-w-[1100px] w-full mx-auto px-8 py-8">
       <TodosPage
         orgId={org.id}
         todos={todos}
@@ -92,7 +92,7 @@ const DashboardTodosPage = async () => {
         isOwner={true}
         revalidatePaths={["/dashboard/todos"]}
       />
-    </div>
+    </main>
   );
 };
 
