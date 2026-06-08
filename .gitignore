@@ -51,8 +51,10 @@ supabase/.temp/
 .kiro/
 
 # Docs (internal plans, not needed in prod)
-docs/
+docs/*
 !docs/superpowers/
+docs/superpowers/*
+!docs/superpowers/specs/
 
 # Reference files
 master_workspace_notion_style/
