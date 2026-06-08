@@ -67,10 +67,10 @@ const PolaroidCard = ({
           />
         )}
       </div>
-      {/* Handwritten name at the bottom */}
+      {/* Name at the bottom */}
       {name && (
         <div className="mt-3 text-center">
-          <span className="font-serif italic font-semibold text-lg text-neutral-800 tracking-wide block leading-none">
+          <span className="font-sans font-bold uppercase text-[13px] tracking-wider text-neutral-800 block leading-none">
             {name}
           </span>
         </div>

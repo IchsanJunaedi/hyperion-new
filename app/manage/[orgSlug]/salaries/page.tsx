@@ -21,7 +21,7 @@ const ManageSalariesPage = async ({ params }: Props) => {
   const admin = createAdminClient();
   const { data: org } = await admin
     .from("organizations")
-    .select("id")
+    .select("id, name")
     .eq("slug", orgSlug)
     .maybeSingle();
 
@@ -56,6 +56,8 @@ const ManageSalariesPage = async ({ params }: Props) => {
       user_id: m.user_id,
       display_name: profileMap.get(m.user_id) ?? null,
       role: m.role,
+      organization_id: org.id,
+      org_name: org.name,
     }));
 
   return (
@@ -68,7 +70,7 @@ const ManageSalariesPage = async ({ params }: Props) => {
       </div>
 
       <SalaryPageClient
-        orgId={org.id}
+        orgs={[{ id: org.id, name: org.name }]}
         contracts={contracts}
         summary={summary}
         members={members}

@@ -16,6 +16,7 @@ const TestimonialForm = ({ testimonial, onDone }: Props) => {
   const [authorName, setAuthorName] = useState(testimonial?.author_name ?? "");
   const [authorRole, setAuthorRole] = useState(testimonial?.author_role ?? "");
   const [content, setContent] = useState(testimonial?.content ?? "");
+  const [tagline, setTagline] = useState(testimonial?.tagline ?? "");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(testimonial?.avatar_url ?? null);
   const [sortOrder, setSortOrder] = useState<number>(testimonial?.sort_order ?? 0);
   const [isActive, setIsActive] = useState(testimonial?.is_active ?? true);
@@ -32,6 +33,7 @@ const TestimonialForm = ({ testimonial, onDone }: Props) => {
       avatar_url: avatarUrl,
       sort_order: sortOrder,
       is_active: isActive,
+      tagline: tagline.trim() || null,
     };
     const result = testimonial
       ? await updateTestimonial(testimonial.id, data)
@@ -56,6 +58,10 @@ const TestimonialForm = ({ testimonial, onDone }: Props) => {
           <label className={labelClass}>Role / Tim</label>
           <input className={inputClass} value={authorRole} onChange={e => setAuthorRole(e.target.value)} placeholder="Player of Team RRQ" />
         </div>
+      </div>
+      <div>
+        <label className={labelClass}>Tagline (Kata Kunci Highlight, contoh: Simple. Reliable. Efficient.)</label>
+        <input className={inputClass} value={tagline} onChange={e => setTagline(e.target.value)} placeholder="Simple. Reliable. Efficient." />
       </div>
       <div>
         <label className={labelClass}>Konten *</label>

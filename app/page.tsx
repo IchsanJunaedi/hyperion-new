@@ -194,7 +194,7 @@ export default async function HomePage() {
         />
         <DivisionsSection />
         <AchievementsSection entries={mergedAchievements} />
-        <LatestNewsSection posts={latestNews.slice(0, 3)} />
+        <LatestNewsSection posts={latestNews.slice(0, 7)} />
         <TestimonialsSection testimonials={testimonials} />
         <PartnersSection partners={partners} />
         <JoinUsSection settings={joinSettings} />

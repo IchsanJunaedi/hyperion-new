@@ -8,15 +8,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
 
-interface SearchParams {
-  org?: string;
-}
-
-export default async function DashboardSalariesPage({
-  searchParams,
-}: {
-  searchParams: Promise<SearchParams>;
-}) {
+export default async function DashboardSalariesPage() {
   const supabase = await createClient();
   const {
     data: { user },
@@ -26,20 +18,19 @@ export default async function DashboardSalariesPage({
   const ownerEmail = process.env.OWNER_EMAIL;
   if (!ownerEmail || user.email !== ownerEmail) redirect("/");
 
-  const sp = await searchParams;
   const admin = createAdminClient();
 
   const { data: orgs } = await admin.from("organizations").select("id, name").order("created_at");
-  const orgId = sp.org ?? orgs?.[0]?.id ?? null;
-  if (!orgId) redirect("/dashboard");
+  if (!orgs || orgs.length === 0) redirect("/dashboard");
+  const orgIds = orgs.map((o) => o.id);
 
   const [contracts, summary, membersRes] = await Promise.all([
-    listContracts(orgId),
-    getPayrollSummary(orgId),
+    listContracts(orgIds),
+    getPayrollSummary(orgIds),
     admin
       .from("team_members")
-      .select("user_id, role")
-      .eq("organization_id", orgId)
+      .select("user_id, role, organization_id")
+      .in("organization_id", orgIds)
       .eq("is_active", true),
   ]);
 
@@ -50,10 +41,13 @@ export default async function DashboardSalariesPage({
     : { data: [] };
 
   const profileMap = new Map((profileRows ?? []).map((p) => [p.id, p.display_name]));
+  const orgNameMap = new Map(orgs.map((o) => [o.id, o.name]));
   const members = memberRows.map((m) => ({
     user_id: m.user_id,
     display_name: profileMap.get(m.user_id) ?? null,
     role: m.role,
+    organization_id: m.organization_id,
+    org_name: orgNameMap.get(m.organization_id) ?? null,
   }));
 
   return (
@@ -67,7 +61,7 @@ export default async function DashboardSalariesPage({
         </div>
 
         <SalaryPageClient
-          orgId={orgId}
+          orgs={orgs}
           contracts={contracts}
           summary={summary}
           members={members}

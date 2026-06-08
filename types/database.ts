@@ -1122,6 +1122,8 @@ export type Database = {
           updated_at: string
           created_at: string
           created_by: string | null
+          category: string | null
+          read_time: number | null
         }
         Insert: {
           id?: string
@@ -1135,6 +1137,8 @@ export type Database = {
           updated_at?: string
           created_at?: string
           created_by?: string | null
+          category?: string | null
+          read_time?: number | null
         }
         Update: {
           id?: string
@@ -1148,6 +1152,8 @@ export type Database = {
           updated_at?: string
           created_at?: string
           created_by?: string | null
+          category?: string | null
+          read_time?: number | null
         }
         Relationships: []
       }
@@ -2496,6 +2502,7 @@ export type Database = {
           id: string
           is_active: boolean
           sort_order: number
+          tagline: string | null
         }
         Insert: {
           author_name: string
@@ -2505,6 +2512,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           sort_order?: number
+          tagline?: string | null
         }
         Update: {
           author_name?: string
@@ -2514,6 +2522,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           sort_order?: number
+          tagline?: string | null
         }
         Relationships: []
       }

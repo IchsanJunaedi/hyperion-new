@@ -137,6 +137,7 @@ export async function createTestimonial(data: {
   avatar_url: string | null;
   sort_order: number;
   is_active: boolean;
+  tagline: string | null;
 }): Promise<ActionResult> {
   const auth = await verifyAdminAccess();
   if (!auth.ok) return auth;
@@ -155,6 +156,7 @@ export async function updateTestimonial(id: string, data: {
   avatar_url?: string | null;
   sort_order?: number;
   is_active?: boolean;
+  tagline?: string | null;
 }): Promise<ActionResult> {
   const auth = await verifyAdminAccess();
   if (!auth.ok) return auth;
@@ -380,6 +382,8 @@ export async function createNewsPostAction(data: {
   content: string | null;
   cover_image_url: string | null;
   status: 'draft' | 'published';
+  category: string | null;
+  read_time: number | null;
 }): Promise<ActionResult> {
   const auth = await verifyAdminAccess();
   if (!auth.ok) return auth;
@@ -408,6 +412,8 @@ export async function updateNewsPostAction(
     content: string | null;
     cover_image_url: string | null;
     status: 'draft' | 'published';
+    category: string | null;
+    read_time: number | null;
   }
 ): Promise<ActionResult> {
   const auth = await verifyAdminAccess();

@@ -12,6 +12,12 @@ interface Props {
   onDone: () => void;
 }
 
+const CATEGORIES = [
+  { value: "unggulan", label: "Unggulan" },
+  { value: "turnamen", label: "Turnamen" },
+  { value: "update_tim", label: "Update Tim" }
+];
+
 const NewsForm = ({ entry, onDone }: Props) => {
   const [title, setTitle] = useState(entry?.title ?? "");
   const [slug, setSlug] = useState(entry?.slug ?? "");
@@ -19,6 +25,8 @@ const NewsForm = ({ entry, onDone }: Props) => {
   const [content, setContent] = useState(entry?.content ?? "");
   const [coverUrl, setCoverUrl] = useState<string | null>(entry?.cover_image_url ?? null);
   const [status, setStatus] = useState<'draft' | 'published'>(entry?.status ?? "draft");
+  const [category, setCategory] = useState<string | null>(entry?.category ?? null);
+  const [readTime, setReadTime] = useState<string>(entry?.read_time != null ? String(entry.read_time) : "");
   const [saving, setSaving] = useState(false);
   const [slugTouched, setSlugTouched] = useState(!!entry);
 
@@ -40,6 +48,8 @@ const NewsForm = ({ entry, onDone }: Props) => {
       content: content.trim() || null,
       cover_image_url: coverUrl,
       status,
+      category: category || null,
+      read_time: readTime ? parseInt(readTime, 10) : null,
     };
     const result = entry
       ? await updateNewsPostAction(entry.id, payload)
@@ -71,6 +81,34 @@ const NewsForm = ({ entry, onDone }: Props) => {
       </div>
       <div>
         <ImageUpload value={coverUrl} onChange={setCoverUrl} folder="news" label="Cover Image (opsional)" />
+      </div>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div>
+          <label className={labelClass}>Kategori</label>
+          <select
+            className={inputClass}
+            value={category ?? ""}
+            onChange={(e) => setCategory(e.target.value || null)}
+          >
+            <option value="" className="bg-[#191919] text-[#6B6A68]">— Pilih Kategori (opsional) —</option>
+            {CATEGORIES.map((cat) => (
+              <option key={cat.value} value={cat.value} className="bg-[#191919] text-[#E5E2E1]">
+                {cat.label}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className={labelClass}>Waktu Baca (menit, opsional)</label>
+          <input
+            type="number"
+            min="1"
+            className={inputClass}
+            value={readTime}
+            onChange={(e) => setReadTime(e.target.value)}
+            placeholder="5"
+          />
+        </div>
       </div>
       <div>
         <label className={labelClass}>Status</label>

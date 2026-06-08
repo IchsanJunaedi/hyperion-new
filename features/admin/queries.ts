@@ -364,13 +364,15 @@ export type NewsPost = {
   published_at: string | null;
   updated_at: string;
   created_at: string;
+  category: string | null;
+  read_time: number | null;
 };
 
 export async function getNewsPosts(): Promise<NewsPost[]> {
   const admin = createAdminClient();
   const { data, error } = await admin
     .from("news_posts")
-    .select("id, title, slug, excerpt, content, cover_image_url, status, published_at, updated_at, created_at")
+    .select("id, title, slug, excerpt, content, cover_image_url, status, published_at, updated_at, created_at, category, read_time")
     .order("created_at", { ascending: false })
     .limit(50);
   if (error) console.error("getNewsPosts:", error);
@@ -381,7 +383,7 @@ export async function getPublishedNewsPosts(): Promise<NewsPost[]> {
   const admin = createAdminClient();
   const { data, error } = await admin
     .from("news_posts")
-    .select("id, title, slug, excerpt, cover_image_url, published_at, updated_at, created_at, content, status")
+    .select("id, title, slug, excerpt, cover_image_url, published_at, updated_at, created_at, content, status, category, read_time")
     .eq("status", "published")
     .order("published_at", { ascending: false })
     .limit(20);
@@ -393,7 +395,7 @@ export async function getNewsPostBySlug(slug: string): Promise<NewsPost | null> 
   const admin = createAdminClient();
   const { data, error } = await admin
     .from("news_posts")
-    .select("id, title, slug, excerpt, content, cover_image_url, status, published_at, updated_at, created_at")
+    .select("id, title, slug, excerpt, content, cover_image_url, status, published_at, updated_at, created_at, category, read_time")
     .eq("slug", slug)
     .eq("status", "published")
     .maybeSingle();

@@ -1,31 +1,68 @@
 "use client";
 
-import { useRef, useEffect } from "react";
-import { ArrowRight } from "lucide-react";
+import { useRef, useEffect, useState } from "react";
 import { gsap } from "gsap";
 import type { Achievement } from "@/features/admin/queries";
 import { GridTexture, GoldRadialGlow } from "@/components/landing/LandingTextures";
 
 export type AchievementItem = Achievement & { href?: string };
 
-const FALLBACK_PORTRAITS = [
-  "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=600&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=600&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1560253023-3ec5d502959f?q=80&w=600&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?q=80&w=600&auto=format&fit=crop"
+const PLACEMENT_LABEL: Record<number, string> = { 1: "Champion", 2: "Runner Up", 3: "3rd Place" };
+
+const CARD_GRADIENTS = [
+  // gold — champion
+  "radial-gradient(ellipse at 85% 15%, rgba(200,155,30,0.55) 0%, rgba(120,75,5,0.35) 35%, rgba(60,30,0,0.2) 60%, transparent 80%)",
+  // silver-blue — runner up
+  "radial-gradient(ellipse at 85% 15%, rgba(100,130,180,0.55) 0%, rgba(40,65,110,0.35) 35%, rgba(15,30,60,0.2) 60%, transparent 80%)",
+  // bronze — 3rd
+  "radial-gradient(ellipse at 85% 15%, rgba(180,100,35,0.55) 0%, rgba(100,50,10,0.35) 35%, rgba(50,20,5,0.2) 60%, transparent 80%)",
+  // purple
+  "radial-gradient(ellipse at 85% 15%, rgba(120,40,180,0.5) 0%, rgba(60,15,100,0.3) 35%, transparent 70%)",
+  // teal
+  "radial-gradient(ellipse at 85% 15%, rgba(20,140,120,0.5) 0%, rgba(5,70,60,0.3) 35%, transparent 70%)",
+  // crimson
+  "radial-gradient(ellipse at 85% 15%, rgba(180,30,50,0.5) 0%, rgba(90,10,20,0.3) 35%, transparent 70%)",
 ];
 
-const PLACEMENT_LABEL: Record<number, string> = { 1: "Champion", 2: "Runner Up", 3: "3rd Place" };
+function getCardBg(placement: number | null, index: number): string {
+  if (placement === 1) return CARD_GRADIENTS[0]!;
+  if (placement === 2) return CARD_GRADIENTS[1]!;
+  if (placement === 3) return CARD_GRADIENTS[2]!;
+  return CARD_GRADIENTS[3 + (index % 3)]!;
+}
 
 interface CardProps {
   item: AchievementItem;
   index: number;
 }
 
-const AchievementCard = ({ item, index }: CardProps) => {
-  const fallbackImage = FALLBACK_PORTRAITS[index % FALLBACK_PORTRAITS.length] || "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=600&auto=format&fit=crop";
-  const imageSrc = item.image_url || fallbackImage;
+function CardBackground({ imageUrl, placement, index }: { imageUrl: string | null; placement: number | null; index: number }) {
+  const [failed, setFailed] = useState(false);
 
+  if (!imageUrl || failed) {
+    return (
+      <>
+        <div className="absolute inset-0" style={{ backgroundImage: getCardBg(placement, index) }} />
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/75 to-black/20 z-10" />
+      </>
+    );
+  }
+
+  return (
+    <>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={imageUrl}
+        alt=""
+        className="absolute inset-0 h-full w-full object-cover pointer-events-none transition-transform duration-700 group-hover:scale-105"
+        onError={() => setFailed(true)}
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent opacity-90 z-10" />
+    </>
+  );
+}
+
+const AchievementCard = ({ item, index }: CardProps) => {
   const label = item.placement ? (PLACEMENT_LABEL[item.placement] ?? `Juara ${item.placement}`) : "Achievement";
 
   // Parse description sentences into a list of highlights (maximum 3 points)
@@ -53,17 +90,7 @@ const AchievementCard = ({ item, index }: CardProps) => {
       <div
         className="group relative w-[280px] sm:w-[320px] aspect-[3/4] rounded-2xl overflow-hidden border border-white/5 bg-[#030813] shadow-2xl transition-all duration-500 hover:border-[#D4FF00]/40 hover:-translate-y-3 hover:scale-[1.02] active:scale-[0.99] cursor-pointer"
       >
-        {/* Background photo */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={imageSrc}
-          alt={item.title}
-          className="absolute inset-0 h-full w-full object-cover pointer-events-none transition-transform duration-700 group-hover:scale-105"
-          onError={(e) => { e.currentTarget.src = "/brand/logo.jpg"; }}
-        />
-
-        {/* Dark gradient overlay for typography readability */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent opacity-95 z-10" />
+        <CardBackground imageUrl={item.image_url} placement={item.placement} index={index} />
 
         {/* Top left placement subtag */}
         <div className="absolute top-6 left-6 z-20">

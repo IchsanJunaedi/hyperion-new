@@ -13,6 +13,8 @@ interface Member {
   user_id: string;
   display_name: string | null;
   role: string | null;
+  organization_id?: string;
+  org_name?: string | null;
 }
 
 interface SalaryFormModalProps {
@@ -65,13 +67,24 @@ const SalaryFormModal = ({
   const [endDate, setEndDate] = useState<string>(contract?.end_date ?? "");
 
   const [selectedUserId, setSelectedUserId] = useState<string>(contract?.user_id ?? "");
+  const [selectedOrgId, setSelectedOrgId] = useState<string>(contract?.organization_id ?? orgId);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [playerQuery, setPlayerQuery] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const isEdit = !!contract;
 
   const eligibleMembers = members.filter((m) => m.role?.toLowerCase() !== "owner");
-  const selectedMember = members.find((m) => m.user_id === selectedUserId);
+  const selectedMember = members.find(
+    (m) => m.user_id === selectedUserId && m.organization_id === selectedOrgId
+  );
+
+  const filteredDropdownMembers = eligibleMembers.filter((m) => {
+    const nameMatch = m.display_name?.toLowerCase().includes(playerQuery.toLowerCase()) ?? false;
+    const orgMatch = m.org_name?.toLowerCase().includes(playerQuery.toLowerCase()) ?? false;
+    const roleMatch = m.role?.toLowerCase().includes(playerQuery.toLowerCase()) ?? false;
+    return nameMatch || orgMatch || roleMatch;
+  });
 
   useEffect(() => {
     if (!dropdownOpen) return;
@@ -105,9 +118,10 @@ const SalaryFormModal = ({
 
     startTransition(async () => {
       setErr(null);
+      const targetOrgId = selectedOrgId;
       const res = isEdit
-        ? await updateContractAction(orgId, raw, revalidatePaths)
-        : await createContractAction(orgId, raw, revalidatePaths);
+        ? await updateContractAction(targetOrgId, raw, revalidatePaths)
+        : await createContractAction(targetOrgId, raw, revalidatePaths);
 
       if (res.ok) {
         success(isEdit ? "Kontrak diperbarui" : "Kontrak ditambahkan");
@@ -147,12 +161,18 @@ const SalaryFormModal = ({
             <div ref={dropdownRef} className="relative">
               <button
                 type="button"
+                disabled={isEdit}
                 onClick={() => setDropdownOpen((v) => !v)}
-                className="h-10 w-full flex items-center justify-between rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-sm text-[#E5E2E1] focus:border-[#9B9A97] focus:outline-none cursor-pointer"
+                className="h-10 w-full flex items-center justify-between rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-sm text-[#E5E2E1] focus:border-[#9B9A97] focus:outline-none cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {selectedMember ? (
                   <div className="flex-1 flex items-center justify-between min-w-0 mr-2">
-                    <span className="truncate pr-2 text-left">{selectedMember.display_name ?? selectedMember.user_id}</span>
+                    <span className="truncate pr-2 text-left">
+                      {selectedMember.display_name ?? selectedMember.user_id}{" "}
+                      <span className="text-[#6B6A68] text-xs font-normal">
+                        {selectedMember.org_name ? `(${selectedMember.org_name})` : ""}
+                      </span>
+                    </span>
                     {selectedMember.role && (
                       <span className={`inline-flex items-center rounded-full px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider shrink-0 ${
                         (ROLE_BADGES[selectedMember.role.toLowerCase()] || { text: "text-[#9B9A97]", bg: "bg-white/5" }).text
@@ -170,40 +190,60 @@ const SalaryFormModal = ({
               </button>
 
               {dropdownOpen && (
-                <div className="absolute left-0 top-full z-50 mt-1 w-full rounded-lg border border-[#2D2D2D] bg-[#202020] py-1 shadow-xl max-h-48 overflow-y-auto scroll-premium">
-                  {eligibleMembers.length === 0 ? (
-                    <p className="px-3 py-2 text-xs text-[#6B6A68]">Tidak ada member tersedia</p>
-                  ) : (
-                    eligibleMembers.map((m) => (
-                      <button
-                        key={m.user_id}
-                        type="button"
-                        onClick={() => {
-                          setSelectedUserId(m.user_id);
-                          setDropdownOpen(false);
-                        }}
-                        className="flex w-full items-center justify-between px-3 py-2 text-sm text-[#E5E2E1] hover:bg-[#2C2C2C] cursor-pointer"
-                      >
-                        <div className="flex-1 flex items-center justify-between min-w-0 mr-2">
-                          <span className="truncate pr-2 text-left">{m.display_name ?? m.user_id}</span>
-                          {m.role && (
-                            <span className={`inline-flex items-center rounded-full px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider shrink-0 ${
-                              (ROLE_BADGES[m.role.toLowerCase()] || { text: "text-[#9B9A97]", bg: "bg-white/5" }).text
-                            } ${
-                              (ROLE_BADGES[m.role.toLowerCase()] || { text: "text-[#9B9A97]", bg: "bg-white/5" }).bg
-                            }`}>
-                              {m.role}
+                <div className="absolute left-0 top-full z-50 mt-1 w-full rounded-lg border border-[#2D2D2D] bg-[#202020] shadow-xl max-h-60 flex flex-col overflow-hidden">
+                  <div className="p-2 border-b border-[#2D2D2D] shrink-0 bg-[#202020]">
+                    <input
+                      type="text"
+                      placeholder="Cari player..."
+                      autoFocus
+                      value={playerQuery}
+                      onChange={(e) => setPlayerQuery(e.target.value)}
+                      className="h-8 w-full rounded border border-[#2D2D2D] bg-[#191919] px-2.5 text-xs text-[#E5E2E1] placeholder-[#6B6A68] focus:border-[#9B9A97] focus:outline-none"
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </div>
+                  <div className="overflow-y-auto flex-1 py-1 bg-[#202020] scroll-premium">
+                    {filteredDropdownMembers.length === 0 ? (
+                      <p className="px-3 py-2 text-xs text-[#6B6A68]">Tidak ada player yang cocok</p>
+                    ) : (
+                      filteredDropdownMembers.map((m) => (
+                        <button
+                          key={`${m.user_id}-${m.organization_id}`}
+                          type="button"
+                          onClick={() => {
+                            setSelectedUserId(m.user_id);
+                            setSelectedOrgId(m.organization_id ?? orgId);
+                            setDropdownOpen(false);
+                            setPlayerQuery("");
+                          }}
+                          className="flex w-full items-center justify-between px-3 py-2 text-sm text-[#E5E2E1] hover:bg-[#2C2C2C] cursor-pointer"
+                        >
+                          <div className="flex-1 flex items-center justify-between min-w-0 mr-2">
+                            <span className="truncate pr-2 text-left">
+                              {m.display_name ?? m.user_id}{" "}
+                              <span className="text-[#6B6A68] text-xs font-normal">
+                                {m.org_name ? `(${m.org_name})` : ""}
+                              </span>
                             </span>
+                            {m.role && (
+                              <span className={`inline-flex items-center rounded-full px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider shrink-0 ${
+                                (ROLE_BADGES[m.role.toLowerCase()] || { text: "text-[#9B9A97]", bg: "bg-white/5" }).text
+                              } ${
+                                (ROLE_BADGES[m.role.toLowerCase()] || { text: "text-[#9B9A97]", bg: "bg-white/5" }).bg
+                              }`}>
+                                {m.role}
+                              </span>
+                            )}
+                          </div>
+                          {selectedUserId === m.user_id && selectedOrgId === m.organization_id ? (
+                            <Check className="h-3.5 w-3.5 text-[#9B9A97] shrink-0" />
+                          ) : (
+                            <div className="h-3.5 w-3.5 shrink-0" />
                           )}
-                        </div>
-                        {selectedUserId === m.user_id ? (
-                          <Check className="h-3.5 w-3.5 text-[#9B9A97] shrink-0" />
-                        ) : (
-                          <div className="h-3.5 w-3.5 shrink-0" />
-                        )}
-                      </button>
-                    ))
-                  )}
+                        </button>
+                      ))
+                    )}
+                  </div>
                 </div>
               )}
             </div>

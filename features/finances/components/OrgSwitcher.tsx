@@ -7,8 +7,8 @@ interface OrgSwitcherProps {
   orgs: Array<{ id: string; name: string }>;
   currentOrgId: string;
   basePath: string;
-  year: number;
-  month: number;
+  year?: number;
+  month?: number;
 }
 
 const OrgSwitcher = ({ orgs, currentOrgId, basePath, year, month }: OrgSwitcherProps) => {
@@ -18,10 +18,16 @@ const OrgSwitcher = ({ orgs, currentOrgId, basePath, year, month }: OrgSwitcherP
     <div className="flex flex-wrap gap-1.5">
       {orgs.map((org) => {
         const active = org.id === currentOrgId;
+        
+        const params = new URLSearchParams();
+        params.set("org", org.id);
+        if (year !== undefined) params.set("year", String(year));
+        if (month !== undefined) params.set("month", String(month));
+        
         return (
           <Link
             key={org.id}
-            href={`${basePath}?org=${org.id}&year=${year}&month=${month}`}
+            href={`${basePath}?${params.toString()}`}
             className={cn(
               "inline-flex h-8 items-center rounded-full px-3 text-xs font-medium transition",
               active

@@ -20,7 +20,7 @@ describe("createNewsPostAction", () => {
     vi.mocked(createClient).mockResolvedValue(mockClient("other@x.com") as any);
     process.env.ADMIN_EMAIL = "admin@x.com";
     process.env.OWNER_EMAIL = "owner@x.com";
-    const result = await createNewsPostAction({ title: "T", slug: "t", excerpt: null, content: null, cover_image_url: null, status: "draft" });
+    const result = await createNewsPostAction({ title: "T", slug: "t", excerpt: null, content: null, cover_image_url: null, status: "draft", category: null, read_time: null });
     expect(result.ok).toBe(false);
   });
 
@@ -30,7 +30,7 @@ describe("createNewsPostAction", () => {
     vi.mocked(createClient).mockResolvedValue(mockClient("admin@x.com") as any);
     const mockInsert = vi.fn().mockResolvedValue({ error: null });
     vi.mocked(createAdminClient).mockReturnValue({ from: () => ({ insert: mockInsert }) } as any);
-    const result = await createNewsPostAction({ title: "T", slug: "t", excerpt: null, content: null, cover_image_url: null, status: "draft" });
+    const result = await createNewsPostAction({ title: "T", slug: "t", excerpt: null, content: null, cover_image_url: null, status: "draft", category: null, read_time: null });
     expect(result.ok).toBe(true);
     expect(mockInsert).toHaveBeenCalledOnce();
   });

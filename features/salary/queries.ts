@@ -23,6 +23,9 @@ export interface ContractWithProfile extends PlayerContract {
   role: string | null;
   payments: SalaryPayment[];
   bonusDistributions: BonusDistribution[];
+  division_id?: string | null;
+  division_name?: string | null;
+  org_name?: string | null;
 }
 
 export interface PayrollSummary {
@@ -34,14 +37,15 @@ export interface PayrollSummary {
   monthlySpend: MonthlySpend[]; // trailing 6 months of paid spend
 }
 
-/** Returns all contracts for an org with profile data and last 6 months of payments. */
-export async function listContracts(orgId: string): Promise<ContractWithProfile[]> {
+/** Returns all contracts for an org (or multiple orgs) with profile data and last 6 months of payments. */
+export async function listContracts(orgIdOrIds: string | string[]): Promise<ContractWithProfile[]> {
   const admin = createAdminClient();
+  const orgIds = Array.isArray(orgIdOrIds) ? orgIdOrIds : [orgIdOrIds];
 
   const { data: contracts } = await admin
     .from("player_contracts")
     .select("id, user_id, organization_id, monthly_salary, bonus_percentage, status, start_date, end_date, notes, created_by, created_at, updated_at")
-    .eq("organization_id", orgId)
+    .in("organization_id", orgIds)
     .order("status")
     .order("created_at", { ascending: false });
 
@@ -60,12 +64,12 @@ export async function listContracts(orgId: string): Promise<ContractWithProfile[
   const now = new Date();
   const monthStart = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-01`;
 
-  const [profilesRes, membersRes, paymentsRes, bonusRes] = await Promise.all([
+  const [profilesRes, membersRes, paymentsRes, bonusRes, divisionsRes, orgsRes] = await Promise.all([
     admin.from("profiles").select("id, display_name, avatar_url").in("id", userIds),
     admin
       .from("team_members")
-      .select("user_id, role")
-      .eq("organization_id", orgId)
+      .select("user_id, role, division_id, organization_id")
+      .in("organization_id", orgIds)
       .eq("is_active", true)
       .in("user_id", userIds),
     admin
@@ -80,10 +84,22 @@ export async function listContracts(orgId: string): Promise<ContractWithProfile[
       .in("contract_id", contractIds)
       .gte("distributed_at", monthStart)
       .order("distributed_at", { ascending: false }),
+    admin
+      .from("divisions")
+      .select("id, name")
+      .in("organization_id", orgIds),
+    admin
+      .from("organizations")
+      .select("id, name")
+      .in("id", orgIds),
   ]);
 
   const profileMap = new Map((profilesRes.data ?? []).map((p) => [p.id, p]));
   const memberMap = new Map((membersRes.data ?? []).map((m) => [m.user_id, m.role]));
+  const memberDivisions = new Map((membersRes.data ?? []).map((m) => [m.user_id, m.division_id]));
+  const divisionMap = new Map((divisionsRes.data ?? []).map((d) => [d.id, d.name]));
+  const orgMap = new Map((orgsRes.data ?? []).map((o) => [o.id, o.name]));
+
   const paymentsByContract = new Map<string, SalaryPayment[]>();
   for (const p of paymentsRes.data ?? []) {
     const list = paymentsByContract.get(p.contract_id) ?? [];
@@ -107,19 +123,25 @@ export async function listContracts(orgId: string): Promise<ContractWithProfile[
 
   return contracts
     .filter((c) => memberMap.has(c.user_id))
-    .map((c) => ({
-      ...(c as PlayerContract),
-      display_name: profileMap.get(c.user_id)?.display_name ?? null,
-      avatar_url: profileMap.get(c.user_id)?.avatar_url ?? null,
-      role: memberMap.get(c.user_id) ?? null,
-      payments: paymentsByContract.get(c.id) ?? [],
-      bonusDistributions: bonusByContract.get(c.id) ?? [],
-    }));
+    .map((c) => {
+      const divisionId = memberDivisions.get(c.user_id) ?? null;
+      return {
+        ...(c as PlayerContract),
+        display_name: profileMap.get(c.user_id)?.display_name ?? null,
+        avatar_url: profileMap.get(c.user_id)?.avatar_url ?? null,
+        role: memberMap.get(c.user_id) ?? null,
+        division_id: divisionId,
+        division_name: divisionId ? (divisionMap.get(divisionId) ?? null) : null,
+        org_name: orgMap.get(c.organization_id) ?? null,
+        payments: paymentsByContract.get(c.id) ?? [],
+        bonusDistributions: bonusByContract.get(c.id) ?? [],
+      };
+    });
 }
 
-
-export async function getPayrollSummary(orgId: string): Promise<PayrollSummary> {
+export async function getPayrollSummary(orgIdOrIds: string | string[]): Promise<PayrollSummary> {
   const admin = createAdminClient();
+  const orgIds = Array.isArray(orgIdOrIds) ? orgIdOrIds : [orgIdOrIds];
 
   // 6 months back (first of that month) for the spend chart.
   const sixMonthsAgo = new Date();
@@ -131,17 +153,17 @@ export async function getPayrollSummary(orgId: string): Promise<PayrollSummary> 
     admin
       .from("player_contracts")
       .select("user_id, monthly_salary, status, end_date")
-      .eq("organization_id", orgId),
+      .in("organization_id", orgIds),
     admin
       .from("salary_payments")
       .select("pay_period, amount, status")
-      .eq("organization_id", orgId)
+      .in("organization_id", orgIds)
       .gte("pay_period", since)
       .limit(1000),
     admin
       .from("team_members")
       .select("user_id")
-      .eq("organization_id", orgId)
+      .in("organization_id", orgIds)
       .eq("is_active", true)
       .limit(100),
   ]);

@@ -30,22 +30,22 @@ const DEFAULT_PARTNERS = [
 type PartnerItem = { id: string; name: string; logo_url: string | null };
 
 function PartnerLogo({ partner }: { partner: PartnerItem }) {
-  const [failed, setFailed] = useState(false);
-  if (!partner.logo_url || failed) {
-    return (
-      <span className="font-orbitron text-[10px] font-bold uppercase tracking-wider text-white/40">
-        {partner.name}
-      </span>
-    );
-  }
+  const [imgSrc, setImgSrc] = useState(partner.logo_url || "/brand/logo.jpg");
+
+  const handleError = () => {
+    if (imgSrc !== "/brand/logo.jpg") {
+      setImgSrc("/brand/logo.jpg");
+    }
+  };
+
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src={partner.logo_url}
+      src={imgSrc}
       alt={partner.name}
       loading="lazy"
-      className="h-8 md:h-10 w-auto max-w-[130px] object-contain opacity-40 hover:opacity-100 transition-opacity duration-300 brightness-0 invert"
-      onError={() => setFailed(true)}
+      className="h-10 w-auto max-w-[130px] object-contain opacity-100 transition-opacity duration-300"
+      onError={handleError}
     />
   );
 }

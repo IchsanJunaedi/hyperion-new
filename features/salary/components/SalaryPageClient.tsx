@@ -1,21 +1,24 @@
 "use client";
 
-import { AlertTriangle, CheckCircle2, CircleDashed, Plus, Users, Wallet } from "lucide-react";
+import { AlertTriangle, CheckCircle2, CircleDashed, Plus, Users, Wallet, Search } from "lucide-react";
 import { useState } from "react";
 
 import { SalaryCard } from "@/features/salary/components/SalaryCard";
 import { SalaryFormModal } from "@/features/salary/components/SalaryFormModal";
 import type { ContractWithProfile, PayrollSummary } from "@/features/salary/queries";
 import type { MonthlySpend } from "@/features/salary/logic";
+import { CustomSelect } from "@/features/dashboard/components/CustomSelect";
 
 interface Member {
   user_id: string;
   display_name: string | null;
   role: string | null;
+  organization_id?: string;
+  org_name?: string | null;
 }
 
 interface SalaryPageClientProps {
-  orgId: string;
+  orgs: Array<{ id: string; name: string }>;
   contracts: ContractWithProfile[];
   summary: PayrollSummary;
   members: Member[];
@@ -72,7 +75,7 @@ function SpendChart({ data }: { data: MonthlySpend[] }) {
 }
 
 const SalaryPageClient = ({
-  orgId,
+  orgs,
   contracts,
   summary,
   members,
@@ -80,6 +83,8 @@ const SalaryPageClient = ({
 }: SalaryPageClientProps) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<ContractWithProfile | undefined>(undefined);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedOrgFilter, setSelectedOrgFilter] = useState("all");
 
   function openCreate() {
     setEditTarget(undefined);
@@ -93,6 +98,36 @@ const SalaryPageClient = ({
 
   const active = contracts.filter((c) => c.status === "active");
   const inactive = contracts.filter((c) => c.status !== "active");
+
+  const filteredActive = active.filter((c) => {
+    const matchesSearch = searchQuery
+      ? c.display_name?.toLowerCase().includes(searchQuery.toLowerCase())
+      : true;
+    const matchesOrg =
+      selectedOrgFilter === "all" ? true : c.organization_id === selectedOrgFilter;
+    return matchesSearch && matchesOrg;
+  });
+
+  // Group active contracts by organization name
+  const groupedActive: Record<string, ContractWithProfile[]> = {};
+  for (const c of filteredActive) {
+    const orgName = c.org_name ?? "Tim Tidak Dikenal";
+    if (!groupedActive[orgName]) {
+      groupedActive[orgName] = [];
+    }
+    groupedActive[orgName].push(c);
+  }
+
+  const sortedGroupNames = Object.keys(groupedActive).sort((a, b) => {
+    if (a === "Tim Tidak Dikenal") return 1;
+    if (b === "Tim Tidak Dikenal") return -1;
+    return a.localeCompare(b);
+  });
+
+  const filterOptions = [
+    { value: "all", label: "Semua Tim" },
+    ...orgs.map((o) => ({ value: o.id, label: o.name })),
+  ];
 
   return (
     <>
@@ -167,6 +202,30 @@ const SalaryPageClient = ({
         </button>
       </div>
 
+      {active.length > 0 && (
+        <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between bg-[#202020] p-4 rounded-xl border border-[#2D2D2D]">
+          <div className="relative flex-1 w-full max-w-sm">
+            <input
+              type="text"
+              placeholder="Cari nama player..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="h-9 w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 pl-8 text-xs text-[#E5E2E1] placeholder-[#6B6A68] focus:border-[#9B9A97] focus:outline-none"
+            />
+            <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-[#6B6A68]" />
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-[#9B9A97]">Filter Tim:</span>
+            <CustomSelect
+              value={selectedOrgFilter}
+              options={filterOptions}
+              onChange={setSelectedOrgFilter}
+            />
+          </div>
+        </div>
+      )}
+
       {active.length === 0 ? (
         <div className="rounded-xl border border-dashed border-[#2D2D2D] bg-[#202020]/40 p-10 text-center">
           <Wallet className="mx-auto h-8 w-8 text-[#6B6A68]" />
@@ -179,34 +238,52 @@ const SalaryPageClient = ({
             Tambah kontrak pertama
           </button>
         </div>
+      ) : filteredActive.length === 0 ? (
+        <div className="rounded-xl border border-dashed border-[#2D2D2D] bg-[#202020]/40 p-10 text-center">
+          <Search className="mx-auto h-8 w-8 text-[#6B6A68]" />
+          <p className="mt-3 text-sm text-[#9B9A97]">Tidak ada player yang cocok dengan filter.</p>
+        </div>
       ) : (
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-          {active.map((c) => (
-            <SalaryCard
-              key={c.id}
-              contract={c}
-              orgId={orgId}
-              revalidatePaths={revalidatePaths}
-
-              onEdit={() => openEdit(c)}
-            />
-          ))}
+        <div className="space-y-8">
+          {sortedGroupNames.map((orgName) => {
+            const groupContracts = groupedActive[orgName] ?? [];
+            return (
+              <div key={orgName} className="space-y-4">
+                <div className="flex items-center gap-2 border-b border-[#2D2D2D] pb-2">
+                  <div className="h-2.5 w-2.5 rounded bg-emerald-500" />
+                  <h3 className="text-sm font-bold text-[#E5E2E1] uppercase tracking-wider">
+                    {orgName} ({groupContracts.length})
+                  </h3>
+                </div>
+                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                  {groupContracts.map((c) => (
+                    <SalaryCard
+                      key={c.id}
+                      contract={c}
+                      orgId={c.organization_id}
+                      revalidatePaths={revalidatePaths}
+                      onEdit={() => openEdit(c)}
+                    />
+                  ))}
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
 
       {inactive.length > 0 && (
         <>
-          <h2 className="text-sm font-semibold text-[#6B6A68] uppercase tracking-wide">
+          <h2 className="text-sm font-semibold text-[#6B6A68] uppercase tracking-wide mt-6">
             Tidak Aktif ({inactive.length})
           </h2>
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3 opacity-60">
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3 opacity-60 mt-4">
             {inactive.map((c) => (
               <SalaryCard
                 key={c.id}
                 contract={c}
-                orgId={orgId}
+                orgId={c.organization_id}
                 revalidatePaths={revalidatePaths}
-  
                 onEdit={() => openEdit(c)}
               />
             ))}
@@ -216,7 +293,7 @@ const SalaryPageClient = ({
 
       {modalOpen && (
         <SalaryFormModal
-          orgId={orgId}
+          orgId={editTarget?.organization_id ?? orgs[0]?.id ?? ""}
           members={members}
           contract={editTarget}
           revalidatePaths={revalidatePaths}
