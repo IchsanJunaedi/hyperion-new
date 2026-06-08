@@ -6,6 +6,7 @@ import {
   BarChart3,
   Building2,
   Calendar,
+  CheckSquare,
   DollarSign,
   Download,
   FileText,
@@ -24,6 +25,7 @@ const NAV_GROUPS = [
     label: "OVERVIEW",
     items: [
       { href: "/dashboard", Icon: Home, label: "Home" },
+      { href: "/dashboard/todos", Icon: CheckSquare, label: "Todos" },
       { href: "/dashboard/calendar", Icon: Calendar, label: "Calendar" },
       { href: "/dashboard/tournaments", Icon: Trophy, label: "Turnamen" },
     ],
@@ -56,7 +58,11 @@ const NAV_GROUPS = [
   },
 ];
 
-const DashboardSidebarNav = () => {
+interface DashboardSidebarNavProps {
+  badgeCount?: number;
+}
+
+const DashboardSidebarNav = ({ badgeCount }: DashboardSidebarNavProps) => {
   const pathname = usePathname();
 
   return (
@@ -84,6 +90,11 @@ const DashboardSidebarNav = () => {
                   >
                     <item.Icon className="h-[18px] w-[18px] shrink-0" />
                     {item.label}
+                    {item.href === "/dashboard/todos" && badgeCount && badgeCount > 0 && (
+                      <span className="rounded-full bg-red-500 px-1.5 py-0.5 text-[10px] font-bold leading-none text-white">
+                        {badgeCount > 99 ? "99+" : badgeCount}
+                      </span>
+                    )}
                   </Link>
                 </li>
               );

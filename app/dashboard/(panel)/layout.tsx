@@ -11,6 +11,7 @@ import { NotificationBell } from "@/features/notifications/components/Notificati
 import { NotificationRealtimeProvider } from "@/features/notifications/components/NotificationRealtimeProvider";
 import { DashboardSidebarNav } from "@/components/layout/DashboardSidebarNav";
 import { DashboardHeader } from "@/components/layout/DashboardHeader";
+import { getTodoBadgeCount } from "@/features/todos/queries";
 
 export const dynamic = "force-dynamic";
 
@@ -59,6 +60,15 @@ export default async function DashboardLayout({
     orgSlug = org.slug ?? "";
     orgName = (org as unknown as { name?: string; logo_url?: string | null }).name ?? "Hyperion Team";
     orgLogoUrl = (org as unknown as { name?: string; logo_url?: string | null }).logo_url ?? null;
+  }
+
+  let todoBadgeCount = 0;
+  if (dashboardOrgId) {
+    try {
+      todoBadgeCount = await getTodoBadgeCount(dashboardOrgId, user.id);
+    } catch {
+      // badge count is non-critical
+    }
   }
 
   const workspaceName = profile?.full_name ?? profile?.display_name ?? orgName;
@@ -110,7 +120,7 @@ export default async function DashboardLayout({
           </div>
 
           {/* Nav groups */}
-          <DashboardSidebarNav />
+          <DashboardSidebarNav badgeCount={todoBadgeCount} />
 
           {/* Settings */}
           <div className="border-t border-[#2D2D2D] px-2 py-3 shrink-0">
