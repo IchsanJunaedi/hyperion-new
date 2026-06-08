@@ -10,8 +10,8 @@ const GROUP_LABELS: Record<TodoUrgency, string> = {
 
 export function computeUrgency(dueDate: Date | null, now = new Date()): TodoUrgency {
   if (!dueDate) return "later";
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const due = new Date(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate());
+  const today = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+  const due = new Date(Date.UTC(dueDate.getUTCFullYear(), dueDate.getUTCMonth(), dueDate.getUTCDate()));
   const diffDays = Math.round((due.getTime() - today.getTime()) / 86400000);
   if (diffDays < 0) return "overdue";
   if (diffDays === 0) return "today";
@@ -21,8 +21,8 @@ export function computeUrgency(dueDate: Date | null, now = new Date()): TodoUrge
 
 export function formatRelativeDueDate(dueDate: Date | null, now = new Date()): string {
   if (!dueDate) return "";
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const due = new Date(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate());
+  const today = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+  const due = new Date(Date.UTC(dueDate.getUTCFullYear(), dueDate.getUTCMonth(), dueDate.getUTCDate()));
   const diffDays = Math.round((due.getTime() - today.getTime()) / 86400000);
   if (diffDays === 0) return "Hari ini";
   if (diffDays < 0) return `Terlambat ${Math.abs(diffDays)} hari`;

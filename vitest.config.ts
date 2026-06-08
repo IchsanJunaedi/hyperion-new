@@ -30,6 +30,7 @@ export default defineConfig({
         "features/scrim/**/*.{ts,tsx}",
         "features/analytics/**/*.{ts,tsx}",
         "features/roster/logic.ts",
+        "features/todos/logic.ts",
       ],
       exclude: [
         "**/__tests__/**",

@@ -117,4 +117,20 @@ describe("filterTodos", () => {
     });
     expect(result).toHaveLength(1);
   });
+  it("filters smart todos by category", () => {
+    const contractTodo: SmartTodo = {
+      id: "contract_expiry:x",
+      source: "smart",
+      smart_type: "contract_expiry",
+      title: "Test",
+      urgency: "today",
+      entity_id: "x",
+      navigate_to: "/dashboard/salaries",
+    };
+    const result = filterTodos([contractTodo, makeSmartTodo("today", "s")], {
+      source: "all", priorities: [], categories: ["contract_expiry"], showCompleted: false,
+    });
+    expect(result).toHaveLength(1);
+    expect(result[0]!.id).toBe("contract_expiry:x");
+  });
 });
