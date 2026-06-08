@@ -63,16 +63,15 @@ const DashboardTodosPage = async () => {
 
   const todos: Todo[] = [...smartTodos, ...manualTodos];
 
-  // Fetch managers for assign dropdown
+  // Fetch managers for assign dropdown — no org filter, action validates
   const { data: managerMembers } = await admin
     .from("team_members")
     .select("user_id")
-    .eq("organization_id", org.id)
     .eq("role", "manager")
     .eq("is_active", true)
-    .limit(20);
+    .limit(50);
 
-  const managerIds = (managerMembers ?? []).map((m) => m.user_id);
+  const managerIds = [...new Set((managerMembers ?? []).map((m) => m.user_id))];
   const { data: managerProfiles } = managerIds.length
     ? await admin.from("profiles").select("id, display_name").in("id", managerIds)
     : { data: [] };
