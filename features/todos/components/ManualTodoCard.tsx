@@ -48,7 +48,11 @@ const ManualTodoCard = ({ todo, revalidatePaths }: Props) => {
 
   const handleDelete = async () => {
     setDeleting(true);
-    await deleteManualTodoAction(todo.id, revalidatePaths);
+    try {
+      await deleteManualTodoAction(todo.id, revalidatePaths);
+    } finally {
+      setDeleting(false);
+    }
   };
 
   return (
