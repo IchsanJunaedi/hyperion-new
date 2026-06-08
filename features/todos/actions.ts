@@ -58,9 +58,10 @@ export async function createManualTodoAction(
 
   const { title, due_date, priority, assigned_to } = parsed.data;
 
+  const admin = createAdminClient();
+
   // Validate assigned_to is a real manager in this org
   if (assigned_to) {
-    const admin = createAdminClient();
     const { data: member, error: memberError } = await admin
       .from("team_members")
       .select("id")
@@ -82,7 +83,6 @@ export async function createManualTodoAction(
     }
   }
 
-  const admin = createAdminClient();
   const { data: todo, error } = await admin
     .from("manual_todos")
     .insert({
@@ -94,11 +94,15 @@ export async function createManualTodoAction(
       priority,
     })
     .select("id")
-    .single();
+    .maybeSingle();
 
   if (error) {
     console.error("[todos] createManualTodoAction:", error.message);
-    return { ok: false, message: error.message };
+    return { ok: false, message: "Gagal membuat todo." };
+  }
+
+  if (!todo) {
+    return { ok: false, message: "Gagal membuat todo." };
   }
 
   await logAudit({
@@ -156,7 +160,7 @@ export async function completeManualTodoAction(
 
   if (error) {
     console.error("[todos] completeManualTodoAction (update):", error.message);
-    return { ok: false, message: error.message };
+    return { ok: false, message: "Gagal memperbarui todo." };
   }
 
   await logAudit({
@@ -208,7 +212,7 @@ export async function deleteManualTodoAction(
 
   if (error) {
     console.error("[todos] deleteManualTodoAction (delete):", error.message);
-    return { ok: false, message: error.message };
+    return { ok: false, message: "Gagal menghapus todo." };
   }
 
   await logAudit({
@@ -261,7 +265,7 @@ export async function dismissSmartTodoAction(
 
   if (error) {
     console.error("[todos] dismissSmartTodoAction:", error.message);
-    return { ok: false, message: error.message };
+    return { ok: false, message: "Gagal dismiss todo." };
   }
 
   await logAudit({
