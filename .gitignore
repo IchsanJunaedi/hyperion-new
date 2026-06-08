@@ -55,6 +55,7 @@ docs/*
 !docs/superpowers/
 docs/superpowers/*
 !docs/superpowers/specs/
+!docs/superpowers/plans/
 
 # Reference files
 master_workspace_notion_style/
