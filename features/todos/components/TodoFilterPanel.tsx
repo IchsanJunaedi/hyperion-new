@@ -1,5 +1,3 @@
-"use client";
-
 import type { SmartTodoType, TodoPriority, TodoFilters } from "../types";
 
 const CATEGORIES: { value: SmartTodoType; label: string }[] = [

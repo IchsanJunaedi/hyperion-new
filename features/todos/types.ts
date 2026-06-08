@@ -46,3 +46,5 @@ export interface TodoFilters {
   categories: SmartTodoType[];
   showCompleted: boolean;
 }
+
+export type TodoTab = "all" | "smart" | "manual" | "assigned_out";

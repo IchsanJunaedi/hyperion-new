@@ -1,8 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils/cn";
-
-export type TodoTab = "all" | "smart" | "manual" | "assigned_out";
+import type { TodoTab } from "../types";
 
 const TABS: { value: TodoTab; label: string; ownerOnly?: boolean }[] = [
   { value: "all", label: "Semua" },
