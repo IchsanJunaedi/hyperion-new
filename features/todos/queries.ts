@@ -13,7 +13,7 @@ async function getContractExpiryTodos(orgId: string, dismissed: Set<string>): Pr
   const in30 = new Date();
   in30.setDate(in30.getDate() + 30);
 
-  const { data: contracts } = await admin
+  const { data: contracts, error: contractsError } = await admin
     .from("player_contracts")
     .select("id, end_date, user_id")
     .eq("organization_id", orgId)
@@ -21,14 +21,16 @@ async function getContractExpiryTodos(orgId: string, dismissed: Set<string>): Pr
     .not("end_date", "is", null)
     .lte("end_date", in30.toISOString().slice(0, 10))
     .limit(20);
+  if (contractsError) console.error("[todos] getContractExpiryTodos:", contractsError.message);
 
   if (!contracts?.length) return [];
 
   const userIds = contracts.map((c) => c.user_id);
-  const { data: profiles } = await admin
+  const { data: profiles, error: profilesError } = await admin
     .from("profiles")
     .select("id, display_name")
     .in("id", userIds);
+  if (profilesError) console.error("[todos] getContractExpiryTodos (profiles):", profilesError.message);
   const nameMap = new Map((profiles ?? []).map((p) => [p.id, p.display_name ?? "player"]));
 
   return contracts
@@ -48,27 +50,30 @@ async function getSalaryDueTodos(orgId: string, dismissed: Set<string>): Promise
   const admin = createAdminClient();
   const today = new Date().toISOString().slice(0, 10);
 
-  const { data: payments } = await admin
+  const { data: payments, error: paymentsError } = await admin
     .from("salary_payments")
     .select("id, contract_id, pay_period")
     .eq("organization_id", orgId)
     .eq("status", "pending")
     .lte("pay_period", today)
     .limit(50);
+  if (paymentsError) console.error("[todos] getSalaryDueTodos:", paymentsError.message);
 
   if (!payments?.length) return [];
 
   const contractIds = [...new Set(payments.map((p) => p.contract_id))];
-  const { data: contracts } = await admin
+  const { data: contracts, error: contractsError } = await admin
     .from("player_contracts")
     .select("id, user_id")
     .in("id", contractIds);
+  if (contractsError) console.error("[todos] getSalaryDueTodos (contracts):", contractsError.message);
   const contractUser = new Map((contracts ?? []).map((c) => [c.id, c.user_id]));
 
   const userIds = [...new Set([...contractUser.values()])];
-  const { data: profiles } = userIds.length
+  const { data: profiles, error: profilesError } = userIds.length
     ? await admin.from("profiles").select("id, display_name").in("id", userIds)
-    : { data: [] };
+    : { data: [], error: null };
+  if (profilesError) console.error("[todos] getSalaryDueTodos (profiles):", profilesError.message);
   const nameMap = new Map((profiles ?? []).map((p) => [p.id, p.display_name ?? "player"]));
 
   return payments
@@ -90,7 +95,7 @@ async function getSalaryDueTodos(orgId: string, dismissed: Set<string>): Promise
 async function getMemberUnassignedTodos(orgId: string, dismissed: Set<string>): Promise<SmartTodo[]> {
   const admin = createAdminClient();
 
-  const { data } = await admin
+  const { data, error: membersError } = await admin
     .from("team_members")
     .select("user_id")
     .eq("organization_id", orgId)
@@ -98,6 +103,7 @@ async function getMemberUnassignedTodos(orgId: string, dismissed: Set<string>): 
     .is("division_id", null)
     .neq("role", "owner")
     .limit(50);
+  if (membersError) console.error("[todos] getMemberUnassignedTodos:", membersError.message);
 
   if (!data?.length) return [];
 
@@ -123,23 +129,25 @@ async function getTrialPendingTodos(orgId: string, dismissed: Set<string>): Prom
   const threeDaysAgo = new Date();
   threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
 
-  const { data: activeTrials } = await admin
+  const { data: activeTrials, error: trialsError } = await admin
     .from("open_trials")
     .select("id")
     .eq("org_id", orgId)
     .eq("status", "active")
     .limit(20);
+  if (trialsError) console.error("[todos] getTrialPendingTodos:", trialsError.message);
 
   if (!activeTrials?.length) return [];
   const trialIds = activeTrials.map((t) => t.id);
 
-  const { data: applicants } = await admin
+  const { data: applicants, error: applicantsError } = await admin
     .from("trial_applicants")
     .select("id")
     .in("trial_id", trialIds)
     .eq("status", "pending")
     .lte("created_at", threeDaysAgo.toISOString())
     .limit(100);
+  if (applicantsError) console.error("[todos] getTrialPendingTodos (applicants):", applicantsError.message);
 
   if (!applicants?.length) return [];
 
@@ -163,21 +171,23 @@ async function getTrialPendingTodos(orgId: string, dismissed: Set<string>): Prom
 async function getScrimNoResultTodos(orgId: string, dismissed: Set<string>): Promise<SmartTodo[]> {
   const admin = createAdminClient();
 
-  const { data: scrims } = await admin
+  const { data: scrims, error: scrimsError } = await admin
     .from("scrims")
     .select("id, opponent_name, scheduled_at")
     .eq("organization_id", orgId)
     .eq("status", "completed")
     .order("scheduled_at", { ascending: false })
     .limit(30);
+  if (scrimsError) console.error("[todos] getScrimNoResultTodos:", scrimsError.message);
 
   if (!scrims?.length) return [];
 
   const scrimIds = scrims.map((s) => s.id);
-  const { data: results } = await admin
+  const { data: results, error: resultsError } = await admin
     .from("scrim_results")
     .select("scrim_id")
     .in("scrim_id", scrimIds);
+  if (resultsError) console.error("[todos] getScrimNoResultTodos (results):", resultsError.message);
 
   const hasResult = new Set((results ?? []).map((r) => r.scrim_id));
 
@@ -199,15 +209,16 @@ async function getSponsorStaleTodos(orgId: string, dismissed: Set<string>): Prom
   const sevenDaysAgo = new Date();
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
-  const { data } = await admin
+  const { data, error: sponsorsError } = await admin
     .from("sponsors")
     .select("id, name")
     .eq("organization_id", orgId)
     .eq("status", "prospect")
     .lte("updated_at", sevenDaysAgo.toISOString())
     .limit(20);
+  if (sponsorsError) console.error("[todos] getSponsorStaleTodos:", sponsorsError.message);
 
-  if (!data) return [];
+  if (!data?.length) return [];
 
   return data
     .filter((s) => !dismissed.has(makeSmartId("sponsor_stale", s.id)))
@@ -228,7 +239,7 @@ async function getTournamentNoBracketTodos(orgId: string, dismissed: Set<string>
   const in7 = new Date();
   in7.setDate(in7.getDate() + 7);
 
-  const { data } = await admin
+  const { data, error: tournamentsError } = await admin
     .from("tournaments")
     .select("id, name, start_date")
     .eq("organization_id", orgId)
@@ -237,8 +248,9 @@ async function getTournamentNoBracketTodos(orgId: string, dismissed: Set<string>
     .is("bracket_link", null)
     .is("bracket_file_path", null)
     .limit(20);
+  if (tournamentsError) console.error("[todos] getTournamentNoBracketTodos:", tournamentsError.message);
 
-  if (!data) return [];
+  if (!data?.length) return [];
 
   return data
     .filter((t) => !dismissed.has(makeSmartId("tournament_no_bracket", t.id)))
@@ -256,12 +268,13 @@ async function getTournamentNoBracketTodos(orgId: string, dismissed: Set<string>
 export async function computeSmartTodos(orgId: string, userId: string): Promise<SmartTodo[]> {
   const admin = createAdminClient();
 
-  const { data: dismissals } = await admin
+  const { data: dismissals, error: dismissalsError } = await admin
     .from("todo_dismissals")
     .select("smart_type, entity_id")
     .eq("org_id", orgId)
     .eq("user_id", userId)
     .limit(500);
+  if (dismissalsError) console.error("[todos] computeSmartTodos:", dismissalsError.message);
 
   const dismissed = new Set(
     (dismissals ?? []).map((d) => `${d.smart_type}:${d.entity_id}`),
@@ -283,7 +296,7 @@ export async function computeSmartTodos(orgId: string, userId: string): Promise<
 export async function getManualTodos(orgId: string, userId: string) {
   const admin = createAdminClient();
 
-  const { data } = await admin
+  const { data, error } = await admin
     .from("manual_todos")
     .select("id, title, due_date, priority, completed_at, created_by, assigned_to")
     .eq("org_id", orgId)
@@ -291,6 +304,7 @@ export async function getManualTodos(orgId: string, userId: string) {
     .is("assigned_to", null)
     .order("created_at", { ascending: false })
     .limit(100);
+  if (error) console.error("[todos] getManualTodos:", error.message);
 
   return data ?? [];
 }
@@ -298,13 +312,14 @@ export async function getManualTodos(orgId: string, userId: string) {
 export async function getAssignedToMeTodos(orgId: string, userId: string) {
   const admin = createAdminClient();
 
-  const { data } = await admin
+  const { data, error } = await admin
     .from("manual_todos")
     .select("id, title, due_date, priority, completed_at, created_by, assigned_to")
     .eq("org_id", orgId)
     .eq("assigned_to", userId)
     .order("created_at", { ascending: false })
     .limit(100);
+  if (error) console.error("[todos] getAssignedToMeTodos:", error.message);
 
   return data ?? [];
 }
@@ -312,7 +327,7 @@ export async function getAssignedToMeTodos(orgId: string, userId: string) {
 export async function getAssignedOutTodos(orgId: string, ownerId: string) {
   const admin = createAdminClient();
 
-  const { data } = await admin
+  const { data, error } = await admin
     .from("manual_todos")
     .select("id, title, due_date, priority, completed_at, assigned_to")
     .eq("org_id", orgId)
@@ -320,14 +335,16 @@ export async function getAssignedOutTodos(orgId: string, ownerId: string) {
     .not("assigned_to", "is", null)
     .order("created_at", { ascending: false })
     .limit(100);
+  if (error) console.error("[todos] getAssignedOutTodos:", error.message);
 
   if (!data?.length) return [];
 
   const assigneeIds = [...new Set(data.map((t) => t.assigned_to!))];
-  const { data: profiles } = await admin
+  const { data: profiles, error: profilesError } = await admin
     .from("profiles")
     .select("id, display_name, avatar_url")
     .in("id", assigneeIds);
+  if (profilesError) console.error("[todos] getAssignedOutTodos (profiles):", profilesError.message);
   const profileMap = new Map((profiles ?? []).map((p) => [p.id, p]));
 
   return data.map((t) => ({
