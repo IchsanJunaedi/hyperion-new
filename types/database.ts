@@ -915,6 +915,53 @@ export type Database = {
         }
         Relationships: []
       }
+      manual_todos: {
+        Row: {
+          assigned_to: string | null
+          completed_at: string | null
+          created_at: string
+          created_by: string
+          due_date: string | null
+          id: string
+          org_id: string
+          priority: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          completed_at?: string | null
+          created_at?: string
+          created_by: string
+          due_date?: string | null
+          id?: string
+          org_id: string
+          priority?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string
+          due_date?: string | null
+          id?: string
+          org_id?: string
+          priority?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "manual_todos_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       meta_hero_ratings: {
         Row: {
           counters: string[] | null
@@ -2487,6 +2534,41 @@ export type Database = {
           {
             foreignKeyName: "team_members_organization_id_fkey"
             columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      todo_dismissals: {
+        Row: {
+          dismissed_at: string
+          entity_id: string
+          id: string
+          org_id: string
+          smart_type: string
+          user_id: string
+        }
+        Insert: {
+          dismissed_at?: string
+          entity_id: string
+          id?: string
+          org_id: string
+          smart_type: string
+          user_id: string
+        }
+        Update: {
+          dismissed_at?: string
+          entity_id?: string
+          id?: string
+          org_id?: string
+          smart_type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "todo_dismissals_org_id_fkey"
+            columns: ["org_id"]
             isOneToOne: false
             referencedRelation: "organizations"
             referencedColumns: ["id"]
