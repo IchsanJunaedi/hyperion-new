@@ -1,159 +1,216 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { gsap, useGSAP } from "@/lib/gsap";
+import { useRef } from "react";
+import { useGSAP } from "@/lib/gsap";
 
 const InteractiveBackground = () => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const orb1Ref = useRef<HTMLDivElement>(null);
-  const orb2Ref = useRef<HTMLDivElement>(null);
-  const orb3Ref = useRef<HTMLDivElement>(null);
-  const scanlineRef = useRef<HTMLDivElement>(null);
 
-  // 1. Slow, continuous floating animations using GSAP
   useGSAP(() => {
-    // Orb 1: Brand Yellow floating
-    gsap.to(orb1Ref.current, {
-      x: "random(-100, 100)",
-      y: "random(-100, 100)",
-      scale: "random(0.8, 1.3)",
-      duration: "random(8, 14)",
-      repeat: -1,
-      yoyo: true,
-      ease: "sine.inOut",
-    });
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
 
-    // Orb 2: Cyber Blue floating
-    gsap.to(orb2Ref.current, {
-      x: "random(-120, 120)",
-      y: "random(-120, 120)",
-      scale: "random(0.9, 1.4)",
-      duration: "random(10, 18)",
-      repeat: -1,
-      yoyo: true,
-      ease: "sine.inOut",
-    });
+    let animationFrameId: number;
+    let width = (canvas.width = window.innerWidth);
+    let height = (canvas.height = window.innerHeight);
 
-    // Orb 3: Tech Cyan floating
-    gsap.to(orb3Ref.current, {
-      x: "random(-80, 80)",
-      y: "random(-80, 80)",
-      scale: "random(0.7, 1.2)",
-      duration: "random(7, 12)",
-      repeat: -1,
-      yoyo: true,
-      ease: "sine.inOut",
-    });
-
-    // Sweep scanline down periodically
-    gsap.to(scanlineRef.current, {
-      y: "100vh",
-      duration: 8,
-      repeat: -1,
-      ease: "none",
-      delay: 2,
-    });
-
-    // Animate glowing tech spark intersections
-    gsap.to(".bg-spark", {
-      opacity: "random(0.1, 0.7)",
-      scale: "random(0.5, 1.5)",
-      duration: "random(2, 4)",
-      stagger: {
-        amount: 2,
-        grid: "auto",
-        repeat: -1,
-        yoyo: true,
-      },
-      ease: "power1.inOut",
-    });
-  }, { scope: containerRef });
-
-  // 2. Interactive mouse movement parallax
-  useEffect(() => {
-    const handleMouseMove = (e: MouseMoveEvent) => {
-      if (!containerRef.current) return;
-      
-      const { clientX, clientY } = e;
-      const width = window.innerWidth;
-      const height = window.innerHeight;
-      
-      // Calculate normalized offset from center (-0.5 to 0.5)
-      const xPercent = (clientX / width) - 0.5;
-      const yPercent = (clientY / height) - 0.5;
-
-      // Parallax move container/orbs slightly in opposite/different speeds
-      gsap.to(orb1Ref.current, {
-        xPercent: xPercent * -15,
-        yPercent: yPercent * -15,
-        duration: 2,
-        ease: "power2.out",
-        overwrite: "auto",
-      });
-
-      gsap.to(orb2Ref.current, {
-        xPercent: xPercent * 25,
-        yPercent: yPercent * 25,
-        duration: 2.5,
-        ease: "power2.out",
-        overwrite: "auto",
-      });
-
-      gsap.to(orb3Ref.current, {
-        xPercent: xPercent * -8,
-        yPercent: yPercent * -8,
-        duration: 1.8,
-        ease: "power2.out",
-        overwrite: "auto",
-      });
+    // Mouse tracker
+    const mouse = {
+      x: null as number | null,
+      y: null as number | null,
+      targetX: null as number | null,
+      targetY: null as number | null,
+      radius: 200, // area of distortion
     };
 
-    type MouseMoveEvent = { clientX: number; clientY: number };
+    // Grid configuration
+    const gridSpacing = 65; // size of grid cells
+    let cols = Math.ceil(width / gridSpacing) + 2;
+    let rows = Math.ceil(height / gridSpacing) + 2;
+
+    // Grid points structure
+    interface GridPoint {
+      x: number;
+      y: number;
+      baseX: number;
+      baseY: number;
+      vx: number;
+      vy: number;
+    }
+
+    let grid: GridPoint[][] = [];
+
+    const initGrid = () => {
+      grid = [];
+      cols = Math.ceil(width / gridSpacing) + 2;
+      rows = Math.ceil(height / gridSpacing) + 2;
+
+      for (let r = 0; r < rows; r++) {
+        const rowPoints: GridPoint[] = [];
+        for (let c = 0; c < cols; c++) {
+          const x = (c - 0.5) * gridSpacing;
+          const y = (r - 0.5) * gridSpacing;
+          rowPoints.push({
+            x,
+            y,
+            baseX: x,
+            baseY: y,
+            vx: 0,
+            vy: 0,
+          });
+        }
+        grid.push(rowPoints);
+      }
+    };
+
+    initGrid();
+
+    // Track mouse coordinates
+    const handleMouseMove = (e: MouseEvent) => {
+      mouse.targetX = e.clientX;
+      mouse.targetY = e.clientY + window.scrollY;
+    };
+
+    const handleMouseLeave = () => {
+      mouse.targetX = null;
+      mouse.targetY = null;
+    };
 
     window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
+    window.addEventListener("mouseleave", handleMouseLeave);
+
+    let currentMouseX = 0;
+    let currentMouseY = 0;
+
+    // Animation loop
+    const drawLoop = (time: number) => {
+      ctx.clearRect(0, 0, width, height);
+
+      // Smoothly interpolate mouse coordinates (inertia)
+      if (mouse.targetX !== null && mouse.targetY !== null) {
+        if (currentMouseX === 0 && currentMouseY === 0) {
+          currentMouseX = mouse.targetX;
+          currentMouseY = mouse.targetY;
+        } else {
+          currentMouseX += (mouse.targetX - currentMouseX) * 0.08;
+          currentMouseY += (mouse.targetY - currentMouseY) * 0.08;
+        }
+        mouse.x = currentMouseX;
+        mouse.y = currentMouseY - window.scrollY;
+      } else {
+        mouse.x = null;
+        mouse.y = null;
+        currentMouseX = 0;
+        currentMouseY = 0;
+      }
+
+      // Update grid point positions
+      const timeMs = time * 0.001; // convert to seconds
+      for (let r = 0; r < rows; r++) {
+        const row = grid[r];
+        if (!row) continue;
+        for (let c = 0; c < cols; c++) {
+          const pt = row[c];
+          if (!pt) continue;
+
+          // 1. Gentle continuous organic wave
+          const waveX = Math.sin(pt.baseY * 0.003 + timeMs * 1.2 + c * 0.2) * 5;
+          const waveY = Math.cos(pt.baseX * 0.003 + timeMs * 0.9 + r * 0.2) * 5;
+
+          let targetX = pt.baseX + waveX;
+          let targetY = pt.baseY + waveY;
+
+          // 2. Mouse gravity/warp distortion
+          if (mouse.x !== null && mouse.y !== null) {
+            const dx = targetX - mouse.x;
+            const dy = targetY - mouse.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            if (dist < mouse.radius) {
+              const force = (mouse.radius - dist) / mouse.radius;
+              // Push points away for a soft grid indentation effect
+              const push = force * force * 38;
+              targetX += (dx / dist) * push;
+              targetY += (dy / dist) * push;
+            }
+          }
+
+          // Smoothly spring point towards its target
+          pt.x += (targetX - pt.x) * 0.1;
+          pt.y += (targetY - pt.y) * 0.1;
+        }
+      }
+
+      // Render grid lines
+      ctx.lineWidth = 0.55;
+
+      // Draw horizontal lines (Gold)
+      ctx.strokeStyle = "rgba(245, 196, 0, 0.022)";
+      for (let r = 0; r < rows; r++) {
+        const row = grid[r];
+        if (!row || row.length === 0) continue;
+        ctx.beginPath();
+        const first = row[0];
+        if (first) ctx.moveTo(first.x, first.y);
+        for (let c = 1; c < cols; c++) {
+          const pt = row[c];
+          if (pt) ctx.lineTo(pt.x, pt.y);
+        }
+        ctx.stroke();
+      }
+
+      // Draw vertical lines (Cyber Blue)
+      ctx.strokeStyle = "rgba(0, 102, 255, 0.016)";
+      for (let c = 0; c < cols; c++) {
+        ctx.beginPath();
+        const firstRow = grid[0];
+        const first = firstRow ? firstRow[c] : null;
+        if (first) ctx.moveTo(first.x, first.y);
+        for (let r = 1; r < rows; r++) {
+          const row = grid[r];
+          const pt = row ? row[c] : null;
+          if (pt) ctx.lineTo(pt.x, pt.y);
+        }
+        ctx.stroke();
+      }
+
+      animationFrameId = requestAnimationFrame(drawLoop);
+    };
+
+    animationFrameId = requestAnimationFrame(drawLoop);
+
+    // Resize handler
+    const handleResize = () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+      initGrid();
+    };
+    window.addEventListener("resize", handleResize);
+
+    // Cleanups
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseleave", handleMouseLeave);
+    };
+  }, { scope: containerRef });
 
   return (
     <div
       ref={containerRef}
       className="pointer-events-none absolute inset-0 overflow-hidden z-0"
     >
-      {/* ── Background Glow Orbs ─────────────────────────────────────── */}
-      {/* Yellow/Gold Orb */}
-      <div
-        ref={orb1Ref}
-        className="absolute top-[15%] left-[20%] w-[350px] sm:w-[500px] h-[350px] sm:h-[500px] rounded-full bg-[#F5C400]/8 blur-[130px]"
+      <canvas
+        ref={canvasRef}
+        className="w-full h-full block opacity-85 pointer-events-none"
       />
-
-      {/* Cyber Blue Orb */}
-      <div
-        ref={orb2Ref}
-        className="absolute top-[45%] right-[15%] w-[400px] sm:w-[600px] h-[400px] sm:h-[600px] rounded-full bg-[#0066FF]/6 blur-[140px]"
-      />
-
-      {/* Tech Cyan/Teal Orb */}
-      <div
-        ref={orb3Ref}
-        className="absolute bottom-[10%] left-[25%] w-[300px] sm:w-[450px] h-[300px] sm:h-[450px] rounded-full bg-[#00F5D4]/5 blur-[120px]"
-      />
-
-      {/* ── Subtle Sweep Scanline ─────────────────────────────────────── */}
-      <div
-        ref={scanlineRef}
-        className="absolute left-0 top-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#F5C400]/8 to-transparent opacity-40 pointer-events-none"
-        style={{ transform: "translateY(-100px)" }}
-      />
-
-      {/* ── Tech Sparks (Grid Intersections) ─────────────────────────── */}
-      <div className="absolute inset-0 opacity-15">
-        {/* We place a few glowing intersections around the grid area */}
-        <div className="bg-spark absolute top-[25%] left-[33%] w-2 h-2 rounded-full bg-[#F5C400] blur-[1px] shadow-[0_0_8px_#F5C400]" />
-        <div className="bg-spark absolute top-[40%] left-[70%] w-2.5 h-2.5 rounded-full bg-[#00F5D4] blur-[1px] shadow-[0_0_10px_#00F5D4]" />
-        <div className="bg-spark absolute top-[65%] left-[20%] w-2 h-2 rounded-full bg-[#F5C400] blur-[1px] shadow-[0_0_8px_#F5C400]" />
-        <div className="bg-spark absolute top-[80%] left-[60%] w-2 h-2 rounded-full bg-[#0066FF] blur-[1px] shadow-[0_0_8px_#0066FF]" />
-        <div className="bg-spark absolute top-[12%] left-[85%] w-2.5 h-2.5 rounded-full bg-[#F5C400] blur-[1px] shadow-[0_0_10px_#F5C400]" />
-      </div>
+      {/* ── Background Glow Orbs for ambient depth ────────────────────── */}
+      <div className="absolute top-[12%] left-[18%] w-[500px] sm:w-[700px] h-[500px] sm:h-[700px] rounded-full bg-[#F5C400]/4 blur-[140px]" />
+      <div className="absolute bottom-[20%] right-[12%] w-[550px] sm:w-[750px] h-[550px] sm:h-[750px] rounded-full bg-[#0066FF]/3 blur-[150px]" />
     </div>
   );
 };
