@@ -38,7 +38,7 @@ Member  → workspace   (view, RSVP, schedule)
 
 ```
 Software Engineer (Developer & AI Agent) → Codebase, DB, CI/CD, and shipping the OS
-Frontend Developer                       → UI/UX, Tailwind CSS v4 styling, component structure
+Frontend Developer                       → UI/UX, Tailwind CSS v4 styling, component structure, GSAP animations
 QA / Tester                              → Unit tests, Playwright E2E testing, CI gate checks
 Security Analyst                         → RLS policies, custom JWT claims, API route guards
 ```
