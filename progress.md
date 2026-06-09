@@ -1,4 +1,4 @@
-# Hyperion Progress — Status as of 2026-05-27
+# Hyperion Progress — Status as of 2026-06-09
 
 > Read this file first at the start of every session. It is the single source of truth for what's built, what's broken, and what's next.
 
@@ -58,9 +58,9 @@
 - RLS on all tables — `createAdminClient()` bypasses, `createClient()` respects
 - Login rate limiting
 
-### Automated Testing (last updated 2026-06-06)
-- **718 unit tests** across 42 test files — all passing
-- Coverage thresholds met: Statements 90.4% / Branches 77.9% / Functions 97.3% / Lines 90.6% (thresholds: 80%/75%/80%/80%)
+### Automated Testing (last updated 2026-06-09)
+- **775 unit tests** across 48 test files — all passing
+- Coverage thresholds met: Statements 90.69% / Branches 78.64% / Functions 95.39% / Lines 90.91% (thresholds: 80%/75%/80%/80%)
 - CI enforces coverage on every push via `test:unit:coverage` script
 
 ### E2E Test Architecture (Test God Mode)
@@ -121,6 +121,18 @@
 | `content_calendar` | Social media content scheduling | `20260515000004` |
 
 ---
+
+## Features & Fixes Completed (2026-06-09 session)
+
+### Refactoring & Polish (Salary & Contract UI)
+- **Plain-Text Status Badges**: Removed pill backgrounds and borders for `active`, `expired`, and `terminated` badges in `SalaryCard.tsx`. Replaced with plain colored text using a clean red/green scheme (`active` in green, `expired`/`terminated` in red).
+- **Payment Box Crowding Fix**: Changed the "Bulan ini" status row and "Bayar" button to stack vertically. This prevents text wrapping and overlap/crowding issues on narrow cards.
+- **Financial Text Color Harmonization**: Changed the color of the player's monthly salary, bonus list amounts, and total paid amounts to green (`text-green-400`).
+- **Pay Button Styling**: Styled the "Bayar" button with a green border (`border-green-500/30`), background (`bg-green-500/10`), and text color (`text-green-400`) to match the color theme.
+- **Terminate Button Polish**: Muted the "Terminate Kontrak" button border and text by default, only highlighting it in red on hover to reduce visual noise.
+
+### Agent Documentation (`AGENTS.md`)
+- Added **Development Roles (Out-of-App)** to the Role Hierarchy section in `AGENTS.md` (Software Engineer, Frontend Developer with GSAP animations, QA / Tester, Security Analyst) to clarify team roles vs codebase development roles.
 
 ## Features & Fixes Completed (2026-06-03 session)
 
