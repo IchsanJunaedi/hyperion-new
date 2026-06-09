@@ -203,9 +203,9 @@ const AboutClient = ({ settings, alumni }: AboutClientProps) => {
 
   // Highfulminds inspired background styling: notion-dark background #191919
   return (
-    <div ref={containerRef} className="flex-1 bg-[#191919] text-[#E5E2E1] overflow-hidden">
+    <div ref={containerRef} className="flex-1 bg-[#040D1C] text-[#E5E2E1] overflow-hidden">
       {/* 1. Hero Section */}
-      <section className="relative w-full border-b border-[#2D2D2D]/60 py-16 md:py-24">
+      <section className="relative w-full border-b border-white/10 py-16 md:py-24">
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-end">
           <div className="space-y-4">
             <span className="text-[11px] font-mono tracking-[0.4em] uppercase text-[#F5C400] font-bold block animate-fadeinup">
@@ -216,7 +216,7 @@ const AboutClient = ({ settings, alumni }: AboutClientProps) => {
               <span className="text-[#F5C400]">Team</span>
             </h1>
           </div>
-          <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl border border-white/5 bg-[#202020]">
+          <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl border border-white/10 bg-[#0C1E3C]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="https://cdn.prod.website-files.com/696aaa5b521d9c01a984f22e/696e5df24fee27d27c3bbae7_about-hero.avif"
@@ -228,8 +228,8 @@ const AboutClient = ({ settings, alumni }: AboutClientProps) => {
       </section>
 
       {/* 2. Who We Are Section */}
-      <section className="about-who-we-are border-b border-[#2D2D2D]/60">
-        <div className="w-full border-b border-[#2D2D2D]/40">
+      <section className="about-who-we-are border-b border-white/10">
+        <div className="w-full border-b border-white/10">
           <div className="max-w-7xl mx-auto px-6 py-4 grid grid-cols-3 font-mono text-[10px] sm:text-xs uppercase tracking-[0.2em] text-[#9B9A97]">
             {/* Left Swap */}
             <div className="swap-left grid grid-cols-1 grid-rows-1 justify-items-start items-center h-6 overflow-hidden">
@@ -287,7 +287,7 @@ const AboutClient = ({ settings, alumni }: AboutClientProps) => {
                   <span className="text-[10px] font-mono tracking-[0.3em] uppercase text-[#9B9A97]">
                     ESPORTS
                   </span>
-                  <div className="mwg037-images relative w-56 h-80 sm:w-64 sm:h-[380px] rounded-2xl overflow-hidden border border-white/5 bg-[#202020] shadow-2xl">
+                  <div className="mwg037-images relative w-56 h-80 sm:w-64 sm:h-[380px] rounded-2xl overflow-hidden border border-white/10 bg-[#0C1E3C] shadow-2xl">
                     <div className="mwg037-hidden absolute inset-0 w-full h-full">
                       <img
                         src="https://cdn.prod.website-files.com/696aaa5b521d9c01a984f22e/6976453a4ebc7af2fbd4fc13_build-meaningful-brands-1.avif"
@@ -325,7 +325,7 @@ const AboutClient = ({ settings, alumni }: AboutClientProps) => {
       {/* 4. What We Believe (Vision & Mission) */}
       <section className="section-with-line relative py-12">
         {/* Sliding Line Glow */}
-        <div className="w-full pt-0 line-container relative h-[1px] bg-[#2D2D2D]/60 overflow-hidden">
+        <div className="w-full pt-0 line-container relative h-[1px] bg-white/10 overflow-hidden">
           <div className="line-base absolute inset-0 w-full h-[1px]"></div>
           <div className="line-glow absolute top-0 left-0 w-64 h-[2px] bg-gradient-to-r from-transparent via-[#F5C400] to-transparent blur-[4px]"></div>
         </div>
@@ -357,9 +357,9 @@ const AboutClient = ({ settings, alumni }: AboutClientProps) => {
       </section>
 
       {/* 5. Alumni / Roster Section */}
-      <section className="section-with-line relative py-12 bg-[#1b1b1b]">
+      <section className="section-with-line relative py-12 bg-[#040D1C]">
         {/* Sliding Line Glow */}
-        <div className="w-full pt-0 line-container relative h-[1px] bg-[#2D2D2D]/60 overflow-hidden">
+        <div className="w-full pt-0 line-container relative h-[1px] bg-white/10 overflow-hidden">
           <div className="line-base absolute inset-0 w-full h-[1px]"></div>
           <div className="line-glow absolute top-0 left-0 w-64 h-[2px] bg-gradient-to-r from-transparent via-[#F5C400] to-transparent blur-[4px]"></div>
         </div>
@@ -379,7 +379,7 @@ const AboutClient = ({ settings, alumni }: AboutClientProps) => {
             {alumni.map((member) => (
               <div
                 key={member.id}
-                className="relative aspect-[3/4] overflow-hidden rounded-2xl border border-white/5 group bg-[#202020] shadow-lg"
+                className="relative aspect-[3/4] overflow-hidden rounded-2xl border border-white/10 group bg-[#0C1E3C] shadow-lg"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -403,30 +403,30 @@ const AboutClient = ({ settings, alumni }: AboutClientProps) => {
       </section>
 
       {/* 6. Grid of Images Section */}
-      <section className="py-16 bg-[#191919] about-img-grid-container">
+      <section className="py-16 bg-[#040D1C] about-img-grid-container">
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-6">
-          <div className="about-grid-img aspect-[3/4] relative rounded-2xl overflow-hidden border border-white/5 bg-[#202020]">
+          <div className="about-grid-img aspect-[3/4] relative rounded-2xl overflow-hidden border border-white/10 bg-[#0C1E3C]">
             <img
               src="https://cdn.prod.website-files.com/696aaa5b521d9c01a984f22e/696fb421b7aaa3e0f247277a_about-1.avif"
               alt="Moment 1"
               className="w-full h-full object-cover grayscale hover:grayscale-0 transition duration-700 ease-out"
             />
           </div>
-          <div className="about-grid-img aspect-[3/4] relative rounded-2xl overflow-hidden border border-white/5 bg-[#202020]">
+          <div className="about-grid-img aspect-[3/4] relative rounded-2xl overflow-hidden border border-white/10 bg-[#0C1E3C]">
             <img
               src="https://cdn.prod.website-files.com/696aaa5b521d9c01a984f22e/696fb421b5c68c016d44cc1a_about-2.avif"
               alt="Moment 2"
               className="w-full h-full object-cover grayscale hover:grayscale-0 transition duration-700 ease-out"
             />
           </div>
-          <div className="about-grid-img aspect-[3/4] relative rounded-2xl overflow-hidden border border-white/5 bg-[#202020]">
+          <div className="about-grid-img aspect-[3/4] relative rounded-2xl overflow-hidden border border-white/10 bg-[#0C1E3C]">
             <img
               src="https://cdn.prod.website-files.com/696aaa5b521d9c01a984f22e/696fb421e1a928d293cb4619_about-3.avif"
               alt="Moment 3"
               className="w-full h-full object-cover grayscale hover:grayscale-0 transition duration-700 ease-out"
             />
           </div>
-          <div className="about-grid-img aspect-[3/4] relative rounded-2xl overflow-hidden border border-white/5 bg-[#202020]">
+          <div className="about-grid-img aspect-[3/4] relative rounded-2xl overflow-hidden border border-white/10 bg-[#0C1E3C]">
             <img
               src="https://cdn.prod.website-files.com/696aaa5b521d9c01a984f22e/696fb421ce364e44fc5d8abe_about-4.avif"
               alt="Moment 4"
@@ -437,9 +437,9 @@ const AboutClient = ({ settings, alumni }: AboutClientProps) => {
       </section>
 
       {/* 7. Are We For You & CTA */}
-      <section className="section-with-line relative py-12 bg-[#1b1b1b]">
+      <section className="section-with-line relative py-12 bg-[#040D1C]">
         {/* Sliding Line Glow */}
-        <div className="w-full pt-0 line-container relative h-[1px] bg-[#2D2D2D]/60 overflow-hidden">
+        <div className="w-full pt-0 line-container relative h-[1px] bg-white/10 overflow-hidden">
           <div className="line-base absolute inset-0 w-full h-[1px]"></div>
           <div className="line-glow absolute top-0 left-0 w-64 h-[2px] bg-gradient-to-r from-transparent via-[#F5C400] to-transparent blur-[4px]"></div>
         </div>
@@ -454,7 +454,7 @@ const AboutClient = ({ settings, alumni }: AboutClientProps) => {
             Apakah kamu memiliki mimpi besar untuk menjadi pemain profesional? Apakah kamu berdedikasi untuk berlatih keras, menjaga kedisiplinan, dan tumbuh bersama di bawah bimbingan para pelatih terbaik?
           </p>
 
-          <div className="relative aspect-[21/9] w-full overflow-hidden rounded-2xl border border-white/5 bg-[#202020] animate-up">
+          <div className="relative aspect-[21/9] w-full overflow-hidden rounded-2xl border border-white/10 bg-[#0C1E3C] animate-up">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="https://cdn.prod.website-files.com/696aaa5b521d9c01a984f22e/697139cdb1edd912d56618d4_about-5.avif"
@@ -493,7 +493,7 @@ const AboutClient = ({ settings, alumni }: AboutClientProps) => {
       </section>
 
       {/* 8. Rebuilt Premium Footer */}
-      <footer className="relative bg-[#121212] border-t border-[#2D2D2D]/60 pt-20 pb-12">
+      <footer className="relative bg-[#030914] border-t border-white/10 pt-20 pb-12">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 pb-16">
             <div className="space-y-6">
@@ -510,7 +510,7 @@ const AboutClient = ({ settings, alumni }: AboutClientProps) => {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 pt-12 border-t border-[#2D2D2D]/40">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 pt-12 border-t border-white/10">
             {/* Clock timezone */}
             <div className="flex flex-col space-y-1 justify-end">
               <span className="font-mono text-[10px] text-[#9B9A97] tracking-widest uppercase">ID Timezone</span>

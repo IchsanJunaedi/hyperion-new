@@ -20,7 +20,7 @@ const AboutPage = async () => {
   return (
     <>
       <Header />
-      <main className="flex flex-col min-h-screen bg-[#191919]">
+      <main className="flex flex-col min-h-screen bg-[#040D1C]">
         <AboutClient settings={settings} alumni={alumni} />
       </main>
     </>
