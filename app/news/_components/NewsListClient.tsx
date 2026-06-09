@@ -1,19 +1,7 @@
-"use client";
-
-import { useState, useMemo } from "react";
 import Link from "next/link";
-import { ArrowRight, Calendar, Clock, Newspaper, Search } from "lucide-react";
+import { ArrowRight, Calendar, Clock, Newspaper } from "lucide-react";
 import type { NewsPost } from "@/features/admin/queries";
 
-const PLACEHOLDER = "/og-default.png";
-
-const CATEGORIES = [
-  { value: null, label: "Semua" },
-  { value: "berita", label: "Berita" },
-  { value: "update", label: "Update" },
-  { value: "pengumuman", label: "Pengumuman" },
-  { value: "opini", label: "Opini" },
-];
 
 function formatDate(iso: string | null): string {
   if (!iso) return "";
@@ -25,61 +13,17 @@ function formatDate(iso: string | null): string {
 }
 
 function getCategoryLabel(cat: string | null): string {
-  return CATEGORIES.find((c) => c.value === cat)?.label ?? cat ?? "Berita";
+  const map: Record<string, string> = { berita: "Berita", update: "Update", pengumuman: "Pengumuman", opini: "Opini" };
+  return map[cat ?? ""] ?? cat ?? "Berita";
 }
 
 const NewsListClient = ({ posts }: { posts: NewsPost[] }) => {
-  const [search, setSearch] = useState("");
-  const [activeCategory, setActiveCategory] = useState<string | null>(null);
-
-  const filtered = useMemo(() => {
-    return posts.filter((p) => {
-      const matchCat = activeCategory === null || p.category === activeCategory;
-      const q = search.toLowerCase();
-      const matchSearch =
-        !q ||
-        p.title.toLowerCase().includes(q) ||
-        (p.excerpt ?? "").toLowerCase().includes(q);
-      return matchCat && matchSearch;
-    });
-  }, [posts, search, activeCategory]);
+  const filtered = posts;
 
   const [featured, ...rest] = filtered;
 
   return (
     <div className="mx-auto max-w-7xl space-y-10 px-6 pb-24 pt-10 sm:px-10 lg:px-16">
-      {/* Filter bar */}
-      <div className="sticky top-[64px] z-20 -mx-2 rounded-xl border border-white/10 bg-[#020202]/90 px-4 py-3 backdrop-blur-xl">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          {/* Category tabs */}
-          <div className="flex flex-wrap gap-1.5">
-            {CATEGORIES.map((cat) => (
-              <button
-                key={String(cat.value)}
-                type="button"
-                onClick={() => setActiveCategory(cat.value)}
-                className={`cursor-pointer rounded-lg px-3.5 py-1.5 text-xs font-semibold transition-all ${
-                  activeCategory === cat.value
-                    ? "bg-[#F5C400] text-[#020202]"
-                    : "text-white/50 hover:bg-white/5 hover:text-white"
-                }`}
-              >
-                {cat.label}
-              </button>
-            ))}
-          </div>
-          {/* Search */}
-          <div className="relative w-full sm:w-64 shrink-0">
-            <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-white/30" />
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Cari artikel..."
-              className="h-9 w-full rounded-lg border border-white/10 bg-white/5 pl-9 pr-4 text-xs text-white placeholder:text-white/30 focus:border-[#F5C400]/40 focus:outline-none"
-            />
-          </div>
-        </div>
-      </div>
 
       {filtered.length === 0 ? (
         <div className="flex flex-col items-center gap-3 py-24 text-center">
