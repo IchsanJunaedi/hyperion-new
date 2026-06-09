@@ -87,18 +87,7 @@ const HeaderClient = ({
             </ul>
           </nav>
 
-          {/* Right */}
           <div className="hidden items-center gap-5 md:flex">
-            <Link
-              href={instagramUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Instagram"
-              className="text-white/30 transition hover:text-white"
-            >
-              <Instagram className="h-4 w-4" />
-            </Link>
-
             {authed ? (
               <div className="flex items-center gap-3">
                 {authed.workspaceHref && (
