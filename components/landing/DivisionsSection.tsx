@@ -82,8 +82,8 @@ export async function DivisionsSection() {
         <div className="mb-12 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
           <div className="md:max-w-md">
             <div className="mb-3 flex items-center gap-3">
-              <div className="h-4 w-0.5 bg-[#D4FF00]" />
-              <p className="font-orbitron text-[9px] font-bold uppercase tracking-[0.3em] text-[#D4FF00]">
+              <div className="h-4 w-0.5 bg-[#F5C400]" />
+              <p className="font-orbitron text-[9px] font-bold uppercase tracking-[0.3em] text-[#F5C400]">
                 Our Divisions
               </p>
             </div>
@@ -97,7 +97,7 @@ export async function DivisionsSection() {
             </p>
             <Link
               href="/divisions"
-              className="font-orbitron text-[10px] font-bold uppercase tracking-widest text-[#D4FF00] hover:text-white transition-colors duration-200"
+              className="font-orbitron text-[10px] font-bold uppercase tracking-widest text-[#F5C400] hover:text-white transition-colors duration-200"
             >
               All Divisions →
             </Link>
@@ -114,7 +114,7 @@ export async function DivisionsSection() {
               <Link
                 key={div.id}
                 href={`/divisions/${div.slug}`}
-                className="group relative flex h-44 overflow-hidden border border-white/5 bg-[#030c1b] hover:border-[#D4FF00]/40 transition-all duration-500 clip-cyber-btn"
+                className="group relative flex h-44 overflow-hidden border border-white/5 bg-[#030c1b] hover:border-[#F5C400]/40 transition-all duration-500 clip-cyber-btn"
               >
                 {/* Left Side: Photo (slides open on hover) */}
                 <div className="absolute inset-y-0 left-0 w-0 group-hover:w-[76%] transition-all duration-500 ease-out overflow-hidden z-0">
@@ -129,7 +129,7 @@ export async function DivisionsSection() {
                   
                   {/* Text details overlay showing on hover */}
                   <div className="absolute bottom-4 left-5 z-20 opacity-0 group-hover:opacity-100 transition-all duration-500 delay-100 translate-y-3 group-hover:translate-y-0">
-                    <span className="font-orbitron text-[8px] font-bold uppercase tracking-[0.2em] text-[#D4FF00]">
+                    <span className="font-orbitron text-[8px] font-bold uppercase tracking-[0.2em] text-[#F5C400]">
                       Division
                     </span>
                     <h3 className="font-bebas text-2xl font-black uppercase tracking-wide text-white leading-none mt-1">
@@ -140,7 +140,7 @@ export async function DivisionsSection() {
 
                 {/* Right Side: Logo vertical stripe (covers full card initially, shrinks to stripe on hover) */}
                 <div className="absolute inset-y-0 right-0 w-full group-hover:w-[24%] transition-all duration-500 ease-out flex flex-col items-center justify-center bg-[#071428] group-hover:bg-[#0b1b33] border-l border-transparent group-hover:border-white/10 z-10">
-                  <span className="text-white/80 group-hover:text-[#D4FF00] transition-colors duration-500 scale-100 group-hover:scale-90">
+                  <span className="text-white/80 group-hover:text-[#F5C400] transition-colors duration-500 scale-100 group-hover:scale-90">
                     {logo}
                   </span>
                 </div>

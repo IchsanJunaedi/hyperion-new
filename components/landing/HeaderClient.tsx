@@ -53,7 +53,7 @@ const HeaderClient = ({
               GAMING ON
             </span>
             <span className="font-bebas text-2xl font-black uppercase tracking-wider text-white">
-              HYPERION<span className="text-[#D4FF00]">.</span>
+              HYPERION<span className="text-[#F5C400]">.</span>
             </span>
           </Link>
 
@@ -78,7 +78,7 @@ const HeaderClient = ({
                     {active && (
                       <motion.div
                         layoutId="nav-underline"
-                        className="absolute -bottom-0.5 left-0 right-0 h-px bg-[#D4FF00]"
+                        className="absolute -bottom-0.5 left-0 right-0 h-px bg-[#F5C400]"
                       />
                     )}
                   </li>
@@ -104,7 +104,7 @@ const HeaderClient = ({
                 {authed.workspaceHref && (
                   <Link
                     href={authed.workspaceHref}
-                    className="inline-flex h-9 items-center justify-center bg-[#D4FF00] hover:bg-white text-black font-bebas text-sm font-bold uppercase tracking-[0.1em] px-6 transition-colors duration-200 clip-cyber-btn"
+                    className="inline-flex h-9 items-center justify-center bg-[#F5C400] hover:bg-white text-black font-bebas text-sm font-bold uppercase tracking-[0.1em] px-6 transition-colors duration-200 clip-cyber-btn"
                   >
                     Masuk ke Tim
                   </Link>
@@ -123,7 +123,7 @@ const HeaderClient = ({
                 </Link>
                 <Link
                   href="/rekrutmen"
-                  className="inline-flex h-9 items-center justify-center bg-[#D4FF00] hover:bg-white text-black font-bebas text-sm font-bold uppercase tracking-[0.1em] px-6 transition-colors duration-200 clip-cyber-btn"
+                  className="inline-flex h-9 items-center justify-center bg-[#F5C400] hover:bg-white text-black font-bebas text-sm font-bold uppercase tracking-[0.1em] px-6 transition-colors duration-200 clip-cyber-btn"
                 >
                   Join Us
                 </Link>
@@ -174,7 +174,7 @@ const HeaderClient = ({
                   GAMING ON
                 </span>
                 <span className="font-bebas text-xl font-black uppercase tracking-wider text-white">
-                  HYPERION<span className="text-[#D4FF00]">.</span>
+                  HYPERION<span className="text-[#F5C400]">.</span>
                 </span>
               </div>
               <button
@@ -197,7 +197,7 @@ const HeaderClient = ({
                         href={link.href}
                         onClick={() => setMobileOpen(false)}
                         className={`flex h-12 items-center text-xs font-semibold uppercase tracking-wider transition ${
-                          active ? "text-[#D4FF00]" : "text-white/55 hover:text-white"
+                          active ? "text-[#F5C400]" : "text-white/55 hover:text-white"
                         }`}
                       >
                         {link.label}
@@ -218,7 +218,7 @@ const HeaderClient = ({
                       <Link
                         href={authed.workspaceHref}
                         onClick={() => setMobileOpen(false)}
-                        className="inline-flex h-10 w-full items-center justify-center bg-[#D4FF00] hover:bg-white text-black text-sm font-bold uppercase tracking-[0.1em] transition-colors duration-200 clip-cyber-btn"
+                        className="inline-flex h-10 w-full items-center justify-center bg-[#F5C400] hover:bg-white text-black text-sm font-bold uppercase tracking-[0.1em] transition-colors duration-200 clip-cyber-btn"
                       >
                         Masuk ke Tim
                       </Link>
@@ -238,7 +238,7 @@ const HeaderClient = ({
                     <Link
                       href="/register"
                       onClick={() => setMobileOpen(false)}
-                      className="inline-flex h-10 w-full items-center justify-center bg-[#D4FF00] hover:bg-white text-black text-sm font-bold uppercase tracking-[0.1em] transition-colors duration-200 clip-cyber-btn"
+                      className="inline-flex h-10 w-full items-center justify-center bg-[#F5C400] hover:bg-white text-black text-sm font-bold uppercase tracking-[0.1em] transition-colors duration-200 clip-cyber-btn"
                     >
                       Join Now
                     </Link>

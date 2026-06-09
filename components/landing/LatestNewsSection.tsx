@@ -123,7 +123,7 @@ function DarkCard({ post, textPosition = "bottom" }: DarkCardProps) {
       {/* Category badge */}
       {post.category && (
         <div className={`absolute z-20 ${isTop ? "bottom-4 left-4" : "top-4 left-4"}`}>
-          <span className="px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-[9px] font-bold text-[#D4FF00] uppercase tracking-wider border border-white/5">
+          <span className="px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-[9px] font-bold text-[#F5C400] uppercase tracking-wider border border-white/5">
             {getCategoryLabel(post.category)}
           </span>
         </div>
@@ -140,7 +140,7 @@ function DarkCard({ post, textPosition = "bottom" }: DarkCardProps) {
             </>
           )}
         </div>
-        <p className="font-bebas text-lg uppercase leading-tight text-white transition-colors group-hover:text-[#D4FF00]">
+        <p className="font-bebas text-lg uppercase leading-tight text-white transition-colors group-hover:text-[#F5C400]">
           {post.title}
         </p>
       </div>
@@ -192,7 +192,7 @@ const LatestNewsSection = ({ posts }: Props) => {
             </p>
             <Link
               href="/news"
-              className="mt-1 font-orbitron text-[9px] font-bold uppercase tracking-widest text-[#D4FF00]/60 transition hover:text-[#D4FF00]"
+              className="mt-1 font-orbitron text-[9px] font-bold uppercase tracking-widest text-[#F5C400]/60 transition hover:text-[#F5C400]"
             >
               Lihat Semua →
             </Link>
@@ -232,7 +232,7 @@ const LatestNewsSection = ({ posts }: Props) => {
               {b && (
                 <Link
                   href={`/news/${b.slug}`}
-                  className="lns-item group relative flex h-full w-full overflow-hidden rounded-2xl bg-[#D4FF00]"
+                  className="lns-item group relative flex h-full w-full overflow-hidden rounded-2xl bg-[#F5C400]"
                 >
                   {b.cover_image_url && (
                     // eslint-disable-next-line @next/next/no-img-element

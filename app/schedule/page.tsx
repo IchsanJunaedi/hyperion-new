@@ -46,7 +46,7 @@ const STATUS_LABEL: Record<string, string> = {
 
 const STATUS_COLOR: Record<string, string> = {
   upcoming: "text-[#F5C400] border-[#F5C400]/30 bg-[#F5C400]/10",
-  ongoing: "text-green-400 border-green-400/30 bg-green-400/10",
+  ongoing: "text-[#F5C400] border-[#F5C400]/30 bg-[#F5C400]/10",
   completed: "text-white/30 border-white/10 bg-white/5",
 };
 

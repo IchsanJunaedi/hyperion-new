@@ -125,7 +125,7 @@ const HeroSection = ({
               
               {/* Left Column: Scrim Countdown */}
               <div className="hero-card-left flex-1 flex flex-col justify-center border-b border-white/5 pb-8 lg:border-b-0 lg:pb-0 lg:border-r lg:border-white/5 lg:pr-14">
-                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.3em] text-[#D4FF00] mb-4">
+                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.3em] text-[#F5C400] mb-4">
                   <Swords className="h-4 w-4" />
                   Scrim Terdekat
                 </div>
@@ -138,14 +138,14 @@ const HeroSection = ({
                     
                     <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs sm:text-sm font-semibold font-orbitron text-white/55">
                       <span className="inline-flex items-center gap-1.5">
-                        <Calendar className="h-4 w-4 text-[#D4FF00] opacity-80" />
+                        <Calendar className="h-4 w-4 text-[#F5C400] opacity-80" />
                         {formatScrimDate(nearestScrim.scheduled_at)}
                       </span>
                     </div>
 
                     {/* Countdown Ticking widget */}
                     <div className="mt-8 flex items-center gap-3">
-                      <Clock className="h-5 w-5 text-[#D4FF00] opacity-80" />
+                      <Clock className="h-5 w-5 text-[#F5C400] opacity-80" />
                       {parts === null ? (
                         <div className="flex gap-4 font-bebas text-white">
                           <CountdownCell value={0} label="hari" />
@@ -157,7 +157,7 @@ const HeroSection = ({
                           <CountdownCell value={0} label="detik" />
                         </div>
                       ) : parts.pastDue ? (
-                        <span className="font-orbitron text-sm font-bold uppercase tracking-wider text-emerald-400">
+                        <span className="font-orbitron text-sm font-bold uppercase tracking-wider text-[#F5C400]">
                           Sedang Berlangsung
                         </span>
                       ) : (
@@ -187,7 +187,7 @@ const HeroSection = ({
               {/* Right Column: Upcoming Matches (3 Cards) */}
               <div className="hero-card-right w-full lg:w-[48%] flex flex-col justify-center">
                 <div className="flex items-center justify-between gap-4 mb-4">
-                  <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.3em] text-[#D4FF00]">
+                  <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.3em] text-[#F5C400]">
                     <Trophy className="h-4 w-4" />
                     Upcoming Matches
                   </div>
@@ -203,20 +203,20 @@ const HeroSection = ({
                   {upcomingMatches.slice(0, 3).map((m) => (
                     <div
                       key={m.id}
-                      className="group flex items-center justify-between gap-4 border border-white/5 bg-white/[0.02] p-4 transition-all duration-300 hover:border-[#D4FF00]/40 hover:bg-white/[0.04] clip-cyber-btn"
+                      className="group flex items-center justify-between gap-4 border border-white/5 bg-white/[0.02] p-4 transition-all duration-300 hover:border-[#F5C400]/40 hover:bg-white/[0.04] clip-cyber-btn"
                     >
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
-                          <span className="font-orbitron text-[9px] font-bold text-[#D4FF00]">
+                          <span className="font-orbitron text-[9px] font-bold text-[#F5C400]">
                             {formatMatchDate(m.start_date, m.start_time)}
                           </span>
                           {m.game && (
-                            <span className="font-orbitron text-[8px] font-bold uppercase bg-[#D4FF00]/10 text-[#D4FF00] px-1.5 py-0.5 rounded">
+                            <span className="font-orbitron text-[8px] font-bold uppercase bg-[#F5C400]/10 text-[#F5C400] px-1.5 py-0.5 rounded">
                               {m.game}
                             </span>
                           )}
                         </div>
-                        <h4 className="mt-1 font-bebas text-lg font-bold uppercase tracking-wide text-white truncate group-hover:text-[#D4FF00] transition-colors duration-200">
+                        <h4 className="mt-1 font-bebas text-lg font-bold uppercase tracking-wide text-white truncate group-hover:text-[#F5C400] transition-colors duration-200">
                           {m.name}
                         </h4>
                         <div className="mt-0.5 flex items-center gap-2 text-[10px] text-white/40 font-semibold font-orbitron">
@@ -249,7 +249,7 @@ const HeroSection = ({
 
       {/* Neon/Gold bottom divider line */}
       <div className="absolute bottom-0 left-0 right-0 z-20 h-[3px] overflow-hidden">
-        <div className="h-full w-[108%] bg-[#D4FF00] opacity-80" style={{ marginLeft: "-4%", transform: "skewX(-8deg)" }} />
+        <div className="h-full w-[108%] bg-[#F5C400] opacity-80" style={{ marginLeft: "-4%", transform: "skewX(-8deg)" }} />
       </div>
     </section>
   );

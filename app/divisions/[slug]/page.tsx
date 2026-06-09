@@ -208,7 +208,7 @@ export default async function DivisionDetailPage({ params }: Props) {
               {rosterList.map((player) => (
                 <div
                   key={player.id}
-                  className="group relative aspect-[3/4] overflow-hidden border border-white/5 bg-[#030813] transition-all duration-300 hover:border-[#D4FF00]/40 clip-cyber-btn"
+                  className="group relative aspect-[3/4] overflow-hidden border border-white/5 bg-[#030813] transition-all duration-300 hover:border-[#F5C400]/40 clip-cyber-btn"
                 >
                   {/* Portrait photo */}
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -223,7 +223,7 @@ export default async function DivisionDetailPage({ params }: Props) {
 
                   {/* Name and Socials info */}
                   <div className="absolute bottom-0 inset-x-0 p-4 flex flex-col items-center justify-end text-center z-10">
-                    <h4 className="font-bebas text-2xl sm:text-3xl font-black uppercase tracking-wide text-white group-hover:text-[#D4FF00] transition-colors duration-200">
+                    <h4 className="font-bebas text-2xl sm:text-3xl font-black uppercase tracking-wide text-white group-hover:text-[#F5C400] transition-colors duration-200">
                       {player.display_name}
                     </h4>
                     <p className="font-orbitron text-[8px] font-bold uppercase tracking-widest text-white/45 mb-3">

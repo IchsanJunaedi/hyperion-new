@@ -88,7 +88,7 @@ const AchievementCard = ({ item, index }: CardProps) => {
       className="achievement-card-wrapper shrink-0 select-none py-10"
     >
       <div
-        className="group relative w-[280px] sm:w-[320px] aspect-[3/4] rounded-2xl overflow-hidden border border-white/5 bg-[#030813] shadow-2xl transition-all duration-500 hover:border-[#D4FF00]/40 hover:-translate-y-3 hover:scale-[1.02] active:scale-[0.99] cursor-pointer"
+        className="group relative w-[280px] sm:w-[320px] aspect-[3/4] rounded-2xl overflow-hidden border border-white/5 bg-[#030813] shadow-2xl transition-all duration-500 hover:border-[#F5C400]/40 hover:-translate-y-3 hover:scale-[1.02] active:scale-[0.99] cursor-pointer"
       >
         <CardBackground imageUrl={item.image_url} placement={item.placement} index={index} />
 
@@ -101,7 +101,7 @@ const AchievementCard = ({ item, index }: CardProps) => {
 
         {/* Bottom card details */}
         <div className="absolute inset-x-6 bottom-6 z-20 flex flex-col text-left">
-          <span className="font-orbitron text-[9px] font-bold uppercase tracking-[0.15em] text-[#D4FF00]/70 mb-1">
+          <span className="font-orbitron text-[9px] font-bold uppercase tracking-[0.15em] text-[#F5C400]/70 mb-1">
             glory{" //"}
           </span>
           <h3 className="font-bebas text-2xl font-black uppercase tracking-wide text-white leading-none mb-2 mt-0.5">
@@ -117,7 +117,7 @@ const AchievementCard = ({ item, index }: CardProps) => {
             <ul className="space-y-1.5 text-left">
               {points.map((pt, idx) => (
                 <li key={idx} className="font-sans font-light text-white/80 text-[11px] leading-relaxed flex items-start gap-1.5">
-                  <span className="text-[#D4FF00] font-sans text-xs select-none mt-0.5">•</span>
+                  <span className="text-[#F5C400] font-sans text-xs select-none mt-0.5">•</span>
                   <span>{pt}</span>
                 </li>
               ))}
@@ -400,14 +400,14 @@ const AchievementsSection = ({ entries }: AchievementsSectionProps) => {
           {/* Header Typography */}
           <div className="mb-16 text-center">
             <div className="mb-3 flex items-center justify-center gap-3">
-              <div className="h-px w-8 bg-[#D4FF00]" />
-              <p className="font-orbitron text-[9px] font-bold uppercase tracking-[0.3em] text-[#D4FF00]">
+              <div className="h-px w-8 bg-[#F5C400]" />
+              <p className="font-orbitron text-[9px] font-bold uppercase tracking-[0.3em] text-[#F5C400]">
                 Trophy Room
               </p>
-              <div className="h-px w-8 bg-[#D4FF00]" />
+              <div className="h-px w-8 bg-[#F5C400]" />
             </div>
             <h2 className="font-bebas text-4xl sm:text-5xl lg:text-6xl font-black uppercase tracking-wide text-white leading-none">
-              The beginning of our <span className="text-[#D4FF00]">glory.</span>
+              The beginning of our <span className="text-[#F5C400]">glory.</span>
             </h2>
             <p className="mt-4 max-w-2xl mx-auto text-xs sm:text-sm text-white/50 font-sans font-light leading-relaxed">
               Kita mulai dari apa yang paling kita impikan – bermain lebih gigih, berlatih lebih cerdas, menyatu lebih dalam, berpikir lebih jernih, dan menang bersama di setiap panggung kompetisi.
