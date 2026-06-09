@@ -219,7 +219,7 @@ const AboutClient = ({ settings, alumni }: AboutClientProps) => {
           <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl border border-white/10 bg-[#0C1E3C]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/brand/landing-hero.jpeg"
+              src="/brand/logo.jpg"
               alt="Hyperion Team Hero"
               className="absolute inset-0 w-full h-full object-cover scale-105"
             />
@@ -290,21 +290,21 @@ const AboutClient = ({ settings, alumni }: AboutClientProps) => {
                   <div className="mwg037-images relative w-56 h-80 sm:w-64 sm:h-[380px] rounded-2xl overflow-hidden border border-white/10 bg-[#0C1E3C] shadow-2xl">
                     <div className="mwg037-hidden absolute inset-0 w-full h-full">
                       <img
-                        src="/brand/ref-hero.jpeg"
+                        src="/brand/logo.jpg"
                         alt="Esports Moment 1"
                         className="mwg037-image w-full h-full object-cover scale-105"
                       />
                     </div>
                     <div className="mwg037-hidden absolute inset-0 w-full h-full opacity-0">
                       <img
-                        src="/brand/ref-games.jpeg"
+                        src="/brand/logo.jpg"
                         alt="Esports Moment 2"
                         className="mwg037-image w-full h-full object-cover scale-105"
                       />
                     </div>
                     <div className="mwg037-hidden absolute inset-0 w-full h-full opacity-0">
                       <img
-                        src="/brand/ref-featured.jpeg"
+                        src="/brand/logo.jpg"
                         alt="Esports Moment 3"
                         className="mwg037-image w-full h-full object-cover scale-105"
                       />
@@ -414,21 +414,21 @@ const AboutClient = ({ settings, alumni }: AboutClientProps) => {
           </div>
           <div className="about-grid-img aspect-[3/4] relative rounded-2xl overflow-hidden border border-white/10 bg-[#0C1E3C]">
             <img
-              src="/brand/achievements-section.jpeg"
+              src="/brand/logo.jpg"
               alt="Moment 2"
               className="w-full h-full object-cover grayscale hover:grayscale-0 transition duration-700 ease-out"
             />
           </div>
           <div className="about-grid-img aspect-[3/4] relative rounded-2xl overflow-hidden border border-white/10 bg-[#0C1E3C]">
             <img
-              src="/brand/ref-games.jpeg"
+              src="/brand/logo.jpg"
               alt="Moment 3"
               className="w-full h-full object-cover grayscale hover:grayscale-0 transition duration-700 ease-out"
             />
           </div>
           <div className="about-grid-img aspect-[3/4] relative rounded-2xl overflow-hidden border border-white/10 bg-[#0C1E3C]">
             <img
-              src="/brand/ref-hero.jpeg"
+              src="/brand/logo.jpg"
               alt="Moment 4"
               className="w-full h-full object-cover grayscale hover:grayscale-0 transition duration-700 ease-out"
             />
@@ -457,7 +457,7 @@ const AboutClient = ({ settings, alumni }: AboutClientProps) => {
           <div className="relative aspect-[21/9] w-full overflow-hidden rounded-2xl border border-white/10 bg-[#0C1E3C] animate-up">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/brand/ref-featured.jpeg"
+              src="/brand/logo.jpg"
               alt="Bootcamp Team Session"
               className="absolute inset-0 w-full h-full object-cover grayscale hover:grayscale-0 transition duration-700 ease-out"
             />
