@@ -90,7 +90,7 @@ const HeroSection = ({
   }, { scope: sectionRef });
 
   return (
-    <section ref={sectionRef} className="relative flex min-h-screen flex-col justify-center overflow-hidden bg-[#020202] pt-24 pb-16">
+    <section ref={sectionRef} className="relative flex min-h-screen flex-col justify-center overflow-hidden bg-transparent pt-24 pb-16">
       {/* Grid line pattern overlay */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none z-0" />
 

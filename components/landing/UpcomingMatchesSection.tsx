@@ -32,7 +32,7 @@ const UpcomingMatchesSection = ({ tournaments }: Props) => {
   if (tournaments.length === 0) return null;
 
   return (
-    <section ref={sectionRef} className="bg-[#000000] px-5 py-20 sm:px-8 lg:px-10">
+    <section ref={sectionRef} className="bg-transparent px-5 py-20 sm:px-8 lg:px-10">
       <div className="mx-auto max-w-7xl">
         {/* Header */}
         <div className="um-header mb-8 flex flex-wrap items-end justify-between gap-4 pb-8">

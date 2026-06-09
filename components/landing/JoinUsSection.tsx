@@ -43,7 +43,7 @@ const JoinUsSection = ({ settings }: JoinUsSectionProps) => {
   }, { scope: sectionRef });
 
   return (
-    <section ref={sectionRef} className="relative overflow-hidden bg-[#020202] px-5 py-24 sm:px-8 lg:px-10">
+    <section ref={sectionRef} className="relative overflow-hidden bg-transparent px-5 py-24 sm:px-8 lg:px-10">
       {/* Glowing Background Orb (Yellow/Gold aura matching request) */}
       <div className="join-glow-orb absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full pointer-events-none opacity-15 bg-[#F5C400] blur-[130px] mix-blend-screen z-0" />
 

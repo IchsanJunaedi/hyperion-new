@@ -457,7 +457,7 @@ const TestimonialsSection = ({ testimonials }: TestimonialsSectionProps) => {
   return (
     <section
       ref={sectionRef}
-      className="relative overflow-hidden bg-[#020202] px-5 py-32 sm:px-8 lg:px-10 border-t border-white/5"
+      className="relative overflow-hidden bg-transparent px-5 py-32 sm:px-8 lg:px-10 border-t border-white/5"
     >
       {/* Decorative subtle background mesh */}
       <div className="absolute inset-0 pointer-events-none opacity-20 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-white/5 via-transparent to-transparent" />

@@ -24,6 +24,7 @@ import {
 } from "@/features/admin/queries";
 import { UpcomingMatchesSection } from "@/components/landing/UpcomingMatchesSection";
 import { LatestNewsSection } from "@/components/landing/LatestNewsSection";
+import { InteractiveBackground } from "@/components/landing/InteractiveBackground";
 import type { PublicTournament } from "@/features/admin/queries";
 import type { HeroSlide, HeroSettings } from "@/components/landing/HeroSection";
 
@@ -183,7 +184,8 @@ export default async function HomePage() {
   return (
     <>
       <Header />
-      <main className="flex-1">
+      <main className="flex-1 relative overflow-hidden bg-[#040D1C]">
+        <InteractiveBackground />
         <HeroSection
           slides={heroSlides}
           settings={heroSettings}

@@ -176,7 +176,7 @@ const LatestNewsSection = ({ posts }: Props) => {
   return (
     <section
       ref={sectionRef}
-      className="relative bg-[#020202] px-5 py-20 sm:px-8 lg:px-10 border-t border-white/5"
+      className="relative bg-transparent px-5 py-20 sm:px-8 lg:px-10 border-t border-white/5"
     >
       <div className="relative mx-auto max-w-7xl">
 

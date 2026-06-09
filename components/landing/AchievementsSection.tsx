@@ -390,7 +390,7 @@ const AchievementsSection = ({ entries }: AchievementsSectionProps) => {
       <section
         ref={sectionRef}
         id="achievements"
-        className="relative scroll-mt-14 overflow-hidden bg-[#020202] px-5 py-28 sm:px-8 lg:px-10 border-t border-white/5"
+        className="relative scroll-mt-14 overflow-hidden bg-transparent px-5 py-28 sm:px-8 lg:px-10 border-t border-white/5"
       >
         <GridTexture opacity={0.02} />
         <GoldRadialGlow from="center" intensity={0.03} />

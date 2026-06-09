@@ -75,7 +75,7 @@ export async function DivisionsSection() {
   if (items.length === 0) return null;
 
   return (
-    <section className="bg-[#000000] px-5 py-24 sm:px-8 lg:px-10 border-t border-white/5">
+    <section className="bg-transparent px-5 py-24 sm:px-8 lg:px-10 border-t border-white/5">
       <div className="mx-auto max-w-7xl">
         
         {/* Header - Two Columns */}

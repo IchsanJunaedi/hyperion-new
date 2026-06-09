@@ -190,7 +190,7 @@ export default async function DivisionDetailPage({ params }: Props) {
         </section>
 
         {/* Roster Cards (Image 3 layout) */}
-        <section className="px-6 py-20 sm:px-10 lg:px-16 border-t border-white/5 bg-[#020202]">
+        <section className="px-6 py-20 sm:px-10 lg:px-16 border-t border-white/5 bg-[#030914]">
           <div className="mx-auto max-w-7xl">
             <div className="mb-12">
               <div className="mb-2 flex items-center gap-3">
@@ -219,7 +219,7 @@ export default async function DivisionDetailPage({ params }: Props) {
                   />
 
                   {/* Dark gradient overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#020202] via-[#020202]/30 to-transparent opacity-90" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#030914] via-[#030914]/30 to-transparent opacity-90" />
 
                   {/* Name and Socials info */}
                   <div className="absolute bottom-0 inset-x-0 p-4 flex flex-col items-center justify-end text-center z-10">

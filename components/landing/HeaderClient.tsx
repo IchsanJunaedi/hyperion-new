@@ -45,7 +45,7 @@ const HeaderClient = ({
 
   return (
     <>
-      <header className="fixed top-0 z-50 w-full border-b border-white/5 bg-[#050505]/40 backdrop-blur-md transition-all duration-200">
+      <header className="fixed top-0 z-50 w-full border-b border-white/5 bg-[#040D1C]/40 backdrop-blur-md transition-all duration-200">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8">
           {/* Logo */}
           <Link href="/" className="flex flex-col items-start leading-none gap-0.5" aria-label="Hyperion Team">
@@ -117,7 +117,7 @@ const HeaderClient = ({
                   href="/login"
                   className="relative p-[1.5px] bg-white/10 hover:bg-white/30 clip-cyber-btn transition-colors duration-200"
                 >
-                  <span className="flex h-9 items-center justify-center bg-[#050505] px-6 font-bebas text-sm font-normal uppercase tracking-[0.1em] text-white clip-cyber-btn">
+                  <span className="flex h-9 items-center justify-center bg-[#040D1C] px-6 font-bebas text-sm font-normal uppercase tracking-[0.1em] text-white clip-cyber-btn">
                     Login
                   </span>
                 </Link>
@@ -152,7 +152,7 @@ const HeaderClient = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
-            className="fixed inset-0 z-40 bg-[#0A0A0A]/80 md:hidden"
+            className="fixed inset-0 z-40 bg-[#030914]/80 md:hidden"
             onClick={() => setMobileOpen(false)}
           />
         )}
@@ -166,7 +166,7 @@ const HeaderClient = ({
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", stiffness: 340, damping: 34 }}
-            className="fixed right-0 top-0 z-50 flex h-full w-72 flex-col border-l border-white/5 bg-[#0A0A0A] md:hidden"
+            className="fixed right-0 top-0 z-50 flex h-full w-72 flex-col border-l border-white/5 bg-[#030914] md:hidden"
           >
             <div className="flex h-16 items-center justify-between border-b border-white/5 px-5">
               <div className="flex flex-col items-start leading-none gap-0.5">
@@ -231,7 +231,7 @@ const HeaderClient = ({
                       onClick={() => setMobileOpen(false)}
                       className="relative block p-[1.5px] bg-white/10 hover:bg-white/30 clip-cyber-btn transition-colors duration-200"
                     >
-                      <span className="flex h-10 items-center justify-center bg-[#0A0A0A]/95 text-sm font-normal uppercase tracking-[0.1em] text-white clip-cyber-btn">
+                      <span className="flex h-10 items-center justify-center bg-[#030914]/95 text-sm font-normal uppercase tracking-[0.1em] text-white clip-cyber-btn">
                         Login
                       </span>
                     </Link>
