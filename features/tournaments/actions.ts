@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { logAudit } from "@/lib/audit";
 import { blastWaMessage } from "@/lib/utils/fonnte";
-import { buildTournamentRegisteredWaMessage } from "@/lib/utils/wa-templates";
+import { buildTournamentRegisteredWaMessage, buildTournamentWonWaMessage } from "@/lib/utils/wa-templates";
 import {
   createTournamentSchema,
   updateTournamentSchema,
@@ -602,6 +602,35 @@ export async function completeTournamentAction(
           .upsert(distributions, { onConflict: "tournament_id,contract_id" });
       }
     }
+
+    // WA blast to all members on win
+    if (data.won && prizeAmount > 0 && data.placement) {
+      const { data: tournamentRow } = await admin
+        .from("tournaments")
+        .select("name")
+        .eq("id", tournamentId)
+        .maybeSingle();
+      const tName = tournamentRow?.name ?? "Turnamen";
+
+      const { data: winContracts } = await admin
+        .from("player_contracts")
+        .select("user_id, bonus_percentage")
+        .eq("organization_id", org.id)
+        .eq("status", "active");
+      const bonusMap = new Map(
+        (winContracts ?? []).map((c) => [c.user_id, Number(c.bonus_percentage)]),
+      );
+
+      fanOutWinNotification(admin, {
+        tournamentId,
+        orgId: org.id,
+        orgSlug,
+        tournamentName: tName,
+        placement: data.placement,
+        prizeAmount,
+        bonusMap,
+      }).catch((err) => console.error("[WA] Win notification error:", err));
+    }
   }
 
   // Auto-create achievement for podium placements
@@ -718,6 +747,94 @@ async function fanOutRegistrationNotification(
   if (recipients.length > 0) {
     blastWaMessage(recipients).catch((err) =>
       console.error("[WA Blast] Registration notification error:", err),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// WA Blast for Tournament Win
+// ---------------------------------------------------------------------------
+
+interface WinNotifData {
+  tournamentId: string;
+  orgId: string;
+  orgSlug: string;
+  tournamentName: string;
+  placement: number;
+  prizeAmount: number;
+  bonusMap: Map<string, number>; // user_id → bonus_percentage
+}
+
+async function fanOutWinNotification(
+  admin: ReturnType<typeof createAdminClient>,
+  data: WinNotifData,
+) {
+  const { data: org } = await admin
+    .from("organizations")
+    .select("name")
+    .eq("id", data.orgId)
+    .maybeSingle();
+  const orgName = org?.name ?? "Tim";
+
+  const { data: members } = await admin
+    .from("team_members")
+    .select("user_id")
+    .eq("organization_id", data.orgId)
+    .eq("is_active", true);
+  if (!members || members.length === 0) return;
+
+  const userIds = members.map((m) => m.user_id);
+  const { data: profiles } = await admin
+    .from("profiles")
+    .select("id, phone_wa")
+    .in("id", userIds);
+  const phoneMap = new Map((profiles ?? []).map((p) => [p.id, p.phone_wa]));
+
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  const tournamentUrl = `${appUrl}/${data.orgSlug}/tournaments/${data.tournamentId}`;
+
+  const title = `🏆 Juara ${data.placement}: ${data.tournamentName}`;
+  const body = `${orgName} meraih Juara ${data.placement} di ${data.tournamentName}! Selamat!`;
+
+  const rows = members.map((m) => {
+    const bonusPct = data.bonusMap.get(m.user_id) ?? 0;
+    const bonusAmount = bonusPct > 0 ? Math.round((data.prizeAmount * bonusPct) / 100) : 0;
+    const phone = phoneMap.get(m.user_id) ?? null;
+    const waMessage = phone
+      ? buildTournamentWonWaMessage({
+          orgName,
+          tournamentName: data.tournamentName,
+          placement: data.placement,
+          prizePool: data.prizeAmount,
+          bonusAmount: bonusAmount > 0 ? bonusAmount : null,
+          bonusPercentage: bonusPct > 0 ? bonusPct : null,
+          tournamentUrl,
+        })
+      : null;
+    return {
+      organization_id: data.orgId,
+      user_id: m.user_id,
+      type: "system" as const,
+      title,
+      body,
+      ref_id: data.tournamentId,
+      ref_type: "tournament",
+      wa_number: phone,
+      wa_message: waMessage,
+    };
+  });
+
+  await admin.from("notifications").insert(rows);
+
+  const recipients = rows
+    .filter((r): r is typeof r & { wa_number: string; wa_message: string } =>
+      Boolean(r.wa_number && r.wa_message),
+    )
+    .map((r) => ({ phone: r.wa_number, message: r.wa_message }));
+
+  if (recipients.length > 0) {
+    blastWaMessage(recipients).catch((err) =>
+      console.error("[WA Blast] Win notification error:", err),
     );
   }
 }

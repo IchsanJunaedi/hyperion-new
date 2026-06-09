@@ -5,7 +5,7 @@ export const createContractSchema = z.object({
   monthly_salary: z.coerce
     .number({ error: "Nominal harus angka" })
     .int("Nominal harus bilangan bulat")
-    .positive("Nominal harus lebih dari 0"),
+    .min(0, "Nominal tidak boleh negatif"),
   bonus_percentage: z.coerce
     .number({ error: "Persentase harus angka" })
     .min(0, "Minimal 0")

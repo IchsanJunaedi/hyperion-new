@@ -124,6 +124,56 @@ export function buildTournamentRegisteredWaMessage(data: TournamentRegisteredWaD
   return lines.join("\n");
 }
 
+interface TournamentWonWaData {
+  orgName: string;
+  tournamentName: string;
+  placement: number;
+  prizePool: number;
+  bonusAmount?: number | null;
+  bonusPercentage?: number | null;
+  tournamentUrl: string;
+}
+
+/**
+ * Build WA message for tournament win result — personalized per player.
+ */
+export function buildTournamentWonWaMessage(data: TournamentWonWaData): string {
+  const fmtRp = (n: number) => `Rp ${n.toLocaleString("id-ID")}`;
+  const placement = data.placement;
+  const placementLabel =
+    placement === 1 ? "🥇 Juara 1" :
+    placement === 2 ? "🥈 Juara 2" :
+    placement === 3 ? "🥉 Juara 3" :
+    `Juara ${placement}`;
+
+  const lines = [
+    `[${data.orgName}] 🏆 *Selamat! Kita Juara!*`,
+    "",
+    `Tim kita berhasil meraih *${placementLabel}* di:`,
+    `*${data.tournamentName}*`,
+    "",
+    `💵 *Total Hadiah Turnamen:* ${fmtRp(data.prizePool)}`,
+  ];
+
+  if (data.bonusAmount && data.bonusAmount > 0) {
+    lines.push("");
+    lines.push(`💰 *Bonus yang kamu dapatkan:* ${fmtRp(data.bonusAmount)}`);
+    if (data.bonusPercentage) {
+      lines.push(`_(${data.bonusPercentage}% dari total hadiah)_`);
+    }
+    lines.push("");
+    lines.push("Bonus sudah tercatat di sistem dan akan segera diproses. Terima kasih atas kerja kerasmu! 💪");
+  } else {
+    lines.push("");
+    lines.push("Terima kasih atas kerja keras seluruh tim! 💪");
+  }
+
+  lines.push("");
+  lines.push(`Detail turnamen: ${data.tournamentUrl}`);
+
+  return lines.join("\n");
+}
+
 /**
  * Build WA message for a new tournament.
  */

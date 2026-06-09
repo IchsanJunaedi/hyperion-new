@@ -3,6 +3,7 @@ import {
   buildScrimWaMessage,
   buildTournamentWaMessage,
   buildTournamentRegisteredWaMessage,
+  buildTournamentWonWaMessage,
 } from "@/lib/utils/wa-templates";
 
 describe("buildScrimWaMessage", () => {
@@ -87,6 +88,58 @@ describe("buildTournamentWaMessage", () => {
     expect(msg).toContain("Rp 10.000.000");
     expect(msg).toContain("Rp 150.000");
     expect(msg).toContain("https://moonton.com/register");
+  });
+});
+
+describe("buildTournamentWonWaMessage", () => {
+  const base = {
+    orgName: "Tim Garuda",
+    tournamentName: "MPL Season 15",
+    placement: 1,
+    prizePool: 10_000_000,
+    tournamentUrl: "https://hyperionteam.id/garuda/tournament/456",
+  };
+
+  it("contains org name, tournament name, and URL", () => {
+    const msg = buildTournamentWonWaMessage(base);
+    expect(msg).toContain("Tim Garuda");
+    expect(msg).toContain("MPL Season 15");
+    expect(msg).toContain("https://hyperionteam.id/garuda/tournament/456");
+  });
+
+  it("uses gold medal emoji for Juara 1", () => {
+    const msg = buildTournamentWonWaMessage(base);
+    expect(msg).toContain("🥇 Juara 1");
+  });
+
+  it("uses silver medal emoji for Juara 2", () => {
+    const msg = buildTournamentWonWaMessage({ ...base, placement: 2 });
+    expect(msg).toContain("🥈 Juara 2");
+  });
+
+  it("uses bronze medal emoji for Juara 3", () => {
+    const msg = buildTournamentWonWaMessage({ ...base, placement: 3 });
+    expect(msg).toContain("🥉 Juara 3");
+  });
+
+  it("shows prize pool amount", () => {
+    const msg = buildTournamentWonWaMessage(base);
+    expect(msg).toContain("10.000.000");
+  });
+
+  it("shows bonus amount and percentage when provided", () => {
+    const msg = buildTournamentWonWaMessage({
+      ...base,
+      bonusAmount: 500_000,
+      bonusPercentage: 5,
+    });
+    expect(msg).toContain("500.000");
+    expect(msg).toContain("5%");
+  });
+
+  it("omits bonus section when bonusAmount is null", () => {
+    const msg = buildTournamentWonWaMessage({ ...base, bonusAmount: null });
+    expect(msg).not.toContain("Bonus yang kamu dapatkan");
   });
 });
 
