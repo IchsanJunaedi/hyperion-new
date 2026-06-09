@@ -219,7 +219,7 @@ const AboutClient = ({ settings, alumni }: AboutClientProps) => {
           <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl border border-white/10 bg-[#0C1E3C]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="https://cdn.prod.website-files.com/696aaa5b521d9c01a984f22e/696e5df24fee27d27c3bbae7_about-hero.avif"
+              src="/brand/landing-hero.jpeg"
               alt="Hyperion Team Hero"
               className="absolute inset-0 w-full h-full object-cover scale-105"
             />
@@ -290,21 +290,21 @@ const AboutClient = ({ settings, alumni }: AboutClientProps) => {
                   <div className="mwg037-images relative w-56 h-80 sm:w-64 sm:h-[380px] rounded-2xl overflow-hidden border border-white/10 bg-[#0C1E3C] shadow-2xl">
                     <div className="mwg037-hidden absolute inset-0 w-full h-full">
                       <img
-                        src="https://cdn.prod.website-files.com/696aaa5b521d9c01a984f22e/6976453a4ebc7af2fbd4fc13_build-meaningful-brands-1.avif"
+                        src="/brand/ref-hero.jpeg"
                         alt="Esports Moment 1"
                         className="mwg037-image w-full h-full object-cover scale-105"
                       />
                     </div>
                     <div className="mwg037-hidden absolute inset-0 w-full h-full opacity-0">
                       <img
-                        src="https://cdn.prod.website-files.com/696aaa5b521d9c01a984f22e/6976453a09a941d9f8d11f1f_build-meaningful-brands-2.avif"
+                        src="/brand/ref-games.jpeg"
                         alt="Esports Moment 2"
                         className="mwg037-image w-full h-full object-cover scale-105"
                       />
                     </div>
                     <div className="mwg037-hidden absolute inset-0 w-full h-full opacity-0">
                       <img
-                        src="https://cdn.prod.website-files.com/696aaa5b521d9c01a984f22e/6976453a3adfb2c97329c198_build-meaningful-brands-3.avif"
+                        src="/brand/ref-featured.jpeg"
                         alt="Esports Moment 3"
                         className="mwg037-image w-full h-full object-cover scale-105"
                       />
@@ -407,28 +407,28 @@ const AboutClient = ({ settings, alumni }: AboutClientProps) => {
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-6">
           <div className="about-grid-img aspect-[3/4] relative rounded-2xl overflow-hidden border border-white/10 bg-[#0C1E3C]">
             <img
-              src="https://cdn.prod.website-files.com/696aaa5b521d9c01a984f22e/696fb421b7aaa3e0f247277a_about-1.avif"
+              src="/brand/logo.jpg"
               alt="Moment 1"
               className="w-full h-full object-cover grayscale hover:grayscale-0 transition duration-700 ease-out"
             />
           </div>
           <div className="about-grid-img aspect-[3/4] relative rounded-2xl overflow-hidden border border-white/10 bg-[#0C1E3C]">
             <img
-              src="https://cdn.prod.website-files.com/696aaa5b521d9c01a984f22e/696fb421b5c68c016d44cc1a_about-2.avif"
+              src="/brand/achievements-section.jpeg"
               alt="Moment 2"
               className="w-full h-full object-cover grayscale hover:grayscale-0 transition duration-700 ease-out"
             />
           </div>
           <div className="about-grid-img aspect-[3/4] relative rounded-2xl overflow-hidden border border-white/10 bg-[#0C1E3C]">
             <img
-              src="https://cdn.prod.website-files.com/696aaa5b521d9c01a984f22e/696fb421e1a928d293cb4619_about-3.avif"
+              src="/brand/ref-games.jpeg"
               alt="Moment 3"
               className="w-full h-full object-cover grayscale hover:grayscale-0 transition duration-700 ease-out"
             />
           </div>
           <div className="about-grid-img aspect-[3/4] relative rounded-2xl overflow-hidden border border-white/10 bg-[#0C1E3C]">
             <img
-              src="https://cdn.prod.website-files.com/696aaa5b521d9c01a984f22e/696fb421ce364e44fc5d8abe_about-4.avif"
+              src="/brand/ref-hero.jpeg"
               alt="Moment 4"
               className="w-full h-full object-cover grayscale hover:grayscale-0 transition duration-700 ease-out"
             />
@@ -457,7 +457,7 @@ const AboutClient = ({ settings, alumni }: AboutClientProps) => {
           <div className="relative aspect-[21/9] w-full overflow-hidden rounded-2xl border border-white/10 bg-[#0C1E3C] animate-up">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="https://cdn.prod.website-files.com/696aaa5b521d9c01a984f22e/697139cdb1edd912d56618d4_about-5.avif"
+              src="/brand/ref-featured.jpeg"
               alt="Bootcamp Team Session"
               className="absolute inset-0 w-full h-full object-cover grayscale hover:grayscale-0 transition duration-700 ease-out"
             />
