@@ -2,7 +2,6 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { ArrowRight, ArrowUpRight, Instagram } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -218,12 +217,11 @@ const AboutClient = ({ settings, alumni }: AboutClientProps) => {
             </h1>
           </div>
           <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl border border-white/5 bg-[#202020]">
-            <Image
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
               src="https://cdn.prod.website-files.com/696aaa5b521d9c01a984f22e/696e5df24fee27d27c3bbae7_about-hero.avif"
               alt="Hyperion Team Hero"
-              fill
-              priority
-              className="object-cover scale-105"
+              className="absolute inset-0 w-full h-full object-cover scale-105"
             />
           </div>
         </div>
@@ -242,7 +240,8 @@ const AboutClient = ({ settings, alumni }: AboutClientProps) => {
             <div className="swap-mid grid grid-cols-1 grid-rows-1 justify-items-center items-center h-6 overflow-hidden">
               <div className="swap-mid-text col-start-1 row-start-1">Esports</div>
               <div className="swap-mid-img col-start-1 row-start-1 opacity-0 translate-y-2 flex items-center justify-center">
-                <Image
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
                   src="/brand/logo.jpg"
                   alt="Logo"
                   width={20}
@@ -456,11 +455,11 @@ const AboutClient = ({ settings, alumni }: AboutClientProps) => {
           </p>
 
           <div className="relative aspect-[21/9] w-full overflow-hidden rounded-2xl border border-white/5 bg-[#202020] animate-up">
-            <Image
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
               src="https://cdn.prod.website-files.com/696aaa5b521d9c01a984f22e/697139cdb1edd912d56618d4_about-5.avif"
               alt="Bootcamp Team Session"
-              fill
-              className="object-cover grayscale hover:grayscale-0 transition duration-700 ease-out"
+              className="absolute inset-0 w-full h-full object-cover grayscale hover:grayscale-0 transition duration-700 ease-out"
             />
           </div>
 
