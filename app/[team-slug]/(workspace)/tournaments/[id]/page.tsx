@@ -10,6 +10,7 @@ import { TournamentTimeline } from "@/features/tournaments/components/Tournament
 import { TournamentJourney } from "@/features/tournaments/components/TournamentJourney";
 import { TournamentDetailActions } from "@/features/tournaments/components/TournamentDetailActions";
 import { TournamentBracketCard } from "@/features/tournaments/components/TournamentBracketCard";
+import { TournamentTechMeetCard } from "@/features/tournaments/components/TournamentTechMeetCard";
 
 export const dynamic = "force-dynamic";
 
@@ -262,6 +263,18 @@ export default async function TournamentDetailPage({ params }: TournamentDetailP
                 canManage={canManage}
               />
             </article>
+          )}
+
+          {/* Tech Meeting */}
+          {(detail.status === "upcoming" || detail.status === "ongoing") && (
+            <TournamentTechMeetCard
+              orgSlug={slug}
+              tournamentId={detail.id}
+              initialDate={detail.tech_meet_date ?? null}
+              initialTime={detail.tech_meet_time ?? null}
+              initialLink={detail.tech_meet_link ?? null}
+              canManage={canManage}
+            />
           )}
         </aside>
       </div>

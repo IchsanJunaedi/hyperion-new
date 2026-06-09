@@ -42,7 +42,7 @@ export async function listTournaments(orgId: string): Promise<Tournament[]> {
   const { data } = await supabase
     .from("tournaments")
     .select(
-      "id, organization_id, division_id, name, status, start_date, start_time, end_date, link, organizer, prize_pool, registration_deadline, registration_fee, registration_url, is_registered, bracket_link, bracket_file_path, notes, created_by, created_at, day_reminder_sent_at, h1_reminder_sent_at, h30_reminder_sent_at, show_in_hero, show_on_schedule",
+      "id, organization_id, division_id, name, status, start_date, start_time, end_date, link, organizer, prize_pool, registration_deadline, registration_fee, registration_url, is_registered, bracket_link, bracket_file_path, notes, created_by, created_at, day_reminder_sent_at, h1_reminder_sent_at, h30_reminder_sent_at, show_in_hero, show_on_schedule, tech_meet_date, tech_meet_time, tech_meet_link",
     )
     .eq("organization_id", orgId)
     .order("start_date", { ascending: false })

@@ -502,6 +502,44 @@ export async function updateTournamentBracketAction(
 }
 
 
+export async function updateTournamentTechMeetAction(
+  orgSlug: string,
+  tournamentId: string,
+  data: {
+    tech_meet_date: string | null;
+    tech_meet_time: string | null;
+    tech_meet_link: string | null;
+  },
+): Promise<ActionError | { ok: true }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, message: "Anda harus login" };
+
+  const admin = createAdminClient();
+  const { error } = await admin
+    .from("tournaments")
+    .update({
+      tech_meet_date: data.tech_meet_date || null,
+      tech_meet_time: data.tech_meet_time || null,
+      tech_meet_link: data.tech_meet_link || null,
+    })
+    .eq("id", tournamentId);
+
+  if (error) return { ok: false, message: error.message };
+
+  await logAudit({
+    actorId: user.id,
+    action: "tournament.update_tech_meet",
+    entityType: "tournament",
+    entityId: tournamentId,
+  });
+
+  revalidatePath(`/${orgSlug}/tournaments/${tournamentId}`);
+  return { ok: true };
+}
+
 export async function completeTournamentAction(
   orgSlug: string,
   tournamentId: string,

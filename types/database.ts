@@ -2822,6 +2822,9 @@ export type Database = {
           start_date: string
           start_time: string | null
           status: string
+          tech_meet_date: string | null
+          tech_meet_link: string | null
+          tech_meet_time: string | null
         }
         Insert: {
           bracket_file_path?: string | null
@@ -2849,6 +2852,9 @@ export type Database = {
           start_date: string
           start_time?: string | null
           status?: string
+          tech_meet_date?: string | null
+          tech_meet_link?: string | null
+          tech_meet_time?: string | null
         }
         Update: {
           bracket_file_path?: string | null
@@ -2876,6 +2882,9 @@ export type Database = {
           start_date?: string
           start_time?: string | null
           status?: string
+          tech_meet_date?: string | null
+          tech_meet_link?: string | null
+          tech_meet_time?: string | null
         }
         Relationships: [
           {
