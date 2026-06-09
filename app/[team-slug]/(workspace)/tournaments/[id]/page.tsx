@@ -168,6 +168,8 @@ export default async function TournamentDetailPage({ params }: TournamentDetailP
                 startTime={detail.start_time}
                 prizePool={detail.prize_pool}
                 organizer={detail.organizer}
+                registrationDeadline={detail.registration_deadline}
+                status={detail.status}
               />
             </div>
           )

@@ -9,6 +9,10 @@ interface TournamentCountdownProps {
   startTime?: string | null;
   prizePool: string | null;
   organizer: string | null;
+  /** ISO string — jika ada dan status upcoming, tampilkan countdown ke deadline */
+  registrationDeadline?: string | null;
+  /** "upcoming" = belum daftar, "ongoing" = sudah daftar */
+  status?: string;
 }
 
 interface CountdownParts {
@@ -32,23 +36,46 @@ function diffParts(target: Date): CountdownParts {
   };
 }
 
-const TournamentCountdown = ({ name, startDate, startTime, prizePool, organizer }: TournamentCountdownProps) => {
-  const target = useMemo(() => {
+const TournamentCountdown = ({
+  name,
+  startDate,
+  startTime,
+  prizePool,
+  organizer,
+  registrationDeadline,
+  status,
+}: TournamentCountdownProps) => {
+  // Show reg deadline countdown when: upcoming + deadline exists + deadline hasn't passed
+  const showRegDeadline =
+    status === "upcoming" &&
+    !!registrationDeadline &&
+    new Date(registrationDeadline).getTime() > Date.now();
+
+  const matchTarget = useMemo(() => {
     const timeStr = startTime ? startTime.slice(0, 5) : "00:00";
     return new Date(`${startDate}T${timeStr}:00+07:00`);
   }, [startDate, startTime]);
+
+  const regTarget = useMemo(() => {
+    if (!registrationDeadline) return null;
+    return new Date(registrationDeadline);
+  }, [registrationDeadline]);
+
+  const activeTarget = showRegDeadline && regTarget ? regTarget : matchTarget;
+
   const [parts, setParts] = useState<CountdownParts | null>(null);
-  const [formatted, setFormatted] = useState("");
+  const [formattedMatch, setFormattedMatch] = useState("");
+  const [formattedReg, setFormattedReg] = useState("");
 
   useEffect(() => {
-    setParts(diffParts(target));
-    const id = setInterval(() => setParts(diffParts(target)), 1000);
+    setParts(diffParts(activeTarget));
+    const id = setInterval(() => setParts(diffParts(activeTarget)), 1000);
     return () => clearInterval(id);
-  }, [target]);
+  }, [activeTarget]);
 
   useEffect(() => {
-    setFormatted(
-      target.toLocaleString("id-ID", {
+    setFormattedMatch(
+      matchTarget.toLocaleString("id-ID", {
         weekday: "short",
         day: "numeric",
         month: "short",
@@ -56,9 +83,84 @@ const TournamentCountdown = ({ name, startDate, startTime, prizePool, organizer 
         timeZone: "Asia/Jakarta",
       }),
     );
-  }, [target]);
+  }, [matchTarget]);
+
+  useEffect(() => {
+    if (!regTarget) return;
+    setFormattedReg(
+      regTarget.toLocaleString("id-ID", {
+        weekday: "short",
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        timeZone: "Asia/Jakarta",
+      }),
+    );
+  }, [regTarget]);
 
   const isPast = parts?.pastDue ?? false;
+
+  if (showRegDeadline) {
+    return (
+      <article className="rounded-xl border border-orange-500/25 bg-gradient-to-br from-orange-500/[0.08] to-transparent p-5">
+        <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-orange-400">
+          <Clock className="h-3.5 w-3.5" />
+          Batas Pendaftaran
+        </div>
+
+        <h3 className="mt-3 text-xl font-bold text-white sm:text-2xl">{name}</h3>
+        {organizer && (
+          <p className="mt-1 text-xs uppercase tracking-wide text-white/55">{organizer}</p>
+        )}
+
+        <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-white/75">
+          <span className="inline-flex items-center gap-1.5">
+            <Calendar className="h-3.5 w-3.5 text-orange-400/70" />
+            Tutup: {formattedReg}
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <Calendar className="h-3.5 w-3.5 text-white/40" />
+            Mulai: {formattedMatch}
+          </span>
+          {prizePool && (
+            <span className="inline-flex items-center gap-1.5">
+              <Trophy className="h-3.5 w-3.5 text-yellow-400" />
+              Rp {prizePool}
+            </span>
+          )}
+        </div>
+
+        <div className="mt-5 flex items-center gap-2">
+          <Clock className="h-4 w-4 text-orange-400/60" />
+          {parts === null ? (
+            <div className="flex gap-2 text-sm tabular-nums">
+              <CountdownCell value={0} label="hari" color="text-orange-300" />
+              <span className="text-white/35">:</span>
+              <CountdownCell value={0} label="jam" color="text-orange-300" />
+              <span className="text-white/35">:</span>
+              <CountdownCell value={0} label="menit" color="text-orange-300" />
+              <span className="text-white/35">:</span>
+              <CountdownCell value={0} label="detik" color="text-orange-300" />
+            </div>
+          ) : isPast ? (
+            <span className="text-sm font-medium text-orange-400">Pendaftaran ditutup</span>
+          ) : (
+            <div className="flex gap-2 text-sm tabular-nums">
+              <CountdownCell value={parts.days} label="hari" color="text-orange-300" />
+              <span className="text-white/35">:</span>
+              <CountdownCell value={parts.hours} label="jam" color="text-orange-300" />
+              <span className="text-white/35">:</span>
+              <CountdownCell value={parts.minutes} label="menit" color="text-orange-300" />
+              <span className="text-white/35">:</span>
+              <CountdownCell value={parts.seconds} label="detik" color="text-orange-300" />
+            </div>
+          )}
+        </div>
+      </article>
+    );
+  }
 
   return (
     <article className="rounded-xl border border-white/10 bg-gradient-to-br from-yellow-500/[0.08] to-transparent p-5">
@@ -67,17 +169,13 @@ const TournamentCountdown = ({ name, startDate, startTime, prizePool, organizer 
         {isPast ? "Turnamen sedang berlangsung" : "Turnamen berikutnya"}
       </div>
 
-      <h3 className="mt-3 text-xl font-bold text-white sm:text-2xl">
-        {name}
-      </h3>
-      <p className="mt-1 text-xs uppercase tracking-wide text-white/55">
-        {organizer ?? "—"}
-      </p>
+      <h3 className="mt-3 text-xl font-bold text-white sm:text-2xl">{name}</h3>
+      <p className="mt-1 text-xs uppercase tracking-wide text-white/55">{organizer ?? "—"}</p>
 
       <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-white/75">
         <span className="inline-flex items-center gap-1.5">
           <Calendar className="h-3.5 w-3.5 text-white/55" />
-          {formatted}
+          {formattedMatch}
         </span>
         {prizePool && (
           <span className="inline-flex items-center gap-1.5">
@@ -99,10 +197,8 @@ const TournamentCountdown = ({ name, startDate, startTime, prizePool, organizer 
             <span className="text-white/35">:</span>
             <CountdownCell value={0} label="detik" />
           </div>
-        ) : parts.pastDue ? (
-          <span className="text-sm font-medium text-yellow-400">
-            Sedang berlangsung
-          </span>
+        ) : isPast ? (
+          <span className="text-sm font-medium text-yellow-400">Sedang berlangsung</span>
         ) : (
           <div className="flex gap-2 text-sm tabular-nums">
             <CountdownCell value={parts.days} label="hari" />
@@ -120,15 +216,21 @@ const TournamentCountdown = ({ name, startDate, startTime, prizePool, organizer 
 };
 export { TournamentCountdown };
 
-function CountdownCell({ value, label }: { value: number; label: string }) {
+function CountdownCell({
+  value,
+  label,
+  color = "text-white",
+}: {
+  value: number;
+  label: string;
+  color?: string;
+}) {
   return (
     <span className="flex flex-col items-center">
-      <span className="text-lg font-bold text-white">
+      <span className={`text-lg font-bold ${color}`}>
         {value.toString().padStart(2, "0")}
       </span>
-      <span className="text-[10px] uppercase tracking-wide text-white/45">
-        {label}
-      </span>
+      <span className="text-[10px] uppercase tracking-wide text-white/45">{label}</span>
     </span>
   );
 }
