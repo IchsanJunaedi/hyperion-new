@@ -24,6 +24,8 @@
 
 ## 2. Role Hierarchy
 
+### Application Roles (In-App Users)
+
 ```
 Owner  → /dashboard   (OWNER_EMAIL env var — NOT stored in team_members)
 Manager → /manage     (assigned by Owner)
@@ -31,6 +33,16 @@ Coach   → workspace   (evaluate scrims, VOD, notes)
 Captain → workspace   (create scrims, attendance)
 Member  → workspace   (view, RSVP, schedule)
 ```
+
+### Development Roles (Out-of-App)
+
+```
+Software Engineer (Developer & AI Agent) → Codebase, DB, CI/CD, and shipping the OS
+Frontend Developer                       → UI/UX, Tailwind CSS v4 styling, component structure
+QA / Tester                              → Unit tests, Playwright E2E testing, CI gate checks
+Security Analyst                         → RLS policies, custom JWT claims, API route guards
+```
+
 
 ### Owner Detection — CRITICAL
 
