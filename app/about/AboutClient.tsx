@@ -290,21 +290,21 @@ const AboutClient = ({ settings, alumni }: AboutClientProps) => {
                   <div className="mwg037-images relative w-56 h-80 sm:w-64 sm:h-[380px] rounded-2xl overflow-hidden border border-white/10 bg-[#0C1E3C] shadow-2xl">
                     <div className="mwg037-hidden absolute inset-0 w-full h-full">
                       <img
-                        src="/brand/logo.jpg"
+                        src="/brand/landing-hero.jpeg"
                         alt="Esports Moment 1"
                         className="mwg037-image w-full h-full object-cover scale-105"
                       />
                     </div>
                     <div className="mwg037-hidden absolute inset-0 w-full h-full opacity-0">
                       <img
-                        src="/brand/logo.jpg"
+                        src="/brand/ref-hero.jpeg"
                         alt="Esports Moment 2"
                         className="mwg037-image w-full h-full object-cover scale-105"
                       />
                     </div>
                     <div className="mwg037-hidden absolute inset-0 w-full h-full opacity-0">
                       <img
-                        src="/brand/logo.jpg"
+                        src="/brand/ref-games.jpeg"
                         alt="Esports Moment 3"
                         className="mwg037-image w-full h-full object-cover scale-105"
                       />
