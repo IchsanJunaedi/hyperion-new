@@ -44,7 +44,7 @@ async function GalleryPage() {
           />
           <div className="relative mx-auto max-w-7xl flex flex-col items-center text-center">
             <div className="mb-4 flex items-center justify-center gap-3">
-              <span className="text-[11px] font-bold uppercase tracking-[0.3em] text-[#F5C400]">
+              <span className="text-[11px] font-extrabold uppercase tracking-[0.3em] bg-gradient-to-r from-[#FFF099] via-[#F5C400] to-[#C79600] bg-clip-text text-transparent">
                 Hyperion Team
               </span>
             </div>

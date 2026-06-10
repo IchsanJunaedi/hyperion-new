@@ -26,21 +26,30 @@ const ResultsPage = async () => {
   return (
     <>
       <Header />
-      <main className="flex-1 bg-[#040D1C]">
-        <section className="border-b border-white/12 px-6 py-20 sm:px-10 lg:px-16">
-          <div className="mx-auto max-w-7xl">
-            <div className="mb-4 flex items-center gap-3">
-              <div className="h-px w-8 bg-[#F5C400]" />
-              <span className="text-[11px] font-bold uppercase tracking-[0.3em] text-[#F5C400]">Hyperion Team</span>
+      <main className="relative flex-1 bg-[#040D1C] overflow-hidden">
+        <section className="relative z-10 overflow-hidden border-b border-white/12 px-6 py-20 sm:px-10 lg:px-16">
+          <div
+            className="pointer-events-none absolute inset-0 opacity-5"
+            style={{
+              backgroundImage: "radial-gradient(circle, rgba(245,196,0,0.2) 1px, transparent 1px)",
+              backgroundSize: "28px 28px",
+            }}
+          />
+          <div className="relative mx-auto max-w-7xl flex flex-col items-center text-center">
+            <div className="mb-4 flex items-center justify-center gap-3">
+              <span className="text-[11px] font-extrabold uppercase tracking-[0.3em] bg-gradient-to-r from-[#FFF099] via-[#F5C400] to-[#C79600] bg-clip-text text-transparent">Hyperion Team</span>
             </div>
-            <h1 className="text-4xl font-black uppercase tracking-tight text-white sm:text-5xl">Results</h1>
-            <p className="mt-3 text-sm text-white/55">Rekam jejak hasil turnamen Hyperion Team.</p>
+            <h1 className="font-bebas text-6xl sm:text-7xl lg:text-8xl font-black uppercase tracking-wide text-white leading-none">Results</h1>
+            <p className="mt-4 text-sm sm:text-base text-white/55">Rekam jejak hasil turnamen Hyperion Team.</p>
           </div>
         </section>
         <section className="px-6 py-16 sm:px-10 lg:px-16">
           <div className="mx-auto max-w-7xl">
             {results.length === 0 ? (
-              <div className="border border-white/12 bg-[#071428] py-20 text-center">
+              <div
+                className="rounded-2xl py-20 text-center shadow-[0_0_30px_rgba(0,0,0,0.4)]"
+                style={{ background: "linear-gradient(135deg, #0d1b2e 0%, #1a2a40 60%, #0a1520 100%)", border: "none" }}
+              >
                 <Trophy className="mx-auto mb-4 h-8 w-8 text-white/20" />
                 <p className="text-sm text-white/45">Belum ada hasil turnamen yang dipublikasikan.</p>
               </div>

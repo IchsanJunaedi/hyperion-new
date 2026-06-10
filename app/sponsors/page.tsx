@@ -64,7 +64,7 @@ const SponsorsPage = async () => {
         <section className="relative z-10 border-b border-white/12 px-6 py-20 sm:px-10 lg:px-16">
           <div className="mx-auto max-w-7xl flex flex-col items-center text-center">
             <div className="mb-4 flex items-center justify-center gap-3">
-              <span className="text-[11px] font-bold uppercase tracking-[0.3em] text-[#F5C400]">Hyperion Team</span>
+              <span className="text-[11px] font-extrabold uppercase tracking-[0.3em] bg-gradient-to-r from-[#FFF099] via-[#F5C400] to-[#C79600] bg-clip-text text-transparent">Hyperion Team</span>
             </div>
             <h1 className="font-bebas text-6xl sm:text-7xl font-black uppercase tracking-wide text-white leading-none">Sponsors</h1>
             <p className="mt-4 max-w-md text-sm sm:text-base leading-relaxed text-white/55">Brand dan mitra yang mendukung perjalanan Hyperion Team.</p>
@@ -75,7 +75,13 @@ const SponsorsPage = async () => {
         <section className="relative z-10 px-6 py-20 sm:px-10 lg:px-16">
           <div className="mx-auto max-w-5xl relative">
             {sponsors.length === 0 ? (
-              <div className="border border-white/5 bg-[#071428]/40 backdrop-blur-md rounded-2xl py-20 text-center">
+              <div
+                className="rounded-2xl py-20 text-center shadow-[0_0_30px_rgba(0,0,0,0.4)]"
+                style={{
+                  background: 'linear-gradient(135deg, #0d1b2e 0%, #1a2a40 60%, #0a1520 100%)',
+                  border: 'none',
+                }}
+              >
                 <Handshake className="mx-auto mb-4 h-8 w-8 text-white/20" />
                 <p className="text-sm text-white/45">Belum ada sponsor yang dipublikasikan.</p>
               </div>
