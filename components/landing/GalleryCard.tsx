@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 
 interface GalleryCardProps {
   index: number;
@@ -28,6 +28,8 @@ const GalleryCard = ({
 }: GalleryCardProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
+  const [imgError, setImgError] = useState(false);
+  const handleImgError = useCallback(() => setImgError(true), []);
 
   useEffect(() => {
     const el = ref.current;
@@ -62,11 +64,12 @@ const GalleryCard = ({
     >
       {/* Background image */}
       <div className="relative aspect-[3/4] w-full overflow-hidden bg-[#030914]">
-        {bgImage ? (
+        {bgImage && !imgError ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={bgImage}
-            alt={title}
+            alt=""
+            onError={handleImgError}
             className="h-full w-full object-cover grayscale transition-all duration-700 ease-out group-hover:grayscale-0 group-hover:scale-105 scale-100"
           />
         ) : (

@@ -26,7 +26,7 @@ export default async function GalleryPage() {
       <Header />
       <main className="flex-1 bg-[#040D1C]">
         {/* Hero */}
-        <section className="relative overflow-hidden border-b border-white/8 px-6 py-20 sm:px-10 lg:px-16">
+        <section className="relative overflow-hidden border-b border-white/8 px-6 pt-32 pb-20 sm:px-10 lg:px-16">
           <div
             className="pointer-events-none absolute inset-0 opacity-10"
             style={{
