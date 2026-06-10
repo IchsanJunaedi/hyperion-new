@@ -86,6 +86,12 @@ export default async function HomePage() {
       }
     }
 
+    // Admin skips onboarding too
+    const adminEmail = process.env.ADMIN_EMAIL;
+    if (adminEmail && user.email === adminEmail) {
+      redirect("/admin");
+    }
+
     // User logged in but no membership → check if onboarding is incomplete
     // Resume onboarding checkpoint so a crash mid-flow sends them back to the right step
     const { data: profile } = await supabase

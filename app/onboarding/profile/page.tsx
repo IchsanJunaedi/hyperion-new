@@ -21,9 +21,10 @@ export default async function ProfileOnboardingPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Owner skips onboarding — go straight to dashboard
+  // Owner and admin skip onboarding
   const ownerEmail = process.env.OWNER_EMAIL;
-  if (user && ownerEmail && user.email === ownerEmail) {
+  const adminEmail = process.env.ADMIN_EMAIL;
+  if (user && ((ownerEmail && user.email === ownerEmail) || (adminEmail && user.email === adminEmail))) {
     redirect("/dashboard");
   }
 
