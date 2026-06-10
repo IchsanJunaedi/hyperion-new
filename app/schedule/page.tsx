@@ -120,8 +120,8 @@ const SchedulePage = async () => {
                           key={t.id}
                           className={`flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 sm:gap-6 bg-slate-800/40 backdrop-blur-md rounded-2xl border p-6 transition-all duration-300 ${
                             t.status === "ongoing"
-                              ? "border-[#F5C400]/40 shadow-[0_0_20px_rgba(245,196,0,0.08)] hover:border-[#F5C400]/60 hover:shadow-[0_0_25px_rgba(245,196,0,0.15)] animate-[pulse_3s_infinite]"
-                              : "border-white/5 hover:border-[#F5C400]/25 hover:shadow-[0_0_15px_rgba(245,196,0,0.06)]"
+                              ? "border-white/10 shadow-[0_0_20px_rgba(255,255,255,0.02)] animate-pulse"
+                              : "border-white/5 hover:border-white/10"
                           } hover:bg-slate-800/60 hover:scale-[1.01]`}
                         >
                           {/* Sisi Kiri: Tanggal & Jam */}

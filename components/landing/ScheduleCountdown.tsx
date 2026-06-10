@@ -44,9 +44,7 @@ const ScheduleCountdown = ({ tournament }: Props) => {
 
   return (
     <div className="flex flex-col items-center text-center">
-      <div className="inline-flex flex-col items-center justify-center bg-[#071428]/35 backdrop-blur-md rounded-3xl border border-[#F5C400]/20 p-6 px-8 sm:px-12 shadow-[0_0_40px_rgba(245,196,0,0.08)] relative overflow-hidden transition-all duration-500 hover:border-[#F5C400]/40 group w-full max-w-md sm:max-w-lg">
-        {/* Pulsing neon border layer */}
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#F5C400]/5 to-transparent opacity-30 blur-md pointer-events-none group-hover:opacity-50 transition-opacity" />
+      <div className="inline-flex flex-col items-center justify-center bg-[#071428]/35 backdrop-blur-md rounded-3xl border border-white/5 p-6 px-8 sm:px-12 relative overflow-hidden transition-all duration-500 hover:border-white/10 group w-full max-w-md sm:max-w-lg">
         
         <p className="relative z-10 mb-4 text-[10px] font-bold uppercase tracking-[0.4em] text-white/40 group-hover:text-white/60 transition-colors">
           Countdown — {tournament.name}
