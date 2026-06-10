@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 
 import {
   Card,
@@ -19,6 +20,12 @@ export default async function ProfileOnboardingPage() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  // Owner skips onboarding — go straight to dashboard
+  const ownerEmail = process.env.OWNER_EMAIL;
+  if (user && ownerEmail && user.email === ownerEmail) {
+    redirect("/dashboard");
+  }
 
   const profile = user
     ? await supabase
