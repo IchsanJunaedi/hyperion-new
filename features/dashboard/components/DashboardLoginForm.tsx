@@ -32,7 +32,7 @@ const DashboardLoginForm = () => {
           }
         });
       }}
-      className="space-y-4 rounded-xl border border-white/10 bg-zinc-900/60 p-6"
+      className="space-y-4 rounded-xl border border-ui-border bg-ui-surface/60 p-6"
     >
       <div className="space-y-1">
         <label htmlFor="email" className="text-xs font-medium text-ui-text">
@@ -43,7 +43,7 @@ const DashboardLoginForm = () => {
           type="email"
           required
           placeholder=""
-          className="h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
+          className="h-10 w-full rounded-md border border-ui-border bg-ui-surface px-3 text-sm text-ui-text focus:border-yellow-400 focus:outline-none"
         />
       </div>
 
@@ -59,7 +59,7 @@ const DashboardLoginForm = () => {
             placeholder=""
             value={passwordValue}
             onChange={(e) => setPasswordValue(e.target.value)}
-            className="h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 pr-10 text-sm text-white focus:border-yellow-400 focus:outline-none [&::-ms-reveal]:hidden [&::-ms-clear]:hidden"
+            className="h-10 w-full rounded-md border border-ui-border bg-ui-surface px-3 pr-10 text-sm text-ui-text focus:border-yellow-400 focus:outline-none [&::-ms-reveal]:hidden [&::-ms-clear]:hidden"
           />
           {passwordValue && (
             <button

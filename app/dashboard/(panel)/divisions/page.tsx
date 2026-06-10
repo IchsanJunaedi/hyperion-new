@@ -37,7 +37,7 @@ export default async function DashboardDivisionsPage() {
         </header>
 
         {/* Create new division */}
-        <section className="max-w-lg rounded-xl border border-white/10 bg-zinc-900/40 p-5">
+        <section className="max-w-lg rounded-xl border border-ui-border bg-ui-surface/40 p-5">
           <h2 className="mb-3 text-sm font-semibold text-ui-text">Buat Divisi Baru</h2>
           <CreateDivisionForm />
         </section>

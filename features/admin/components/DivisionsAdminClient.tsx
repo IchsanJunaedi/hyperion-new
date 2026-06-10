@@ -69,7 +69,7 @@ const DivisionCard = ({ division }: { division: DivisionWithMembers }) => {
     <div className="border border-ui-border bg-ui-bg">
       {/* Header */}
       <div className="flex items-center gap-4 p-4">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded border border-white/10 bg-ui-surface">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded border border-ui-border bg-ui-surface">
           {editState.logo_url ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={editState.logo_url} alt={division.name} className="h-full w-full object-contain" />

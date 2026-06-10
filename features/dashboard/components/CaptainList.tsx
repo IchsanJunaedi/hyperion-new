@@ -18,23 +18,23 @@ interface CaptainListProps {
 const CaptainList = ({ captains }: CaptainListProps) => {
   if (captains.length === 0) {
     return (
-      <p className="rounded-lg border border-white/5 bg-white/[0.02] px-4 py-8 text-center text-sm text-ui-text-muted">
+      <p className="rounded-lg border border-ui-border bg-white/[0.02] px-4 py-8 text-center text-sm text-ui-text-muted">
         Belum ada Captain. Assign dari &quot;Tambah Member&quot; dengan role Captain.
       </p>
     );
   }
 
   return (
-    <div className="overflow-x-auto rounded-lg border border-white/5">
+    <div className="overflow-x-auto rounded-lg border border-ui-border">
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-b border-white/5 bg-white/[0.02]">
+          <tr className="border-b border-ui-border bg-white/[0.02]">
             <th className="px-4 py-3 text-left text-xs font-medium text-ui-text-2">Nama</th>
             <th className="px-4 py-3 text-left text-xs font-medium text-ui-text-2">Divisi</th>
             <th className="px-4 py-3 text-left text-xs font-medium text-ui-text-2">Role</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-white/5">
+        <tbody className="divide-y divide-ui-border">
           {captains.map((c) => (
             <tr key={c.memberId} className="transition hover:bg-white/[0.02]">
               <td className="px-4 py-3 text-ui-text">{c.name}</td>

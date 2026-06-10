@@ -112,7 +112,7 @@ const AvailabilityPollCard = ({
             const count = slotCounts[i] ?? 0;
             const pct = maxCount > 0 ? (count / maxCount) * 100 : 0;
             const isSelected = selected.has(i);
-            const intensity = pct >= 75 ? "bg-teal-500/25" : pct >= 40 ? "bg-teal-500/12" : "bg-white/5";
+            const intensity = pct >= 75 ? "bg-teal-500/25" : pct >= 40 ? "bg-teal-500/12" : "bg-ui-elevated";
 
             return (
               <button

@@ -97,7 +97,7 @@ const OrgSettingsCard = ({ org, divisions }: OrgSettingsCardProps) => {
             </div>
             <Link
               href={`/${org.slug}`}
-              className="inline-flex h-8 items-center gap-1.5 rounded bg-white/10 hover:bg-white/15 px-3 text-xs font-medium text-ui-text transition-colors cursor-pointer"
+              className="inline-flex h-8 items-center gap-1.5 rounded bg-ui-hover hover:bg-white/15 px-3 text-xs font-medium text-ui-text transition-colors cursor-pointer"
             >
               Buka Workspace
             </Link>

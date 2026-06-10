@@ -37,14 +37,14 @@ export default async function StrategyPage({ params }: StrategyPageProps) {
       </header>
 
       {notes.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-white/10 bg-zinc-900/30 p-10 text-center">
+        <div className="rounded-xl border border-dashed border-ui-border bg-ui-surface/30 p-10 text-center">
           <Lightbulb className="mx-auto h-8 w-8 text-ui-text-muted" />
           <p className="mt-3 text-sm text-ui-text-2">
             Belum ada catatan strategi.
           </p>
           <Link
             href={`/${slug}/strategy/new`}
-            className="mt-4 inline-flex h-9 items-center rounded-md border border-white/15 px-4 text-sm font-medium text-ui-text transition hover:bg-white/5"
+            className="mt-4 inline-flex h-9 items-center rounded-md border border-white/15 px-4 text-sm font-medium text-ui-text transition hover:bg-ui-elevated"
           >
             Tulis catatan pertama
           </Link>

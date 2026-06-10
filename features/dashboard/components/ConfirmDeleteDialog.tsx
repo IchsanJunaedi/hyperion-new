@@ -45,12 +45,12 @@ const ConfirmDeleteDialog = ({
       onClick={onCancel}
     >
       <div
-        className="w-full max-w-sm rounded-xl border border-white/10 bg-zinc-900 p-5 shadow-xl"
+        className="w-full max-w-sm rounded-xl border border-ui-border bg-ui-surface p-5 shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start justify-between mb-3">
           <h3 className="text-base font-bold text-ui-text">{title}</h3>
-          <button onClick={onCancel} className="rounded p-1 text-ui-text-muted hover:bg-white/10 hover:text-ui-text">
+          <button onClick={onCancel} className="rounded p-1 text-ui-text-muted hover:bg-ui-hover hover:text-ui-text">
             <X className="h-4 w-4" />
           </button>
         </div>
@@ -64,7 +64,7 @@ const ConfirmDeleteDialog = ({
               value={typed}
               onChange={(e) => setTyped(e.target.value)}
               autoFocus
-              className="h-9 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-red-400 focus:outline-none"
+              className="h-9 w-full rounded-md border border-ui-border bg-ui-surface px-3 text-sm text-ui-text focus:border-red-400 focus:outline-none"
             />
           </div>
         )}
@@ -72,7 +72,7 @@ const ConfirmDeleteDialog = ({
           <button
             type="button"
             onClick={onCancel}
-            className="h-9 rounded-md border border-white/10 px-3 text-xs font-medium text-ui-text hover:bg-white/5"
+            className="h-9 rounded-md border border-ui-border px-3 text-xs font-medium text-ui-text hover:bg-ui-elevated"
           >
             Batal
           </button>

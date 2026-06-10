@@ -87,7 +87,7 @@ const HeroDetailPanel = ({ hero: initialHero, allHeroes, onClose }: HeroDetailPa
             </button>
           )}
           <div className="flex min-w-0 flex-1 items-center gap-3">
-            <div className={cn("h-12 w-12 shrink-0 overflow-hidden rounded-xl border", style?.border ?? "border-white/10")}>
+            <div className={cn("h-12 w-12 shrink-0 overflow-hidden rounded-xl border", style?.border ?? "border-ui-border")}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={getHeroImageUrl(current.hero_name)} alt={current.hero_name} className="h-full w-full object-cover" />
             </div>

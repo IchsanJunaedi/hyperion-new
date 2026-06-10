@@ -78,7 +78,7 @@ const ScrimReviewSection = ({
   if (!scrimCompleted) return null;
 
   return (
-    <article className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5 space-y-3">
+    <article className="rounded-2xl border border-ui-border bg-ui-surface/40 p-5 space-y-3">
       <div className="flex items-center gap-2">
         <ClipboardCheck className="h-4 w-4 text-blue-400" />
         <h2 className="text-sm font-semibold text-ui-text">Review Coach</h2>
@@ -122,7 +122,7 @@ const ScrimReviewSection = ({
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Catatan untuk coach (opsional)"
                 rows={2}
-                className="w-full resize-none rounded-xl border border-white/10 bg-zinc-900/60 px-3 py-2 text-sm text-white/85 placeholder-white/30 focus:border-white/20 focus:outline-none"
+                className="w-full resize-none rounded-xl border border-ui-border bg-ui-surface/60 px-3 py-2 text-sm text-ui-text placeholder-white/30 focus:border-white/20 focus:outline-none"
               />
               <div className="flex gap-2">
                 <button
@@ -137,7 +137,7 @@ const ScrimReviewSection = ({
                 <button
                   type="button"
                   onClick={() => setShowForm(false)}
-                  className="h-8 rounded-lg border border-white/10 px-3 text-xs text-ui-text-2 hover:bg-white/5 cursor-pointer"
+                  className="h-8 rounded-lg border border-ui-border px-3 text-xs text-ui-text-2 hover:bg-ui-elevated cursor-pointer"
                 >
                   Batal
                 </button>
@@ -147,7 +147,7 @@ const ScrimReviewSection = ({
             <button
               type="button"
               onClick={() => setShowForm(true)}
-              className="inline-flex items-center gap-2 rounded-lg border border-white/10 px-3 py-2 text-xs text-ui-text-2 hover:bg-white/5 hover:text-ui-text transition cursor-pointer"
+              className="inline-flex items-center gap-2 rounded-lg border border-ui-border px-3 py-2 text-xs text-ui-text-2 hover:bg-ui-elevated hover:text-ui-text transition cursor-pointer"
             >
               <MessageSquarePlus className="h-3.5 w-3.5" />
               Minta review dari coach
@@ -166,7 +166,7 @@ const ScrimReviewSection = ({
                 onChange={(e) => setReviewNotes(e.target.value)}
                 placeholder="Catatan review untuk tim..."
                 rows={4}
-                className="w-full resize-none rounded-xl border border-white/10 bg-zinc-900/60 px-3 py-2 text-sm text-white/85 placeholder-white/30 focus:border-white/20 focus:outline-none"
+                className="w-full resize-none rounded-xl border border-ui-border bg-ui-surface/60 px-3 py-2 text-sm text-ui-text placeholder-white/30 focus:border-white/20 focus:outline-none"
               />
               <div className="flex gap-2">
                 <button
@@ -182,7 +182,7 @@ const ScrimReviewSection = ({
                 <button
                   type="button"
                   onClick={() => setShowReviewForm(false)}
-                  className="h-8 rounded-lg border border-white/10 px-3 text-xs text-ui-text-2 hover:bg-white/5 cursor-pointer"
+                  className="h-8 rounded-lg border border-ui-border px-3 text-xs text-ui-text-2 hover:bg-ui-elevated cursor-pointer"
                 >
                   Batal
                 </button>

@@ -42,7 +42,7 @@ const CreateDivisionForm = () => {
           onChange={(e) => setName(e.target.value)}
           placeholder="Nama divisi baru"
           maxLength={60}
-          className="h-9 flex-1 rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
+          className="h-9 flex-1 rounded-md border border-ui-border bg-ui-surface px-3 text-sm text-ui-text focus:border-yellow-400 focus:outline-none"
         />
         <button
           type="submit"

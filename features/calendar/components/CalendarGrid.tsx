@@ -109,7 +109,7 @@ const CalendarGrid = ({
         <button
           type="button"
           onClick={() => navigateMonth(-1)}
-          className="rounded-md p-2 text-ui-text-2 transition hover:bg-white/10 hover:text-ui-text"
+          className="rounded-md p-2 text-ui-text-2 transition hover:bg-ui-hover hover:text-ui-text"
           aria-label="Bulan sebelumnya"
         >
           <ChevronLeft className="h-4 w-4" />
@@ -120,7 +120,7 @@ const CalendarGrid = ({
         <button
           type="button"
           onClick={() => navigateMonth(1)}
-          className="rounded-md p-2 text-ui-text-2 transition hover:bg-white/10 hover:text-ui-text"
+          className="rounded-md p-2 text-ui-text-2 transition hover:bg-ui-hover hover:text-ui-text"
           aria-label="Bulan berikutnya"
         >
           <ChevronRight className="h-4 w-4" />
@@ -137,10 +137,10 @@ const CalendarGrid = ({
       </div>
 
       {/* Calendar cells */}
-      <div className="grid grid-cols-7 gap-px overflow-hidden rounded-lg border border-white/5 bg-white/5">
+      <div className="grid grid-cols-7 gap-px overflow-hidden rounded-lg border border-ui-border bg-ui-elevated">
         {/* Empty cells before first day */}
         {Array.from({ length: startDayOfWeek }).map((_, i) => (
-          <div key={`empty-${i}`} className="min-h-[80px] bg-zinc-950 p-1" />
+          <div key={`empty-${i}`} className="min-h-[80px] bg-ui-bg p-1" />
         ))}
 
         {/* Day cells */}
@@ -154,9 +154,9 @@ const CalendarGrid = ({
             <div
               key={day}
               onClick={() => handleDayClick(day)}
-              className={`group relative min-h-[80px] bg-zinc-950 p-1 transition ${
+              className={`group relative min-h-[80px] bg-ui-bg p-1 transition ${
                 isToday ? "ring-1 ring-inset ring-yellow-400/30" : ""
-              } ${isClickable ? "cursor-pointer hover:bg-zinc-900/80" : "hover:bg-zinc-900"}`}
+              } ${isClickable ? "cursor-pointer hover:bg-ui-surface/80" : "hover:bg-ui-surface"}`}
             >
               {/* Day number + add button */}
               <div className="flex items-center justify-between">
@@ -178,7 +178,7 @@ const CalendarGrid = ({
                       e.stopPropagation();
                       handleDayClick(day);
                     }}
-                    className="opacity-0 group-hover:opacity-100 flex h-5 w-5 items-center justify-center rounded text-ui-text-muted transition hover:bg-white/10 hover:text-ui-text"
+                    className="opacity-0 group-hover:opacity-100 flex h-5 w-5 items-center justify-center rounded text-ui-text-muted transition hover:bg-ui-hover hover:text-ui-text"
                     aria-label={`Tambah event pada ${day}`}
                   >
                     <Plus className="h-3 w-3" />
@@ -239,7 +239,7 @@ const CalendarGrid = ({
                       key={ev.id}
                       href={eventHref}
                       onClick={(e) => e.stopPropagation()}
-                      className="block rounded px-1 py-0.5 text-[10px] leading-tight text-ui-text transition hover:bg-white/10"
+                      className="block rounded px-1 py-0.5 text-[10px] leading-tight text-ui-text transition hover:bg-ui-hover"
                     >
                       {eventContent}
                     </Link>
@@ -249,7 +249,7 @@ const CalendarGrid = ({
                   <button
                     type="button"
                     onClick={(e) => { e.stopPropagation(); setExpandedDay(day); }}
-                    className="block w-full cursor-pointer rounded px-1 text-left text-[10px] text-ui-text-muted transition hover:bg-white/10 hover:text-ui-text"
+                    className="block w-full cursor-pointer rounded px-1 text-left text-[10px] text-ui-text-muted transition hover:bg-ui-hover hover:text-ui-text"
                   >
                     +{dayEvents.length - 3} lagi
                   </button>
@@ -320,7 +320,7 @@ const CalendarGrid = ({
                       key={ev.id}
                       href={href}
                       onClick={() => setExpandedDay(null)}
-                      className="flex items-center gap-2 px-4 py-2 text-sm text-ui-text transition hover:bg-white/5"
+                      className="flex items-center gap-2 px-4 py-2 text-sm text-ui-text transition hover:bg-ui-elevated"
                     >
                       {dot}
                       <span className="flex-1 truncate">{ev.title}</span>

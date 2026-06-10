@@ -285,7 +285,7 @@ const FinishScrimForm = ({
   return (
     <div className="mx-auto w-full max-w-2xl space-y-5">
       {/* ── Header greeting ─────────────────────────────────────────────── */}
-      <div className="rounded-2xl border border-white/10 bg-zinc-900/40 px-5 py-4 shadow-xl shadow-black/20">
+      <div className="rounded-2xl border border-ui-border bg-ui-surface/40 px-5 py-4 shadow-xl shadow-black/20">
         <p className="text-xs font-medium text-yellow-400/80">Assalamu&apos;alaikum, Coach</p>
         <div className="mt-2 flex items-center gap-3">
           <Trophy className="h-5 w-5 shrink-0 text-yellow-400" />
@@ -307,7 +307,7 @@ const FinishScrimForm = ({
       </div>
 
       {/* ── Game tabs ────────────────────────────────────────────────────── */}
-      <div className="flex items-center gap-1 border-b border-white/10 pb-0">
+      <div className="flex items-center gap-1 border-b border-ui-border pb-0">
         {games.map((g, i) => (
           <button
             key={i}
@@ -333,7 +333,7 @@ const FinishScrimForm = ({
           <button
             type="button"
             onClick={addGame}
-            className="ml-1 flex h-6 w-6 items-center justify-center rounded text-ui-text-muted hover:bg-white/5 hover:text-ui-text transition-colors"
+            className="ml-1 flex h-6 w-6 items-center justify-center rounded text-ui-text-muted hover:bg-ui-elevated hover:text-ui-text transition-colors"
           >
             <Plus className="h-3.5 w-3.5" />
           </button>
@@ -350,7 +350,7 @@ const FinishScrimForm = ({
       </div>
 
       {/* ── Active game card ─────────────────────────────────────────────── */}
-      <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5 shadow-xl shadow-black/20 space-y-4">
+      <div className="rounded-2xl border border-ui-border bg-ui-surface/40 p-5 shadow-xl shadow-black/20 space-y-4">
         {/* Win / Loss */}
         <div className="flex gap-2">
           <button
@@ -360,7 +360,7 @@ const FinishScrimForm = ({
               "inline-flex h-9 items-center gap-2 rounded-lg px-4 text-sm font-medium transition-all",
               game.isWin === true
                 ? "bg-emerald-500 text-white shadow-md shadow-emerald-500/30"
-                : "border border-white/10 bg-white/5 text-ui-text-2 hover:bg-white/10",
+                : "border border-ui-border bg-ui-elevated text-ui-text-2 hover:bg-ui-hover",
             )}
           >
             <CheckCircle className="h-4 w-4" />
@@ -373,7 +373,7 @@ const FinishScrimForm = ({
               "inline-flex h-9 items-center gap-2 rounded-lg px-4 text-sm font-medium transition-all",
               game.isWin === false
                 ? "bg-red-500 text-white shadow-md shadow-red-500/30"
-                : "border border-white/10 bg-white/5 text-ui-text-2 hover:bg-white/10",
+                : "border border-ui-border bg-ui-elevated text-ui-text-2 hover:bg-ui-hover",
             )}
           >
             <XCircle className="h-4 w-4" />
@@ -399,13 +399,13 @@ const FinishScrimForm = ({
             rows={2}
             maxLength={1000}
             placeholder="Strategi, kesalahan, highlight…"
-            className="w-full resize-none rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-white placeholder:text-white/20 focus:border-yellow-400 focus:outline-none"
+            className="w-full resize-none rounded-lg border border-ui-border bg-ui-surface px-3 py-2 text-sm text-ui-text placeholder:text-ui-text-muted focus:border-yellow-400 focus:outline-none"
           />
         </div>
 
         {/* Screenshot */}
         <div className="flex items-center gap-3">
-          <label className="inline-flex h-8 cursor-pointer items-center gap-2 rounded-lg border border-white/10 px-3 text-xs text-ui-text-2 transition-colors hover:bg-white/5">
+          <label className="inline-flex h-8 cursor-pointer items-center gap-2 rounded-lg border border-ui-border px-3 text-xs text-ui-text-2 transition-colors hover:bg-ui-elevated">
             {game.uploading ? (
               <Loader2 className="h-3.5 w-3.5 animate-spin" />
             ) : (
@@ -441,7 +441,7 @@ const FinishScrimForm = ({
             {attendingPlayers.map((p) => {
               const ev = playerEvals.get(p.userId) ?? { rating: "", coachNotes: "" };
               return (
-                <div key={p.userId} className="rounded-xl border border-white/5 bg-zinc-900/60 p-3 space-y-2">
+                <div key={p.userId} className="rounded-xl border border-ui-border bg-ui-surface/60 p-3 space-y-2">
                   <div className="flex items-center justify-between gap-3">
                     <div className="min-w-0">
                       <p className="truncate text-xs font-semibold text-ui-text">
@@ -468,7 +468,7 @@ const FinishScrimForm = ({
                           })
                         }
                         placeholder="0–10"
-                        className="h-7 text-center text-xs text-white bg-zinc-900 border-white/10 focus:border-yellow-400 focus:outline-none"
+                        className="h-7 text-center text-xs text-ui-text bg-ui-surface border-ui-border focus:border-yellow-400 focus:outline-none"
                         containerClassName="w-20 shrink-0"
                       />
                     </div>
@@ -485,7 +485,7 @@ const FinishScrimForm = ({
                     }
                     placeholder="Catatan untuk pemain ini…"
                     maxLength={500}
-                    className="w-full rounded-lg border border-white/10 bg-zinc-900 px-2.5 py-1.5 text-xs text-white placeholder:text-white/20 focus:border-blue-400 focus:outline-none"
+                    className="w-full rounded-lg border border-ui-border bg-ui-surface px-2.5 py-1.5 text-xs text-ui-text placeholder:text-ui-text-muted focus:border-blue-400 focus:outline-none"
                   />
                 </div>
               );
@@ -495,7 +495,7 @@ const FinishScrimForm = ({
       )}
 
       {/* ── Overall coach notes ──────────────────────────────────────────── */}
-      <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5 shadow-xl shadow-black/20 space-y-3">
+      <div className="rounded-2xl border border-ui-border bg-ui-surface/40 p-5 shadow-xl shadow-black/20 space-y-3">
         <h3 className="flex items-center gap-2 text-sm font-semibold text-ui-text">
           <ClipboardList className="h-4 w-4 text-ui-text-2" />
           Catatan Coach
@@ -507,7 +507,7 @@ const FinishScrimForm = ({
           rows={4}
           maxLength={3000}
           placeholder="Analisis keseluruhan, taktik, catatan penting…"
-          className="w-full resize-none rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-white placeholder:text-white/20 focus:border-blue-400 focus:outline-none"
+          className="w-full resize-none rounded-lg border border-ui-border bg-ui-surface px-3 py-2 text-sm text-ui-text placeholder:text-ui-text-muted focus:border-blue-400 focus:outline-none"
         />
       </div>
 

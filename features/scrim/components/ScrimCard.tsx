@@ -25,7 +25,7 @@ const ScrimCard = ({
   return (
     <Link
       href={`/${orgSlug}/scrim/${scrim.id}`}
-      className="block rounded-xl border border-white/10 bg-zinc-900/40 p-4 transition hover:border-white/20 hover:bg-zinc-900/70"
+      className="block rounded-xl border border-ui-border bg-ui-surface/40 p-4 transition hover:border-white/20 hover:bg-ui-surface/70"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">

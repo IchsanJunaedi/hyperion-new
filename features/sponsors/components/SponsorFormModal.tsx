@@ -161,7 +161,7 @@ const SponsorFormModal = ({ open, onClose, orgId, editing, onSaved, organization
                 className="w-full rounded-md border border-ui-border bg-ui-bg px-3 py-2 text-sm text-ui-text outline-none focus:border-white/30 cursor-pointer"
               >
                 {organizations.map((org) => (
-                  <option key={org.id} value={org.id} className="bg-zinc-900">
+                  <option key={org.id} value={org.id} className="bg-ui-surface">
                     {org.name}
                   </option>
                 ))}
@@ -213,7 +213,7 @@ const SponsorFormModal = ({ open, onClose, orgId, editing, onSaved, organization
                   type="button"
                   disabled={logoUploading}
                   onClick={() => logoInputRef.current?.click()}
-                  className="inline-flex h-8 items-center gap-1.5 rounded-md border border-ui-border px-3 text-xs text-ui-text-2 transition hover:bg-white/5 hover:text-ui-text disabled:opacity-50 cursor-pointer"
+                  className="inline-flex h-8 items-center gap-1.5 rounded-md border border-ui-border px-3 text-xs text-ui-text-2 transition hover:bg-ui-elevated hover:text-ui-text disabled:opacity-50 cursor-pointer"
                 >
                   {logoUploading ? <Loader2 className="h-3 w-3 animate-spin" /> : <ImagePlus className="h-3 w-3" />}
                   {logoUploading ? "Mengupload..." : "Upload logo"}
@@ -300,7 +300,7 @@ const SponsorFormModal = ({ open, onClose, orgId, editing, onSaved, organization
 
           {/* Actions */}
           <div className="flex gap-2 pt-1">
-            <button type="button" onClick={onClose} className="flex-1 cursor-pointer rounded-md border border-ui-border py-2 text-sm text-ui-text-2 transition hover:bg-white/5">
+            <button type="button" onClick={onClose} className="flex-1 cursor-pointer rounded-md border border-ui-border py-2 text-sm text-ui-text-2 transition hover:bg-ui-elevated">
               Batal
             </button>
             <button type="button" onClick={handleSave} disabled={pending}

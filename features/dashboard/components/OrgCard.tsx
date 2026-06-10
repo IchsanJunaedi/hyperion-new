@@ -104,7 +104,7 @@ const OrgCard = ({ org, divisions, allDivisions }: OrgCardProps) => {
   }
 
   return (
-    <div className="rounded-xl border border-white/10 bg-zinc-900/40 p-4 space-y-3">
+    <div className="rounded-xl border border-ui-border bg-ui-surface/40 p-4 space-y-3">
       {/* Header */}
       <div className="flex items-center justify-between">
         {editing ? (
@@ -112,14 +112,14 @@ const OrgCard = ({ org, divisions, allDivisions }: OrgCardProps) => {
             <input
               value={editName}
               onChange={(e) => setEditName(e.target.value)}
-              className="h-8 flex-1 rounded border border-white/10 bg-zinc-900 px-2 text-sm font-semibold text-white focus:border-yellow-400 focus:outline-none"
+              className="h-8 flex-1 rounded border border-ui-border bg-ui-surface px-2 text-sm font-semibold text-ui-text focus:border-yellow-400 focus:outline-none"
               autoFocus
               onKeyDown={(e) => { if (e.key === "Enter") handleSaveName(); if (e.key === "Escape") setEditing(false); }}
             />
-            <button onClick={handleSaveName} disabled={pending} className="p-1 text-green-400 hover:bg-white/10 rounded">
+            <button onClick={handleSaveName} disabled={pending} className="p-1 text-green-400 hover:bg-ui-hover rounded">
               <Save className="h-3.5 w-3.5" />
             </button>
-            <button onClick={() => { setEditing(false); setEditName(org.name); }} className="p-1 text-ui-text-muted hover:bg-white/10 rounded">
+            <button onClick={() => { setEditing(false); setEditName(org.name); }} className="p-1 text-ui-text-muted hover:bg-ui-hover rounded">
               <X className="h-3.5 w-3.5" />
             </button>
           </div>
@@ -131,10 +131,10 @@ const OrgCard = ({ org, divisions, allDivisions }: OrgCardProps) => {
         )}
         {!editing && (
           <div className="flex gap-1">
-            <button onClick={() => setEditing(true)} className="p-1.5 text-ui-text-muted hover:bg-white/10 hover:text-ui-text rounded-md" title="Edit nama">
+            <button onClick={() => setEditing(true)} className="p-1.5 text-ui-text-muted hover:bg-ui-hover hover:text-ui-text rounded-md" title="Edit nama">
               <Pencil className="h-3.5 w-3.5" />
             </button>
-            <button onClick={handleDelete} disabled={pending} className="p-1.5 text-ui-text-muted hover:bg-white/10 hover:text-red-400 rounded-md" title="Hapus tim">
+            <button onClick={handleDelete} disabled={pending} className="p-1.5 text-ui-text-muted hover:bg-ui-hover hover:text-red-400 rounded-md" title="Hapus tim">
               <Trash2 className="h-3.5 w-3.5" />
             </button>
           </div>
@@ -149,7 +149,7 @@ const OrgCard = ({ org, divisions, allDivisions }: OrgCardProps) => {
         ) : (
           <div className="flex flex-wrap gap-1.5">
             {divisions.map((div) => (
-              <span key={div.id} className="inline-flex items-center gap-1 rounded-full bg-white/5 px-2.5 py-1 text-xs text-ui-text">
+              <span key={div.id} className="inline-flex items-center gap-1 rounded-full bg-ui-elevated px-2.5 py-1 text-xs text-ui-text">
                 {div.name}
                 <button
                   onClick={() => handleRemoveDivision(div.id, div.name)}
@@ -170,7 +170,7 @@ const OrgCard = ({ org, divisions, allDivisions }: OrgCardProps) => {
             <select
               value={selectedDivId}
               onChange={(e) => setSelectedDivId(e.target.value)}
-              className="h-8 flex-1 rounded border border-white/10 bg-zinc-900 px-2 text-xs text-white focus:border-yellow-400 focus:outline-none"
+              className="h-8 flex-1 rounded border border-ui-border bg-ui-surface px-2 text-xs text-ui-text focus:border-yellow-400 focus:outline-none"
             >
               <option value="">Pilih divisi...</option>
               {availableDivisions.map((d) => (

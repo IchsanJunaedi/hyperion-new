@@ -53,7 +53,7 @@ const ManagerAssignmentsTable = ({
 
   if (managers.length === 0) {
     return (
-      <p className="rounded-lg border border-white/5 bg-white/[0.02] px-4 py-6 text-center text-sm text-ui-text-muted">
+      <p className="rounded-lg border border-ui-border bg-white/[0.02] px-4 py-6 text-center text-sm text-ui-text-muted">
         Belum ada Manager yang di-assign. Gunakan &quot;Assign Role&quot; untuk menambahkan.
       </p>
     );
@@ -61,10 +61,10 @@ const ManagerAssignmentsTable = ({
 
   return (
     <>
-      <div className="overflow-x-auto rounded-lg border border-white/5">
+      <div className="overflow-x-auto rounded-lg border border-ui-border">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-white/5 bg-white/[0.02]">
+            <tr className="border-b border-ui-border bg-white/[0.02]">
               <th className="px-4 py-3 text-left text-xs font-medium text-ui-text-2">
                 Manager
               </th>
@@ -76,7 +76,7 @@ const ManagerAssignmentsTable = ({
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/5">
+          <tbody className="divide-y divide-ui-border">
             {managers.map((m) => {
               const p = profileMap.get(m.user_id);
               const org = orgMap.get(m.organization_id);

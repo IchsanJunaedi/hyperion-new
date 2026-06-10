@@ -13,10 +13,10 @@ const UserActiveTable = ({ users }: UserActiveTableProps) => {
 
   return (
     <>
-      <div className="overflow-x-auto rounded-lg border border-white/5">
+      <div className="overflow-x-auto rounded-lg border border-ui-border">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-white/5 bg-white/[0.02]">
+            <tr className="border-b border-ui-border bg-white/[0.02]">
               <th className="px-4 py-3 text-left text-xs font-medium text-ui-text-2">Nama</th>
               <th className="px-4 py-3 text-left text-xs font-medium text-ui-text-2">Username</th>
               <th className="px-4 py-3 text-left text-xs font-medium text-ui-text-2">Email</th>
@@ -25,7 +25,7 @@ const UserActiveTable = ({ users }: UserActiveTableProps) => {
               <th className="px-4 py-3 text-left text-xs font-medium text-ui-text-2">WA</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/5">
+          <tbody className="divide-y divide-ui-border">
             {users.map((u) => (
               <tr
                 key={u.id}
@@ -42,7 +42,7 @@ const UserActiveTable = ({ users }: UserActiveTableProps) => {
                       u.role === "manager" ? "bg-green-500/10 text-green-400" :
                       u.role === "coach" ? "bg-blue-500/10 text-blue-400" :
                       u.role === "captain" ? "bg-purple-500/10 text-purple-400" :
-                      "bg-white/5 text-ui-text-2"
+                      "bg-ui-elevated text-ui-text-2"
                     }`}>{u.role}</span>
                   ) : (
                     <span className="text-xs text-ui-text-muted">none</span>

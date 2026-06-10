@@ -41,7 +41,7 @@ function OverviewTab({ calendar }: TabContentProps) {
   return (
     <div className="space-y-4">
       {/* Calendar Info Card */}
-      <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5 shadow-xl shadow-black/20">
+      <div className="rounded-2xl border border-ui-border bg-ui-surface/40 p-5 shadow-xl shadow-black/20">
         <h3 className="text-sm font-semibold uppercase tracking-wider text-ui-text-muted mb-4">
           Informasi Kalender
         </h3>
@@ -58,13 +58,13 @@ function OverviewTab({ calendar }: TabContentProps) {
           )}
           <div>
             <p className="text-xs font-medium text-ui-text-muted mb-1">Visibilitas</p>
-            <span className="inline-flex items-center rounded-full bg-white/5 border border-white/10 px-2.5 py-1 text-xs font-medium text-ui-text">
+            <span className="inline-flex items-center rounded-full bg-ui-elevated border border-ui-border px-2.5 py-1 text-xs font-medium text-ui-text">
               {calendar.visibility}
             </span>
           </div>
           <div>
             <p className="text-xs font-medium text-ui-text-muted mb-1">Status</p>
-            <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium border ${calendar.is_active ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" : "bg-white/5 text-white/50 border-white/10"}`}>
+            <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium border ${calendar.is_active ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" : "bg-ui-elevated text-white/50 border-ui-border"}`}>
               {calendar.is_active ? "Aktif" : "Nonaktif"}
             </span>
           </div>
@@ -72,7 +72,7 @@ function OverviewTab({ calendar }: TabContentProps) {
       </div>
 
       {/* Statistics */}
-      <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5 shadow-xl shadow-black/20">
+      <div className="rounded-2xl border border-ui-border bg-ui-surface/40 p-5 shadow-xl shadow-black/20">
         <h3 className="text-sm font-semibold uppercase tracking-wider text-ui-text-muted mb-4">
           Statistik
         </h3>
@@ -105,7 +105,7 @@ function OverviewTab({ calendar }: TabContentProps) {
 
 function VisibilityTab({ calendar }: TabContentProps) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5 shadow-xl shadow-black/20">
+    <div className="rounded-2xl border border-ui-border bg-ui-surface/40 p-5 shadow-xl shadow-black/20">
       <h3 className="text-sm font-semibold uppercase tracking-wider text-ui-text-muted mb-4">
         Atur Visibilitas Kalender
       </h3>
@@ -121,7 +121,7 @@ function VisibilityTab({ calendar }: TabContentProps) {
         ].map((option) => (
           <label
             key={option.value}
-            className="flex items-center p-4 border border-white/10 rounded-xl cursor-pointer hover:bg-white/5 transition-colors"
+            className="flex items-center p-4 border border-ui-border rounded-xl cursor-pointer hover:bg-ui-elevated transition-colors"
           >
             <input
               type="radio"
@@ -143,7 +143,7 @@ function VisibilityTab({ calendar }: TabContentProps) {
 
 function MembersTab({ }: TabContentProps) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5 shadow-xl shadow-black/20">
+    <div className="rounded-2xl border border-ui-border bg-ui-surface/40 p-5 shadow-xl shadow-black/20">
       <h3 className="text-sm font-semibold uppercase tracking-wider text-ui-text-muted mb-4">
         Izin Anggota
       </h3>
@@ -159,7 +159,7 @@ function MembersTab({ }: TabContentProps) {
 
 function AuditTab({ }: TabContentProps) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5 shadow-xl shadow-black/20">
+    <div className="rounded-2xl border border-ui-border bg-ui-surface/40 p-5 shadow-xl shadow-black/20">
       <h3 className="text-sm font-semibold uppercase tracking-wider text-ui-text-muted mb-4">
         Riwayat Audit
       </h3>
@@ -191,7 +191,7 @@ export default function CalendarSettingsPage() {
         <div className="flex justify-start">
           <Link
             href={`/${teamSlug}/calendar`}
-            className="group inline-flex items-center gap-2 rounded-full border border-white/5 bg-zinc-900/40 px-3.5 py-1.5 text-xs font-semibold text-white/60 transition-all duration-300 hover:bg-zinc-800/60 hover:text-white"
+            className="group inline-flex items-center gap-2 rounded-full border border-ui-border bg-ui-surface/40 px-3.5 py-1.5 text-xs font-semibold text-ui-text-2 transition-all duration-300 hover:bg-ui-elevated/60 hover:text-ui-text"
           >
             <ArrowLeft className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-x-0.5" />
             Kembali ke kalender
@@ -211,7 +211,7 @@ export default function CalendarSettingsPage() {
   if (isLoading || permLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-white/10 border-t-white/60" />
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-ui-border border-t-white/60" />
       </div>
     );
   }
@@ -232,7 +232,7 @@ export default function CalendarSettingsPage() {
         <div className="flex justify-start">
           <Link
             href={`/${teamSlug}/calendar`}
-            className="group inline-flex items-center gap-2 rounded-full border border-white/5 bg-zinc-900/40 px-3.5 py-1.5 text-xs font-semibold text-white/60 transition-all duration-300 hover:bg-zinc-800/60 hover:text-white"
+            className="group inline-flex items-center gap-2 rounded-full border border-ui-border bg-ui-surface/40 px-3.5 py-1.5 text-xs font-semibold text-ui-text-2 transition-all duration-300 hover:bg-ui-elevated/60 hover:text-ui-text"
           >
             <ArrowLeft className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-x-0.5" />
             Kembali ke kalender
@@ -258,7 +258,7 @@ export default function CalendarSettingsPage() {
       <div className="flex justify-start">
         <Link
           href={`/${teamSlug}/calendar`}
-          className="group inline-flex items-center gap-2 rounded-full border border-white/5 bg-zinc-900/40 px-3.5 py-1.5 text-xs font-semibold text-white/60 transition-all duration-300 hover:bg-zinc-800/60 hover:text-white"
+          className="group inline-flex items-center gap-2 rounded-full border border-ui-border bg-ui-surface/40 px-3.5 py-1.5 text-xs font-semibold text-ui-text-2 transition-all duration-300 hover:bg-ui-elevated/60 hover:text-ui-text"
         >
           <ArrowLeft className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-x-0.5" />
           Kembali ke kalender
@@ -273,7 +273,7 @@ export default function CalendarSettingsPage() {
 
         {/* Calendar selector (if multiple) */}
         {manageableCalendars.length > 1 && (
-          <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-4 shadow-xl shadow-black/20">
+          <div className="rounded-2xl border border-ui-border bg-ui-surface/40 p-4 shadow-xl shadow-black/20">
             <p className="text-xs font-semibold uppercase tracking-wider text-ui-text-muted mb-3">Kalender Saya</p>
             <div className="space-y-1">
               {manageableCalendars.map((cal) => (
@@ -282,7 +282,7 @@ export default function CalendarSettingsPage() {
                   className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
                     selectedCalendar?.id === cal.id
                       ? "bg-yellow-400/10 text-yellow-400"
-                      : "text-ui-text-2 hover:bg-white/5 hover:text-ui-text"
+                      : "text-ui-text-2 hover:bg-ui-elevated hover:text-ui-text"
                   }`}
                 >
                   <p className="font-medium">{cal.title}</p>
@@ -294,7 +294,7 @@ export default function CalendarSettingsPage() {
         )}
 
         {/* Tabs */}
-        <div className="flex gap-1 border-b border-white/10">
+        <div className="flex gap-1 border-b border-ui-border">
           {TABS.map((tab) => {
             const Icon = tab.icon;
             return (

@@ -71,7 +71,7 @@ const ScrimForm = ({ orgSlug, divisions }: ScrimFormProps) => {
         {divisions.length === 1 ? (
           <>
             <input type="hidden" name="division_id" value={divisions[0]!.id} />
-            <p className="h-10 flex items-center rounded-lg border border-white/10 bg-zinc-950/40 px-3 text-sm text-white/70">
+            <p className="h-10 flex items-center rounded-lg border border-ui-border bg-ui-bg/40 px-3 text-sm text-ui-text">
               {divisions[0]!.name}
             </p>
           </>
@@ -80,7 +80,7 @@ const ScrimForm = ({ orgSlug, divisions }: ScrimFormProps) => {
             name="division_id"
             required
             defaultValue=""
-            className="h-10 w-full rounded-lg border border-white/10 bg-zinc-950/40 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
+            className="h-10 w-full rounded-lg border border-ui-border bg-ui-bg/40 px-3 text-sm text-ui-text focus:border-yellow-400 focus:outline-none"
           >
             <option value="" disabled>
               Pilih divisi…
@@ -105,7 +105,7 @@ const ScrimForm = ({ orgSlug, divisions }: ScrimFormProps) => {
             name="opponent_name"
             required
             maxLength={120}
-            className="h-10 w-full rounded-lg border border-white/10 bg-zinc-950/40 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
+            className="h-10 w-full rounded-lg border border-ui-border bg-ui-bg/40 px-3 text-sm text-ui-text focus:border-yellow-400 focus:outline-none"
           />
         </Field>
 
@@ -118,7 +118,7 @@ const ScrimForm = ({ orgSlug, divisions }: ScrimFormProps) => {
             name="opponent_contact"
             required
             maxLength={120}
-            className="h-10 w-full rounded-lg border border-white/10 bg-zinc-950/40 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
+            className="h-10 w-full rounded-lg border border-ui-border bg-ui-bg/40 px-3 text-sm text-ui-text focus:border-yellow-400 focus:outline-none"
           />
         </Field>
       </div>
@@ -133,7 +133,7 @@ const ScrimForm = ({ orgSlug, divisions }: ScrimFormProps) => {
           type="datetime-local"
           name="scheduled_at"
           required
-          className="h-10 w-full rounded-lg border border-white/10 bg-zinc-950/40 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none [&::-webkit-calendar-picker-indicator]:invert"
+          className="h-10 w-full rounded-lg border border-ui-border bg-ui-bg/40 px-3 text-sm text-ui-text focus:border-yellow-400 focus:outline-none [&::-webkit-calendar-picker-indicator]:invert"
         />
       </Field>
 
@@ -143,7 +143,7 @@ const ScrimForm = ({ orgSlug, divisions }: ScrimFormProps) => {
           {FORMATS.map((f, i) => (
             <label
               key={f.value}
-              className="inline-flex cursor-pointer items-center justify-center rounded-lg border border-white/10 bg-zinc-800/40 px-4 py-2 text-xs font-semibold text-white/80 transition-all duration-300 hover:bg-zinc-700/40 has-[input:checked]:bg-yellow-400 has-[input:checked]:text-black has-[input:checked]:border-yellow-400"
+              className="inline-flex cursor-pointer items-center justify-center rounded-lg border border-ui-border bg-ui-elevated/40 px-4 py-2 text-xs font-semibold text-white/80 transition-all duration-300 hover:bg-zinc-700/40 has-[input:checked]:bg-yellow-400 has-[input:checked]:text-black has-[input:checked]:border-yellow-400"
             >
               <input
                 type="radio"
@@ -168,7 +168,7 @@ const ScrimForm = ({ orgSlug, divisions }: ScrimFormProps) => {
           name="server_region"
           required
           maxLength={60}
-          className="h-10 w-full rounded-lg border border-white/10 bg-zinc-950/40 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
+          className="h-10 w-full rounded-lg border border-ui-border bg-ui-bg/40 px-3 text-sm text-ui-text focus:border-yellow-400 focus:outline-none"
         />
       </Field>
 
@@ -179,7 +179,7 @@ const ScrimForm = ({ orgSlug, divisions }: ScrimFormProps) => {
             name="room_id"
             maxLength={100}
             placeholder="mis. 123456"
-            className="h-10 w-full rounded-lg border border-white/10 bg-zinc-950/40 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
+            className="h-10 w-full rounded-lg border border-ui-border bg-ui-bg/40 px-3 text-sm text-ui-text focus:border-yellow-400 focus:outline-none"
           />
         </Field>
 
@@ -188,7 +188,7 @@ const ScrimForm = ({ orgSlug, divisions }: ScrimFormProps) => {
             name="room_password"
             maxLength={100}
             placeholder="mis. hyperion"
-            className="h-10 w-full rounded-lg border border-white/10 bg-zinc-950/40 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
+            className="h-10 w-full rounded-lg border border-ui-border bg-ui-bg/40 px-3 text-sm text-ui-text focus:border-yellow-400 focus:outline-none"
           />
         </Field>
       </div>
@@ -199,7 +199,7 @@ const ScrimForm = ({ orgSlug, divisions }: ScrimFormProps) => {
           name="notes"
           rows={3}
           maxLength={2000}
-          className="w-full rounded-lg border border-white/10 bg-zinc-950/40 px-3 py-2 text-sm text-white focus:border-yellow-400 focus:outline-none"
+          className="w-full rounded-lg border border-ui-border bg-ui-bg/40 px-3 py-2 text-sm text-ui-text focus:border-yellow-400 focus:outline-none"
         />
       </Field>
 

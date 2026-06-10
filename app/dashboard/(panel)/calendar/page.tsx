@@ -209,7 +209,7 @@ const DashboardCalendarPage = async ({
             className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
               isAllOrgs
                 ? "bg-yellow-400 text-black"
-                : "bg-white/5 text-ui-text-2 hover:bg-white/10 hover:text-ui-text"
+                : "bg-ui-elevated text-ui-text-2 hover:bg-ui-hover hover:text-ui-text"
             }`}
           >
             Semua Tim
@@ -223,7 +223,7 @@ const DashboardCalendarPage = async ({
                 className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
                   isActive
                     ? "bg-yellow-400 text-black"
-                    : "bg-white/5 text-ui-text-2 hover:bg-white/10 hover:text-ui-text"
+                    : "bg-ui-elevated text-ui-text-2 hover:bg-ui-hover hover:text-ui-text"
                 }`}
               >
                 {org.name}

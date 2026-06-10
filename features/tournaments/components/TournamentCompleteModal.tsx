@@ -153,7 +153,7 @@ const TournamentCompleteModal = ({
             onClick={() => setWon(false)}
             className={`flex items-center justify-center gap-2 rounded-lg border py-2.5 text-sm font-medium transition cursor-pointer ${
               !won
-                ? "border-ui-text-2/40 bg-white/5 text-ui-text"
+                ? "border-ui-text-2/40 bg-ui-elevated text-ui-text"
                 : "border-ui-border text-ui-text-muted hover:border-[#3D3D3D] hover:text-ui-text-2"
             }`}
           >
@@ -219,7 +219,7 @@ const TournamentCompleteModal = ({
                     onClick={() => { setEliminatedRound(r); setCustomRound(""); }}
                     className={`h-8 rounded-md border px-3 text-xs font-medium transition cursor-pointer ${
                       eliminatedRound === r
-                        ? "border-ui-text-2/50 bg-white/10 text-ui-text"
+                        ? "border-ui-text-2/50 bg-ui-hover text-ui-text"
                         : "border-ui-border text-ui-text-muted hover:border-[#3D3D3D] hover:text-ui-text-2"
                     }`}
                   >

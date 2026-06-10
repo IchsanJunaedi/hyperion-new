@@ -120,7 +120,7 @@ const AuditLogList = ({ logs, showSearch = false }: AuditLogListProps) => {
       )}
 
       {filtered.length === 0 ? (
-        <div className="rounded-lg border border-white/5 bg-white/[0.02] px-4 py-8 text-center text-sm text-ui-text-muted">
+        <div className="rounded-lg border border-ui-border bg-white/[0.02] px-4 py-8 text-center text-sm text-ui-text-muted">
           {query ? "Tidak ada hasil yang cocok." : "Belum ada aktivitas tercatat."}
         </div>
       ) : (
@@ -137,7 +137,7 @@ const AuditLogList = ({ logs, showSearch = false }: AuditLogListProps) => {
                   return (
                     <div
                       key={log.id}
-                      className="flex items-start gap-3 rounded-lg border border-white/5 bg-white/[0.02] px-4 py-3"
+                      className="flex items-start gap-3 rounded-lg border border-ui-border bg-white/[0.02] px-4 py-3"
                     >
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">

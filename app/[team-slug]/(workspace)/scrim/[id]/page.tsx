@@ -66,7 +66,7 @@ export default async function ScrimDetailPage({
       <div className="flex justify-start">
         <Link
           href={`/${slug}/scrim`}
-          className="group inline-flex items-center gap-2 rounded-full border border-white/5 bg-zinc-900/40 px-3.5 py-1.5 text-xs font-semibold text-white/60 transition-all duration-300 hover:bg-zinc-800/60 hover:text-white"
+          className="group inline-flex items-center gap-2 rounded-full border border-ui-border bg-ui-surface/40 px-3.5 py-1.5 text-xs font-semibold text-ui-text-2 transition-all duration-300 hover:bg-ui-elevated/60 hover:text-ui-text"
         >
           <ArrowLeft className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-x-0.5" />
           Kembali ke daftar scrim
@@ -110,7 +110,7 @@ export default async function ScrimDetailPage({
           {!locked && (
             <Link
               href={`/${slug}/scrim/${scrim.id}/edit`}
-              className="inline-flex h-9 items-center rounded-md border border-white/10 px-4 text-sm font-medium text-ui-text transition hover:bg-white/5"
+              className="inline-flex h-9 items-center rounded-md border border-ui-border px-4 text-sm font-medium text-ui-text transition hover:bg-ui-elevated"
             >
               Edit scrim
             </Link>
@@ -125,7 +125,7 @@ export default async function ScrimDetailPage({
         <section className="space-y-6">
           {/* Only show attendance RSVP for captain and member (not manager/owner/coach) */}
           {(currentUserRole === "captain" || currentUserRole === "member") && (
-          <article className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
+          <article className="rounded-2xl border border-ui-border bg-ui-surface/40 p-5">
             <h2 className="text-sm font-semibold text-ui-text">
               Konfirmasi kehadiran kamu
             </h2>
@@ -143,7 +143,7 @@ export default async function ScrimDetailPage({
           </article>
           )}
 
-          <article className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
+          <article className="rounded-2xl border border-ui-border bg-ui-surface/40 p-5">
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-semibold text-ui-text">
                 Anggota divisi
@@ -159,7 +159,7 @@ export default async function ScrimDetailPage({
           </article>
 
           {scrim.notes || scrim.room_info ? (
-            <article className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
+            <article className="rounded-2xl border border-ui-border bg-ui-surface/40 p-5">
               <h2 className="text-sm font-semibold text-ui-text">
                 Detail tambahan
               </h2>
@@ -213,7 +213,7 @@ export default async function ScrimDetailPage({
 
           {/* Files linked to this scrim */}
           {(linkedFiles.length > 0 || isCoach || canManageScrims) && (
-            <article className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
+            <article className="rounded-2xl border border-ui-border bg-ui-surface/40 p-5">
               <ContextFiles
                 orgId={scrim.organization_id}
                 orgSlug={slug}
@@ -227,7 +227,7 @@ export default async function ScrimDetailPage({
 
           {/* Scouting info (auto-shown if opponent profile exists) */}
           {opponentProfile && (
-            <article className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
+            <article className="rounded-2xl border border-ui-border bg-ui-surface/40 p-5">
               <h2 className="text-sm font-semibold text-ui-text mb-3">Intel Lawan</h2>
               <ScoutingCard profile={opponentProfile} />
             </article>
@@ -235,7 +235,7 @@ export default async function ScrimDetailPage({
 
           {/* Opponent history */}
           {opponentHistory.length > 0 && (
-            <article className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
+            <article className="rounded-2xl border border-ui-border bg-ui-surface/40 p-5">
               <div className="mb-3 flex items-center justify-between">
                 <h2 className="text-sm font-semibold text-ui-text">Riwayat vs {scrim.opponent_name}</h2>
                 <span className="text-xs text-ui-text-muted">{opponentHistory.length} pertandingan</span>
@@ -268,7 +268,7 @@ export default async function ScrimDetailPage({
                 const total = opponentHistory.filter(h => h.is_win !== null).length;
                 if (total === 0) return null;
                 return (
-                  <div className="mt-3 border-t border-white/5 pt-3 text-xs text-ui-text-muted">
+                  <div className="mt-3 border-t border-ui-border pt-3 text-xs text-ui-text-muted">
                     W/L: <span className="font-semibold text-ui-text">{wins}/{total - wins}</span>
                   </div>
                 );

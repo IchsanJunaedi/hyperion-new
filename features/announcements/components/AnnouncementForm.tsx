@@ -50,7 +50,7 @@ const AnnouncementForm = ({ orgSlug, divisions }: AnnouncementFormProps) => {
           name="title"
           required
           maxLength={200}
-          className="h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
+          className="h-10 w-full rounded-md border border-ui-border bg-ui-surface px-3 text-sm text-ui-text focus:border-yellow-400 focus:outline-none"
         />
       </Field>
 
@@ -61,7 +61,7 @@ const AnnouncementForm = ({ orgSlug, divisions }: AnnouncementFormProps) => {
           required
           rows={6}
           maxLength={5000}
-          className="w-full rounded-md border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-yellow-400 focus:outline-none"
+          className="w-full rounded-md border border-ui-border bg-ui-surface px-3 py-2 text-sm text-ui-text focus:border-yellow-400 focus:outline-none"
         />
       </Field>
 
@@ -74,7 +74,7 @@ const AnnouncementForm = ({ orgSlug, divisions }: AnnouncementFormProps) => {
           id="division_id"
           name="division_id"
           defaultValue=""
-          className="h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
+          className="h-10 w-full rounded-md border border-ui-border bg-ui-surface px-3 text-sm text-ui-text focus:border-yellow-400 focus:outline-none"
         >
           <option value="">Semua divisi</option>
           {divisions.map((d) => (
@@ -88,38 +88,38 @@ const AnnouncementForm = ({ orgSlug, divisions }: AnnouncementFormProps) => {
       {/* Toggles Panel */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Toggle Pin */}
-        <div className="flex items-center justify-between rounded-xl bg-zinc-900/40 border border-white/5 px-4 py-3">
+        <div className="flex items-center justify-between rounded-xl bg-ui-surface/40 border border-ui-border px-4 py-3">
           <div className="space-y-0.5">
             <span className="block text-xs font-semibold text-ui-text">Pin di Halaman Utama</span>
             <span className="block text-[10px] text-ui-text-muted">Sematkan pengumuman di bagian atas</span>
           </div>
           <label className="relative inline-flex cursor-pointer items-center">
             <input type="checkbox" name="is_pinned" className="peer sr-only" />
-            <div className="peer h-5 w-9 rounded-full bg-zinc-800 transition-all duration-300 after:absolute after:top-[2px] after:left-[2px] after:h-4 after:w-4 after:rounded-full after:bg-white/60 after:transition-all after:content-[''] peer-checked:bg-yellow-400 peer-checked:after:translate-x-full peer-checked:after:bg-black peer-hover:bg-zinc-700/80"></div>
+            <div className="peer h-5 w-9 rounded-full bg-ui-elevated transition-all duration-300 after:absolute after:top-[2px] after:left-[2px] after:h-4 after:w-4 after:rounded-full after:bg-white/60 after:transition-all after:content-[''] peer-checked:bg-yellow-400 peer-checked:after:translate-x-full peer-checked:after:bg-black peer-hover:bg-zinc-700/80"></div>
           </label>
         </div>
 
         {/* Toggle WA Blast */}
-        <div className="flex items-center justify-between rounded-xl bg-zinc-900/40 border border-white/5 px-4 py-3">
+        <div className="flex items-center justify-between rounded-xl bg-ui-surface/40 border border-ui-border px-4 py-3">
           <div className="space-y-0.5">
             <span className="block text-xs font-semibold text-ui-text">Kirim WA Blast</span>
             <span className="block text-[10px] text-ui-text-muted">Kirim notifikasi WhatsApp ke member</span>
           </div>
           <label className="relative inline-flex cursor-pointer items-center">
             <input type="checkbox" name="send_wa_blast" className="peer sr-only" />
-            <div className="peer h-5 w-9 rounded-full bg-zinc-800 transition-all duration-300 after:absolute after:top-[2px] after:left-[2px] after:h-4 after:w-4 after:rounded-full after:bg-white/60 after:transition-all after:content-[''] peer-checked:bg-yellow-400 peer-checked:after:translate-x-full peer-checked:after:bg-black peer-hover:bg-zinc-700/80"></div>
+            <div className="peer h-5 w-9 rounded-full bg-ui-elevated transition-all duration-300 after:absolute after:top-[2px] after:left-[2px] after:h-4 after:w-4 after:rounded-full after:bg-white/60 after:transition-all after:content-[''] peer-checked:bg-yellow-400 peer-checked:after:translate-x-full peer-checked:after:bg-black peer-hover:bg-zinc-700/80"></div>
           </label>
         </div>
 
         {/* Toggle Acknowledgement Required */}
-        <div className="flex items-center justify-between rounded-xl bg-zinc-900/40 border border-orange-500/10 px-4 py-3 sm:col-span-2">
+        <div className="flex items-center justify-between rounded-xl bg-ui-surface/40 border border-orange-500/10 px-4 py-3 sm:col-span-2">
           <div className="space-y-0.5">
             <span className="block text-xs font-semibold text-orange-400">Wajib Konfirmasi Baca</span>
             <span className="block text-[10px] text-ui-text-muted">Member harus klik konfirmasi — kamu bisa lihat siapa yang belum</span>
           </div>
           <label className="relative inline-flex cursor-pointer items-center">
             <input type="checkbox" name="requires_ack" className="peer sr-only" />
-            <div className="peer h-5 w-9 rounded-full bg-zinc-800 transition-all duration-300 after:absolute after:top-[2px] after:left-[2px] after:h-4 after:w-4 after:rounded-full after:bg-white/60 after:transition-all after:content-[''] peer-checked:bg-orange-500 peer-checked:after:translate-x-full peer-checked:after:bg-black peer-hover:bg-zinc-700/80"></div>
+            <div className="peer h-5 w-9 rounded-full bg-ui-elevated transition-all duration-300 after:absolute after:top-[2px] after:left-[2px] after:h-4 after:w-4 after:rounded-full after:bg-white/60 after:transition-all after:content-[''] peer-checked:bg-orange-500 peer-checked:after:translate-x-full peer-checked:after:bg-black peer-hover:bg-zinc-700/80"></div>
           </label>
         </div>
       </div>

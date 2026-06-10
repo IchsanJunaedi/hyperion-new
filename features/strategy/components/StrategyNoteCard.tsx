@@ -21,7 +21,7 @@ const StrategyNoteCard = ({ note, orgSlug }: StrategyNoteCardProps) => {
   return (
     <Link
       href={`/${orgSlug}/strategy/${note.id}`}
-      className="block rounded-xl border border-white/10 bg-zinc-900/40 p-5 transition hover:border-white/20 hover:bg-zinc-900/60"
+      className="block rounded-xl border border-ui-border bg-ui-surface/40 p-5 transition hover:border-white/20 hover:bg-ui-surface/60"
     >
       <div className="flex items-start gap-2">
         <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-yellow-400" />
@@ -37,7 +37,7 @@ const StrategyNoteCard = ({ note, orgSlug }: StrategyNoteCardProps) => {
           {note.tags.slice(0, 5).map((tag) => (
             <span
               key={tag}
-              className="rounded-full bg-white/5 px-2 py-0.5 text-[10px] text-ui-text-2"
+              className="rounded-full bg-ui-elevated px-2 py-0.5 text-[10px] text-ui-text-2"
             >
               {tag}
             </span>

@@ -136,7 +136,7 @@ const FileList = ({ orgId, folder = "files" }: FileListProps) => {
           onClose={() => setPreview(null)}
         />
       )}
-      <div className="divide-y divide-white/5 rounded-lg border border-white/5">
+      <div className="divide-y divide-ui-border rounded-lg border border-ui-border">
         {files.map((file) => {
           const size = file.metadata?.size
             ? formatFileSize(file.metadata.size)
@@ -173,7 +173,7 @@ const FileList = ({ orgId, folder = "files" }: FileListProps) => {
                 type="button"
                 disabled={deletingId === file.id}
                 onClick={() => handleDelete(file.name, file.id)}
-                className="shrink-0 cursor-pointer rounded-md p-1 text-ui-text-muted transition hover:bg-white/10 hover:text-red-400 disabled:opacity-40"
+                className="shrink-0 cursor-pointer rounded-md p-1 text-ui-text-muted transition hover:bg-ui-hover hover:text-red-400 disabled:opacity-40"
                 aria-label="Hapus file"
               >
                 {deletingId === file.id ? (

@@ -37,7 +37,7 @@ const RemoveMemberButton = ({ memberId, name }: RemoveMemberButtonProps) => {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="rounded-md p-1.5 text-ui-text-muted hover:bg-white/10 hover:text-red-400"
+        className="rounded-md p-1.5 text-ui-text-muted hover:bg-ui-hover hover:text-red-400"
         title="Hapus dari tim"
       >
         <Trash2 className="h-3.5 w-3.5" />

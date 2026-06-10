@@ -108,7 +108,7 @@ const HeroPicker = ({ selected, onChange }: HeroPickerProps) => {
               onClick={() => add(hero)}
               className="flex w-full cursor-pointer items-center gap-2.5 px-3 py-2 text-left text-sm text-ui-text transition-colors hover:bg-ui-hover"
             >
-              <div className="h-6 w-6 shrink-0 overflow-hidden rounded-full border border-white/10 bg-zinc-800">
+              <div className="h-6 w-6 shrink-0 overflow-hidden rounded-full border border-ui-border bg-ui-elevated">
                 <img
                   src={getHeroImageUrl(hero)}
                   alt={hero}
@@ -129,7 +129,7 @@ const HeroPicker = ({ selected, onChange }: HeroPickerProps) => {
               key={hero}
               className="inline-flex items-center gap-1.5 rounded-full border border-ui-border bg-ui-hover px-2 py-1 text-xs text-ui-text-dim"
             >
-              <div className="h-4 w-4 shrink-0 overflow-hidden rounded-full border border-white/10 bg-zinc-800">
+              <div className="h-4 w-4 shrink-0 overflow-hidden rounded-full border border-ui-border bg-ui-elevated">
                 <img
                   src={getHeroImageUrl(hero)}
                   alt={hero}

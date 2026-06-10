@@ -184,7 +184,7 @@ const StatisticsTab = ({ orgId }: { orgId: string }) => {
             >
               {/* Hero */}
               <div className="flex items-center gap-2 text-left">
-                <div className="h-7 w-7 shrink-0 overflow-hidden rounded-full border border-white/10">
+                <div className="h-7 w-7 shrink-0 overflow-hidden rounded-full border border-ui-border">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={getHeroImageUrl(row.hero_name)}

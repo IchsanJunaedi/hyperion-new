@@ -61,7 +61,7 @@ const StrategyNoteListWithFilter = ({
                 {i + 1}
               </span>
               <h3 className="text-sm font-semibold uppercase tracking-wider text-ui-text">{tag}</h3>
-              <div className="h-px flex-1 bg-white/5" />
+              <div className="h-px flex-1 bg-ui-elevated" />
               <span className="text-[10px] text-ui-text-muted">{chapterNotes.length} catatan</span>
             </div>
             <div className="space-y-2 pl-9">
@@ -69,7 +69,7 @@ const StrategyNoteListWithFilter = ({
                 <Link
                   key={note.id}
                   href={`/${orgSlug}/strategy/${note.id}`}
-                  className="group flex items-start gap-3 rounded-xl border border-white/5 bg-zinc-900/30 px-4 py-3 transition hover:border-white/15 hover:bg-zinc-900/50"
+                  className="group flex items-start gap-3 rounded-xl border border-ui-border bg-ui-surface/30 px-4 py-3 transition hover:border-white/15 hover:bg-ui-surface/50"
                 >
                   <Lightbulb className="mt-0.5 h-3.5 w-3.5 shrink-0 text-yellow-400/60 group-hover:text-yellow-400 transition" />
                   <div className="min-w-0 flex-1">
@@ -99,7 +99,7 @@ const StrategyNoteListWithFilter = ({
               className={`rounded-full px-3 py-1 text-xs font-medium transition ${
                 activeTag === null
                   ? "bg-yellow-400 text-black"
-                  : "bg-white/5 text-ui-text-2 hover:bg-white/10 hover:text-ui-text"
+                  : "bg-ui-elevated text-ui-text-2 hover:bg-ui-hover hover:text-ui-text"
               }`}
             >
               Semua
@@ -112,7 +112,7 @@ const StrategyNoteListWithFilter = ({
                 className={`rounded-full px-3 py-1 text-xs font-medium transition ${
                   activeTag === tag
                     ? "bg-yellow-400 text-black"
-                    : "bg-white/5 text-ui-text-2 hover:bg-white/10 hover:text-ui-text"
+                    : "bg-ui-elevated text-ui-text-2 hover:bg-ui-hover hover:text-ui-text"
                 }`}
               >
                 {tag}
@@ -149,14 +149,14 @@ function ViewToggle({
   onToggle: (v: "grid" | "playbook") => void;
 }) {
   return (
-    <div className="flex items-center rounded-md border border-white/10 p-0.5">
+    <div className="flex items-center rounded-md border border-ui-border p-0.5">
       <button
         type="button"
         onClick={() => onToggle("grid")}
         title="Tampilan Grid"
         className={cn(
           "flex h-7 w-7 cursor-pointer items-center justify-center rounded transition",
-          viewMode === "grid" ? "bg-white/10 text-ui-text" : "text-ui-text-muted hover:text-ui-text",
+          viewMode === "grid" ? "bg-ui-hover text-ui-text" : "text-ui-text-muted hover:text-ui-text",
         )}
       >
         <LayoutGrid className="h-3.5 w-3.5" />
@@ -167,7 +167,7 @@ function ViewToggle({
         title="Playbook"
         className={cn(
           "flex h-7 w-7 cursor-pointer items-center justify-center rounded transition",
-          viewMode === "playbook" ? "bg-white/10 text-ui-text" : "text-ui-text-muted hover:text-ui-text",
+          viewMode === "playbook" ? "bg-ui-hover text-ui-text" : "text-ui-text-muted hover:text-ui-text",
         )}
       >
         <BookOpen className="h-3.5 w-3.5" />

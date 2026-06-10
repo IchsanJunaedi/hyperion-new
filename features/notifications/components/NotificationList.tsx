@@ -19,9 +19,9 @@ const NotificationList = ({ userId, orgSlug, limit = 10, onClose }: Notification
         <div className="space-y-3">
           {Array.from({ length: 3 }).map((_, i) => (
             <div key={i} className="animate-pulse space-y-2">
-              <div className="h-3 w-3/4 rounded bg-white/10" />
-              <div className="h-2 w-full rounded bg-white/5" />
-              <div className="h-2 w-1/3 rounded bg-white/5" />
+              <div className="h-3 w-3/4 rounded bg-ui-hover" />
+              <div className="h-2 w-full rounded bg-ui-elevated" />
+              <div className="h-2 w-1/3 rounded bg-ui-elevated" />
             </div>
           ))}
         </div>

@@ -77,7 +77,7 @@ const ScoutingPageClient = ({ orgSlug, profiles }: ScoutingPageClientProps) => {
           <button
             type="button"
             onClick={openCreate}
-            className="mt-4 inline-flex h-9 items-center rounded-md border border-white/15 px-4 text-sm font-medium text-ui-text transition hover:bg-white/5 cursor-pointer"
+            className="mt-4 inline-flex h-9 items-center rounded-md border border-white/15 px-4 text-sm font-medium text-ui-text transition hover:bg-ui-elevated cursor-pointer"
           >
             Tambah profil pertama
           </button>

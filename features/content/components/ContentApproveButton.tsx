@@ -86,7 +86,7 @@ const ContentActionButtons = ({
           type="button"
           disabled={pending}
           onClick={() => handleStatus("draft")}
-          className="inline-flex h-7 items-center gap-1 rounded-md border border-white/10 px-2 text-xs text-ui-text-2 hover:bg-ui-hover disabled:opacity-50"
+          className="inline-flex h-7 items-center gap-1 rounded-md border border-ui-border px-2 text-xs text-ui-text-2 hover:bg-ui-hover disabled:opacity-50"
         >
           <RotateCcw className="h-3 w-3" /> Reject
         </button>

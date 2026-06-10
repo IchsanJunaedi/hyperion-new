@@ -241,7 +241,7 @@ const SponsorListClient = ({ sponsors, orgId, orgName, detailBasePath, isAllOrgs
             <button
               type="button"
               onClick={() => setPrintMode(true)}
-              className="flex cursor-pointer items-center gap-1.5 rounded-md border border-ui-border px-3 py-2 text-sm text-ui-text-2 transition hover:bg-white/5 hover:text-ui-text"
+              className="flex cursor-pointer items-center gap-1.5 rounded-md border border-ui-border px-3 py-2 text-sm text-ui-text-2 transition hover:bg-ui-elevated hover:text-ui-text"
             >
               <FileDown className="h-4 w-4" />
               Media Kit
@@ -269,7 +269,7 @@ const SponsorListClient = ({ sponsors, orgId, orgName, detailBasePath, isAllOrgs
           <button
             type="button"
             onClick={() => setModalOpen(true)}
-            className="flex cursor-pointer items-center gap-1.5 rounded-md border border-ui-border px-4 py-2 text-sm text-ui-text-2 transition hover:bg-white/5"
+            className="flex cursor-pointer items-center gap-1.5 rounded-md border border-ui-border px-4 py-2 text-sm text-ui-text-2 transition hover:bg-ui-elevated"
           >
             <Plus className="h-3.5 w-3.5" />
             Tambah Sponsor

@@ -76,7 +76,7 @@ const CalendarRsvpButtons = ({
             className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition disabled:opacity-50 cursor-pointer ${
               isActive
                 ? active
-                : `border-white/10 text-ui-text-2 ${hover} hover:bg-white/5`
+                : `border-ui-border text-ui-text-2 ${hover} hover:bg-ui-elevated`
             }`}
           >
             {pending && isActive ? (

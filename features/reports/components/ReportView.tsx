@@ -507,7 +507,7 @@ const ReportView = ({ report }: { report: MonthlyReport }) => {
           type="button"
           onClick={handleDownload}
           disabled={downloading}
-          className="mb-2 inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-white/10 px-3 py-1.5 text-xs text-ui-text-2 transition hover:bg-white/5 hover:text-ui-text disabled:opacity-50"
+          className="mb-2 inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-ui-border px-3 py-1.5 text-xs text-ui-text-2 transition hover:bg-ui-elevated hover:text-ui-text disabled:opacity-50"
         >
           {downloading
             ? <Loader2 className="h-3.5 w-3.5 animate-spin" />

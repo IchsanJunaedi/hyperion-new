@@ -89,7 +89,7 @@ const CalendarAgendaView = ({ orgSlug, events, readOnly = false }: CalendarAgend
                 }
 
                 const card = (
-                  <div className="flex items-start gap-3 rounded-xl border border-white/5 bg-zinc-900/40 px-4 py-3 transition hover:bg-zinc-900/70">
+                  <div className="flex items-start gap-3 rounded-xl border border-ui-border bg-ui-surface/40 px-4 py-3 transition hover:bg-ui-surface/70">
                     <span className={`mt-1 h-2 w-2 shrink-0 rounded-full ${EVENT_TYPE_COLORS[ev.event_type] ?? "bg-white/40"}`} />
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium text-ui-text">{ev.title}</p>

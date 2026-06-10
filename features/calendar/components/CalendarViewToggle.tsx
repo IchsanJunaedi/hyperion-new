@@ -25,14 +25,14 @@ const CalendarViewToggle = ({ activeView }: CalendarViewToggleProps) => {
   }
 
   return (
-    <div className="flex items-center rounded-md border border-white/10 p-0.5">
+    <div className="flex items-center rounded-md border border-ui-border p-0.5">
       <button
         type="button"
         onClick={() => setView("grid")}
         title="Tampilan Grid"
         className={cn(
           "flex h-7 w-7 cursor-pointer items-center justify-center rounded transition",
-          activeView === "grid" ? "bg-white/10 text-ui-text" : "text-ui-text-muted hover:text-ui-text",
+          activeView === "grid" ? "bg-ui-hover text-ui-text" : "text-ui-text-muted hover:text-ui-text",
         )}
       >
         <CalendarDays className="h-3.5 w-3.5" />
@@ -43,7 +43,7 @@ const CalendarViewToggle = ({ activeView }: CalendarViewToggleProps) => {
         title="War Room Mingguan"
         className={cn(
           "flex h-7 w-7 cursor-pointer items-center justify-center rounded transition",
-          activeView === "week" ? "bg-white/10 text-ui-text" : "text-ui-text-muted hover:text-ui-text",
+          activeView === "week" ? "bg-ui-hover text-ui-text" : "text-ui-text-muted hover:text-ui-text",
         )}
       >
         <Swords className="h-3.5 w-3.5" />
@@ -54,7 +54,7 @@ const CalendarViewToggle = ({ activeView }: CalendarViewToggleProps) => {
         title="Tampilan List"
         className={cn(
           "flex h-7 w-7 cursor-pointer items-center justify-center rounded transition",
-          activeView === "list" ? "bg-white/10 text-ui-text" : "text-ui-text-muted hover:text-ui-text",
+          activeView === "list" ? "bg-ui-hover text-ui-text" : "text-ui-text-muted hover:text-ui-text",
         )}
       >
         <List className="h-3.5 w-3.5" />

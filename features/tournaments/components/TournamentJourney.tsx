@@ -34,7 +34,7 @@ const TournamentJourney = ({ stages, tournamentName }: TournamentJourneyProps) =
       {/* Summary pill row */}
       <div className="flex flex-wrap items-center gap-2 text-xs">
         {completedStages > 0 && (
-          <span className="rounded-full bg-white/5 px-2.5 py-1 text-ui-text-2">
+          <span className="rounded-full bg-ui-elevated px-2.5 py-1 text-ui-text-2">
             {completedStages}/{stages.length} tahap selesai
           </span>
         )}
@@ -69,7 +69,7 @@ const TournamentJourney = ({ stages, tournamentName }: TournamentJourneyProps) =
                   result === "win" && "border-green-500/30 bg-green-500/5",
                   result === "loss" && "border-red-500/30 bg-red-500/5",
                   result === "draw" && "border-yellow-500/30 bg-yellow-500/5",
-                  result === "pending" && "border-white/10 bg-white/[0.02]",
+                  result === "pending" && "border-ui-border bg-white/[0.02]",
                 )}
               >
                 {/* Stage label */}
@@ -116,7 +116,7 @@ const TournamentJourney = ({ stages, tournamentName }: TournamentJourneyProps) =
           "rounded-xl border px-4 py-2.5 text-center text-xs font-semibold",
           totalWins >= totalLosses
             ? "border-green-500/20 bg-green-500/5 text-green-400"
-            : "border-white/10 bg-white/[0.02] text-ui-text-2",
+            : "border-ui-border bg-white/[0.02] text-ui-text-2",
         )}>
           {totalWins >= totalLosses
             ? `🏆 Selesai — ${totalWins}W ${totalLosses}L`

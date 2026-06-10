@@ -58,7 +58,7 @@ const FilePreviewModal = ({
           </div>
           <button
             onClick={onClose}
-            className="ml-4 shrink-0 cursor-pointer rounded-md p-1.5 text-ui-text-muted transition hover:bg-white/10 hover:text-ui-text"
+            className="ml-4 shrink-0 cursor-pointer rounded-md p-1.5 text-ui-text-muted transition hover:bg-ui-hover hover:text-ui-text"
             aria-label="Tutup"
           >
             <X className="h-4 w-4" />
@@ -93,7 +93,7 @@ const FilePreviewModal = ({
         <div className="flex justify-end border-t border-ui-border px-5 py-4">
           <button
             onClick={() => triggerDownload(signedUrl, fileName)}
-            className="flex cursor-pointer items-center gap-2 rounded-lg bg-white/10 px-4 py-2 text-sm text-ui-text transition hover:bg-white/15"
+            className="flex cursor-pointer items-center gap-2 rounded-lg bg-ui-hover px-4 py-2 text-sm text-ui-text transition hover:bg-white/15"
           >
             <Download className="h-4 w-4" />
             Download

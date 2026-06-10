@@ -133,7 +133,7 @@ const StrategyComments = ({
           {comments.map((c) => (
             <div
               key={c.id}
-              className="group flex gap-3 rounded-xl border border-white/5 bg-zinc-900/40 px-4 py-3"
+              className="group flex gap-3 rounded-xl border border-ui-border bg-ui-surface/40 px-4 py-3"
             >
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-medium text-ui-text-2">
@@ -177,13 +177,13 @@ const StrategyComments = ({
           }}
           placeholder="Tulis komentar... (Ctrl+Enter untuk kirim)"
           rows={2}
-          className="flex-1 resize-none rounded-xl border border-white/10 bg-zinc-900/60 px-3 py-2 text-sm text-white/85 placeholder-white/30 focus:border-white/20 focus:outline-none"
+          className="flex-1 resize-none rounded-xl border border-ui-border bg-ui-surface/60 px-3 py-2 text-sm text-ui-text placeholder-white/30 focus:border-white/20 focus:outline-none"
         />
         <button
           type="button"
           disabled={addPending || !text.trim()}
           onClick={handleAdd}
-          className="shrink-0 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-xs font-medium text-ui-text transition hover:bg-white/10 hover:text-ui-text disabled:opacity-40 cursor-pointer"
+          className="shrink-0 rounded-xl border border-ui-border bg-ui-elevated px-4 py-2 text-xs font-medium text-ui-text transition hover:bg-ui-hover hover:text-ui-text disabled:opacity-40 cursor-pointer"
         >
           {addPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Kirim"}
         </button>

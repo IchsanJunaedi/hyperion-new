@@ -76,14 +76,14 @@ const AttendanceList = ({ scrimId, rows }: AttendanceListProps) => {
 
   if (rows.length === 0) {
     return (
-      <p className="rounded-lg border border-dashed border-white/10 bg-zinc-900/30 p-4 text-center text-sm text-white/55">
+      <p className="rounded-lg border border-dashed border-ui-border bg-ui-surface/30 p-4 text-center text-sm text-ui-text-2">
         Belum ada anggota divisi yang dapat konfirmasi.
       </p>
     );
   }
 
   return (
-    <ul className="divide-y divide-white/5 overflow-hidden rounded-xl border border-white/10">
+    <ul className="divide-y divide-ui-border overflow-hidden rounded-xl border border-ui-border">
       {rows.map((row) => {
         const { Icon, className, label } = STATUS_META[row.attendance.status];
         const name =
@@ -92,9 +92,9 @@ const AttendanceList = ({ scrimId, rows }: AttendanceListProps) => {
         return (
           <li
             key={row.attendance.id}
-            className="flex items-center gap-3 bg-zinc-900/40 px-4 py-3"
+            className="flex items-center gap-3 bg-ui-surface/40 px-4 py-3"
           >
-            <div className="grid h-9 w-9 flex-none place-items-center rounded-full bg-white/10 text-xs font-semibold text-ui-text">
+            <div className="grid h-9 w-9 flex-none place-items-center rounded-full bg-ui-hover text-xs font-semibold text-ui-text">
               {row.member.avatar_url ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img

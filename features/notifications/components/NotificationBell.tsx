@@ -95,7 +95,7 @@ const NotificationBell = ({ userId, orgSlug }: NotificationBellProps) => {
         type="button"
         aria-label={ariaLabel}
         onClick={() => setOpen((v) => !v)}
-        className="relative cursor-pointer rounded-full p-2 text-ui-text transition hover:bg-white/10 hover:text-ui-text"
+        className="relative cursor-pointer rounded-full p-2 text-ui-text transition hover:bg-ui-hover hover:text-ui-text"
       >
         <Bell className="h-4 w-4" />
         {badgeText && (
@@ -108,10 +108,10 @@ const NotificationBell = ({ userId, orgSlug }: NotificationBellProps) => {
       {open && (
         <div
           ref={popoverRef}
-          className="absolute right-0 top-full z-50 mt-2 w-80 overflow-hidden rounded-lg border border-white/5 bg-zinc-900 shadow-xl"
+          className="absolute right-0 top-full z-50 mt-2 w-80 overflow-hidden rounded-lg border border-ui-border bg-ui-surface shadow-xl"
         >
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-white/5 px-4 py-3">
+          <div className="flex items-center justify-between border-b border-ui-border px-4 py-3">
             <h3 className="text-sm font-semibold text-ui-text">Notifikasi</h3>
             <button
               type="button"
@@ -133,7 +133,7 @@ const NotificationBell = ({ userId, orgSlug }: NotificationBellProps) => {
 
           {/* Footer */}
           {limit <= 10 && (
-            <div className="border-t border-white/5 px-4 py-2.5">
+            <div className="border-t border-ui-border px-4 py-2.5">
               <button
                 type="button"
                 onClick={() => setLimit(50)}

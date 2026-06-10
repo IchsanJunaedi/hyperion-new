@@ -207,7 +207,7 @@ const ScoutingDetailModal = ({ profile, onClose }: ScoutingDetailModalProps) => 
                               key={hero}
                               className="inline-flex items-center gap-1 rounded-full border border-ui-border bg-ui-hover px-1.5 py-0.5 text-xs text-ui-text-dim"
                             >
-                              <div className="h-3.5 w-3.5 shrink-0 overflow-hidden rounded-full border border-white/10 bg-zinc-800">
+                              <div className="h-3.5 w-3.5 shrink-0 overflow-hidden rounded-full border border-ui-border bg-ui-elevated">
                                 <img
                                   src={getHeroImageUrl(hero)}
                                   alt={hero}

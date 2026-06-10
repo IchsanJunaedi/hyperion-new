@@ -4,7 +4,7 @@ const STATUS_STYLE: Record<ScrimStatus, string> = {
   scheduled: "bg-blue-500/15 text-blue-300",
   ongoing: "bg-amber-500/15 text-amber-300",
   completed: "bg-emerald-500/15 text-emerald-300",
-  cancelled: "bg-zinc-500/15 text-zinc-300",
+  cancelled: "bg-zinc-500/15 text-ui-text-dim",
 };
 
 const STATUS_LABEL: Record<ScrimStatus, string> = {

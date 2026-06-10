@@ -84,7 +84,7 @@ const ScrimEditForm = ({
           name="division_id"
           required
           defaultValue={initialValues.division_id}
-          className="h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
+          className="h-10 w-full rounded-md border border-ui-border bg-ui-surface px-3 text-sm text-ui-text focus:border-yellow-400 focus:outline-none"
         >
           <option value="" disabled>
             Pilih divisi…
@@ -108,7 +108,7 @@ const ScrimEditForm = ({
           maxLength={120}
           placeholder="mis. Team Spartan"
           defaultValue={initialValues.opponent_name}
-          className="h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
+          className="h-10 w-full rounded-md border border-ui-border bg-ui-surface px-3 text-sm text-ui-text focus:border-yellow-400 focus:outline-none"
         />
       </Field>
 
@@ -122,7 +122,7 @@ const ScrimEditForm = ({
           maxLength={120}
           placeholder="WA / Discord captain lawan"
           defaultValue={initialValues.opponent_contact ?? ""}
-          className="h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
+          className="h-10 w-full rounded-md border border-ui-border bg-ui-surface px-3 text-sm text-ui-text focus:border-yellow-400 focus:outline-none"
         />
       </Field>
 
@@ -136,7 +136,7 @@ const ScrimEditForm = ({
           name="scheduled_at"
           required
           defaultValue={toWibDatetimeLocal(initialValues.scheduled_at)}
-          className="h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
+          className="h-10 w-full rounded-md border border-ui-border bg-ui-surface px-3 text-sm text-ui-text focus:border-yellow-400 focus:outline-none"
         />
       </Field>
 
@@ -145,7 +145,7 @@ const ScrimEditForm = ({
           {FORMATS.map((f) => (
             <label
               key={f.value}
-              className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-zinc-800 px-3 py-2 text-sm text-white/85 has-[input:checked]:bg-yellow-400 has-[input:checked]:text-black"
+              className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-ui-elevated px-3 py-2 text-sm text-white/85 has-[input:checked]:bg-yellow-400 has-[input:checked]:text-black"
             >
               <input
                 type="radio"
@@ -170,7 +170,7 @@ const ScrimEditForm = ({
           maxLength={60}
           placeholder="mis. SEA, ID, Asia"
           defaultValue={initialValues.server_region ?? ""}
-          className="h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
+          className="h-10 w-full rounded-md border border-ui-border bg-ui-surface px-3 text-sm text-ui-text focus:border-yellow-400 focus:outline-none"
         />
       </Field>
 
@@ -184,7 +184,7 @@ const ScrimEditForm = ({
           maxLength={500}
           placeholder="ID room + password"
           defaultValue={initialValues.room_info ?? ""}
-          className="h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
+          className="h-10 w-full rounded-md border border-ui-border bg-ui-surface px-3 text-sm text-ui-text focus:border-yellow-400 focus:outline-none"
         />
       </Field>
 
@@ -195,7 +195,7 @@ const ScrimEditForm = ({
           maxLength={2000}
           placeholder="Catatan strategis, request map, dsb"
           defaultValue={initialValues.notes ?? ""}
-          className="w-full rounded-md border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-yellow-400 focus:outline-none"
+          className="w-full rounded-md border border-ui-border bg-ui-surface px-3 py-2 text-sm text-ui-text focus:border-yellow-400 focus:outline-none"
         />
       </Field>
 

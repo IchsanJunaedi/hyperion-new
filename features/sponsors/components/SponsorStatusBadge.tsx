@@ -5,7 +5,7 @@ const STATUS_STYLES: Record<SponsorStatus, string> = {
   prospect: "bg-blue-500/10 text-blue-400 border-blue-500/20",
   active:   "bg-green-500/10 text-green-400 border-green-500/20",
   inactive: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20",
-  ended:    "bg-white/5 text-ui-text-muted border-white/10",
+  ended:    "bg-ui-elevated text-ui-text-muted border-ui-border",
 };
 
 const STATUS_LABELS: Record<SponsorStatus, string> = {

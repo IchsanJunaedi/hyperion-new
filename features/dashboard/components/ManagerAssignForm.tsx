@@ -97,7 +97,7 @@ const ManagerAssignForm = ({
           required
           value={selectedUser}
           onChange={(e) => handleUserChange(e.target.value)}
-          className="h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
+          className="h-10 w-full rounded-md border border-ui-border bg-ui-surface px-3 text-sm text-ui-text focus:border-yellow-400 focus:outline-none"
         >
           <option value="" disabled>Pilih user...</option>
           {sortedUsers.map((u) => (
@@ -113,7 +113,7 @@ const ManagerAssignForm = ({
             required
             value={selectedOrg}
             onChange={(e) => handleOrgChange(e.target.value)}
-            className="h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
+            className="h-10 w-full rounded-md border border-ui-border bg-ui-surface px-3 text-sm text-ui-text focus:border-yellow-400 focus:outline-none"
           >
             <option value="" disabled>Pilih tim...</option>
             {organizations.map((o) => (
@@ -129,7 +129,7 @@ const ManagerAssignForm = ({
             name="division_id"
             value={selectedDiv}
             onChange={(e) => setSelectedDiv(e.target.value)}
-            className="h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
+            className="h-10 w-full rounded-md border border-ui-border bg-ui-surface px-3 text-sm text-ui-text focus:border-yellow-400 focus:outline-none"
           >
             <option value="">Tanpa divisi</option>
             {filteredDivisions.map((d) => (
@@ -146,7 +146,7 @@ const ManagerAssignForm = ({
             required
             value={selectedRole}
             onChange={(e) => setSelectedRole(e.target.value as MemberRole)}
-            className="h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
+            className="h-10 w-full rounded-md border border-ui-border bg-ui-surface px-3 text-sm text-ui-text focus:border-yellow-400 focus:outline-none"
           >
             <option value="" disabled>Pilih role...</option>
             {availableRoles.map((r) => (

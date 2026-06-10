@@ -42,7 +42,7 @@ const PollPageClient = ({ polls, orgSlug, canManage, userId }: PollPageClientPro
       )}
 
       {polls.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-white/10 bg-zinc-900/30 p-10 text-center">
+        <div className="rounded-xl border border-dashed border-ui-border bg-ui-surface/30 p-10 text-center">
           <BarChart3 className="mx-auto h-8 w-8 text-ui-text-muted" />
           <p className="mt-3 text-sm text-ui-text-2">Belum ada polling.</p>
         </div>

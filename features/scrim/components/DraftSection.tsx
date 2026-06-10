@@ -164,7 +164,7 @@ function BanSlotPicker({
                       hero === value ? "bg-red-500/10 text-red-300" : "text-ui-text",
                     )}
                   >
-                    <div className="h-6 w-6 shrink-0 overflow-hidden rounded-full border border-white/10">
+                    <div className="h-6 w-6 shrink-0 overflow-hidden rounded-full border border-ui-border">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={getHeroImageUrl(hero)} alt={hero} className="h-full w-full object-cover" />
                     </div>

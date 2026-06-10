@@ -77,7 +77,7 @@ const PlayerStatsTab = ({ playerStats, orgId }: PlayerStatsTabProps) => {
   return (
     <>
       {/* Player Impact Score leaderboard */}
-      <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-4 mb-2">
+      <div className="rounded-2xl border border-ui-border bg-ui-surface/40 p-4 mb-2">
         <div className="flex items-center gap-2 mb-3">
           <Zap className="h-4 w-4 text-yellow-400" />
           <h3 className="text-sm font-semibold text-ui-text">Player Impact Score</h3>

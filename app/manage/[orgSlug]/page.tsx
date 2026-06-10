@@ -103,13 +103,13 @@ const ManageTeamPage = async ({ params }: Props) => {
         </Link>
         <Link
           href={`/manage/${orgSlug}/divisions`}
-          className="inline-flex h-10 items-center gap-2 rounded-md bg-white/5 px-4 text-sm font-medium text-ui-text transition hover:bg-white/10"
+          className="inline-flex h-10 items-center gap-2 rounded-md bg-ui-elevated px-4 text-sm font-medium text-ui-text transition hover:bg-ui-hover"
         >
           Edit Divisi
         </Link>
         <Link
           href={`/manage/${orgSlug}/captains`}
-          className="inline-flex h-10 items-center gap-2 rounded-md bg-white/5 px-4 text-sm font-medium text-ui-text transition hover:bg-white/10"
+          className="inline-flex h-10 items-center gap-2 rounded-md bg-ui-elevated px-4 text-sm font-medium text-ui-text transition hover:bg-ui-hover"
         >
           Edit Captain
         </Link>
@@ -162,7 +162,7 @@ export default ManageTeamPage;
 
 function StatCard({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-lg border border-white/5 bg-white/[0.02] p-4">
+    <div className="rounded-lg border border-ui-border bg-white/[0.02] p-4">
       <p className="text-xs text-ui-text-2">{label}</p>
       <p className="mt-1 text-2xl font-bold text-ui-text">{value}</p>
     </div>

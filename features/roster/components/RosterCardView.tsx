@@ -18,7 +18,7 @@ const ROLE_COLORS: Record<string, string> = {
   manager: "bg-green-500/20 text-green-400 border-green-500/30",
   coach:   "bg-blue-500/20 text-blue-400 border-blue-500/30",
   captain: "bg-purple-500/20 text-purple-400 border-purple-500/30",
-  member:  "bg-white/10 text-ui-text-2 border-white/15",
+  member:  "bg-ui-hover text-ui-text-2 border-white/15",
 };
 
 const ROLE_LABELS: Record<string, string> = {
@@ -39,7 +39,7 @@ function PlayerCard({ m }: { m: RosterMember }) {
     .split(" ").slice(0, 2).map((w) => w[0] ?? "").join("").toUpperCase();
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-zinc-800/60 to-zinc-900/80 p-5 text-center shadow-xl">
+    <div className="relative overflow-hidden rounded-2xl border border-ui-border bg-gradient-to-b from-zinc-800/60 to-zinc-900/80 p-5 text-center shadow-xl">
       {/* Jersey number badge */}
       {m.jersey_number != null && (
         <span className="absolute left-3 top-3 font-mono text-xs font-bold text-ui-text-muted">
@@ -56,12 +56,12 @@ function PlayerCard({ m }: { m: RosterMember }) {
       </span>
 
       {/* Avatar */}
-      <div className="mx-auto mb-3 h-16 w-16 overflow-hidden rounded-full border-2 border-white/10">
+      <div className="mx-auto mb-3 h-16 w-16 overflow-hidden rounded-full border-2 border-ui-border">
         {m.avatar_url ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={m.avatar_url} alt={m.display_name ?? ""} className="h-full w-full object-cover" />
         ) : (
-          <div className="flex h-full w-full items-center justify-center bg-zinc-800 text-lg font-bold text-white/60">
+          <div className="flex h-full w-full items-center justify-center bg-ui-elevated text-lg font-bold text-ui-text-2">
             {initials}
           </div>
         )}
@@ -101,7 +101,7 @@ function PlayerCard({ m }: { m: RosterMember }) {
           href={`/players/${m.username}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-3 inline-flex items-center gap-1 rounded-md border border-white/10 px-2 py-1 text-[10px] text-ui-text-2 transition hover:bg-white/5 hover:text-ui-text"
+          className="mt-3 inline-flex items-center gap-1 rounded-md border border-ui-border px-2 py-1 text-[10px] text-ui-text-2 transition hover:bg-ui-elevated hover:text-ui-text"
         >
           <ExternalLink className="h-3 w-3" />
           Profil Publik

@@ -70,7 +70,7 @@ const FindOpponentButton = ({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="inline-flex h-10 items-center gap-2 rounded-md border border-white/10 bg-ui-surface px-4 text-sm font-medium text-ui-text transition hover:bg-ui-hover cursor-pointer"
+        className="inline-flex h-10 items-center gap-2 rounded-md border border-ui-border bg-ui-surface px-4 text-sm font-medium text-ui-text transition hover:bg-ui-hover cursor-pointer"
       >
         <Search className="h-4 w-4" />
         Cari Lawan

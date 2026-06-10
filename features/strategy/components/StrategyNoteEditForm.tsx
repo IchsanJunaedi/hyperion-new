@@ -59,7 +59,7 @@ const StrategyNoteEditForm = ({
           required
           maxLength={200}
           defaultValue={initialValues.title}
-          className="h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
+          className="h-10 w-full rounded-md border border-ui-border bg-ui-surface px-3 text-sm text-ui-text focus:border-yellow-400 focus:outline-none"
         />
       </Field>
 
@@ -70,7 +70,7 @@ const StrategyNoteEditForm = ({
           rows={12}
           maxLength={20000}
           defaultValue={initialValues.content}
-          className="w-full rounded-md border border-white/10 bg-zinc-900 px-3 py-2 font-mono text-sm text-white focus:border-yellow-400 focus:outline-none"
+          className="w-full rounded-md border border-ui-border bg-ui-surface px-3 py-2 font-mono text-sm text-ui-text focus:border-yellow-400 focus:outline-none"
         />
       </Field>
 
@@ -83,7 +83,7 @@ const StrategyNoteEditForm = ({
           name="tags"
           maxLength={500}
           defaultValue={initialValues.tags.join(", ")}
-          className="h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
+          className="h-10 w-full rounded-md border border-ui-border bg-ui-surface px-3 text-sm text-ui-text focus:border-yellow-400 focus:outline-none"
         />
       </Field>
 
@@ -91,7 +91,7 @@ const StrategyNoteEditForm = ({
         <select
           name="visibility"
           defaultValue={initialValues.visibility}
-          className="h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
+          className="h-10 w-full rounded-md border border-ui-border bg-ui-surface px-3 text-sm text-ui-text focus:border-yellow-400 focus:outline-none"
         >
           <option value="public">Publik (semua member org)</option>
           <option value="division">Divisi saja</option>

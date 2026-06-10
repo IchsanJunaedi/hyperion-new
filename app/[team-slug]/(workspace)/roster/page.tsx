@@ -40,7 +40,7 @@ export default async function RosterPage({ params, searchParams }: RosterPagePro
   if (!currentUserRole) {
     return (
       <div className="flex min-h-[50vh] flex-col items-center justify-center px-4 text-center">
-        <div className="rounded-full bg-zinc-900/50 p-4 border border-white/5 mb-4">
+        <div className="rounded-full bg-ui-surface/50 p-4 border border-ui-border mb-4">
           <Users className="h-10 w-10 text-ui-text-muted" />
         </div>
         <h1 className="text-xl font-bold text-ui-text sm:text-2xl">Roster Belum Diisi</h1>
@@ -66,7 +66,7 @@ export default async function RosterPage({ params, searchParams }: RosterPagePro
           <Suspense>
             <RosterViewToggle activeView={viewMode} />
           </Suspense>
-          <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-zinc-900/40 px-4 py-3">
+          <div className="flex items-center gap-2 rounded-xl border border-ui-border bg-ui-surface/40 px-4 py-3">
             <Users className="h-5 w-5 text-ui-text-muted" />
             <span className="text-2xl font-bold text-ui-text">
               {members.length}

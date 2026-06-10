@@ -66,7 +66,7 @@ export default async function StrategyNoteDetailPage({
           ← Bank Strategi
         </Link>
         <div className="flex items-center gap-2">
-          <span className="inline-flex items-center gap-1 rounded-full bg-white/5 px-2 py-0.5 text-xs text-ui-text-2">
+          <span className="inline-flex items-center gap-1 rounded-full bg-ui-elevated px-2 py-0.5 text-xs text-ui-text-2">
             <VisIcon className="h-3 w-3" />
             {vis.label}
           </span>
@@ -78,7 +78,7 @@ export default async function StrategyNoteDetailPage({
             {note.tags.map((tag) => (
               <span
                 key={tag}
-                className="rounded-full bg-white/5 px-2.5 py-0.5 text-xs text-ui-text-2"
+                className="rounded-full bg-ui-elevated px-2.5 py-0.5 text-xs text-ui-text-2"
               >
                 {tag}
               </span>
@@ -87,7 +87,7 @@ export default async function StrategyNoteDetailPage({
         )}
       </header>
 
-      <article className="max-w-3xl rounded-2xl border border-white/10 bg-zinc-900/40 p-5 sm:p-6">
+      <article className="max-w-3xl rounded-2xl border border-ui-border bg-ui-surface/40 p-5 sm:p-6">
         <div className="whitespace-pre-line font-mono text-sm leading-relaxed text-ui-text">
           {note.content}
         </div>
@@ -96,7 +96,7 @@ export default async function StrategyNoteDetailPage({
       <StrategyNoteActions orgSlug={slug} noteId={note.id} />
 
       {(linkedFiles.length > 0 || canUploadFiles) && (
-        <article className="max-w-3xl rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
+        <article className="max-w-3xl rounded-2xl border border-ui-border bg-ui-surface/40 p-5">
           <ContextFiles
             orgId={note.organization_id}
             orgSlug={slug}

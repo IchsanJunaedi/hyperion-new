@@ -44,13 +44,13 @@ const CancelScrimButton = ({ scrimId, orgSlug }: CancelScrimButtonProps) => {
       <button
         type="button"
         onClick={() => setShowDialog(true)}
-        className="rounded-md border border-white/10 px-3 py-1.5 text-sm text-rose-400 hover:bg-rose-500/10 hover:border-rose-500/30 transition-colors"
+        className="rounded-md border border-ui-border px-3 py-1.5 text-sm text-rose-400 hover:bg-rose-500/10 hover:border-rose-500/30 transition-colors"
       >
         Batalkan Scrim
       </button>
 
       {showDialog && (
-        <div className="mt-3 rounded-lg border border-white/10 bg-zinc-900/60 p-4 space-y-3">
+        <div className="mt-3 rounded-lg border border-ui-border bg-ui-surface/60 p-4 space-y-3">
           <p className="text-sm text-ui-text">Yakin batalkan scrim ini?</p>
 
           <textarea
@@ -59,7 +59,7 @@ const CancelScrimButton = ({ scrimId, orgSlug }: CancelScrimButtonProps) => {
             maxLength={500}
             placeholder="Alasan pembatalan (opsional)"
             rows={3}
-            className="w-full rounded-md border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-white placeholder-white/30 focus:border-yellow-400 focus:outline-none resize-none"
+            className="w-full rounded-md border border-ui-border bg-ui-surface px-3 py-2 text-sm text-ui-text placeholder-white/30 focus:border-yellow-400 focus:outline-none resize-none"
           />
 
           <div className="flex items-center gap-3">

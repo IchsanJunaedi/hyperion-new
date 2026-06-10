@@ -25,14 +25,14 @@ const RosterViewToggle = ({ activeView }: RosterViewToggleProps) => {
   }
 
   return (
-    <div className="flex items-center rounded-md border border-white/10 p-0.5">
+    <div className="flex items-center rounded-md border border-ui-border p-0.5">
       <button
         type="button"
         onClick={() => setView("table")}
         title="Tampilan Tabel"
         className={cn(
           "flex h-7 w-7 cursor-pointer items-center justify-center rounded transition",
-          activeView === "table" ? "bg-white/10 text-ui-text" : "text-ui-text-muted hover:text-ui-text",
+          activeView === "table" ? "bg-ui-hover text-ui-text" : "text-ui-text-muted hover:text-ui-text",
         )}
       >
         <List className="h-3.5 w-3.5" />
@@ -43,7 +43,7 @@ const RosterViewToggle = ({ activeView }: RosterViewToggleProps) => {
         title="Tampilan Kartu"
         className={cn(
           "flex h-7 w-7 cursor-pointer items-center justify-center rounded transition",
-          activeView === "cards" ? "bg-white/10 text-ui-text" : "text-ui-text-muted hover:text-ui-text",
+          activeView === "cards" ? "bg-ui-hover text-ui-text" : "text-ui-text-muted hover:text-ui-text",
         )}
       >
         <LayoutGrid className="h-3.5 w-3.5" />

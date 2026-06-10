@@ -101,7 +101,7 @@ const InviteForm = ({
         <p className="text-xs text-ui-text-2">
           Bagikan link ini kepada calon member. Link berlaku 7 hari.
         </p>
-        <div className="flex items-center gap-2 rounded-md border border-white/10 bg-black/20 px-3 py-2">
+        <div className="flex items-center gap-2 rounded-md border border-ui-border bg-black/20 px-3 py-2">
           <span className="min-w-0 flex-1 truncate text-xs text-ui-text">
             {inviteUrl}
           </span>
@@ -111,7 +111,7 @@ const InviteForm = ({
               navigator.clipboard.writeText(inviteUrl);
               notify.success("Link disalin ke clipboard");
             }}
-            className="shrink-0 rounded-md p-1 text-ui-text-muted transition hover:bg-white/10 hover:text-ui-text"
+            className="shrink-0 rounded-md p-1 text-ui-text-muted transition hover:bg-ui-hover hover:text-ui-text"
             title="Salin link"
           >
             <Copy className="h-4 w-4" />
@@ -138,7 +138,7 @@ const InviteForm = ({
         <button
           type="button"
           onClick={onClose}
-          className="rounded-md p-1 text-ui-text-muted transition hover:bg-white/10 hover:text-ui-text"
+          className="rounded-md p-1 text-ui-text-muted transition hover:bg-ui-hover hover:text-ui-text"
         >
           <X className="h-4 w-4" />
         </button>
@@ -150,7 +150,7 @@ const InviteForm = ({
             <button
               type="button"
               onClick={() => setDivisionOpen(!divisionOpen)}
-              className="flex h-9 w-full items-center justify-between rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white transition hover:bg-zinc-800 focus:border-yellow-400 focus:outline-none"
+              className="flex h-9 w-full items-center justify-between rounded-md border border-ui-border bg-ui-surface px-3 text-sm text-ui-text transition hover:bg-ui-elevated focus:border-yellow-400 focus:outline-none"
             >
               <span>
                 {divisions.find((d) => d.id === selectedDivisionId)?.name ?? "Pilih divisi..."}
@@ -159,7 +159,7 @@ const InviteForm = ({
             </button>
 
             {divisionOpen && (
-              <div className="absolute left-0 z-50 mt-1.5 w-full rounded-md border border-white/10 bg-zinc-950/95 p-1 shadow-2xl backdrop-blur-xl animate-in fade-in-50 slide-in-from-top-1 duration-100">
+              <div className="absolute left-0 z-50 mt-1.5 w-full rounded-md border border-ui-border bg-ui-bg/95 p-1 shadow-2xl backdrop-blur-xl animate-in fade-in-50 slide-in-from-top-1 duration-100">
                 {divisions.map((d) => (
                   <button
                     key={d.id}
@@ -171,7 +171,7 @@ const InviteForm = ({
                     className={`flex w-full items-center rounded px-3 py-1.5 text-left text-sm transition ${
                       selectedDivisionId === d.id
                         ? "bg-yellow-400/10 text-yellow-400 font-semibold"
-                        : "text-ui-text hover:bg-white/5 hover:text-ui-text"
+                        : "text-ui-text hover:bg-ui-elevated hover:text-ui-text"
                     }`}
                   >
                     {d.name}
@@ -189,7 +189,7 @@ const InviteForm = ({
           <button
             type="button"
             onClick={() => setRoleOpen(!roleOpen)}
-            className="flex h-9 w-full items-center justify-between rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white transition hover:bg-zinc-800 focus:border-yellow-400 focus:outline-none"
+            className="flex h-9 w-full items-center justify-between rounded-md border border-ui-border bg-ui-surface px-3 text-sm text-ui-text transition hover:bg-ui-elevated focus:border-yellow-400 focus:outline-none"
           >
             <span>
               {ROLES.find((r) => r.value === selectedRole)?.label ?? "Pilih role..."}
@@ -198,7 +198,7 @@ const InviteForm = ({
           </button>
 
           {roleOpen && (
-            <div className="absolute left-0 z-50 mt-1.5 w-full rounded-md border border-white/10 bg-zinc-950/95 p-1 shadow-2xl backdrop-blur-xl animate-in fade-in-50 slide-in-from-top-1 duration-100">
+            <div className="absolute left-0 z-50 mt-1.5 w-full rounded-md border border-ui-border bg-ui-bg/95 p-1 shadow-2xl backdrop-blur-xl animate-in fade-in-50 slide-in-from-top-1 duration-100">
               {availableRoles.map((r) => (
                 <button
                   key={r.value}
@@ -210,7 +210,7 @@ const InviteForm = ({
                   className={`flex w-full items-center rounded px-3 py-1.5 text-left text-sm transition ${
                     selectedRole === r.value
                       ? "bg-yellow-400/10 text-yellow-400 font-semibold"
-                      : "text-ui-text hover:bg-white/5 hover:text-ui-text"
+                      : "text-ui-text hover:bg-ui-elevated hover:text-ui-text"
                   }`}
                 >
                   {r.label}
@@ -226,7 +226,7 @@ const InviteForm = ({
         <input
           name="email"
           type="email"
-          className="h-9 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
+          className="h-9 w-full rounded-md border border-ui-border bg-ui-surface px-3 text-sm text-ui-text focus:border-yellow-400 focus:outline-none"
         />
       </Field>
 
@@ -237,7 +237,7 @@ const InviteForm = ({
           inputMode="numeric"
           maxLength={15}
           onInput={(e) => { e.currentTarget.value = e.currentTarget.value.replace(/\D/g, ""); }}
-          className="h-9 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
+          className="h-9 w-full rounded-md border border-ui-border bg-ui-surface px-3 text-sm text-ui-text focus:border-yellow-400 focus:outline-none"
         />
       </Field>
 

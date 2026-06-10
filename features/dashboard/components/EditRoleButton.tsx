@@ -48,7 +48,7 @@ const EditRoleButton = ({ memberId, currentRole, name }: EditRoleButtonProps) =>
         type="button"
         disabled={pending}
         onClick={() => setOpen((v) => !v)}
-        className="rounded-md p-1.5 text-ui-text-muted hover:bg-white/10 hover:text-blue-400 disabled:opacity-40"
+        className="rounded-md p-1.5 text-ui-text-muted hover:bg-ui-hover hover:text-blue-400 disabled:opacity-40"
         title="Ganti role"
       >
         <Pencil className="h-3.5 w-3.5" />

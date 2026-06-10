@@ -122,7 +122,7 @@ const CalendarToolbar = ({
             placeholder="Cari event..."
             value={searchQuery}
             onChange={(e) => handleSearchChange(e.target.value)}
-            className="h-10 w-full rounded-md border border-white/10 bg-zinc-900 pl-9 pr-3 text-sm text-white placeholder:text-white/40 focus:border-yellow-400 focus:outline-none"
+            className="h-10 w-full rounded-md border border-ui-border bg-ui-surface pl-9 pr-3 text-sm text-ui-text placeholder:text-ui-text-muted focus:border-yellow-400 focus:outline-none"
           />
         </div>
 
@@ -131,7 +131,7 @@ const CalendarToolbar = ({
           <button
             type="button"
             onClick={() => setTypeMenuOpen(!typeMenuOpen)}
-            className="inline-flex items-center gap-2 rounded-md border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-white/80 transition hover:bg-zinc-800 hover:text-white"
+            className="inline-flex items-center gap-2 rounded-md border border-ui-border bg-ui-surface px-3 py-2 text-sm text-ui-text transition hover:bg-ui-elevated hover:text-ui-text"
           >
             <span>Tipe</span>
             {activeTypeFilters.length > 0 && (
@@ -141,17 +141,17 @@ const CalendarToolbar = ({
             )}
           </button>
           {typeMenuOpen && (
-            <div className="absolute top-full right-0 mt-2 w-48 space-y-1 rounded-lg border border-white/10 bg-zinc-800 p-2 shadow-lg">
+            <div className="absolute top-full right-0 mt-2 w-48 space-y-1 rounded-lg border border-ui-border bg-ui-elevated p-2 shadow-lg">
               {EVENT_TYPES.map((type) => (
                 <label
                   key={type.value}
-                  className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm text-white/80 transition hover:bg-zinc-700"
+                  className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm text-ui-text transition hover:bg-zinc-700"
                 >
                   <input
                     type="checkbox"
                     checked={activeTypeFilters.includes(type.value)}
                     onChange={() => handleTypeFilterToggle(type.value)}
-                    className="h-4 w-4 rounded border-white/20 bg-zinc-900 text-blue-400 focus:ring-blue-400"
+                    className="h-4 w-4 rounded border-white/20 bg-ui-surface text-blue-400 focus:ring-blue-400"
                   />
                   {type.label}
                 </label>
@@ -165,7 +165,7 @@ const CalendarToolbar = ({
           <button
             type="button"
             onClick={() => setStatusMenuOpen(!statusMenuOpen)}
-            className="inline-flex items-center gap-2 rounded-md border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-white/80 transition hover:bg-zinc-800 hover:text-white"
+            className="inline-flex items-center gap-2 rounded-md border border-ui-border bg-ui-surface px-3 py-2 text-sm text-ui-text transition hover:bg-ui-elevated hover:text-ui-text"
           >
             <span>Status</span>
             {activeStatusFilters.length > 0 && (
@@ -175,17 +175,17 @@ const CalendarToolbar = ({
             )}
           </button>
           {statusMenuOpen && (
-            <div className="absolute top-full right-0 mt-2 w-48 space-y-1 rounded-lg border border-white/10 bg-zinc-800 p-2 shadow-lg">
+            <div className="absolute top-full right-0 mt-2 w-48 space-y-1 rounded-lg border border-ui-border bg-ui-elevated p-2 shadow-lg">
               {EVENT_STATUSES.map((status) => (
                 <label
                   key={status.value}
-                  className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm text-white/80 transition hover:bg-zinc-700"
+                  className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm text-ui-text transition hover:bg-zinc-700"
                 >
                   <input
                     type="checkbox"
                     checked={activeStatusFilters.includes(status.value)}
                     onChange={() => handleStatusFilterToggle(status.value)}
-                    className="h-4 w-4 rounded border-white/20 bg-zinc-900 text-green-400 focus:ring-green-400"
+                    className="h-4 w-4 rounded border-white/20 bg-ui-surface text-green-400 focus:ring-green-400"
                   />
                   {status.label}
                 </label>
@@ -198,7 +198,7 @@ const CalendarToolbar = ({
         <button
           type="button"
           onClick={handleTodayClick}
-          className="rounded-md border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-white/80 transition hover:bg-zinc-800 hover:text-white"
+          className="rounded-md border border-ui-border bg-ui-surface px-3 py-2 text-sm text-ui-text transition hover:bg-ui-elevated hover:text-ui-text"
         >
           Hari Ini
         </button>
@@ -212,7 +212,7 @@ const CalendarToolbar = ({
             const newDate = new Date(year, month - 1, 1);
             onNavigate(newDate.getFullYear(), newDate.getMonth());
           }}
-          className="rounded-md p-2 text-ui-text-2 transition hover:bg-white/10 hover:text-ui-text"
+          className="rounded-md p-2 text-ui-text-2 transition hover:bg-ui-hover hover:text-ui-text"
           aria-label="Bulan sebelumnya"
         >
           <ChevronLeft className="h-5 w-5" />
@@ -226,7 +226,7 @@ const CalendarToolbar = ({
             const newDate = new Date(year, month + 1, 1);
             onNavigate(newDate.getFullYear(), newDate.getMonth());
           }}
-          className="rounded-md p-2 text-ui-text-2 transition hover:bg-white/10 hover:text-ui-text"
+          className="rounded-md p-2 text-ui-text-2 transition hover:bg-ui-hover hover:text-ui-text"
           aria-label="Bulan berikutnya"
         >
           <ChevronRight className="h-5 w-5" />

@@ -23,7 +23,7 @@ const SkillRadarChart = ({ targets }: SkillRadarChartProps) => {
   }));
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
+    <div className="rounded-2xl border border-ui-border bg-ui-surface/40 p-5">
       <div className="mb-1 flex items-center justify-between">
         <h2 className="text-sm font-semibold text-ui-text">Skill Radar</h2>
         <div className="flex items-center gap-3 text-[10px] text-ui-text-muted">

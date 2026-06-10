@@ -65,7 +65,7 @@ const TrialListClient = ({ orgSlug, trials, divisionId, canManage, revalidatePat
               type="button"
               onClick={() => setModalOpen(true)}
               disabled={!divisionId}
-              className="mt-4 inline-flex h-9 items-center rounded-md border border-white/15 px-4 text-sm font-medium text-ui-text transition hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+              className="mt-4 inline-flex h-9 items-center rounded-md border border-white/15 px-4 text-sm font-medium text-ui-text transition hover:bg-ui-elevated disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
             >
               Buat trial pertama
             </button>

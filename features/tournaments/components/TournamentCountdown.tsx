@@ -163,7 +163,7 @@ const TournamentCountdown = ({
   }
 
   return (
-    <article className="rounded-xl border border-white/10 bg-gradient-to-br from-yellow-500/[0.08] to-transparent p-5">
+    <article className="rounded-xl border border-ui-border bg-gradient-to-br from-yellow-500/[0.08] to-transparent p-5">
       <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-yellow-400">
         <Trophy className="h-3.5 w-3.5" />
         {isPast ? "Turnamen sedang berlangsung" : "Turnamen berikutnya"}

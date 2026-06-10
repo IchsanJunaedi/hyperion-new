@@ -58,7 +58,7 @@ const AnnouncementEditForm = ({
           required
           maxLength={200}
           defaultValue={initialValues.title}
-          className="h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
+          className="h-10 w-full rounded-md border border-ui-border bg-ui-surface px-3 text-sm text-ui-text focus:border-yellow-400 focus:outline-none"
         />
       </Field>
 
@@ -70,11 +70,11 @@ const AnnouncementEditForm = ({
           rows={6}
           maxLength={5000}
           defaultValue={initialValues.body}
-          className="w-full rounded-md border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-yellow-400 focus:outline-none"
+          className="w-full rounded-md border border-ui-border bg-ui-surface px-3 py-2 text-sm text-ui-text focus:border-yellow-400 focus:outline-none"
         />
       </Field>
 
-      <div className="flex items-center justify-between rounded-xl bg-zinc-900/40 border border-white/5 px-4 py-3">
+      <div className="flex items-center justify-between rounded-xl bg-ui-surface/40 border border-ui-border px-4 py-3">
         <div className="space-y-0.5">
           <span className="block text-xs font-semibold text-ui-text">Pin di Halaman Utama</span>
           <span className="block text-[10px] text-ui-text-muted">Sematkan pengumuman di bagian atas</span>
@@ -86,7 +86,7 @@ const AnnouncementEditForm = ({
             defaultChecked={initialValues.is_pinned}
             className="peer sr-only"
           />
-          <div className="peer h-5 w-9 rounded-full bg-zinc-800 transition-all duration-300 after:absolute after:top-[2px] after:left-[2px] after:h-4 after:w-4 after:rounded-full after:bg-white/60 after:transition-all after:content-[''] peer-checked:bg-yellow-400 peer-checked:after:translate-x-full peer-checked:after:bg-black peer-hover:bg-zinc-700/80"></div>
+          <div className="peer h-5 w-9 rounded-full bg-ui-elevated transition-all duration-300 after:absolute after:top-[2px] after:left-[2px] after:h-4 after:w-4 after:rounded-full after:bg-white/60 after:transition-all after:content-[''] peer-checked:bg-yellow-400 peer-checked:after:translate-x-full peer-checked:after:bg-black peer-hover:bg-zinc-700/80"></div>
         </label>
       </div>
 

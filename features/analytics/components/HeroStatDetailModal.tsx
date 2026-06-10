@@ -81,7 +81,7 @@ function HeroRow({ row }: { row: HeroDetailHeroRow }) {
   return (
     <div className="grid grid-cols-[1fr_32px_32px_32px_40px] items-center gap-1 px-4 py-2 text-center transition-colors hover:bg-ui-surface">
       <div className="flex items-center gap-2">
-        <div className="h-5 w-5 shrink-0 overflow-hidden rounded-full border border-white/10">
+        <div className="h-5 w-5 shrink-0 overflow-hidden rounded-full border border-ui-border">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={getHeroImageUrl(row.hero_name)}
@@ -150,7 +150,7 @@ const HeroStatDetailModal = ({
       >
         {/* ── Header ── */}
         <div className="flex items-center gap-4 border-b border-ui-border bg-ui-surface px-6 py-4">
-          <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full border border-white/10">
+          <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full border border-ui-border">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={getHeroImageUrl(heroName)}

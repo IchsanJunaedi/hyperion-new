@@ -7,7 +7,7 @@ import type { Tournament } from "@/features/tournaments/queries";
 
 const PLACEMENT_BADGE: Record<number, { label: string; color: string }> = {
   1: { label: "Juara 1", color: "border-yellow-400/40 bg-yellow-400/10 text-yellow-300" },
-  2: { label: "Juara 2", color: "border-zinc-400/30 bg-zinc-400/10 text-zinc-300" },
+  2: { label: "Juara 2", color: "border-zinc-400/30 bg-zinc-400/10 text-ui-text-dim" },
   3: { label: "Juara 3", color: "border-orange-600/30 bg-orange-600/10 text-orange-400" },
 };
 
@@ -18,7 +18,7 @@ interface TournamentCardProps {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  upcoming: "bg-white/5 text-ui-text-2",
+  upcoming: "bg-ui-elevated text-ui-text-2",
   expired: "bg-orange-500/10 text-orange-400",
   ongoing: "bg-yellow-500/10 text-yellow-400",
   completed: "bg-green-500/10 text-green-400",

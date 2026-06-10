@@ -158,10 +158,10 @@ const QuickAddEventModal = ({
         role="dialog"
         aria-modal="true"
         aria-label="Tambah event"
-        className="fixed left-1/2 top-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-white/10 bg-ui-bg shadow-[0_0_50px_-12px_rgba(234,179,8,0.15)] transition-all duration-300"
+        className="fixed left-1/2 top-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-ui-border bg-ui-bg shadow-[0_0_50px_-12px_rgba(234,179,8,0.15)] transition-all duration-300"
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-white/5 px-6 py-5">
+        <div className="flex items-center justify-between border-b border-ui-border px-6 py-5">
           <div className="flex items-center gap-3">
             <Calendar className="h-5 w-5 text-yellow-400 shrink-0" />
             <div>
@@ -172,7 +172,7 @@ const QuickAddEventModal = ({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-1.5 text-ui-text-muted transition hover:bg-white/5 hover:text-ui-text"
+            className="rounded-lg p-1.5 text-ui-text-muted transition hover:bg-ui-elevated hover:text-ui-text"
           >
             <X className="h-4 w-4" />
           </button>
@@ -181,7 +181,7 @@ const QuickAddEventModal = ({
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-5 px-6 py-5">
           {/* Tip Banner */}
-          <div className="rounded-xl bg-zinc-900/60 p-3 text-[11px] leading-relaxed text-white/50 border border-white/5">
+          <div className="rounded-xl bg-ui-surface/60 p-3 text-[11px] leading-relaxed text-ui-text-2 border border-ui-border">
             <span className="font-semibold text-yellow-400">Tips Senior:</span> Turnamen resmi tim dibuat melalui menu <strong className="text-ui-text">Turnamen</strong> agar otomatis sinkron dengan sistem kehadiran dan rekapitulasi data.
           </div>
 
@@ -196,7 +196,7 @@ const QuickAddEventModal = ({
               required
               maxLength={200}
               placeholder="Masukkan nama event..."
-              className="w-full rounded-lg border border-white/10 bg-zinc-900/40 px-3.5 py-2 text-xs text-white placeholder:text-white/20 transition-all duration-300 focus:border-yellow-400/50 focus:outline-none"
+              className="w-full rounded-lg border border-ui-border bg-ui-surface/40 px-3.5 py-2 text-xs text-ui-text placeholder:text-ui-text-muted transition-all duration-300 focus:border-yellow-400/50 focus:outline-none"
             />
           </div>
 
@@ -214,7 +214,7 @@ const QuickAddEventModal = ({
                   className={`rounded-full px-3 py-1 text-xs font-semibold tracking-wide transition-all duration-300 ${
                     eventType === t.value
                       ? "bg-yellow-400 text-black shadow-lg shadow-yellow-400/20 scale-105"
-                      : "bg-white/5 text-ui-text-2 hover:bg-white/10 hover:text-ui-text hover:scale-102"
+                      : "bg-ui-elevated text-ui-text-2 hover:bg-ui-hover hover:text-ui-text hover:scale-102"
                   }`}
                 >
                   {t.label}
@@ -237,7 +237,7 @@ const QuickAddEventModal = ({
                 defaultValue={defaultStartsAt}
                 required
                 onChange={(e) => setStartsAt(e.target.value)}
-                className="w-full rounded-lg border border-white/10 bg-zinc-900/60 px-3 py-2 text-xs text-white transition-all duration-300 focus:border-yellow-400/50 focus:outline-none"
+                className="w-full rounded-lg border border-ui-border bg-ui-surface/60 px-3 py-2 text-xs text-ui-text transition-all duration-300 focus:border-yellow-400/50 focus:outline-none"
               />
             </div>
             <div className="space-y-1">
@@ -249,13 +249,13 @@ const QuickAddEventModal = ({
                 name="ends_at"
                 defaultValue={defaultEndsAt}
                 min={startsAt || undefined}
-                className="w-full rounded-lg border border-white/10 bg-zinc-900/60 px-3 py-2 text-xs text-white transition-all duration-300 focus:border-yellow-400/50 focus:outline-none"
+                className="w-full rounded-lg border border-ui-border bg-ui-surface/60 px-3 py-2 text-xs text-ui-text transition-all duration-300 focus:border-yellow-400/50 focus:outline-none"
               />
             </div>
           </div>
 
           {/* All day toggle */}
-          <div className="flex items-center justify-between rounded-xl bg-zinc-900/40 border border-white/5 px-4 py-3">
+          <div className="flex items-center justify-between rounded-xl bg-ui-surface/40 border border-ui-border px-4 py-3">
             <div className="space-y-0.5">
               <span className="block text-xs font-semibold text-ui-text">Event Seharian</span>
               <span className="block text-[10px] text-ui-text-muted">Setel event berlangsung sepanjang hari</span>
@@ -266,7 +266,7 @@ const QuickAddEventModal = ({
                 name="is_all_day"
                 className="peer sr-only"
               />
-              <div className="peer h-5 w-9 rounded-full bg-zinc-800 transition-all duration-300 after:absolute after:top-[2px] after:left-[2px] after:h-4 after:w-4 after:rounded-full after:bg-white/60 after:transition-all after:content-[''] peer-checked:bg-yellow-400 peer-checked:after:translate-x-full peer-checked:after:bg-black peer-hover:bg-zinc-700/80"></div>
+              <div className="peer h-5 w-9 rounded-full bg-ui-elevated transition-all duration-300 after:absolute after:top-[2px] after:left-[2px] after:h-4 after:w-4 after:rounded-full after:bg-white/60 after:transition-all after:content-[''] peer-checked:bg-yellow-400 peer-checked:after:translate-x-full peer-checked:after:bg-black peer-hover:bg-zinc-700/80"></div>
             </label>
           </div>
 
@@ -279,7 +279,7 @@ const QuickAddEventModal = ({
               <select
                 name="division_id"
                 defaultValue=""
-                className="w-full rounded-lg border border-white/10 bg-zinc-900/80 px-3 py-2 text-xs text-white transition-all duration-300 focus:border-yellow-400/50 focus:ring-1 focus:ring-yellow-400/20 focus:outline-none cursor-pointer"
+                className="w-full rounded-lg border border-ui-border bg-ui-surface/80 px-3 py-2 text-xs text-ui-text transition-all duration-300 focus:border-yellow-400/50 focus:ring-1 focus:ring-yellow-400/20 focus:outline-none cursor-pointer"
               >
                 <option value="">Semua divisi</option>
                 {divisions.map((d) => (
@@ -300,7 +300,7 @@ const QuickAddEventModal = ({
               <select
                 name="visibility"
                 defaultValue="all"
-                className="w-full rounded-lg border border-white/10 bg-zinc-900/80 px-3 py-2 text-xs text-white transition-all duration-300 focus:border-yellow-400/50 focus:ring-1 focus:ring-yellow-400/20 focus:outline-none cursor-pointer"
+                className="w-full rounded-lg border border-ui-border bg-ui-surface/80 px-3 py-2 text-xs text-ui-text transition-all duration-300 focus:border-yellow-400/50 focus:ring-1 focus:ring-yellow-400/20 focus:outline-none cursor-pointer"
               >
                 {visibilityOptions.map((o) => (
                   <option key={o.value} value={o.value}>
@@ -321,7 +321,7 @@ const QuickAddEventModal = ({
               rows={2}
               maxLength={2000}
               placeholder="Tambahkan detail, link, atau catatan penting..."
-              className="w-full resize-none rounded-lg border border-white/10 bg-zinc-900/40 px-3.5 py-2.5 text-xs text-white/80 placeholder:text-white/20 transition-all duration-300 focus:border-yellow-400/50 focus:outline-none"
+              className="w-full resize-none rounded-lg border border-ui-border bg-ui-surface/40 px-3.5 py-2.5 text-xs text-ui-text placeholder:text-ui-text-muted transition-all duration-300 focus:border-yellow-400/50 focus:outline-none"
             />
           </div>
 
@@ -333,11 +333,11 @@ const QuickAddEventModal = ({
           )}
 
           {/* Actions */}
-          <div className="flex items-center justify-end gap-2 border-t border-white/5 pt-4">
+          <div className="flex items-center justify-end gap-2 border-t border-ui-border pt-4">
             <button
               type="button"
               onClick={onClose}
-              className="rounded-lg px-4 py-2 text-sm font-semibold text-ui-text-2 transition-all duration-300 hover:bg-white/5 hover:text-ui-text active:scale-95"
+              className="rounded-lg px-4 py-2 text-sm font-semibold text-ui-text-2 transition-all duration-300 hover:bg-ui-elevated hover:text-ui-text active:scale-95"
             >
               Batal
             </button>

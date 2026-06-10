@@ -69,7 +69,7 @@ const RosterTable = ({
       {isManagerOrAbove && (
         <div>
           {showInviteForm ? (
-            <div className="rounded-xl border border-white/10 bg-zinc-900/40 p-5">
+            <div className="rounded-xl border border-ui-border bg-ui-surface/40 p-5">
               <InviteForm
                 orgSlug={orgSlug}
                 orgId={orgId}
@@ -82,7 +82,7 @@ const RosterTable = ({
             <button
               type="button"
               onClick={() => setShowInviteForm(true)}
-              className="inline-flex items-center gap-2 rounded-md border border-white/10 px-3 py-2 text-sm text-ui-text transition hover:bg-white/5 hover:text-ui-text"
+              className="inline-flex items-center gap-2 rounded-md border border-ui-border px-3 py-2 text-sm text-ui-text transition hover:bg-ui-elevated hover:text-ui-text"
             >
               <UserPlus className="h-4 w-4" />
               Undang Member
@@ -92,7 +92,7 @@ const RosterTable = ({
       )}
 
       {/* Member list */}
-      <div className="divide-y divide-white/5 overflow-hidden rounded-xl border border-white/10 bg-zinc-900/40">
+      <div className="divide-y divide-ui-border overflow-hidden rounded-xl border border-ui-border bg-ui-surface/40">
         {members.length === 0 && (
           <p className="px-5 py-10 text-center text-sm text-ui-text-2">
             Belum ada member aktif.
@@ -138,7 +138,7 @@ const RosterTable = ({
                     className="h-9 w-9 shrink-0 rounded-full object-cover"
                   />
                 ) : (
-                  <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-white/10 text-xs font-semibold text-ui-text">
+                  <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-ui-hover text-xs font-semibold text-ui-text">
                     {initials}
                   </div>
                 )}

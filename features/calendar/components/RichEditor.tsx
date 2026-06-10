@@ -101,7 +101,7 @@ const RichEditor = ({
 
   if (!editable) {
     return (
-      <div className="whitespace-pre-wrap rounded-lg border border-white/10 bg-zinc-950 p-4 text-sm text-white/85 leading-relaxed">
+      <div className="whitespace-pre-wrap rounded-lg border border-ui-border bg-ui-bg p-4 text-sm text-ui-text leading-relaxed">
         {content || placeholder}
       </div>
     );
@@ -110,47 +110,47 @@ const RichEditor = ({
   return (
     <div className="space-y-2">
       {/* Simple formatting toolbar */}
-      <div className="flex flex-wrap gap-1 rounded-lg border border-white/10 bg-zinc-900 p-2">
+      <div className="flex flex-wrap gap-1 rounded-lg border border-ui-border bg-ui-surface p-2">
         <button
           type="button"
           title="Bold (Ctrl+B)"
-          className="rounded px-2 py-1.5 text-ui-text transition hover:bg-white/10 hover:text-ui-text"
+          className="rounded px-2 py-1.5 text-ui-text transition hover:bg-ui-hover hover:text-ui-text"
         >
           <Bold className="h-4 w-4" />
         </button>
         <button
           type="button"
           title="Italic (Ctrl+I)"
-          className="rounded px-2 py-1.5 text-ui-text transition hover:bg-white/10 hover:text-ui-text"
+          className="rounded px-2 py-1.5 text-ui-text transition hover:bg-ui-hover hover:text-ui-text"
         >
           <Italic className="h-4 w-4" />
         </button>
-        <div className="mx-1 border-r border-white/10" />
+        <div className="mx-1 border-r border-ui-border" />
         <button
           type="button"
           title="Bullet list"
-          className="rounded px-2 py-1.5 text-ui-text transition hover:bg-white/10 hover:text-ui-text"
+          className="rounded px-2 py-1.5 text-ui-text transition hover:bg-ui-hover hover:text-ui-text"
         >
           <List className="h-4 w-4" />
         </button>
         <button
           type="button"
           title="Checklist"
-          className="rounded px-2 py-1.5 text-ui-text transition hover:bg-white/10 hover:text-ui-text"
+          className="rounded px-2 py-1.5 text-ui-text transition hover:bg-ui-hover hover:text-ui-text"
         >
           <ListChecks className="h-4 w-4" />
         </button>
         <button
           type="button"
           title="Quote"
-          className="rounded px-2 py-1.5 text-ui-text transition hover:bg-white/10 hover:text-ui-text"
+          className="rounded px-2 py-1.5 text-ui-text transition hover:bg-ui-hover hover:text-ui-text"
         >
           <Quote className="h-4 w-4" />
         </button>
         <button
           type="button"
           title="Link"
-          className="rounded px-2 py-1.5 text-ui-text transition hover:bg-white/10 hover:text-ui-text"
+          className="rounded px-2 py-1.5 text-ui-text transition hover:bg-ui-hover hover:text-ui-text"
         >
           <Link2 className="h-4 w-4" />
         </button>
@@ -165,7 +165,7 @@ const RichEditor = ({
         onBlur={handleBlur}
         placeholder={placeholder}
         style={{ minHeight }}
-        className="w-full rounded-lg border border-white/10 bg-zinc-950 p-4 font-mono text-sm text-white placeholder:text-white/40 focus:border-yellow-400 focus:outline-none focus:ring-1 focus:ring-yellow-400/20"
+        className="w-full rounded-lg border border-ui-border bg-ui-bg p-4 font-mono text-sm text-ui-text placeholder:text-ui-text-muted focus:border-yellow-400 focus:outline-none focus:ring-1 focus:ring-yellow-400/20"
       />
 
       {/* Helper text */}

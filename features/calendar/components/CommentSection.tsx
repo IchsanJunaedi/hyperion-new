@@ -74,7 +74,7 @@ const CommentSection = ({
   };
 
   return (
-    <div className="space-y-4 rounded-xl border border-white/10 bg-zinc-900/40 p-4 sm:p-6">
+    <div className="space-y-4 rounded-xl border border-ui-border bg-ui-surface/40 p-4 sm:p-6">
       {/* Header */}
       <div className="flex items-center gap-2">
         <MessageSquare className="h-5 w-5 text-ui-text" />
@@ -93,7 +93,7 @@ const CommentSection = ({
           comments.map((comment) => (
             <div
               key={comment.id}
-              className="group rounded-lg border border-white/5 bg-white/2.5 p-3 transition hover:bg-white/5"
+              className="group rounded-lg border border-ui-border bg-white/2.5 p-3 transition hover:bg-ui-elevated"
             >
               <div className="mb-1.5 flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -133,7 +133,7 @@ const CommentSection = ({
       {!readOnly && (
         <form
           onSubmit={handleAddComment}
-          className="space-y-2 border-t border-white/5 pt-4"
+          className="space-y-2 border-t border-ui-border pt-4"
         >
           <textarea
             ref={textareaRef}
@@ -141,7 +141,7 @@ const CommentSection = ({
             onChange={(e) => setCommentBody(e.target.value)}
             placeholder="Tambahkan komentar..."
             rows={2}
-            className="w-full resize-none rounded-lg border border-white/10 bg-zinc-950 p-3 text-sm text-white placeholder:text-white/40 focus:border-yellow-400 focus:outline-none focus:ring-1 focus:ring-yellow-400/20"
+            className="w-full resize-none rounded-lg border border-ui-border bg-ui-bg p-3 text-sm text-ui-text placeholder:text-ui-text-muted focus:border-yellow-400 focus:outline-none focus:ring-1 focus:ring-yellow-400/20"
           />
           <div className="flex justify-end">
             <button

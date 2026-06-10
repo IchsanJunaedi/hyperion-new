@@ -110,7 +110,7 @@ const VodReviewSection = ({
     isCoach || ts.created_by === currentUserId;
 
   return (
-    <div className="border-t border-white/5">
+    <div className="border-t border-ui-border">
       {/* Toggle header */}
       <button
         onClick={() => setExpanded((v) => !v)}
@@ -120,7 +120,7 @@ const VodReviewSection = ({
           <Video className="h-3.5 w-3.5 text-ui-text-muted" />
           <span className="text-xs font-semibold text-ui-text-2">VOD Review</span>
           {timestamps.length > 0 && (
-            <span className="rounded-full bg-white/10 px-1.5 py-0.5 text-[10px] font-bold text-ui-text-2">
+            <span className="rounded-full bg-ui-hover px-1.5 py-0.5 text-[10px] font-bold text-ui-text-2">
               {timestamps.length}
             </span>
           )}
@@ -188,7 +188,7 @@ const VodReviewSection = ({
           )}
 
           {canEdit && showForm && (
-            <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3 space-y-2.5">
+            <div className="rounded-lg border border-ui-border bg-white/[0.03] p-3 space-y-2.5">
               {/* Time input */}
               <div className="space-y-1">
                 <label className="text-[10px] font-semibold uppercase tracking-wider text-ui-text-muted">
@@ -204,7 +204,7 @@ const VodReviewSection = ({
                   }}
                   className={cn(
                     "w-full rounded-md border bg-white/[0.04] px-3 py-1.5 font-mono text-sm text-ui-text placeholder-white/20 outline-none focus:ring-1 focus:ring-blue-500/50",
-                    timeError ? "border-red-500/50" : "border-white/10",
+                    timeError ? "border-red-500/50" : "border-ui-border",
                   )}
                 />
                 {timeError && (
@@ -221,7 +221,7 @@ const VodReviewSection = ({
                   <select
                     value={selectedPlayerId}
                     onChange={(e) => setSelectedPlayerId(e.target.value)}
-                    className="w-full rounded-md border border-white/10 bg-ui-bg px-3 py-1.5 text-sm text-ui-text outline-none focus:ring-1 focus:ring-blue-500/50 cursor-pointer"
+                    className="w-full rounded-md border border-ui-border bg-ui-bg px-3 py-1.5 text-sm text-ui-text outline-none focus:ring-1 focus:ring-blue-500/50 cursor-pointer"
                   >
                     <option value="">— Tidak ada —</option>
                     {players.map((p) => (
@@ -244,7 +244,7 @@ const VodReviewSection = ({
                   value={noteText}
                   onChange={(e) => setNoteText(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleAdd()}
-                  className="w-full rounded-md border border-white/10 bg-white/[0.04] px-3 py-1.5 text-sm text-ui-text placeholder-white/20 outline-none focus:ring-1 focus:ring-blue-500/50"
+                  className="w-full rounded-md border border-ui-border bg-white/[0.04] px-3 py-1.5 text-sm text-ui-text placeholder-white/20 outline-none focus:ring-1 focus:ring-blue-500/50"
                 />
               </div>
 

@@ -61,7 +61,7 @@ const ManageAssignPage = async ({ params }: Props) => {
         </p>
       </header>
 
-      <div className="max-w-2xl rounded-2xl border border-white/10 bg-zinc-900/40 p-5 sm:p-6">
+      <div className="max-w-2xl rounded-2xl border border-ui-border bg-ui-surface/40 p-5 sm:p-6">
         <ManagerAssignForm
           users={filteredProfiles.map((p) => ({
             id: p.id,

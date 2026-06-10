@@ -48,7 +48,7 @@ const StrategyNoteForm = ({ orgSlug, divisions }: StrategyNoteFormProps) => {
           name="title"
           required
           maxLength={200}
-          className="h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
+          className="h-10 w-full rounded-md border border-ui-border bg-ui-surface px-3 text-sm text-ui-text focus:border-yellow-400 focus:outline-none"
         />
       </Field>
 
@@ -58,7 +58,7 @@ const StrategyNoteForm = ({ orgSlug, divisions }: StrategyNoteFormProps) => {
           required
           rows={12}
           maxLength={20000}
-          className="w-full rounded-md border border-white/10 bg-zinc-900 px-3 py-2 font-mono text-sm text-white focus:border-yellow-400 focus:outline-none"
+          className="w-full rounded-md border border-ui-border bg-ui-surface px-3 py-2 font-mono text-sm text-ui-text focus:border-yellow-400 focus:outline-none"
         />
       </Field>
 
@@ -66,7 +66,7 @@ const StrategyNoteForm = ({ orgSlug, divisions }: StrategyNoteFormProps) => {
         <select
           name="division_id"
           defaultValue=""
-          className="h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
+          className="h-10 w-full rounded-md border border-ui-border bg-ui-surface px-3 text-sm text-ui-text focus:border-yellow-400 focus:outline-none"
         >
           <option value="">Semua divisi</option>
           {divisions.map((d) => (
@@ -81,7 +81,7 @@ const StrategyNoteForm = ({ orgSlug, divisions }: StrategyNoteFormProps) => {
         <input
           name="tags"
           maxLength={500}
-          className="h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
+          className="h-10 w-full rounded-md border border-ui-border bg-ui-surface px-3 text-sm text-ui-text focus:border-yellow-400 focus:outline-none"
         />
       </Field>
 
@@ -89,7 +89,7 @@ const StrategyNoteForm = ({ orgSlug, divisions }: StrategyNoteFormProps) => {
         <select
           name="visibility"
           defaultValue="division"
-          className="h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none"
+          className="h-10 w-full rounded-md border border-ui-border bg-ui-surface px-3 text-sm text-ui-text focus:border-yellow-400 focus:outline-none"
         >
           <option value="public">Publik (semua member org)</option>
           <option value="division">Divisi saja</option>

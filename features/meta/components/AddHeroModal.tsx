@@ -363,7 +363,7 @@ const AddHeroModal = ({
             <button
               type="button"
               onClick={() => onClose()}
-              className="flex-1 cursor-pointer rounded-md border border-ui-border py-2 text-sm text-ui-text-2 transition hover:bg-white/5"
+              className="flex-1 cursor-pointer rounded-md border border-ui-border py-2 text-sm text-ui-text-2 transition hover:bg-ui-elevated"
             >
               Batal
             </button>

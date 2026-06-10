@@ -110,12 +110,12 @@ const AdminFileManager = ({
   return (
     <div className="space-y-6">
       {/* Header Panel */}
-      <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center bg-zinc-900/40 border border-white/5 rounded-2xl p-5">
+      <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center bg-ui-surface/40 border border-ui-border rounded-2xl p-5">
         <div className="space-y-1">
           <h2 className="text-lg font-bold text-ui-text tracking-tight">Total File Platform</h2>
           <p className="text-xs text-ui-text-2">Kelola semua file yang diupload oleh tim esports di Hyperion.</p>
         </div>
-        <div className="text-xs font-semibold px-3.5 py-1.5 rounded-full border border-white/5 bg-zinc-900/60 text-yellow-400">
+        <div className="text-xs font-semibold px-3.5 py-1.5 rounded-full border border-ui-border bg-ui-surface/60 text-yellow-400">
           {files.length} File Terdaftar
         </div>
       </div>
@@ -130,7 +130,7 @@ const AdminFileManager = ({
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Cari nama file..."
-            className="w-full h-10 pl-10 pr-4 rounded-xl border border-white/10 bg-zinc-900/40 text-sm text-white placeholder:text-white/20 focus:border-yellow-400 focus:outline-none transition-all duration-300"
+            className="w-full h-10 pl-10 pr-4 rounded-xl border border-ui-border bg-ui-surface/40 text-sm text-ui-text placeholder:text-ui-text-muted focus:border-yellow-400 focus:outline-none transition-all duration-300"
           />
         </div>
 
@@ -139,11 +139,11 @@ const AdminFileManager = ({
           <select
             value={selectedOrgId}
             onChange={(e) => setSelectedOrgId(e.target.value)}
-            className="w-full h-10 px-3.5 rounded-xl border border-white/10 bg-zinc-900/40 text-sm text-white focus:border-yellow-400 focus:outline-none cursor-pointer transition-all duration-300"
+            className="w-full h-10 px-3.5 rounded-xl border border-ui-border bg-ui-surface/40 text-sm text-ui-text focus:border-yellow-400 focus:outline-none cursor-pointer transition-all duration-300"
           >
-            <option value="" className="bg-zinc-900">Semua Tim</option>
+            <option value="" className="bg-ui-surface">Semua Tim</option>
             {organizations.map((org) => (
-              <option key={org.id} value={org.id} className="bg-zinc-900">
+              <option key={org.id} value={org.id} className="bg-ui-surface">
                 {org.name}
               </option>
             ))}
@@ -153,15 +153,15 @@ const AdminFileManager = ({
 
       {/* Files List Table/Card */}
       {filteredFiles.length === 0 ? (
-        <div className="rounded-2xl border border-white/5 bg-zinc-900/20 p-12 text-center">
+        <div className="rounded-2xl border border-ui-border bg-ui-surface/20 p-12 text-center">
           <File className="h-10 w-10 text-ui-text-muted mx-auto mb-3" />
           <p className="text-sm text-ui-text-muted">Tidak ada file yang cocok dengan pencarian.</p>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-2xl border border-white/10 bg-zinc-900/40 shadow-xl shadow-black/20">
+        <div className="overflow-x-auto rounded-2xl border border-ui-border bg-ui-surface/40 shadow-xl shadow-black/20">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-white/5 text-[11px] font-bold uppercase tracking-wider text-ui-text-muted bg-zinc-900/20">
+              <tr className="border-b border-ui-border text-[11px] font-bold uppercase tracking-wider text-ui-text-muted bg-ui-surface/20">
                 <th className="px-5 py-4">Nama File</th>
                 <th className="px-5 py-4">Tim / Organisasi</th>
                 <th className="px-5 py-4">Ukuran</th>
@@ -170,7 +170,7 @@ const AdminFileManager = ({
                 <th className="px-5 py-4 text-right">Aksi</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5">
+            <tbody className="divide-y divide-ui-border">
               {filteredFiles.map((file) => {
                 const date = new Date(file.created_at).toLocaleDateString("id-ID", {
                   day: "numeric",
@@ -231,7 +231,7 @@ const AdminFileManager = ({
                           type="button"
                           onClick={() => handleDownload(file.id, file.storage_path, file.file_name)}
                           disabled={downloadingId === file.id}
-                          className="rounded-lg p-1.5 text-ui-text-muted hover:bg-white/5 hover:text-ui-text transition disabled:opacity-40"
+                          className="rounded-lg p-1.5 text-ui-text-muted hover:bg-ui-elevated hover:text-ui-text transition disabled:opacity-40"
                           title="Unduh file"
                         >
                           {downloadingId === file.id ? (

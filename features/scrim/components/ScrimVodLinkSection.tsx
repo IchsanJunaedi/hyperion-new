@@ -18,7 +18,7 @@ function detectPlatform(url: string) {
     return { name: "YouTube", icon: Youtube, color: "text-red-500", bg: "bg-red-500/10" };
   }
   if (lowerUrl.includes("tiktok.com")) {
-    return { name: "TikTok", icon: Video, color: "text-ui-text", bg: "bg-white/10" };
+    return { name: "TikTok", icon: Video, color: "text-ui-text", bg: "bg-ui-hover" };
   }
   if (lowerUrl.includes("twitch.tv")) {
     return { name: "Twitch", icon: Video, color: "text-purple-400", bg: "bg-purple-500/10" };
@@ -59,7 +59,7 @@ const ScrimVodLinkSection = ({ scrimId, initialLink, canEdit }: ScrimVodLinkSect
   const PlatformIcon = platform?.icon ?? LinkIcon;
 
   return (
-    <article className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
+    <article className="rounded-2xl border border-ui-border bg-ui-surface/40 p-5">
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-sm font-semibold text-ui-text">VOD / Livestream</h2>
         {canEdit && !isEditing && (
@@ -81,7 +81,7 @@ const ScrimVodLinkSection = ({ scrimId, initialLink, canEdit }: ScrimVodLinkSect
             href={vodLink}
             target="_blank"
             rel="noopener noreferrer"
-            className="group flex items-center justify-between rounded-lg border border-white/5 bg-white/[0.02] p-3 transition-colors hover:bg-white/[0.04]"
+            className="group flex items-center justify-between rounded-lg border border-ui-border bg-white/[0.02] p-3 transition-colors hover:bg-white/[0.04]"
           >
             <div className="flex items-center gap-3 min-w-0">
               <div className={cn("flex h-8 w-8 shrink-0 items-center justify-center rounded-md", platform?.bg)}>
@@ -95,7 +95,7 @@ const ScrimVodLinkSection = ({ scrimId, initialLink, canEdit }: ScrimVodLinkSect
             <ExternalLink className="h-4 w-4 shrink-0 text-ui-text-muted transition-colors group-hover:text-ui-text-2 ml-2" />
           </a>
         ) : (
-          <div className="flex items-center justify-center rounded-lg border border-dashed border-white/10 py-4">
+          <div className="flex items-center justify-center rounded-lg border border-dashed border-ui-border py-4">
             <p className="text-xs text-ui-text-muted">Belum ada link VOD/Livestream</p>
           </div>
         )
@@ -106,7 +106,7 @@ const ScrimVodLinkSection = ({ scrimId, initialLink, canEdit }: ScrimVodLinkSect
             value={inputUrl}
             onChange={(e) => setInputUrl(e.target.value)}
             placeholder="https://youtube.com/..."
-            className="w-full rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm text-ui-text placeholder-white/20 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            className="w-full rounded-md border border-ui-border bg-ui-elevated px-3 py-2 text-sm text-ui-text placeholder-white/20 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
             autoFocus
           />
           <div className="flex items-center justify-end gap-2">

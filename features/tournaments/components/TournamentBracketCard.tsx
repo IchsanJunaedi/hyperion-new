@@ -139,7 +139,7 @@ const TournamentBracketCard = ({
   const hasBracket = !!initialBracketLink || !!filePath;
 
   return (
-    <article className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
+    <article className="rounded-2xl border border-ui-border bg-ui-surface/40 p-5">
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-sm font-semibold text-ui-text">Bracket Turnamen</h2>
         {canManage && !editing && (
@@ -170,7 +170,7 @@ const TournamentBracketCard = ({
           <div className="space-y-1">
             <label className="text-xs text-ui-text-muted font-medium">File Bracket (Opsional)</label>
             {filePath || selectedFile ? (
-              <div className="flex items-center gap-2.5 rounded-lg border border-white/5 bg-ui-bg px-3 py-2">
+              <div className="flex items-center gap-2.5 rounded-lg border border-ui-border bg-ui-bg px-3 py-2">
                 <File className="h-4 w-4 shrink-0 text-ui-text-muted" />
                 <span className="min-w-0 flex-1 truncate text-xs text-ui-text">
                   {selectedFile ? selectedFile.name : getFileName(filePath)}
@@ -184,7 +184,7 @@ const TournamentBracketCard = ({
                 </button>
               </div>
             ) : (
-              <label className="flex h-16 cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-white/10 hover:bg-white/[0.02] transition">
+              <label className="flex h-16 cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-ui-border hover:bg-white/[0.02] transition">
                 <div className="flex flex-col items-center justify-center py-2 text-center">
                   <Upload className="h-4 w-4 text-ui-text-muted mb-1" />
                   <p className="text-[10px] text-ui-text-muted font-medium">
@@ -227,7 +227,7 @@ const TournamentBracketCard = ({
               href={initialBracketLink.startsWith("http") ? initialBracketLink : `https://${initialBracketLink}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2.5 rounded-lg border border-white/5 bg-white/[0.02] px-3.5 py-2.5 text-xs text-ui-text hover:bg-white/[0.05] hover:text-ui-text transition"
+              className="flex items-center gap-2.5 rounded-lg border border-ui-border bg-white/[0.02] px-3.5 py-2.5 text-xs text-ui-text hover:bg-white/[0.05] hover:text-ui-text transition"
             >
               <ExternalLink className="h-4 w-4 text-yellow-400 shrink-0" />
               <span className="flex-1 truncate font-medium">Buka Link Bracket</span>
@@ -240,7 +240,7 @@ const TournamentBracketCard = ({
               type="button"
               disabled={opening}
               onClick={handleOpen}
-              className="w-full flex items-center gap-2.5 rounded-lg border border-white/5 bg-white/[0.02] px-3.5 py-2.5 text-xs text-ui-text hover:bg-white/[0.05] hover:text-ui-text transition cursor-pointer text-left"
+              className="w-full flex items-center gap-2.5 rounded-lg border border-ui-border bg-white/[0.02] px-3.5 py-2.5 text-xs text-ui-text hover:bg-white/[0.05] hover:text-ui-text transition cursor-pointer text-left"
             >
               {opening ? (
                 <Loader2 className="h-4 w-4 text-blue-400 animate-spin shrink-0" />

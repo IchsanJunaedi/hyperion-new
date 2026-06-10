@@ -28,7 +28,7 @@ const PLACEMENT_STYLE: Record<number, { gradient: string; ring: string; textColo
   2: {
     gradient: "from-zinc-400/20 via-zinc-300/10 to-transparent",
     ring: "border-zinc-400/40",
-    textColor: "text-zinc-300",
+    textColor: "text-ui-text-dim",
     label: "JUARA 2",
   },
   3: {
@@ -72,7 +72,7 @@ function PlacementBanner({ placement, prizeEarned }: { placement: number; prizeE
 }
 
 const STATUS_BADGE: Record<string, { color: string; label: string }> = {
-  upcoming: { color: "bg-white/5 text-ui-text-2 border-white/10", label: "BELUM DAFTAR" },
+  upcoming: { color: "bg-ui-elevated text-ui-text-2 border-ui-border", label: "BELUM DAFTAR" },
   expired: { color: "bg-orange-500/10 text-orange-400 border-orange-500/20", label: "KADALUARSA" },
   ongoing: { color: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20", label: "TERDAFTAR" },
   completed: { color: "bg-green-500/10 text-green-400 border-green-500/20", label: "SELESAI" },
@@ -100,7 +100,7 @@ export default async function TournamentDetailPage({ params }: TournamentDetailP
 
   const tournamentStarted = new Date(`${detail.start_date}T${startTimeStr}:00+07:00`).getTime() <= Date.now();
   const badgeKey = isRegistrationExpired ? "expired" : detail.status;
-  let badge = STATUS_BADGE[badgeKey] ?? STATUS_BADGE["upcoming"] ?? { color: "bg-white/5 text-ui-text-2 border-white/10", label: "TIDAK DIKETAHUI" };
+  let badge = STATUS_BADGE[badgeKey] ?? STATUS_BADGE["upcoming"] ?? { color: "bg-ui-elevated text-ui-text-2 border-ui-border", label: "TIDAK DIKETAHUI" };
   if (detail.status === "ongoing" && tournamentStarted) {
     badge = { color: "bg-blue-500/10 text-blue-400 border-blue-500/20", label: "BERLANGSUNG" };
   }
@@ -119,7 +119,7 @@ export default async function TournamentDetailPage({ params }: TournamentDetailP
       <div className="flex justify-start">
         <Link
           href={`/${slug}/tournaments`}
-          className="group inline-flex items-center gap-2 rounded-full border border-white/5 bg-zinc-900/40 px-3.5 py-1.5 text-xs font-semibold text-white/60 transition-all duration-300 hover:bg-zinc-800/60 hover:text-white"
+          className="group inline-flex items-center gap-2 rounded-full border border-ui-border bg-ui-surface/40 px-3.5 py-1.5 text-xs font-semibold text-ui-text-2 transition-all duration-300 hover:bg-ui-elevated/60 hover:text-ui-text"
         >
           <ArrowLeft className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-x-0.5" />
           Kembali ke daftar turnamen
@@ -213,7 +213,7 @@ export default async function TournamentDetailPage({ params }: TournamentDetailP
 
           {/* Detail info card */}
           {(detail.registration_fee || detail.registration_url || detail.notes) && (
-            <article className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
+            <article className="rounded-2xl border border-ui-border bg-ui-surface/40 p-5">
               <h2 className="text-sm font-semibold text-ui-text">Detail tambahan</h2>
 
               {detail.registration_fee && (
@@ -229,7 +229,7 @@ export default async function TournamentDetailPage({ params }: TournamentDetailP
                     href={detail.registration_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 rounded-md border border-white/10 px-3 py-1.5 text-xs text-blue-400 hover:bg-white/5 transition"
+                    className="inline-flex items-center gap-1.5 rounded-md border border-ui-border px-3 py-1.5 text-xs text-blue-400 hover:bg-ui-elevated transition"
                   >
                     <ExternalLink className="h-3 w-3" />
                     Link Registrasi
@@ -249,7 +249,7 @@ export default async function TournamentDetailPage({ params }: TournamentDetailP
         <aside className="space-y-6">
           {/* Visual journey — show when there are completed stages with matches */}
           {detail.stages.some((s) => s.matches.length > 0) && (
-            <article className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
+            <article className="rounded-2xl border border-ui-border bg-ui-surface/40 p-5">
               <h3 className="mb-3 text-sm font-semibold text-ui-text">Perjalanan Turnamen</h3>
               <TournamentJourney stages={detail.stages} tournamentName={detail.name} />
             </article>
@@ -257,7 +257,7 @@ export default async function TournamentDetailPage({ params }: TournamentDetailP
 
           {/* Timeline — show for all active statuses */}
           {(detail.status === "upcoming" || detail.status === "ongoing" || detail.status === "completed") && (
-            <article className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
+            <article className="rounded-2xl border border-ui-border bg-ui-surface/40 p-5">
               <TournamentTimeline
                 stages={detail.stages}
                 tournamentId={detail.id}

@@ -107,7 +107,7 @@ const SponsorROIDashboard = ({ sponsors }: Props) => {
             <>
               <p className={cn("text-2xl font-bold tabular-nums", completionColor)}>{overallPct}%</p>
               <p className="text-[11px] text-ui-text-muted mt-0.5">{totalDone}/{totalAll} deliverable</p>
-              <div className="mt-2 h-1 w-full rounded-full bg-white/10">
+              <div className="mt-2 h-1 w-full rounded-full bg-ui-hover">
                 <div
                   className={cn("h-full rounded-full transition-all", completionBarColor)}
                   style={{ width: `${overallPct}%` }}
@@ -188,7 +188,7 @@ const SponsorROIDashboard = ({ sponsors }: Props) => {
                           </span>
                           <span className={cn(
                             "shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-semibold tabular-nums",
-                            done ? "bg-green-500/15 text-green-400" : "bg-white/5 text-white/40"
+                            done ? "bg-green-500/15 text-green-400" : "bg-ui-elevated text-white/40"
                           )}>
                             {s.deliverableDone}/{s.deliverableTotal}
                           </span>
@@ -287,7 +287,7 @@ const SponsorROIDashboard = ({ sponsors }: Props) => {
           </div>
 
           {/* Stacked bar */}
-          <div className="flex h-2 w-full overflow-hidden rounded-full bg-white/5">
+          <div className="flex h-2 w-full overflow-hidden rounded-full bg-ui-elevated">
             {sortedStatuses.map(([status, val]) => (
               <div
                 key={status}

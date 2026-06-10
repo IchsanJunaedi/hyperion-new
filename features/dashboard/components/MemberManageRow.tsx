@@ -102,7 +102,7 @@ const MemberManageRow = ({
               type="button"
               disabled={deletePending}
               onClick={() => setDeleteOpen(true)}
-              className="rounded-md p-1.5 text-ui-text-muted hover:bg-white/10 hover:text-red-400 disabled:opacity-40"
+              className="rounded-md p-1.5 text-ui-text-muted hover:bg-ui-hover hover:text-red-400 disabled:opacity-40"
               title="Hapus dari tim"
             >
               {deletePending ? (

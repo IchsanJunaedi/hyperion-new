@@ -25,7 +25,7 @@ const VISIBILITY_OPTIONS = [
 ];
 
 const inputCls =
-  "h-10 w-full rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none [color-scheme:dark]";
+  "h-10 w-full rounded-md border border-ui-border bg-ui-surface px-3 text-sm text-ui-text focus:border-yellow-400 focus:outline-none [color-scheme:dark]";
 
 interface PremiumSelectProps {
   id: string;
@@ -59,7 +59,7 @@ function PremiumSelect({ id, name, options, defaultValue = "" }: PremiumSelectPr
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex h-10 w-full items-center justify-between rounded-md border border-white/10 bg-zinc-900 px-3 text-sm text-white focus:border-yellow-400 focus:outline-none transition-all duration-200 hover:bg-zinc-800/40 text-left"
+        className="flex h-10 w-full items-center justify-between rounded-md border border-ui-border bg-ui-surface px-3 text-sm text-ui-text focus:border-yellow-400 focus:outline-none transition-all duration-200 hover:bg-ui-elevated/40 text-left"
       >
         <span className="truncate">{selectedOption?.label}</span>
         <svg
@@ -78,7 +78,7 @@ function PremiumSelect({ id, name, options, defaultValue = "" }: PremiumSelectPr
       </button>
 
       {isOpen && (
-        <div className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md border border-white/10 bg-zinc-950/95 backdrop-blur-md p-1 shadow-xl shadow-black/40 focus:outline-none animate-in fade-in-50 slide-in-from-top-1 duration-100">
+        <div className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md border border-ui-border bg-ui-bg/95 backdrop-blur-md p-1 shadow-xl shadow-black/40 focus:outline-none animate-in fade-in-50 slide-in-from-top-1 duration-100">
           {options.map((opt) => {
             const isSelected = opt.value === selectedValue;
             return (
@@ -92,7 +92,7 @@ function PremiumSelect({ id, name, options, defaultValue = "" }: PremiumSelectPr
                 className={`flex w-full items-center rounded px-3 py-2 text-left text-sm transition-all duration-150 ${
                   isSelected
                     ? "bg-yellow-400 text-black font-semibold shadow-md"
-                    : "text-ui-text hover:bg-white/5 hover:text-ui-text"
+                    : "text-ui-text hover:bg-ui-elevated hover:text-ui-text"
                 }`}
               >
                 <span className="truncate">{opt.label}</span>
@@ -147,7 +147,7 @@ const CalendarEventForm = ({ orgSlug, divisions }: CalendarEventFormProps) => {
       className="space-y-4"
     >
       {/* Tip Banner */}
-      <div className="rounded-lg bg-zinc-950/60 p-4 text-xs leading-relaxed text-white/55 border border-white/5 mb-2">
+      <div className="rounded-lg bg-ui-bg/60 p-4 text-xs leading-relaxed text-ui-text-2 border border-ui-border mb-2">
         <span className="font-semibold text-yellow-400">Tips Senior:</span> Turnamen resmi tim dibuat melalui menu <strong className="text-ui-text">Turnamen</strong> agar otomatis sinkron dengan sistem kehadiran dan rekapitulasi data.
       </div>
 
@@ -225,11 +225,11 @@ const CalendarEventForm = ({ orgSlug, divisions }: CalendarEventFormProps) => {
           name="description"
           rows={3}
           maxLength={2000}
-          className="w-full rounded-md border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-yellow-400 focus:outline-none"
+          className="w-full rounded-md border border-ui-border bg-ui-surface px-3 py-2 text-sm text-ui-text focus:border-yellow-400 focus:outline-none"
         />
       </Field>
 
-      <div className="flex items-center justify-between rounded-xl bg-zinc-900/40 border border-white/5 px-4 py-3">
+      <div className="flex items-center justify-between rounded-xl bg-ui-surface/40 border border-ui-border px-4 py-3">
         <div className="space-y-0.5">
           <span className="block text-xs font-semibold text-ui-text">Event Seharian</span>
           <span className="block text-[10px] text-ui-text-muted">Setel event berlangsung sepanjang hari</span>
@@ -240,7 +240,7 @@ const CalendarEventForm = ({ orgSlug, divisions }: CalendarEventFormProps) => {
             name="is_all_day"
             className="peer sr-only"
           />
-          <div className="peer h-5 w-9 rounded-full bg-zinc-800 transition-all duration-300 after:absolute after:top-[2px] after:left-[2px] after:h-4 after:w-4 after:rounded-full after:bg-white/60 after:transition-all after:content-[''] peer-checked:bg-yellow-400 peer-checked:after:translate-x-full peer-checked:after:bg-black peer-hover:bg-zinc-700/80"></div>
+          <div className="peer h-5 w-9 rounded-full bg-ui-elevated transition-all duration-300 after:absolute after:top-[2px] after:left-[2px] after:h-4 after:w-4 after:rounded-full after:bg-white/60 after:transition-all after:content-[''] peer-checked:bg-yellow-400 peer-checked:after:translate-x-full peer-checked:after:bg-black peer-hover:bg-zinc-700/80"></div>
         </label>
       </div>
 

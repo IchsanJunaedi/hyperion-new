@@ -76,7 +76,7 @@ const PropertyField = ({
 
   if (!editable) {
     return (
-      <div className="flex items-center justify-between rounded-lg border border-white/5 bg-white/2.5 px-3 py-2">
+      <div className="flex items-center justify-between rounded-lg border border-ui-border bg-white/2.5 px-3 py-2">
         <div className="flex items-center gap-2">
           {icon && <div className="text-ui-text-2">{icon}</div>}
           <div className="flex flex-col">
@@ -96,7 +96,7 @@ const PropertyField = ({
 
   return (
     <div
-      className="group rounded-lg border border-white/5 bg-white/2.5 px-3 py-2 transition hover:bg-white/5"
+      className="group rounded-lg border border-ui-border bg-white/2.5 px-3 py-2 transition hover:bg-ui-elevated"
       onClick={editable ? handleEditToggle : undefined}
     >
       <div className="flex items-center justify-between gap-2">
@@ -125,7 +125,7 @@ const PropertyField = ({
                     <button
                       type="button"
                       onClick={() => setDropdownOpen(!dropdownOpen)}
-                      className="flex w-full items-center gap-2 rounded border border-white/20 bg-zinc-900 px-2 py-1 text-xs text-white"
+                      className="flex w-full items-center gap-2 rounded border border-white/20 bg-ui-surface px-2 py-1 text-xs text-ui-text"
                     >
                       <span className="flex-1 text-left">
                         {value
@@ -135,7 +135,7 @@ const PropertyField = ({
                       <ChevronDown className="h-3 w-3" />
                     </button>
                     {dropdownOpen && (
-                      <div className="absolute top-full left-0 z-50 mt-1 w-full space-y-1 rounded border border-white/10 bg-zinc-800 p-1">
+                      <div className="absolute top-full left-0 z-50 mt-1 w-full space-y-1 rounded border border-ui-border bg-ui-elevated p-1">
                         {options.map((opt) => (
                           <button
                             key={opt.value}
@@ -144,7 +144,7 @@ const PropertyField = ({
                               handleChange(opt.value);
                               setDropdownOpen(false);
                             }}
-                            className="w-full rounded px-2 py-1 text-left text-xs text-ui-text transition hover:bg-white/10"
+                            className="w-full rounded px-2 py-1 text-left text-xs text-ui-text transition hover:bg-ui-hover"
                           >
                             {opt.label}
                           </button>
@@ -166,7 +166,7 @@ const PropertyField = ({
                       if (e.key === "Escape") setIsEditing(false);
                     }}
                     placeholder={placeholder}
-                    className="mt-1 rounded border border-white/20 bg-zinc-900 px-2 py-1 text-xs text-white focus:border-yellow-400 focus:outline-none"
+                    className="mt-1 rounded border border-white/20 bg-ui-surface px-2 py-1 text-xs text-ui-text focus:border-yellow-400 focus:outline-none"
                   />
                 )}
 
@@ -208,7 +208,7 @@ const PropertyField = ({
                         if (e.key === "Escape") setIsEditing(false);
                       }}
                       placeholder="Tambah tag..."
-                      className="w-full rounded border border-white/20 bg-zinc-900 px-2 py-1 text-xs text-white focus:border-yellow-400 focus:outline-none"
+                      className="w-full rounded border border-white/20 bg-ui-surface px-2 py-1 text-xs text-ui-text focus:border-yellow-400 focus:outline-none"
                     />
                   </div>
                 )}
@@ -219,7 +219,7 @@ const PropertyField = ({
                       type="checkbox"
                       checked={Boolean(value)}
                       onChange={(e) => handleChange(e.target.checked)}
-                      className="h-4 w-4 rounded border-white/20 bg-zinc-900 text-yellow-400"
+                      className="h-4 w-4 rounded border-white/20 bg-ui-surface text-yellow-400"
                     />
                     <span className="text-xs text-ui-text">
                       {value ? "Yes" : "No"}
@@ -232,7 +232,7 @@ const PropertyField = ({
                     <button
                       type="button"
                       onClick={() => setDropdownOpen(!dropdownOpen)}
-                      className="flex w-full items-center gap-2 rounded border border-white/20 bg-zinc-900 px-2 py-1 text-xs text-white"
+                      className="flex w-full items-center gap-2 rounded border border-white/20 bg-ui-surface px-2 py-1 text-xs text-ui-text"
                     >
                       <span className="flex-1 text-left">
                         {value
@@ -242,7 +242,7 @@ const PropertyField = ({
                       <ChevronDown className="h-3 w-3" />
                     </button>
                     {dropdownOpen && (
-                      <div className="absolute top-full left-0 z-50 mt-1 w-full space-y-1 rounded border border-white/10 bg-zinc-800 p-1">
+                      <div className="absolute top-full left-0 z-50 mt-1 w-full space-y-1 rounded border border-ui-border bg-ui-elevated p-1">
                         {STATUS_OPTIONS.map((opt) => (
                           <button
                             key={opt.value}
@@ -251,7 +251,7 @@ const PropertyField = ({
                               handleChange(opt.value);
                               setDropdownOpen(false);
                             }}
-                            className="w-full rounded px-2 py-1 text-left text-xs text-ui-text transition hover:bg-white/10"
+                            className="w-full rounded px-2 py-1 text-left text-xs text-ui-text transition hover:bg-ui-hover"
                           >
                             {opt.label}
                           </button>
@@ -266,7 +266,7 @@ const PropertyField = ({
                     <button
                       type="button"
                       onClick={() => setDropdownOpen(!dropdownOpen)}
-                      className="flex w-full items-center gap-2 rounded border border-white/20 bg-zinc-900 px-2 py-1 text-xs text-white"
+                      className="flex w-full items-center gap-2 rounded border border-white/20 bg-ui-surface px-2 py-1 text-xs text-ui-text"
                     >
                       <span className="flex-1 text-left">
                         {value
@@ -276,7 +276,7 @@ const PropertyField = ({
                       <ChevronDown className="h-3 w-3" />
                     </button>
                     {dropdownOpen && (
-                      <div className="absolute top-full left-0 z-50 mt-1 w-full space-y-1 rounded border border-white/10 bg-zinc-800 p-1">
+                      <div className="absolute top-full left-0 z-50 mt-1 w-full space-y-1 rounded border border-ui-border bg-ui-elevated p-1">
                         {PRIORITY_OPTIONS.map((opt) => (
                           <button
                             key={opt.value}
@@ -285,7 +285,7 @@ const PropertyField = ({
                               handleChange(opt.value);
                               setDropdownOpen(false);
                             }}
-                            className="w-full rounded px-2 py-1 text-left text-xs text-ui-text transition hover:bg-white/10"
+                            className="w-full rounded px-2 py-1 text-left text-xs text-ui-text transition hover:bg-ui-hover"
                           >
                             {opt.label}
                           </button>
@@ -302,7 +302,7 @@ const PropertyField = ({
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     onBlur={() => handleChange(inputValue)}
-                    className="mt-1 rounded border border-white/20 bg-zinc-900 px-2 py-1 text-xs text-white focus:border-yellow-400 focus:outline-none"
+                    className="mt-1 rounded border border-white/20 bg-ui-surface px-2 py-1 text-xs text-ui-text focus:border-yellow-400 focus:outline-none"
                   />
                 )}
               </>

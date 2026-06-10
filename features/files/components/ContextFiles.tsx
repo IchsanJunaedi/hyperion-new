@@ -130,7 +130,7 @@ const ContextFiles = ({
           File Terlampir
         </span>
         {canUpload && (
-          <label className="inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-md border border-white/10 px-2.5 text-xs text-ui-text-2 transition hover:bg-white/5 hover:text-ui-text">
+          <label className="inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-md border border-ui-border px-2.5 text-xs text-ui-text-2 transition hover:bg-ui-elevated hover:text-ui-text">
             {uploading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Upload className="h-3 w-3" />}
             {uploading ? "Mengupload..." : "Upload"}
             <input
@@ -151,7 +151,7 @@ const ContextFiles = ({
       {files.length === 0 ? (
         <p className="text-xs text-ui-text-muted">Belum ada file terlampir.</p>
       ) : (
-        <div className="divide-y divide-white/5 rounded-lg border border-white/5">
+        <div className="divide-y divide-ui-border rounded-lg border border-ui-border">
           {files.map((f) => (
             <div
               key={f.id}

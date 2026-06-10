@@ -63,7 +63,7 @@ export default async function CalendarEventDetailPage({
       <div className="flex justify-start">
         <Link
           href={`/${slug}/calendar`}
-          className="group inline-flex items-center gap-2 rounded-full border border-white/5 bg-zinc-900/40 px-3.5 py-1.5 text-xs font-semibold text-white/60 transition-all duration-300 hover:bg-zinc-800/60 hover:text-white"
+          className="group inline-flex items-center gap-2 rounded-full border border-ui-border bg-ui-surface/40 px-3.5 py-1.5 text-xs font-semibold text-ui-text-2 transition-all duration-300 hover:bg-ui-elevated/60 hover:text-ui-text"
         >
           <ArrowLeft className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-x-0.5" />
           Kembali ke kalender
@@ -74,7 +74,7 @@ export default async function CalendarEventDetailPage({
       <div className="mx-auto max-w-2xl w-full space-y-4">
         {/* Badges */}
         <div className="flex flex-wrap gap-2">
-          <span className="inline-flex items-center rounded-full bg-white/5 px-2.5 py-1 text-xs font-medium text-ui-text-2 border border-white/10">
+          <span className="inline-flex items-center rounded-full bg-ui-elevated px-2.5 py-1 text-xs font-medium text-ui-text-2 border border-ui-border">
             {EVENT_TYPE_LABELS[event.event_type] ?? event.event_type}
           </span>
           {event.visibility && VISIBILITY_LABELS[event.visibility] && (
@@ -102,7 +102,7 @@ export default async function CalendarEventDetailPage({
 
         {/* Description card */}
         {event.description && (
-          <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5 sm:p-6 w-full shadow-xl shadow-black/20">
+          <div className="rounded-2xl border border-ui-border bg-ui-surface/40 p-5 sm:p-6 w-full shadow-xl shadow-black/20">
             <p className="text-xs font-semibold uppercase tracking-wider text-ui-text-muted mb-3">Deskripsi</p>
             <div className="whitespace-pre-line text-sm leading-relaxed text-ui-text">
               {event.description}
@@ -120,7 +120,7 @@ export default async function CalendarEventDetailPage({
 
         {/* RSVP attendee list */}
         {rsvpAttendees.length > 0 && (
-          <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-4 space-y-3">
+          <div className="rounded-2xl border border-ui-border bg-ui-surface/40 p-4 space-y-3">
             <p className="text-xs font-semibold uppercase tracking-wider text-ui-text-muted">Respons anggota</p>
             {(["hadir", "tentative", "tidak_hadir"] as const).map((status) => {
               const group = rsvpAttendees.filter((a) => a.status === status);
@@ -137,7 +137,7 @@ export default async function CalendarEventDetailPage({
                   </span>
                   <div className="flex flex-wrap gap-1.5">
                     {group.map((a) => (
-                      <span key={a.user_id} className="rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-xs text-ui-text">
+                      <span key={a.user_id} className="rounded-full border border-ui-border bg-ui-elevated px-2.5 py-0.5 text-xs text-ui-text">
                         {a.name}
                       </span>
                     ))}

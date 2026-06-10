@@ -57,24 +57,24 @@ const DivisionListItem = ({ id, name, isActive }: DivisionListItemProps) => {
 
   return (
     <>
-      <div className="flex items-center justify-between rounded-lg border border-white/5 bg-white/[0.02] px-4 py-3">
+      <div className="flex items-center justify-between rounded-lg border border-ui-border bg-white/[0.02] px-4 py-3">
         <div className="flex items-center gap-2 flex-1 min-w-0">
           {editing ? (
             <div className="flex items-center gap-1 flex-1">
               <input
                 value={editName}
                 onChange={(e) => setEditName(e.target.value)}
-                className="h-7 flex-1 rounded border border-white/10 bg-zinc-900 px-2 text-sm text-white focus:border-yellow-400 focus:outline-none"
+                className="h-7 flex-1 rounded border border-ui-border bg-ui-surface px-2 text-sm text-ui-text focus:border-yellow-400 focus:outline-none"
                 autoFocus
                 onKeyDown={(e) => {
                   if (e.key === "Enter") handleSave();
                   if (e.key === "Escape") setEditing(false);
                 }}
               />
-              <button type="button" disabled={pending} onClick={handleSave} className="rounded p-1 text-green-400 hover:bg-white/10">
+              <button type="button" disabled={pending} onClick={handleSave} className="rounded p-1 text-green-400 hover:bg-ui-hover">
                 {pending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Check className="h-3.5 w-3.5" />}
               </button>
-              <button type="button" onClick={() => { setEditing(false); setEditName(name); }} className="rounded p-1 text-ui-text-muted hover:bg-white/10">
+              <button type="button" onClick={() => { setEditing(false); setEditName(name); }} className="rounded p-1 text-ui-text-muted hover:bg-ui-hover">
                 <X className="h-3.5 w-3.5" />
               </button>
             </div>
@@ -82,7 +82,7 @@ const DivisionListItem = ({ id, name, isActive }: DivisionListItemProps) => {
             <>
               <span className="text-sm font-medium text-ui-text">{name}</span>
               {!isActive && (
-                <span className="rounded-full bg-white/5 px-2 py-0.5 text-[10px] text-ui-text-muted">Arsip</span>
+                <span className="rounded-full bg-ui-elevated px-2 py-0.5 text-[10px] text-ui-text-muted">Arsip</span>
               )}
             </>
           )}
@@ -93,7 +93,7 @@ const DivisionListItem = ({ id, name, isActive }: DivisionListItemProps) => {
               type="button"
               disabled={pending}
               onClick={() => setEditing(true)}
-              className="rounded-md p-1.5 text-ui-text-muted hover:bg-white/10 hover:text-ui-text disabled:opacity-40"
+              className="rounded-md p-1.5 text-ui-text-muted hover:bg-ui-hover hover:text-ui-text disabled:opacity-40"
               title="Edit nama"
             >
               <Pencil className="h-3.5 w-3.5" />
@@ -102,7 +102,7 @@ const DivisionListItem = ({ id, name, isActive }: DivisionListItemProps) => {
               type="button"
               disabled={pending}
               onClick={() => setDeleteOpen(true)}
-              className="rounded-md p-1.5 text-ui-text-muted hover:bg-white/10 hover:text-red-400 disabled:opacity-40"
+              className="rounded-md p-1.5 text-ui-text-muted hover:bg-ui-hover hover:text-red-400 disabled:opacity-40"
               title="Hapus"
             >
               <Trash2 className="h-3.5 w-3.5" />

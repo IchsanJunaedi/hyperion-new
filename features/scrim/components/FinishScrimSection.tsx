@@ -57,7 +57,7 @@ const FinishScrimSection = ({
       weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "Asia/Jakarta",
     });
     return (
-      <article className="rounded-2xl border border-white/5 bg-zinc-900/30 p-5">
+      <article className="rounded-2xl border border-ui-border bg-ui-surface/30 p-5">
         <div className="flex items-center gap-2 text-sm text-ui-text-2">
           <Trophy className="h-4 w-4 text-ui-text-muted" />
           <span>Tombol hasil akan muncul setelah scrim dimulai ({scheduledTime})</span>
@@ -110,7 +110,7 @@ function ResultDisplay({
   scrimId?: string;
 }) {
   return (
-    <article className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
+    <article className="rounded-2xl border border-ui-border bg-ui-surface/40 p-5">
       <div className="flex items-center justify-between">
         <h2 className="flex items-center gap-2 text-sm font-semibold text-ui-text">
           <Trophy className="h-4 w-4 text-yellow-400" />
@@ -166,7 +166,7 @@ function ResultDisplay({
           <img
             src={imageUrl}
             alt="Foto hasil pertandingan"
-            className="mt-2 max-h-64 w-full rounded-lg border border-white/10 object-contain"
+            className="mt-2 max-h-64 w-full rounded-lg border border-ui-border object-contain"
           />
         ) : null}
       </div>
@@ -271,12 +271,12 @@ function ResultForm({
     activeClass: string;
   }> = [
     { value: true, label: "Menang", activeClass: "bg-emerald-500 text-white" },
-    { value: null, label: "Imbang", activeClass: "bg-zinc-600 text-white" },
+    { value: null, label: "Imbang", activeClass: "bg-zinc-600 text-ui-text" },
     { value: false, label: "Kalah", activeClass: "bg-rose-500 text-white" },
   ];
 
   return (
-    <article className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
+    <article className="rounded-2xl border border-ui-border bg-ui-surface/40 p-5">
       <div className="flex items-center justify-between">
         <h2 className="flex items-center gap-2 text-sm font-semibold text-ui-text">
           <Trophy className="h-4 w-4 text-yellow-400" />
@@ -302,7 +302,7 @@ function ResultForm({
               min={0}
               max={5}
               defaultValue={0}
-              className="mt-1 h-12 text-2xl font-bold text-white bg-zinc-900 border-white/10 focus:border-yellow-400 focus:outline-none"
+              className="mt-1 h-12 text-2xl font-bold text-ui-text bg-ui-surface border-ui-border focus:border-yellow-400 focus:outline-none"
             />
           </label>
           <label className="block text-xs font-medium text-ui-text">
@@ -313,7 +313,7 @@ function ResultForm({
               min={0}
               max={5}
               defaultValue={0}
-              className="mt-1 h-12 text-2xl font-bold text-white bg-zinc-900 border-white/10 focus:border-yellow-400 focus:outline-none"
+              className="mt-1 h-12 text-2xl font-bold text-ui-text bg-ui-surface border-ui-border focus:border-yellow-400 focus:outline-none"
             />
           </label>
         </div>
@@ -335,7 +335,7 @@ function ResultForm({
                   className={`h-9 rounded-full px-4 text-sm font-medium transition ${
                     selected
                       ? activeClass
-                      : "bg-zinc-800 text-white/70 hover:bg-zinc-700"
+                      : "bg-ui-elevated text-ui-text hover:bg-zinc-700"
                   }`}
                 >
                   {label}
@@ -357,7 +357,7 @@ function ResultForm({
                 className={`grid h-9 w-9 place-items-center rounded-full transition ${
                   rating !== null && n <= rating
                     ? "bg-yellow-400/90 text-black"
-                    : "bg-zinc-800 text-white/55 hover:text-white"
+                    : "bg-ui-elevated text-ui-text-2 hover:text-ui-text"
                 }`}
               >
                 <Star
@@ -376,7 +376,7 @@ function ResultForm({
             rows={3}
             maxLength={2000}
             placeholder="Evaluasi singkat, MVP, area improvement"
-            className="mt-1 w-full rounded-md border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-yellow-400 focus:outline-none"
+            className="mt-1 w-full rounded-md border border-ui-border bg-ui-surface px-3 py-2 text-sm text-ui-text focus:border-yellow-400 focus:outline-none"
           />
         </label>
 
@@ -384,7 +384,7 @@ function ResultForm({
           <p className="mb-1 text-xs font-medium text-ui-text">
             Upload hasil (gambar, maks 2MB)
           </p>
-          <label className="flex cursor-pointer items-center gap-2 rounded-md border border-dashed border-white/20 bg-zinc-900/50 px-4 py-3 text-sm text-white/55 transition hover:border-white/35 hover:text-white/80">
+          <label className="flex cursor-pointer items-center gap-2 rounded-md border border-dashed border-white/20 bg-ui-surface/50 px-4 py-3 text-sm text-ui-text-2 transition hover:border-white/35 hover:text-ui-text">
             <Upload className="h-4 w-4 flex-none" />
             <span className="truncate">
               {imageFile ? imageFile.name : "Pilih gambar…"}

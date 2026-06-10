@@ -192,7 +192,7 @@ function HeroCard({
         )}
       </div>
       {hero.notes && (
-        <div className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-2 -translate-x-1/2 whitespace-nowrap rounded border border-white/10 bg-black/95 px-2 py-1.5 text-[9px] italic text-white/50 opacity-0 shadow-lg transition group-hover:opacity-100">
+        <div className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-2 -translate-x-1/2 whitespace-nowrap rounded border border-ui-border bg-black/95 px-2 py-1.5 text-[9px] italic text-white/50 opacity-0 shadow-lg transition group-hover:opacity-100">
           {hero.notes}
         </div>
       )}
@@ -422,8 +422,8 @@ function HeroPickerPanel({
                   className={cn(
                     "group relative w-14 shrink-0 cursor-pointer rounded-lg border p-0.5 transition focus:outline-none",
                     isSelected
-                      ? cn(style.border, "bg-white/5 scale-105")
-                      : "border-transparent hover:border-white/20 hover:bg-white/5",
+                      ? cn(style.border, "bg-ui-elevated scale-105")
+                      : "border-transparent hover:border-white/20 hover:bg-ui-elevated",
                   )}
                 >
                   <div className="aspect-square overflow-hidden rounded-md">
@@ -663,7 +663,7 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
           <button
             type="button"
             onClick={() => window.print()}
-            className="inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-md border border-white/10 px-3 text-xs text-ui-text-2 transition hover:bg-white/5 hover:text-ui-text"
+            className="inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-md border border-ui-border px-3 text-xs text-ui-text-2 transition hover:bg-ui-elevated hover:text-ui-text"
           >
             <Download className="h-3.5 w-3.5" />
             Export PDF
@@ -676,7 +676,7 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
                 "inline-flex h-9 cursor-pointer items-center gap-2 rounded-md border px-3 text-sm transition",
                 editMode
                   ? "border-yellow-500/50 bg-yellow-500/10 text-yellow-400"
-                  : "border-ui-border text-ui-text-2 hover:bg-white/5",
+                  : "border-ui-border text-ui-text-2 hover:bg-ui-elevated",
               )}
             >
               <Pencil className="h-3.5 w-3.5" />
@@ -765,7 +765,7 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
             <button
               type="button"
               onClick={() => setShowNewPatchForm(false)}
-              className="cursor-pointer rounded-md border border-ui-border px-4 py-1.5 text-sm text-ui-text-2 transition hover:bg-white/5"
+              className="cursor-pointer rounded-md border border-ui-border px-4 py-1.5 text-sm text-ui-text-2 transition hover:bg-ui-elevated"
             >
               Batal
             </button>
@@ -819,7 +819,7 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
             <button
               type="button"
               onClick={() => setShowPatchSettings(false)}
-              className="cursor-pointer rounded-md border border-ui-border px-4 py-1.5 text-sm text-ui-text-2 transition hover:bg-white/5"
+              className="cursor-pointer rounded-md border border-ui-border px-4 py-1.5 text-sm text-ui-text-2 transition hover:bg-ui-elevated"
             >
               Batal
             </button>
@@ -864,7 +864,7 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
       )}
 
       {!activePatch ? (
-        <div className="rounded-xl border border-dashed border-white/10 bg-zinc-900/30 p-10 text-center">
+        <div className="rounded-xl border border-dashed border-ui-border bg-ui-surface/30 p-10 text-center">
           <p className="text-sm text-ui-text-2">
             Belum ada patch.
             {canEdit && " Klik \"Patch Baru\" untuk mulai tracking meta."}
@@ -1019,8 +1019,8 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
                               className={cn(
                                 "print-hide inline-flex h-[72px] w-[72px] shrink-0 cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border border-dashed transition",
                                 isOpen
-                                  ? `${style.activeBorder} bg-white/5 ${style.label}`
-                                  : "border-white/10 text-ui-text-muted hover:border-white/30 hover:text-ui-text-2",
+                                  ? `${style.activeBorder} bg-ui-elevated ${style.label}`
+                                  : "border-ui-border text-ui-text-muted hover:border-white/30 hover:text-ui-text-2",
                               )}
                             >
                               {isOpen ? <X className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
@@ -1103,7 +1103,7 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
                           </div>
                         )}
                         {h.notes && (
-                          <div className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-2 -translate-x-1/2 whitespace-nowrap rounded border border-white/10 bg-black/95 px-2 py-1.5 text-[9px] italic text-white/50 opacity-0 shadow-lg transition group-hover:opacity-100">
+                          <div className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-2 -translate-x-1/2 whitespace-nowrap rounded border border-ui-border bg-black/95 px-2 py-1.5 text-[9px] italic text-white/50 opacity-0 shadow-lg transition group-hover:opacity-100">
                             {h.notes}
                           </div>
                         )}
@@ -1155,7 +1155,7 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
                                 </div>
                               )}
                               {h.notes && (
-                                <div className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-2 -translate-x-1/2 whitespace-nowrap rounded border border-white/10 bg-black/95 px-2 py-1.5 text-[9px] italic text-white/50 opacity-0 shadow-lg transition group-hover:opacity-100">
+                                <div className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-2 -translate-x-1/2 whitespace-nowrap rounded border border-ui-border bg-black/95 px-2 py-1.5 text-[9px] italic text-white/50 opacity-0 shadow-lg transition group-hover:opacity-100">
                                   {h.notes}
                                 </div>
                               )}
@@ -1218,14 +1218,14 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
               const style = TIER_STYLES[hero.tier as Tier] ?? TIER_STYLES.D;
               return (
                 <div className="flex items-center gap-3 rounded-xl bg-white/[0.03] px-3 py-2.5">
-                  <div className="h-8 w-8 shrink-0 overflow-hidden rounded-lg border border-white/10">
+                  <div className="h-8 w-8 shrink-0 overflow-hidden rounded-lg border border-ui-border">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={getHeroImageUrl(hero.hero_name)} alt={hero.hero_name} className="h-full w-full object-cover" />
                   </div>
                   <span className="flex-1 text-xs font-medium text-ui-text">{hero.hero_name}</span>
                   {type === "buff" && oldTier && (
                     <div className="flex items-center gap-1.5">
-                      <span className={cn("rounded px-1.5 py-0.5 text-[10px] font-black", TIER_STYLES[oldTier as Tier]?.badge ?? "bg-white/10 text-ui-text-muted")}>{oldTier}</span>
+                      <span className={cn("rounded px-1.5 py-0.5 text-[10px] font-black", TIER_STYLES[oldTier as Tier]?.badge ?? "bg-ui-hover text-ui-text-muted")}>{oldTier}</span>
                       <span className="text-[10px] text-ui-text-muted">→</span>
                       <span className={cn("rounded px-1.5 py-0.5 text-[10px] font-black", style.badge)}>{hero.tier}</span>
                       <span className="ml-1 rounded bg-emerald-500/15 px-1.5 py-0.5 text-[9px] font-semibold text-emerald-400">BUFF</span>
@@ -1233,7 +1233,7 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
                   )}
                   {type === "nerf" && oldTier && (
                     <div className="flex items-center gap-1.5">
-                      <span className={cn("rounded px-1.5 py-0.5 text-[10px] font-black", TIER_STYLES[oldTier as Tier]?.badge ?? "bg-white/10 text-ui-text-muted")}>{oldTier}</span>
+                      <span className={cn("rounded px-1.5 py-0.5 text-[10px] font-black", TIER_STYLES[oldTier as Tier]?.badge ?? "bg-ui-hover text-ui-text-muted")}>{oldTier}</span>
                       <span className="text-[10px] text-ui-text-muted">→</span>
                       <span className={cn("rounded px-1.5 py-0.5 text-[10px] font-black", style.badge)}>{hero.tier}</span>
                       <span className="ml-1 rounded bg-rose-500/15 px-1.5 py-0.5 text-[9px] font-semibold text-rose-400">NERF</span>
@@ -1246,7 +1246,7 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
                     </div>
                   )}
                   {type === "removed" && (
-                    <span className="rounded bg-white/10 px-1.5 py-0.5 text-[9px] font-semibold text-ui-text-muted">REMOVED</span>
+                    <span className="rounded bg-ui-hover px-1.5 py-0.5 text-[9px] font-semibold text-ui-text-muted">REMOVED</span>
                   )}
                   {type === "ban" && (
                     <span className="rounded bg-red-500/15 px-1.5 py-0.5 text-[9px] font-semibold text-red-400">BAN PRIORITY</span>

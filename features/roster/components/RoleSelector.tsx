@@ -46,7 +46,7 @@ const RoleSelector = ({
         value={currentRole}
         onChange={handleChange}
         disabled={pending}
-        className="h-7 rounded-md border border-white/10 bg-zinc-900 px-2 text-xs text-white focus:border-yellow-400 focus:outline-none disabled:opacity-50"
+        className="h-7 rounded-md border border-ui-border bg-ui-surface px-2 text-xs text-ui-text focus:border-yellow-400 focus:outline-none disabled:opacity-50"
       >
         {ASSIGNABLE_ROLES.map((r) => (
           <option key={r.value} value={r.value}>

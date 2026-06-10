@@ -14,7 +14,7 @@ const EVENT_TYPE_STYLES: Record<string, { bg: string; text: string; label: strin
   practice:   { bg: "bg-green-500/15 border-green-500/30",  text: "text-green-300",  label: "Latihan" },
   meeting:    { bg: "bg-blue-500/15 border-blue-500/30",    text: "text-blue-300",   label: "Meeting" },
   bootcamp:   { bg: "bg-orange-500/15 border-orange-500/30", text: "text-orange-300", label: "Bootcamp" },
-  other:      { bg: "bg-white/5 border-white/10",           text: "text-ui-text-2",   label: "Event" },
+  other:      { bg: "bg-ui-elevated border-ui-border",           text: "text-ui-text-2",   label: "Event" },
 };
 
 function getEventTypeIcon(type: string) {
@@ -125,7 +125,7 @@ const CalendarWeeklyWarRoom = ({ orgSlug, events }: CalendarWeeklyWarRoomProps) 
           <button
             type="button"
             onClick={() => setWeekOffset((v) => v - 1)}
-            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded border border-white/10 text-ui-text-2 hover:bg-white/5 hover:text-ui-text transition"
+            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded border border-ui-border text-ui-text-2 hover:bg-ui-elevated hover:text-ui-text transition"
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
@@ -133,7 +133,7 @@ const CalendarWeeklyWarRoom = ({ orgSlug, events }: CalendarWeeklyWarRoomProps) 
           <button
             type="button"
             onClick={() => setWeekOffset((v) => v + 1)}
-            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded border border-white/10 text-ui-text-2 hover:bg-white/5 hover:text-ui-text transition"
+            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded border border-ui-border text-ui-text-2 hover:bg-ui-elevated hover:text-ui-text transition"
           >
             <ChevronRight className="h-4 w-4" />
           </button>
@@ -173,8 +173,8 @@ const CalendarWeeklyWarRoom = ({ orgSlug, events }: CalendarWeeklyWarRoomProps) 
                 isToday
                   ? "border-yellow-400/40 bg-yellow-400/5"
                   : isWeekend
-                  ? "border-white/5 bg-zinc-900/20"
-                  : "border-white/8 bg-zinc-900/30",
+                  ? "border-ui-border bg-ui-surface/20"
+                  : "border-white/8 bg-ui-surface/30",
               )}
             >
               {/* Day header */}

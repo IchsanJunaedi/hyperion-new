@@ -101,7 +101,7 @@ const TournamentDetailActions = ({ tournament, orgSlug }: TournamentDetailAction
             type="button"
             disabled={pending}
             onClick={handleComplete}
-            className="inline-flex h-9 items-center gap-2 rounded-md border border-white/10 px-4 text-sm font-medium text-ui-text transition hover:bg-white/5 disabled:opacity-50 cursor-pointer"
+            className="inline-flex h-9 items-center gap-2 rounded-md border border-ui-border px-4 text-sm font-medium text-ui-text transition hover:bg-ui-elevated disabled:opacity-50 cursor-pointer"
           >
             {pending && <Loader2 className="h-3 w-3 animate-spin" />}
             Turnamen Selesai
@@ -114,7 +114,7 @@ const TournamentDetailActions = ({ tournament, orgSlug }: TournamentDetailAction
             type="button"
             disabled={pending}
             onClick={handleCancel}
-            className="inline-flex h-9 items-center gap-2 rounded-md border border-white/10 px-4 text-sm font-medium text-ui-text transition hover:bg-white/5 disabled:opacity-50 cursor-pointer"
+            className="inline-flex h-9 items-center gap-2 rounded-md border border-ui-border px-4 text-sm font-medium text-ui-text transition hover:bg-ui-elevated disabled:opacity-50 cursor-pointer"
           >
             Batalkan
           </button>

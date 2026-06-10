@@ -38,7 +38,7 @@ function RoleBadge({ role }: { role: string }) {
     manager: "bg-green-500/10 text-green-400",
     coach: "bg-blue-500/10 text-blue-400",
     captain: "bg-purple-500/10 text-purple-400",
-    member: "bg-white/5 text-ui-text-2",
+    member: "bg-ui-elevated text-ui-text-2",
   };
   return (
     <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${colors[role] ?? colors.member}`}>
@@ -52,10 +52,10 @@ const ManageMemberTable = ({ members, orgName }: ManageMemberTableProps) => {
 
   return (
     <>
-      <div className="overflow-x-auto md:overflow-visible sidebar-scroll rounded-lg border border-white/5">
+      <div className="overflow-x-auto md:overflow-visible sidebar-scroll rounded-lg border border-ui-border">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-white/5 bg-white/[0.02]">
+            <tr className="border-b border-ui-border bg-white/[0.02]">
               <th className="px-4 py-3 text-left text-xs font-medium text-ui-text-2">Nama</th>
               <th className="px-4 py-3 text-left text-xs font-medium text-ui-text-2">Username</th>
               <th className="px-4 py-3 text-left text-xs font-medium text-ui-text-2">Divisi</th>
@@ -66,7 +66,7 @@ const ManageMemberTable = ({ members, orgName }: ManageMemberTableProps) => {
               <th className="px-4 py-3 text-right text-xs font-medium text-ui-text-2">Aksi</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/5">
+          <tbody className="divide-y divide-ui-border">
             {members.map((m, idx) => (
               <tr key={m.id} className="transition hover:bg-white/[0.04]">
                 <td

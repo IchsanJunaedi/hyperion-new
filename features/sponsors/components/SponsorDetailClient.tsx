@@ -31,7 +31,7 @@ const STATUS_CYCLE: Record<DeliverableStatus, DeliverableStatus> = {
 };
 
 const STATUS_PILL: Record<DeliverableStatus, string> = {
-  pending:     "border-white/10 bg-white/5 text-ui-text-muted",
+  pending:     "border-ui-border bg-ui-elevated text-ui-text-muted",
   in_progress: "border-blue-500/30 bg-blue-500/10 text-blue-400",
   done:        "border-green-500/30 bg-green-500/10 text-green-400",
   cancelled:   "border-red-500/30 bg-red-500/10 text-red-400",
@@ -201,7 +201,7 @@ const SponsorDetailClient = ({ sponsor: initial, orgId, backHref, listHref }: Sp
         </Link>
         <div className="flex gap-2">
           <button type="button" onClick={() => setEditModalOpen(true)}
-            className="inline-flex h-8 cursor-pointer items-center gap-2 rounded-md border border-ui-border px-3 text-xs text-ui-text-2 transition hover:bg-white/5">
+            className="inline-flex h-8 cursor-pointer items-center gap-2 rounded-md border border-ui-border px-3 text-xs text-ui-text-2 transition hover:bg-ui-elevated">
             <Pencil className="h-3.5 w-3.5" />
             Edit
           </button>
@@ -309,7 +309,7 @@ const SponsorDetailClient = ({ sponsor: initial, orgId, backHref, listHref }: Sp
             </div>
             <div className="flex gap-2">
               <button type="button" onClick={() => setShowDlForm(false)}
-                className="cursor-pointer rounded-md border border-ui-border px-3 py-1.5 text-xs text-ui-text-2 transition hover:bg-white/5">Batal</button>
+                className="cursor-pointer rounded-md border border-ui-border px-3 py-1.5 text-xs text-ui-text-2 transition hover:bg-ui-elevated">Batal</button>
               <button type="button" onClick={handleAddDeliverable} disabled={pending}
                 className="cursor-pointer rounded-md bg-yellow-400 px-3 py-1.5 text-xs font-semibold text-black transition hover:bg-yellow-300 disabled:opacity-50">Tambahkan</button>
             </div>
@@ -373,7 +373,7 @@ const SponsorDetailClient = ({ sponsor: initial, orgId, backHref, listHref }: Sp
                                 setOpenStatusId(null);
                               }}
                               className={cn(
-                                "flex w-full items-center gap-2.5 px-3 py-2 text-xs transition hover:bg-white/5",
+                                "flex w-full items-center gap-2.5 px-3 py-2 text-xs transition hover:bg-ui-elevated",
                                 dl.status === s ? "text-ui-text" : "text-ui-text-2"
                               )}
                             >

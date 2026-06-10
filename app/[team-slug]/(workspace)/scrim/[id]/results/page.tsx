@@ -165,7 +165,7 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
       <div className="flex justify-start">
         <Link
           href={`/${slug}/scrim/${id}`}
-          className="group inline-flex items-center gap-2 rounded-full border border-white/5 bg-zinc-900/40 px-3.5 py-1.5 text-xs font-semibold text-white/60 transition-all duration-300 hover:bg-zinc-800/60 hover:text-white"
+          className="group inline-flex items-center gap-2 rounded-full border border-ui-border bg-ui-surface/40 px-3.5 py-1.5 text-xs font-semibold text-ui-text-2 transition-all duration-300 hover:bg-ui-elevated/60 hover:text-ui-text"
         >
           <ArrowLeft className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-x-0.5" />
           Kembali ke detail scrim
@@ -204,10 +204,10 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
           return (
             <div
               key={game.id}
-              className="rounded-xl border border-white/10 bg-zinc-900/40 overflow-hidden"
+              className="rounded-xl border border-ui-border bg-ui-surface/40 overflow-hidden"
             >
               {/* Game header */}
-              <div className="flex items-center justify-between px-5 py-3.5 border-b border-white/5">
+              <div className="flex items-center justify-between px-5 py-3.5 border-b border-ui-border">
                 <h3 className="text-sm font-semibold text-ui-text">Game {game.game_number}</h3>
                 <div className={`text-xs font-semibold ${
                   game.is_win
@@ -242,7 +242,7 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
                             </span>
                             {pick ? (
                               <div className="flex items-center gap-2 min-w-0">
-                                <div className="h-5 w-5 shrink-0 overflow-hidden rounded-full border border-white/10 bg-zinc-800">
+                                <div className="h-5 w-5 shrink-0 overflow-hidden rounded-full border border-ui-border bg-ui-elevated">
                                   {/* eslint-disable-next-line @next/next/no-img-element */}
                                   <img
                                     src={getHeroImageUrl(pick.hero_name)}
@@ -286,7 +286,7 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
                             </span>
                             {pick ? (
                               <div className="flex items-center gap-2 min-w-0">
-                                <div className="h-5 w-5 shrink-0 overflow-hidden rounded-full border border-white/10 bg-zinc-800">
+                                <div className="h-5 w-5 shrink-0 overflow-hidden rounded-full border border-ui-border bg-ui-elevated">
                                   {/* eslint-disable-next-line @next/next/no-img-element */}
                                   <img
                                     src={getHeroImageUrl(pick.hero_name)}
@@ -325,7 +325,7 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
                     <img
                       src={game.signedUrl}
                       alt={`Screenshot Game ${game.game_number}`}
-                      className="rounded-lg border border-white/10 w-full max-h-[300px] object-contain"
+                      className="rounded-lg border border-ui-border w-full max-h-[300px] object-contain"
                     />
                   </a>
                 )}

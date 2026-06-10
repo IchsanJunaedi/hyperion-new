@@ -128,7 +128,7 @@ function PermissionBadge({
       {required && <span className="text-xs opacity-70">*</span>}
       <button
         onClick={handleCopy}
-        className="ml-auto p-1 rounded hover:bg-white/10 transition"
+        className="ml-auto p-1 rounded hover:bg-ui-hover transition"
         title="Copy permission name"
       >
         <Copy className="h-3 w-3" />

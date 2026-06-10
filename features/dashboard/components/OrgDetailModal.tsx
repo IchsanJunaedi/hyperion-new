@@ -35,7 +35,7 @@ const OrgDetailModal = ({ org, onClose }: OrgDetailModalProps) => {
       onClick={onClose}
     >
       <div
-        className="max-h-[85vh] w-full max-w-md overflow-y-auto rounded-xl border border-white/10 bg-zinc-900 p-6 shadow-xl"
+        className="max-h-[85vh] w-full max-w-md overflow-y-auto rounded-xl border border-ui-border bg-ui-surface p-6 shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-4 flex items-start justify-between">
@@ -45,7 +45,7 @@ const OrgDetailModal = ({ org, onClose }: OrgDetailModalProps) => {
           </div>
           <button
             onClick={onClose}
-            className="rounded-md p-1 text-ui-text-muted hover:bg-white/10 hover:text-ui-text"
+            className="rounded-md p-1 text-ui-text-muted hover:bg-ui-hover hover:text-ui-text"
           >
             <X className="h-4 w-4" />
           </button>
@@ -61,7 +61,7 @@ const OrgDetailModal = ({ org, onClose }: OrgDetailModalProps) => {
                 {org.divisions.map((d) => (
                   <span
                     key={d.id}
-                    className="inline-flex rounded-full bg-white/5 px-2.5 py-1 text-xs text-ui-text"
+                    className="inline-flex rounded-full bg-ui-elevated px-2.5 py-1 text-xs text-ui-text"
                   >
                     {d.name}
                   </span>

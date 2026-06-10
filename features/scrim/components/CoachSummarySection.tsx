@@ -45,7 +45,7 @@ const CoachSummarySection = ({
   }
 
   return (
-    <article className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
+    <article className="rounded-2xl border border-ui-border bg-ui-surface/40 p-5">
       <div className="mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <ClipboardList className="h-4 w-4 text-ui-text-2" />
@@ -71,7 +71,7 @@ const CoachSummarySection = ({
             {summary}
           </p>
         ) : (
-          <div className="flex items-center justify-center rounded-lg border border-dashed border-white/10 py-4">
+          <div className="flex items-center justify-center rounded-lg border border-dashed border-ui-border py-4">
             <p className="text-xs text-ui-text-muted">Belum ada ringkasan evaluasi coach.</p>
           </div>
         )
@@ -82,7 +82,7 @@ const CoachSummarySection = ({
             onChange={(e) => setDraft(e.target.value)}
             rows={5}
             placeholder="Ringkasan evaluasi keseluruhan scrim: apa yang berjalan baik, kelemahan, fokus latihan berikutnya..."
-            className="w-full resize-y rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm text-ui-text placeholder-white/20 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            className="w-full resize-y rounded-md border border-ui-border bg-ui-elevated px-3 py-2 text-sm text-ui-text placeholder-white/20 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
             autoFocus
           />
           <div className="flex items-center justify-end gap-2">

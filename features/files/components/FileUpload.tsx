@@ -97,7 +97,7 @@ const FileUpload = ({
   return (
     <div className="space-y-2">
       <div className="flex items-center gap-2">
-        <label className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-md border border-white/10 px-3 text-xs font-medium text-ui-text transition hover:bg-white/5 hover:text-ui-text">
+        <label className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-md border border-ui-border px-3 text-xs font-medium text-ui-text transition hover:bg-ui-elevated hover:text-ui-text">
           {uploading ? (
             <Loader2 className="h-3.5 w-3.5 animate-spin" />
           ) : (
@@ -113,7 +113,7 @@ const FileUpload = ({
           />
         </label>
         {fileName && !uploading && (
-          <div className="flex items-center gap-1.5 rounded-md bg-white/5 px-2 py-1 text-xs text-ui-text-2">
+          <div className="flex items-center gap-1.5 rounded-md bg-ui-elevated px-2 py-1 text-xs text-ui-text-2">
             <span className="max-w-[200px] truncate">{fileName}</span>
             <button
               type="button"

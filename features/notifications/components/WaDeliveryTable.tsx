@@ -52,7 +52,7 @@ const WaDeliveryTable = ({ orgId, orgSlug }: WaDeliveryTableProps) => {
   return (
     <div className="space-y-4">
       {/* Filter tabs */}
-      <div className="flex gap-1 rounded-lg bg-white/5 p-1">
+      <div className="flex gap-1 rounded-lg bg-ui-elevated p-1">
         {FILTERS.map((f) => (
           <button
             key={f.value}
@@ -60,7 +60,7 @@ const WaDeliveryTable = ({ orgId, orgSlug }: WaDeliveryTableProps) => {
             onClick={() => handleFilterChange(f.value)}
             className={`cursor-pointer rounded-md px-3 py-1.5 text-xs font-medium transition ${
               filter === f.value
-                ? "bg-white/10 text-ui-text"
+                ? "bg-ui-hover text-ui-text"
                 : "text-ui-text-2 hover:text-ui-text"
             }`}
           >

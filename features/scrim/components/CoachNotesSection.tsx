@@ -79,7 +79,7 @@ const CoachNotesSection = ({
             rows={5}
             maxLength={3000}
             placeholder="Evaluasi performa tim, area perbaikan, catatan taktis..."
-            className="w-full rounded-md border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-blue-400 focus:outline-none"
+            className="w-full rounded-md border border-ui-border bg-ui-surface px-3 py-2 text-sm text-ui-text focus:border-blue-400 focus:outline-none"
           />
           {error && (
             <p className="text-xs text-rose-400">{error}</p>

@@ -84,7 +84,7 @@ const SponsorCard = ({ sponsor, detailHref, showOrgName = false }: SponsorCardPr
 
       <Link
         href={detailHref}
-        className="mt-auto inline-flex h-8 items-center justify-center rounded-md border border-ui-border text-xs text-ui-text-2 transition hover:bg-white/5 hover:text-ui-text"
+        className="mt-auto inline-flex h-8 items-center justify-center rounded-md border border-ui-border text-xs text-ui-text-2 transition hover:bg-ui-elevated hover:text-ui-text"
       >
         Lihat Detail
       </Link>

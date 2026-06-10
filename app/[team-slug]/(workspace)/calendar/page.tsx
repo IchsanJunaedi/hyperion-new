@@ -113,7 +113,7 @@ export default async function CalendarPage({
         </div>
       </header>
 
-      <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-4 sm:p-6">
+      <div className="rounded-2xl border border-ui-border bg-ui-surface/40 p-4 sm:p-6">
         {viewMode === "week" ? (
           <CalendarWeeklyWarRoom orgSlug={slug} events={events} />
         ) : viewMode === "list" ? (

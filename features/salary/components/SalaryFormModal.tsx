@@ -30,7 +30,7 @@ const ROLE_BADGES: Record<string, { text: string; bg: string }> = {
   manager: { text: "text-emerald-400", bg: "bg-emerald-400/10" },
   coach: { text: "text-sky-400", bg: "bg-sky-400/10" },
   captain: { text: "text-violet-400", bg: "bg-violet-400/10" },
-  member: { text: "text-ui-text", bg: "bg-white/5" },
+  member: { text: "text-ui-text", bg: "bg-ui-elevated" },
 };
 
 function formatSalaryDisplay(raw: string): string {
@@ -175,9 +175,9 @@ const SalaryFormModal = ({
                     </span>
                     {selectedMember.role && (
                       <span className={`inline-flex items-center rounded-full px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider shrink-0 ${
-                        (ROLE_BADGES[selectedMember.role.toLowerCase()] || { text: "text-ui-text-2", bg: "bg-white/5" }).text
+                        (ROLE_BADGES[selectedMember.role.toLowerCase()] || { text: "text-ui-text-2", bg: "bg-ui-elevated" }).text
                       } ${
-                        (ROLE_BADGES[selectedMember.role.toLowerCase()] || { text: "text-ui-text-2", bg: "bg-white/5" }).bg
+                        (ROLE_BADGES[selectedMember.role.toLowerCase()] || { text: "text-ui-text-2", bg: "bg-ui-elevated" }).bg
                       }`}>
                         {selectedMember.role}
                       </span>
@@ -227,9 +227,9 @@ const SalaryFormModal = ({
                             </span>
                             {m.role && (
                               <span className={`inline-flex items-center rounded-full px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider shrink-0 ${
-                                (ROLE_BADGES[m.role.toLowerCase()] || { text: "text-ui-text-2", bg: "bg-white/5" }).text
+                                (ROLE_BADGES[m.role.toLowerCase()] || { text: "text-ui-text-2", bg: "bg-ui-elevated" }).text
                               } ${
-                                (ROLE_BADGES[m.role.toLowerCase()] || { text: "text-ui-text-2", bg: "bg-white/5" }).bg
+                                (ROLE_BADGES[m.role.toLowerCase()] || { text: "text-ui-text-2", bg: "bg-ui-elevated" }).bg
                               }`}>
                                 {m.role}
                               </span>

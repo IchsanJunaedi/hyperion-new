@@ -60,11 +60,11 @@ function CalendarItem({
   const visLabel = VISIBILITY_LABELS[calendar.visibility] ?? calendar.visibility;
 
   return (
-    <div className="flex items-center justify-between p-4 rounded-2xl border border-white/10 bg-zinc-900/40 shadow-xl shadow-black/20 hover:bg-zinc-800/40 transition-colors">
+    <div className="flex items-center justify-between p-4 rounded-2xl border border-ui-border bg-ui-surface/40 shadow-xl shadow-black/20 hover:bg-ui-elevated/40 transition-colors">
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1 flex-wrap">
           <h3 className="text-sm font-medium text-ui-text">{calendar.title}</h3>
-          <span className={`text-xs font-medium px-2 py-0.5 rounded-full bg-white/5 border border-white/10 ${visColor}`}>
+          <span className={`text-xs font-medium px-2 py-0.5 rounded-full bg-ui-elevated border border-ui-border ${visColor}`}>
             {visLabel}
           </span>
           {isDefault && (
@@ -84,7 +84,7 @@ function CalendarItem({
         <button
           onClick={() => onToggleVisibility(calendar.id)}
           title={calendar.isVisible ? "Sembunyikan kalender" : "Tampilkan kalender"}
-          className="p-2 rounded-lg text-ui-text-muted hover:bg-white/5 hover:text-ui-text transition-colors"
+          className="p-2 rounded-lg text-ui-text-muted hover:bg-ui-elevated hover:text-ui-text transition-colors"
         >
           {calendar.isVisible ? (
             <Eye className="h-4 w-4" />
@@ -96,7 +96,7 @@ function CalendarItem({
         <button
           onClick={() => onTogglePinned(calendar.id)}
           title={calendar.isPinned ? "Lepas pin kalender" : "Pin kalender"}
-          className="p-2 rounded-lg transition-colors hover:bg-white/5"
+          className="p-2 rounded-lg transition-colors hover:bg-ui-elevated"
         >
           {calendar.isPinned ? (
             <Pin className="h-4 w-4 text-yellow-400" />
@@ -111,7 +111,7 @@ function CalendarItem({
           className={`p-2 rounded-lg transition-colors ${
             isDefault
               ? "bg-yellow-400/10 text-yellow-400"
-              : "text-ui-text-muted hover:bg-white/5 hover:text-ui-text"
+              : "text-ui-text-muted hover:bg-ui-elevated hover:text-ui-text"
           }`}
         >
           <Star className="h-4 w-4" />
@@ -150,7 +150,7 @@ function FilterSection({ visibilityFilter, onFilterChange }: FilterSectionProps)
           className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors border ${
             visibilityFilter === filter.value
               ? "bg-yellow-400/10 text-yellow-400 border-yellow-400/30"
-              : "bg-white/5 text-ui-text-2 border-white/10 hover:bg-white/10 hover:text-ui-text"
+              : "bg-ui-elevated text-ui-text-2 border-ui-border hover:bg-ui-hover hover:text-ui-text"
           }`}
         >
           {filter.label}
@@ -205,7 +205,7 @@ export default function CalendarViewSettingsPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-white/10 border-t-white/60" />
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-ui-border border-t-white/60" />
       </div>
     );
   }
@@ -216,7 +216,7 @@ export default function CalendarViewSettingsPage() {
       <div className="flex justify-start">
         <Link
           href={`/${teamSlug}/calendar`}
-          className="group inline-flex items-center gap-2 rounded-full border border-white/5 bg-zinc-900/40 px-3.5 py-1.5 text-xs font-semibold text-white/60 transition-all duration-300 hover:bg-zinc-800/60 hover:text-white"
+          className="group inline-flex items-center gap-2 rounded-full border border-ui-border bg-ui-surface/40 px-3.5 py-1.5 text-xs font-semibold text-ui-text-2 transition-all duration-300 hover:bg-ui-elevated/60 hover:text-ui-text"
         >
           <ArrowLeft className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-x-0.5" />
           Kembali ke kalender
@@ -241,7 +241,7 @@ export default function CalendarViewSettingsPage() {
             { label: "Terlihat", value: visibleCount },
             { label: "Pinned", value: pinnedCount },
           ].map((stat) => (
-            <div key={stat.label} className="rounded-2xl border border-white/10 bg-zinc-900/40 p-4 shadow-xl shadow-black/20">
+            <div key={stat.label} className="rounded-2xl border border-ui-border bg-ui-surface/40 p-4 shadow-xl shadow-black/20">
               <p className="text-xs text-ui-text-muted">{stat.label}</p>
               <p className="text-2xl font-bold text-ui-text mt-2">{stat.value}</p>
             </div>
@@ -274,7 +274,7 @@ export default function CalendarViewSettingsPage() {
         )}
 
         {/* Info Box */}
-        <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5 shadow-xl shadow-black/20">
+        <div className="rounded-2xl border border-ui-border bg-ui-surface/40 p-5 shadow-xl shadow-black/20">
           <h4 className="text-sm font-semibold text-ui-text mb-3">Tips</h4>
           <ul className="space-y-1.5 text-xs text-ui-text-muted">
             <li>• Sembunyikan kalender yang tidak ingin Anda lihat di tampilan utama</li>

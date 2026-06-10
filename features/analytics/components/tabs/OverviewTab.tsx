@@ -175,7 +175,7 @@ const OverviewTab = ({ stats, formatBreakdown, recentScrims, slug }: OverviewTab
                       ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-400"
                       : s.is_win === false
                         ? "border-rose-500/20 bg-rose-500/10 text-rose-400"
-                        : "border-zinc-500/20 bg-zinc-500/10 text-zinc-400"
+                        : "border-zinc-500/20 bg-zinc-500/10 text-ui-text-2"
                   }`}
                 >
                   {s.is_win === true ? "W" : s.is_win === false ? "L" : "D"}

@@ -38,7 +38,7 @@ const AuditActivityChart = ({ data7, data30 }: AuditActivityChartProps) => {
               onClick={() => setRange(d)}
               className={`px-3 py-1 rounded text-xs cursor-pointer transition-colors ${
                 range === d
-                  ? "bg-white/10 text-ui-text"
+                  ? "bg-ui-hover text-ui-text"
                   : "text-ui-text-muted hover:text-ui-text-2"
               }`}
             >

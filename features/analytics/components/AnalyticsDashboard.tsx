@@ -71,7 +71,7 @@ const AnalyticsDashboard = ({
         <button
           type="button"
           onClick={() => window.print()}
-          className="mb-2 inline-flex items-center gap-1.5 rounded-md border border-white/10 px-3 py-1.5 text-xs text-ui-text-2 transition hover:bg-white/5 hover:text-ui-text cursor-pointer"
+          className="mb-2 inline-flex items-center gap-1.5 rounded-md border border-ui-border px-3 py-1.5 text-xs text-ui-text-2 transition hover:bg-ui-elevated hover:text-ui-text cursor-pointer"
         >
           <Download className="h-3.5 w-3.5" />
           Export PDF

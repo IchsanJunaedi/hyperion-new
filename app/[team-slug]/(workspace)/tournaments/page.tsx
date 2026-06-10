@@ -82,7 +82,7 @@ export default async function TournamentsPage({ params, searchParams }: Tourname
               className={`relative inline-flex h-9 items-center rounded-full px-4 text-xs font-medium transition ${
                 active
                   ? "bg-white text-black"
-                  : "bg-zinc-800 text-white/70 hover:bg-zinc-700 hover:text-white"
+                  : "bg-ui-elevated text-ui-text hover:bg-zinc-700 hover:text-ui-text"
               }`}
             >
               {t.label}
@@ -102,7 +102,7 @@ export default async function TournamentsPage({ params, searchParams }: Tourname
       </nav>
 
       {filtered.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-white/10 bg-zinc-900/30 p-10 text-center">
+        <div className="rounded-xl border border-dashed border-ui-border bg-ui-surface/30 p-10 text-center">
           <Trophy className="mx-auto h-8 w-8 text-ui-text-muted" />
           <p className="mt-3 text-sm text-ui-text-2">
             {tab === "ongoing"
@@ -118,7 +118,7 @@ export default async function TournamentsPage({ params, searchParams }: Tourname
           {canManage && (
             <Link
               href={`/${slug}/tournaments/new`}
-              className="mt-4 inline-flex h-9 items-center rounded-md border border-white/15 px-4 text-sm font-medium text-ui-text transition hover:bg-white/5"
+              className="mt-4 inline-flex h-9 items-center rounded-md border border-white/15 px-4 text-sm font-medium text-ui-text transition hover:bg-ui-elevated"
             >
               Tambah turnamen pertama
             </Link>

@@ -44,7 +44,7 @@ const UserDetailModal = ({ user, onClose }: UserDetailModalProps) => {
       onClick={onClose}
     >
       <div
-        className="max-h-[85vh] w-full max-w-md overflow-y-auto rounded-xl border border-white/10 bg-zinc-900 p-6 shadow-xl"
+        className="max-h-[85vh] w-full max-w-md overflow-y-auto rounded-xl border border-ui-border bg-ui-surface p-6 shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start justify-between mb-4">
@@ -54,7 +54,7 @@ const UserDetailModal = ({ user, onClose }: UserDetailModalProps) => {
             </h3>
             {user.username && <p className="text-xs text-ui-text-2">@{user.username}</p>}
           </div>
-          <button onClick={onClose} className="rounded-md p-1 text-ui-text-muted hover:bg-white/10 hover:text-ui-text">
+          <button onClick={onClose} className="rounded-md p-1 text-ui-text-muted hover:bg-ui-hover hover:text-ui-text">
             <X className="h-4 w-4" />
           </button>
         </div>

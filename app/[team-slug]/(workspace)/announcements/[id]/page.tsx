@@ -126,7 +126,7 @@ export default async function AnnouncementDetailPage({
         </div>
       </header>
 
-      <article className="max-w-3xl rounded-2xl border border-white/10 bg-zinc-900/40 p-5 sm:p-6">
+      <article className="max-w-3xl rounded-2xl border border-ui-border bg-ui-surface/40 p-5 sm:p-6">
         <div className="whitespace-pre-line text-sm leading-relaxed text-ui-text">
           {announcement.body}
         </div>
@@ -164,7 +164,7 @@ export default async function AnnouncementDetailPage({
 
       {/* Manager acknowledgement overview */}
       {isManager && announcement.requires_ack && ackDetails && (
-        <div className="max-w-3xl rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
+        <div className="max-w-3xl rounded-2xl border border-ui-border bg-ui-surface/40 p-5">
           <div className="flex items-center gap-2 mb-4">
             <Users className="h-4 w-4 text-ui-text-muted" />
             <h3 className="text-sm font-semibold text-ui-text">Status Konfirmasi Member</h3>
@@ -173,7 +173,7 @@ export default async function AnnouncementDetailPage({
             </span>
           </div>
           {/* Progress bar */}
-          <div className="mb-4 h-1.5 w-full overflow-hidden rounded-full bg-white/10">
+          <div className="mb-4 h-1.5 w-full overflow-hidden rounded-full bg-ui-hover">
             <div
               className="h-full rounded-full bg-green-500 transition-all"
               style={{

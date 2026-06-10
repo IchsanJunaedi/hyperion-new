@@ -7,8 +7,8 @@ function rp(n: number) {
 const STATUS_CONFIG: Record<string, { label: string; cls: string }> = {
   active:   { label: "Aktif",    cls: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" },
   prospect: { label: "Prospek",  cls: "bg-blue-500/10 text-blue-400 border-blue-500/20" },
-  inactive: { label: "Inaktif",  cls: "bg-zinc-500/10 text-zinc-400 border-zinc-500/20" },
-  ended:    { label: "Selesai",  cls: "bg-zinc-500/10 text-zinc-400 border-zinc-500/20" },
+  inactive: { label: "Inaktif",  cls: "bg-zinc-500/10 text-ui-text-2 border-zinc-500/20" },
+  ended:    { label: "Selesai",  cls: "bg-zinc-500/10 text-ui-text-2 border-zinc-500/20" },
 };
 
 const SponsorTab = ({ sponsors }: { sponsors: NonNullable<MonthlyReport["sponsors"]> }) => {
