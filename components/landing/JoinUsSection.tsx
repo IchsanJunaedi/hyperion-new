@@ -61,10 +61,7 @@ const JoinUsSection = ({ settings }: JoinUsSectionProps) => {
               <h2 className="text-5xl font-black uppercase leading-tight tracking-tight text-white sm:text-6xl lg:text-7xl">
                 {settings.join_title_line1}
                 <br />
-                <span
-                  className="text-[#F5C400]"
-                  style={{ textShadow: "0 0 40px rgba(245,196,0,0.25)" }}
-                >
+                <span className="text-white">
                   {settings.join_title_line2}
                 </span>
               </h2>

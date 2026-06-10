@@ -407,7 +407,7 @@ const AchievementsSection = ({ entries }: AchievementsSectionProps) => {
               <div className="h-px w-8 bg-[#F5C400]" />
             </div>
             <h2 className="font-bebas text-4xl sm:text-5xl lg:text-6xl font-black uppercase tracking-wide text-white leading-none">
-              The beginning of our <span className="text-[#F5C400]">glory.</span>
+              The beginning of our <span className="text-white">glory.</span>
             </h2>
             <p className="mt-4 max-w-2xl mx-auto text-xs sm:text-sm text-white/50 font-sans font-light leading-relaxed">
               Kita mulai dari apa yang paling kita impikan – bermain lebih gigih, berlatih lebih cerdas, menyatu lebih dalam, berpikir lebih jernih, dan menang bersama di setiap panggung kompetisi.

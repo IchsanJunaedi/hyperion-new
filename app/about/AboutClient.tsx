@@ -225,7 +225,7 @@ const AboutClient = ({ settings, alumni }: AboutClientProps) => {
             </span>
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black uppercase tracking-tight text-white leading-none animate-fadeinup">
               {orgName.split(" ").slice(0, -1).join(" ") || orgName} <br />
-              <span className="text-[#F5C400]">{orgName.split(" ").slice(-1)[0]}</span>
+              <span className="text-white">{orgName.split(" ").slice(-1)[0]}</span>
             </h1>
           </div>
           <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl border border-white/10 bg-[#0C1E3C]">

@@ -4,7 +4,9 @@ import { Instagram, Menu, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
 import { AnimatePresence, motion } from "motion/react";
 
 import { ProfileDropdown } from "@/components/landing/ProfileDropdown";
@@ -31,6 +33,33 @@ const HeaderClient = ({
 }: HeaderProps) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
+  const navRef = useRef<HTMLUListElement>(null);
+  const pillRef = useRef<HTMLDivElement>(null);
+  const isFirstRender = useRef(true);
+
+  useGSAP(() => {
+    if (!navRef.current || !pillRef.current) return;
+    const activeItem = navRef.current.querySelector("[data-active='true']") as HTMLLIElement | null;
+    if (!activeItem) {
+      gsap.to(pillRef.current, { opacity: 0, duration: 0.2 });
+      return;
+    }
+    const x = activeItem.offsetLeft;
+    const w = activeItem.offsetWidth;
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      gsap.set(pillRef.current, { x, width: w, opacity: 1 });
+      return;
+    }
+    gsap.to(pillRef.current, { x, width: w, opacity: 1, duration: 0.38, ease: "power3.out" });
+    const link = activeItem.querySelector("a");
+    if (link) {
+      gsap.fromTo(link,
+        { filter: "brightness(2.5)" },
+        { filter: "brightness(1)", duration: 0.45, ease: "power2.out" }
+      );
+    }
+  }, { dependencies: [pathname], scope: navRef });
 
   // Helper to determine if a route is active (matches current pathname or is a subpath)
   const isActive = (href: string) => {
@@ -70,11 +99,20 @@ const HeaderClient = ({
             aria-label="Main"
             className="absolute left-1/2 hidden -translate-x-1/2 md:block"
           >
-            <ul className="flex items-center gap-8 font-orbitron text-[10px] uppercase tracking-[0.2em]">
+            <ul ref={navRef} className="relative flex items-center gap-8 font-orbitron text-[10px] uppercase tracking-[0.2em]">
+              {/* GSAP glow pill */}
+              <div
+                ref={pillRef}
+                className="pointer-events-none absolute inset-y-0 opacity-0 rounded-sm"
+                style={{
+                  background: "rgba(245,196,0,0.07)",
+                  boxShadow: "0 0 14px rgba(245,196,0,0.14), inset 0 0 6px rgba(245,196,0,0.05)",
+                }}
+              />
               {navLinks.map((link) => {
                 const active = isActive(link.href);
                 return (
-                  <li key={link.href} className="relative py-1">
+                  <li key={link.href} data-active={active ? "true" : undefined} className="relative py-1 px-1">
                     <Link
                       href={link.href}
                       className={`transition-colors duration-200 ${
@@ -85,12 +123,6 @@ const HeaderClient = ({
                     >
                       {link.label}
                     </Link>
-                    {active && (
-                      <motion.div
-                        layoutId="nav-underline"
-                        className="absolute -bottom-0.5 left-0 right-0 h-px bg-[#F5C400]"
-                      />
-                    )}
                   </li>
                 );
               })}
