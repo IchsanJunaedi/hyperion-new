@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import type { ReactNode } from "react";
 
 import { NotificationBell } from "@/features/notifications/components/NotificationBell";
 
@@ -9,6 +10,7 @@ interface DashboardHeaderProps {
   workspaceName: string;
   userId: string;
   orgSlug: string;
+  mobileNav?: ReactNode;
 }
 
 const ROUTE_LABELS: Record<string, string> = {
@@ -35,6 +37,7 @@ const DashboardHeader = ({
   workspaceName,
   userId,
   orgSlug,
+  mobileNav,
 }: DashboardHeaderProps) => {
   const pathname = usePathname() ?? "/dashboard";
   const segments = pathname.split("/").filter(Boolean);
@@ -91,8 +94,11 @@ const DashboardHeader = ({
 
   return (
     <header className="sticky top-0 z-40 h-12 border-b border-[#2D2D2D] bg-[#191919] select-none print-hide">
-      <div className="w-full h-full flex items-center justify-between px-6">
-        {renderBreadcrumbs()}
+      <div className="w-full h-full flex items-center justify-between px-4 sm:px-6">
+        <div className="flex items-center gap-2">
+          {mobileNav}
+          {renderBreadcrumbs()}
+        </div>
         <NotificationBell userId={userId} orgSlug={orgSlug} />
       </div>
     </header>

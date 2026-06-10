@@ -287,11 +287,11 @@ const AboutClient = ({ settings, alumni }: AboutClientProps) => {
       {/* 3. Pinned Scrolling Gallery */}
       <section className="relative">
         <div className="mwg037">
-          <div className="mwg037-pin-height h-[250vh] relative">
+          <div className="mwg037-pin-height h-[180vh] md:h-[250vh] relative">
             <div className="mwg037-container sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-7xl px-6 items-center">
                 {/* Left Text */}
-                <h3 className="text-4xl sm:text-6xl lg:text-7xl font-black uppercase tracking-tight text-white text-center md:text-left leading-none">
+                <h3 className="text-3xl sm:text-5xl lg:text-7xl font-black uppercase tracking-tight text-white text-center md:text-left leading-none">
                   BUILDING
                 </h3>
 
@@ -300,7 +300,7 @@ const AboutClient = ({ settings, alumni }: AboutClientProps) => {
                   <span className="text-[10px] font-mono tracking-[0.3em] uppercase text-[#9B9A97]">
                     ESPORTS
                   </span>
-                  <div className="mwg037-images relative w-56 h-80 sm:w-64 sm:h-[380px] rounded-2xl overflow-hidden border border-white/10 bg-[#0C1E3C] shadow-2xl">
+                  <div className="mwg037-images relative w-40 h-60 sm:w-56 sm:h-80 md:w-64 md:h-[380px] rounded-2xl overflow-hidden border border-white/10 bg-[#0C1E3C] shadow-2xl">
                     <div className="mwg037-hidden absolute inset-0 w-full h-full">
                       <div
                         className="mwg037-image absolute top-0 left-0 w-full h-[calc(100%+40px)]"
@@ -329,7 +329,7 @@ const AboutClient = ({ settings, alumni }: AboutClientProps) => {
                 </div>
 
                 {/* Right Text */}
-                <h3 className="text-4xl sm:text-6xl lg:text-7xl font-black uppercase tracking-tight text-white text-center md:text-right leading-none">
+                <h3 className="text-3xl sm:text-5xl lg:text-7xl font-black uppercase tracking-tight text-white text-center md:text-right leading-none">
                   CHAMPIONS
                 </h3>
               </div>

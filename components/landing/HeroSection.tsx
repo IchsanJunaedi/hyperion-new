@@ -191,7 +191,7 @@ const HeroSection = ({
               {/* Right Column: Upcoming Matches (3 Cards) */}
               <div className="hero-card-right w-full lg:w-[48%] flex flex-col justify-center">
                 <div className="flex items-center justify-between gap-4 mb-4">
-                  <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.3em] text-[#F5C400]">
+                  <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.15em] sm:tracking-[0.3em] text-[#F5C400]">
                     <Trophy className="h-4 w-4" />
                     Upcoming Matches
                   </div>

@@ -11,6 +11,7 @@ import { NotificationBell } from "@/features/notifications/components/Notificati
 import { NotificationRealtimeProvider } from "@/features/notifications/components/NotificationRealtimeProvider";
 import { DashboardSidebarNav } from "@/components/layout/DashboardSidebarNav";
 import { DashboardHeader } from "@/components/layout/DashboardHeader";
+import { DashboardMobileNav } from "@/components/layout/DashboardMobileNav";
 import { getTodoBadgeCount } from "@/features/todos/queries";
 
 export const dynamic = "force-dynamic";
@@ -76,8 +77,8 @@ export default async function DashboardLayout({
   return (
     <NotifyProvider>
       <div className="flex min-h-screen bg-[#191919] text-[#E5E2E1]">
-        {/* Sidebar */}
-        <aside className="w-[280px] h-screen fixed left-0 top-0 bg-[#202020] flex flex-col border-r border-[#2D2D2D] text-sm">
+        {/* Sidebar — desktop only */}
+        <aside className="hidden md:flex w-[280px] h-screen fixed left-0 top-0 bg-[#202020] flex-col border-r border-[#2D2D2D] text-sm">
           {/* Org header */}
           <div className="flex h-12 shrink-0 items-center border-b border-[#2D2D2D]">
             {orgSlug ? (
@@ -162,12 +163,13 @@ export default async function DashboardLayout({
         </aside>
 
         {/* Main content */}
-        <div className="flex-1 ml-[280px] flex flex-col min-h-screen">
+        <div className="flex-1 md:ml-[280px] flex flex-col min-h-screen">
           <NotificationRealtimeProvider userId={user?.id ?? ""}>
             <DashboardHeader
               workspaceName={workspaceName}
               userId={user.id}
               orgSlug={orgSlug}
+              mobileNav={<DashboardMobileNav badgeCount={todoBadgeCount} />}
             />
             {children}
           </NotificationRealtimeProvider>

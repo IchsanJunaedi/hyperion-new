@@ -23,7 +23,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   return (
     <div className="flex min-h-screen bg-[#191919] text-[#E5E2E1]">
-      <aside className="w-[260px] h-screen fixed left-0 top-0 bg-[#202020] flex flex-col border-r border-[#2D2D2D] text-sm">
+      <aside className="hidden md:flex w-[260px] h-screen fixed left-0 top-0 bg-[#202020] flex-col border-r border-[#2D2D2D] text-sm">
         <div className="flex h-12 shrink-0 items-center border-b border-[#2D2D2D] px-4 gap-3">
           <div className="grid h-5 w-5 place-items-center rounded bg-[#F5C400] text-[10px] font-black text-black">
             A
@@ -60,7 +60,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         </div>
       </aside>
 
-      <div className="flex-1 ml-[260px] flex flex-col min-h-screen">
+      <div className="flex-1 md:ml-[260px] flex flex-col min-h-screen">
         {children}
       </div>
     </div>
