@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Header } from "@/components/landing/Header";
 import { Footer } from "@/components/landing/Footer";
+import { InteractiveBackground } from "@/components/landing/InteractiveBackground";
 import { getPublishedNewsPosts } from "@/features/admin/queries";
 import { NewsListClient } from "./_components/NewsListClient";
 
@@ -16,21 +17,31 @@ const NewsPage = async () => {
   return (
     <>
       <Header />
-      <main className="min-h-screen flex-1 bg-[#040D1C]">
+      <main className="relative min-h-screen flex-1 bg-[#040D1C] overflow-hidden">
+        <InteractiveBackground />
         {/* Hero header */}
-        <section className="px-6 pb-6 pt-28 sm:px-10 lg:px-16">
-          <div className="mx-auto max-w-7xl">
-            <h1 className="text-5xl font-black uppercase tracking-tight text-white sm:text-6xl lg:text-7xl">
+        <section className="relative z-10 overflow-hidden border-b border-white/12 px-6 py-20 sm:px-10 lg:px-16">
+          <div
+            className="pointer-events-none absolute inset-0 opacity-5"
+            style={{
+              backgroundImage: "radial-gradient(circle, rgba(245,196,0,0.2) 1px, transparent 1px)",
+              backgroundSize: "28px 28px",
+            }}
+          />
+          <div className="relative mx-auto max-w-7xl flex flex-col items-center text-center">
+            <div className="mb-4 flex items-center justify-center gap-3">
+              <span className="text-[11px] font-bold uppercase tracking-[0.3em] text-[#F5C400]">
+                Hyperion Team
+              </span>
+            </div>
+            <h1 className="font-bebas text-6xl sm:text-7xl lg:text-8xl font-black uppercase tracking-wide text-white leading-none">
               News
             </h1>
-            <p className="mt-3 max-w-xl text-sm leading-relaxed text-white/45">
+            <p className="mt-4 max-w-xl text-sm sm:text-base leading-relaxed text-white/55">
               Berita, update, dan pengumuman terbaru dari Hyperion Team.
             </p>
           </div>
         </section>
-
-        {/* Divider */}
-        <div className="mx-6 border-t border-white/[0.06] sm:mx-10 lg:mx-16" />
 
         <NewsListClient posts={posts} />
       </main>

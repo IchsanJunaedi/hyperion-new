@@ -5,7 +5,7 @@ import { getGalleryEntries, getSiteSettings } from "@/features/admin/queries";
 
 export const dynamic = "force-dynamic";
 
-export default async function GalleryPage() {
+async function GalleryPage() {
   const [galleries, settings] = await Promise.all([
     getGalleryEntries(),
     getSiteSettings(),
@@ -42,11 +42,16 @@ export default async function GalleryPage() {
                 "radial-gradient(circle at 80% 50%, rgba(245,196,0,0.05) 0%, transparent 70%)",
             }}
           />
-          <div className="relative mx-auto max-w-7xl">
-            <h1 className="font-bebas text-6xl font-black uppercase leading-none tracking-tight text-white sm:text-7xl lg:text-8xl">
+          <div className="relative mx-auto max-w-7xl flex flex-col items-center text-center">
+            <div className="mb-4 flex items-center justify-center gap-3">
+              <span className="text-[11px] font-bold uppercase tracking-[0.3em] text-[#F5C400]">
+                Hyperion Team
+              </span>
+            </div>
+            <h1 className="font-bebas text-6xl sm:text-7xl lg:text-8xl font-black uppercase tracking-wide text-white leading-none">
               Achievement
             </h1>
-            <p className="mt-4 max-w-lg text-sm leading-relaxed text-white/50">
+            <p className="mt-4 max-w-lg text-sm sm:text-base leading-relaxed text-white/55">
               Prestasi dan pencapaian Hyperion Team di berbagai turnamen nasional dan regional.
             </p>
           </div>
@@ -54,11 +59,11 @@ export default async function GalleryPage() {
 
         {/* Gallery Grid */}
         <section className="px-6 py-16 sm:px-10 lg:px-16">
-          <div className="mx-auto max-w-7xl">
+          <div className="mx-auto max-w-[1440px]">
             {galleries.length === 0 ? (
               <p className="text-sm text-white/30">Belum ada data achievement.</p>
             ) : (
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="flex flex-col gap-16 md:gap-20">
                 {galleries.map((gallery, i) => (
                   <GalleryCard
                     key={gallery.slug}
@@ -69,8 +74,11 @@ export default async function GalleryPage() {
                     tournamentDate={gallery.tournament_date}
                     position={gallery.position}
                     logoUrl={gallery.logo_url}
-                    previewImages={gallery.preview_images}
+                    previewImages={gallery.preview_images ?? []}
                     total={galleries.length}
+                    metricValue={gallery.metric_value}
+                    metricLabel={gallery.metric_label}
+                    description={gallery.description}
                   />
                 ))}
               </div>
@@ -82,3 +90,5 @@ export default async function GalleryPage() {
     </>
   );
 }
+
+export { GalleryPage as default };
