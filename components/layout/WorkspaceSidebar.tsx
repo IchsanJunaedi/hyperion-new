@@ -161,7 +161,7 @@ const getManagerNavGroup = (orgSlug: string): NavGroup => ({
       key: "manage-todos",
       href: "",
       absoluteHref: `/manage/${orgSlug}/todos`,
-      label: "Todos",
+      label: "To-Do",
       Icon: ClipboardCheck,
     },
   ],

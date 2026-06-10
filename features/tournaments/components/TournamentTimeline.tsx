@@ -189,6 +189,7 @@ function MatchRow({
 }) {
   const [editing, setEditing] = useState(false);
   const [roundLabel, setRoundLabel] = useState(match.round_label);
+  const [opponentName, setOpponentName] = useState(match.opponent_name ?? "");
   const [ourScore, setOurScore] = useState(match.our_score?.toString() ?? "");
   const [oppScore, setOppScore] = useState(match.opponent_score?.toString() ?? "");
   const [isWin, setIsWin] = useState<string>(
@@ -208,6 +209,7 @@ function MatchRow({
     startTransition(async () => {
       const res = await updateTournamentMatchAction(orgSlug, tournamentId, match.id, {
         round_label: roundLabel,
+        opponent_name: opponentName,
         our_score: ourScore !== "" ? Number(ourScore) : null,
         opponent_score: oppScore !== "" ? Number(oppScore) : null,
         is_win: isWin === "win" ? true : isWin === "lose" ? false : null,
@@ -227,6 +229,13 @@ function MatchRow({
         <input
           value={roundLabel}
           onChange={(e) => setRoundLabel(e.target.value)}
+          placeholder="Label ronde (misal: Babak Grup)"
+          className="h-7 w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-2 text-xs text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none"
+        />
+        <input
+          value={opponentName}
+          onChange={(e) => setOpponentName(e.target.value)}
+          placeholder="Nama lawan (opsional)"
           className="h-7 w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-2 text-xs text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none"
         />
         <div className="grid grid-cols-3 gap-1.5">
@@ -284,6 +293,9 @@ function MatchRow({
       </span>
       <span className="flex-1 min-w-0 text-xs text-[#9B9A97] truncate">
         {match.round_label}
+        {match.opponent_name && (
+          <span className="text-[#6B6A68]"> vs {match.opponent_name}</span>
+        )}
         {match.our_score != null && match.opponent_score != null && (
           <span className="ml-1 text-[#6B6A68]">
             {match.our_score}–{match.opponent_score}
@@ -327,6 +339,7 @@ function AddMatchForm({
   onDone: () => void;
 }) {
   const [roundLabel, setRoundLabel] = useState("");
+  const [opponentName, setOpponentName] = useState("");
   const [ourScore, setOurScore] = useState("");
   const [oppScore, setOppScore] = useState("");
   const [isWin, setIsWin] = useState<string>("");
@@ -338,6 +351,7 @@ function AddMatchForm({
       const res = await addTournamentMatchAction(orgSlug, tournamentId, {
         stage_id: stageId,
         round_label: roundLabel,
+        opponent_name: opponentName,
         our_score: ourScore !== "" ? Number(ourScore) : null,
         opponent_score: oppScore !== "" ? Number(oppScore) : null,
         is_win: isWin === "win" ? true : isWin === "lose" ? false : null,
@@ -345,6 +359,7 @@ function AddMatchForm({
       if (res.ok) {
         success("Hasil match disimpan!");
         setRoundLabel("");
+        setOpponentName("");
         setOurScore("");
         setOppScore("");
         setIsWin("");
@@ -360,7 +375,13 @@ function AddMatchForm({
       <input
         value={roundLabel}
         onChange={(e) => setRoundLabel(e.target.value)}
-        placeholder="Label ronde (misal: Babak Grup vs TeamX)"
+        placeholder="Label ronde (misal: Babak Grup)"
+        className="h-8 w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-xs text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none"
+      />
+      <input
+        value={opponentName}
+        onChange={(e) => setOpponentName(e.target.value)}
+        placeholder="Nama lawan (opsional)"
         className="h-8 w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-xs text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none"
       />
       <div className="grid grid-cols-3 gap-2">

@@ -159,6 +159,7 @@ features/
   strategy/             → Strategy notes + comments
   teams/                → Team management
   tournaments/          → Tournament brackets & stages
+  todos/                → To-Do feature (smart auto-todos + manual assignable tasks)
   trials/               → Open trials pipeline
 lib/
   actions/              → Shared server action utilities
@@ -381,13 +382,14 @@ See **`progress.md`** in the project root for the full, up-to-date feature inven
 
 **Always read `progress.md` at the start of a new session before making any changes.**
 
-Quick summary (as of 2026-05-27):
+Quick summary (as of 2026-06-09):
 - All workspace routes functional: scrim (+ VOD link + hero portraits in results), calendar (RSVP), tournaments (bracket + match tracking), announcements (read receipts + ack), strategy (comments), polls (regular + availability grid), analytics (PDF export), roster, files, development, meta, trials
+- To-Do feature live: smart auto-todos (7 types) + manual assignable todos — `/dashboard/todos` + `/manage/[orgSlug]/todos`
 - Premium `NumberInput` stepper component replaces all native `<input type="number">` app-wide
 - Salary contracts: player contracts + payments + bonus distributions — Owner excluded from receiving salary
-- 68 migrations applied
+- 775 unit tests passing, 90.69% statement coverage — all CI gates green
 - Dead features (do not revive): scouting, AI insights, matchmaking, reports (not public)
-- Performance Batch 2 items remaining: B2-1, B2-2, B2-7, B2-9 (see progress.md)
+- Performance Batch 2: all items done (B2-1, B2-2, B2-7, B2-9)
 
 ## Caveman — Token Compression
 

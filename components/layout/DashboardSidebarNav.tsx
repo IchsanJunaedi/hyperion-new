@@ -25,7 +25,7 @@ const NAV_GROUPS = [
     label: "OVERVIEW",
     items: [
       { href: "/dashboard", Icon: Home, label: "Home" },
-      { href: "/dashboard/todos", Icon: CheckSquare, label: "Todos" },
+      { href: "/dashboard/todos", Icon: CheckSquare, label: "To-Do" },
       { href: "/dashboard/calendar", Icon: Calendar, label: "Calendar" },
       { href: "/dashboard/tournaments", Icon: Trophy, label: "Turnamen" },
     ],

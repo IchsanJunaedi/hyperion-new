@@ -10,6 +10,7 @@ export interface TournamentMatch {
   id: string;
   stage_id: string;
   round_label: string;
+  opponent_name: string | null;
   our_score: number | null;
   opponent_score: number | null;
   is_win: boolean | null;

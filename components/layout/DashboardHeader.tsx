@@ -27,7 +27,7 @@ const ROUTE_LABELS: Record<string, string> = {
   "/dashboard/sponsors": "Sponsor",
   "/dashboard/teams": "Pengaturan Tim",
   "/dashboard/tournaments": "Turnamen",
-  "/dashboard/todos": "Todos",
+  "/dashboard/todos": "To-Do",
   "/dashboard/users": "User Active",
 };
 

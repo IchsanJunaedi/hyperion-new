@@ -2675,6 +2675,7 @@ export type Database = {
           id: string
           is_win: boolean | null
           notes: string | null
+          opponent_name: string | null
           opponent_score: number | null
           our_score: number | null
           played_at: string | null
@@ -2686,6 +2687,7 @@ export type Database = {
           id?: string
           is_win?: boolean | null
           notes?: string | null
+          opponent_name?: string | null
           opponent_score?: number | null
           our_score?: number | null
           played_at?: string | null
@@ -2697,6 +2699,7 @@ export type Database = {
           id?: string
           is_win?: boolean | null
           notes?: string | null
+          opponent_name?: string | null
           opponent_score?: number | null
           our_score?: number | null
           played_at?: string | null

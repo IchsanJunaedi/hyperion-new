@@ -14,6 +14,7 @@
 - Content calendar: platform scheduling, approval flow
 - Player development panel: set targets per player, update level, history chart
 - Salary & contracts: player contracts with salary/bonus percentages + payment tracking
+- To-Do (`/dashboard/todos`, `/manage/[orgSlug]/todos`): smart auto-todos (7 types: contract expiry, salary due, member unassigned, trial pending, scrim no result, sponsor stale, tournament no bracket) + manual assignable todos. Sidebar badge counts overdue+today items only.
 
 ### Manager Panel (`/manage`)
 - Roster: assign members to divisions, set roles (captain/coach/member)
@@ -116,9 +117,29 @@
 | `meta_picks` | MLBB hero pick/ban meta tracking | `20260521200000` |
 | `opponent_profiles` | Scouted opponent org data | `20260516000003` |
 | `scrim_matchmaking_requests` | Scrim findmatch requests | `20260516000007` |
+| `manual_todos` | Owner/manager created tasks, assignable to org members | todos feature |
+| `todo_dismissals` | Per-user smart todo dismissal records | todos feature |
 | `audit_logs` | All create/update/delete actions | `20260514000002` |
 | `notification_preferences` | Per-user WA notification toggles | `20260516120000` |
 | `content_calendar` | Social media content scheduling | `20260515000004` |
+
+---
+
+## Features & Fixes Completed (2026-06-10 session)
+
+### Issue Triage & Tournament Match Opponent Name (GH #27-#30)
+- **#27, #28, #29 — already fixed** (progress.md was stale): strategy comments display name, calendar RSVP grid count, and strategy comments realtime were all already implemented in code. Closed issues with explanation.
+- **#30 — Tournament match opponent name** implemented:
+  - Migration `20260610120000_tournament_match_opponent_name.sql` — adds `opponent_name TEXT` column to `tournament_matches`
+  - `types/database.ts` — added `opponent_name: string | null` to Row/Insert/Update
+  - `features/tournaments/queries.ts` — `TournamentMatch` interface updated
+  - `features/tournaments/actions.ts` — `addTournamentMatchAction` + `updateTournamentMatchAction` accept `opponent_name`
+  - `TournamentTimeline.tsx` — "Nama lawan (opsional)" input in both `AddMatchForm` and `MatchRow` edit form; display shows `{round_label} vs {opponent_name}` in match row
+
+### Documentation Improvements
+- `AGENTS.md` — fixed critical `logAudit` params bug (was `userId/table/recordId`, now correct `actorId/entityType/entityId`); added `logAudit` signature section, error→UI pattern, TanStack Query pattern, state management decision tree (§20-22), To-Do feature docs
+- `CLAUDE.md` — added `todos/` to features list, updated Quick summary to 2026-06-09 with correct test counts, removed stale "B2 remaining" note
+- `progress.md` — added To-Do feature to What's Live, added `manual_todos`/`todo_dismissals` tables, updated Known Limitations (all resolved), updated What's NOT Done with GH issue refs
 
 ---
 
@@ -318,19 +339,18 @@ All `<input type="number">` must use `<NumberInput>` from `@/components/ui/numbe
 ---
 
 ## Known Limitations (not bugs, by design)
-- Strategy comments: optimistic display name shows `null` → "Member" until full page reload.
-- `StrategyComments` state doesn't sync with server re-renders. Add `useEffect` if user complains.
-- Calendar RSVP has no attendee count in grid/week view — only personal status.
-- Tournament match tracking: no opponent name field — `round_label` is free text by design.
+- *(none active — all prior limitations resolved)*
 
 ---
 
 ## What's NOT Done (Future Work)
-- RSVP summary count per calendar event in grid view
-- Strategy comments realtime subscription (currently requires page reload)
-- Public profile activation
-- Reports page activation
-- `/[slug]/sponsors` workspace page — intentionally not built (business data, not for members)
+- Public profile activation (GH #31 — needs design decision on public data scope)
+- Reports page activation for managers (GH #32 — needs audit of manager-visible data)
+- `/[slug]/sponsors` workspace page (GH #34 — needs decision: full vs partial sponsor visibility)
+- Light/dark mode CSS variable refactor (GH #33 — DO NOT START before palette finalized)
+- Apply 2 pending DB migrations when Docker available (GH #26):
+  - `20260604150000_polls_coach_permission.sql`
+  - `20260605120000_announcements_coach_permission.sql`
 
 ### Light/Dark Mode Theming Refactor (future, before light mode launch)
 - **Problem:** 146 file TSX hardcode hex design-system colors (`#191919`, `#2D2D2D`, dll) — akan salah di light mode

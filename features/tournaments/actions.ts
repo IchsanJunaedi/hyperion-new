@@ -338,6 +338,7 @@ export async function addTournamentMatchAction(
   raw: {
     stage_id: string;
     round_label: string;
+    opponent_name?: string;
     our_score?: number | null;
     opponent_score?: number | null;
     is_win?: boolean | null;
@@ -359,6 +360,7 @@ export async function addTournamentMatchAction(
   const { error } = await (supabase as any).from("tournament_matches").insert({
     stage_id: raw.stage_id,
     round_label: raw.round_label.trim(),
+    opponent_name: raw.opponent_name?.trim() || null,
     our_score: raw.our_score ?? null,
     opponent_score: raw.opponent_score ?? null,
     is_win: raw.is_win ?? null,
@@ -378,6 +380,7 @@ export async function updateTournamentMatchAction(
   matchId: string,
   raw: {
     round_label: string;
+    opponent_name?: string;
     our_score?: number | null;
     opponent_score?: number | null;
     is_win?: boolean | null;
@@ -398,6 +401,7 @@ export async function updateTournamentMatchAction(
     .from("tournament_matches")
     .update({
       round_label: raw.round_label.trim(),
+      opponent_name: raw.opponent_name?.trim() || null,
       our_score: raw.our_score ?? null,
       opponent_score: raw.opponent_score ?? null,
       is_win: raw.is_win ?? null,

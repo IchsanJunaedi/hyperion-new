@@ -151,9 +151,34 @@ export async function myAction(input: MyInput) {
 
   // ... logic ...
 
-  await logAudit({ userId: user.id, action: "create", table: "...", recordId: "..." });
+  await logAudit({ actorId: user.id, action: "create", entityType: "scrims", entityId: record.id });
   return { ok: true };
 }
+```
+
+### logAudit Signature (lib/audit.ts)
+
+```typescript
+await logAudit({
+  actorId: user.id,        // required — who performed the action
+  action: "create",        // required — "create" | "update" | "delete" | any string
+  entityType: "scrims",    // required — table name snake_case
+  entityId: record.id,     // optional — affected row ID
+  metadata: { title },     // optional — arbitrary context object
+});
+```
+
+### Error → UI Display Pattern
+
+```typescript
+// Client component consuming a server action
+const result = await myAction(input);
+if (!result.ok) {
+  toast.error(result.message);      // workspace context
+  // notify.error(result.message);  // dashboard/manage context (useNotify)
+  return;
+}
+toast.success("Berhasil!");
 ```
 
 ### Public Actions (unauthenticated forms)
@@ -353,6 +378,14 @@ app/
   onboarding/       → org + profile setup
 
 features/           → domain logic (actions, components, queries per feature)
+  todos/            → To-Do: smart auto-todos + manual tasks (see §22)
+  scrim/            → Scrim CRUD + VOD review + draft picks
+  calendar/         → Calendar events + permissions
+  salary/           → Player contracts + payments
+  tournaments/      → Bracket + match tracking
+  trials/           → Open trials pipeline
+  sponsors/         → Sponsor tracker + ROI
+  (see CLAUDE.md for full feature list)
 components/ui/      → primitive UI (button, card, input, label, number-input)
 components/layout/  → sidebar, nav
 lib/
@@ -410,3 +443,76 @@ FONNTE_WEBHOOK_SECRET=
 11. Owner excluded from salary contract dropdowns
 12. Public server actions must have rate limiting
 13. Upload URLs must be validated against Supabase storage prefix
+
+---
+
+## 20. State Management Decision Tree
+
+| Data type | Tool |
+|-----------|------|
+| Server data (lists, details fetched from DB) | TanStack Query `useQuery` / `useMutation` |
+| Ephemeral UI state (open/close, selected tab) | `useState` / `useReducer` |
+| Cross-component workspace state (active team, sidebar) | `useWorkspaceStore` (Zustand, `stores/`) |
+| Form state | React Hook Form |
+
+**Never** use `useEffect` + `fetch` to replace `useQuery`. **Never** put server-fetched data in Zustand.
+
+---
+
+## 21. TanStack Query + Server Action Integration
+
+```typescript
+// Read pattern
+const { data, isPending } = useQuery({
+  queryKey: ["scrims", teamId],
+  queryFn: () => listScrims(teamId),
+});
+
+// Write pattern — wrap { ok, message } server action
+const { mutateAsync, isPending } = useMutation({
+  mutationFn: async (input: CreateScrimInput) => {
+    const result = await createScrim(input);
+    if (!result.ok) throw new Error(result.message);
+    return result;
+  },
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ["scrims", teamId] });
+    toast.success("Berhasil");
+  },
+  onError: (err) => toast.error(err instanceof Error ? err.message : "Gagal"),
+});
+```
+
+---
+
+## 22. To-Do Feature (features/todos/)
+
+Routes: `/dashboard/todos` (owner) and `/manage/[orgSlug]/todos` (manager).
+
+**Two todo types:**
+
+Smart todos — auto-generated from DB state, each dismissible per-user:
+
+| `smart_type` | Trigger | Navigate to |
+|---|---|---|
+| `contract_expiry` | Active contract ending in ≤30 days | `/dashboard/salaries` |
+| `salary_due` | Pending payment overdue today | `/dashboard/salaries` |
+| `member_unassigned` | Active member with no division | `/dashboard/assign` |
+| `trial_pending` | Applicant pending >3 days | `#trials` |
+| `scrim_no_result` | Completed scrim missing result entry | `#scrim-{id}` |
+| `sponsor_stale` | Prospect sponsor not updated >7 days | `/dashboard/sponsors` |
+| `tournament_no_bracket` | Tournament in ≤7 days, no bracket set | `/dashboard/tournaments/{id}` |
+
+Manual todos — created by owner/manager, optionally assigned to another org member.
+
+**DB tables:** `manual_todos`, `todo_dismissals`
+
+**Urgency levels:** `overdue` → `today` → `this_week` → `later`
+
+**Sidebar badge** (`getTodoBadgeCount`) — only counts `overdue` + `today` urgency items.
+
+**Key files:**
+- `features/todos/queries.ts` — `computeSmartTodos`, `getManualTodos`, `getTodoBadgeCount`
+- `features/todos/actions.ts` — create/toggle/delete manual todos, dismiss smart todos
+- `features/todos/types.ts` — `SmartTodo`, `ManualTodo`, `TodoUrgency`, `SmartTodoType`
+- `features/todos/logic.ts` — `computeUrgency(date: Date | null): TodoUrgency`
