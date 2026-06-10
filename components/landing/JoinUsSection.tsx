@@ -47,10 +47,7 @@ const JoinUsSection = ({ settings }: JoinUsSectionProps) => {
       {/* Glowing Background Orb (Yellow/Gold aura matching request) */}
       <div className="join-glow-orb absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full pointer-events-none opacity-15 bg-[#F5C400] blur-[130px] mix-blend-screen z-0" />
 
-      {/* Gold diagonal stripe accent */}
-      <div className="absolute top-0 left-0 right-0 h-[3px] overflow-hidden z-10">
-        <div className="h-full w-[108%] bg-[#F5C400]" style={{ marginLeft: "-4%", transform: "skewX(-8deg)", opacity: 0.6 }} />
-      </div>
+      <div className="absolute top-0 left-0 right-0 h-px bg-white/5 z-10" />
       <div className="relative mx-auto max-w-7xl z-10">
         <div className="border-b border-t border-[#F5C400]/15 py-20">
           <div className="grid items-center gap-10 lg:grid-cols-[1fr_auto]">
