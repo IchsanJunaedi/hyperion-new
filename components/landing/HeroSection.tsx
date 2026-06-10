@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Swords, Calendar, Clock, Trophy } from "lucide-react";
+import { Calendar, Clock, Trophy } from "lucide-react";
 import { gsap, useGSAP } from "@/lib/gsap";
-import type { PublicTournament, PublicScrim } from "@/features/admin/queries";
+import type { PublicTournament } from "@/features/admin/queries";
 
 export interface HeroSlide {
   image: string;
@@ -25,7 +25,7 @@ interface HeroSectionProps {
   settings?: HeroSettings;
   featuredTournaments?: unknown[];
   heroBackground?: string | null;
-  nearestScrim: PublicScrim | null;
+  nearestTournament: PublicTournament | null;
   upcomingMatches: PublicTournament[];
 }
 
@@ -70,11 +70,15 @@ function formatMatchDate(dateStr: string, timeStr: string | null): string {
 
 const HeroSection = ({
   heroBackground,
-  nearestScrim,
+  nearestTournament,
   upcomingMatches = [],
 }: HeroSectionProps) => {
   const sectionRef = useRef<HTMLElement>(null);
-  const target = useMemo(() => nearestScrim ? new Date(nearestScrim.scheduled_at) : null, [nearestScrim]);
+  const target = useMemo(() => {
+    if (!nearestTournament) return null;
+    const time = nearestTournament.start_time ?? "00:00:00";
+    return new Date(`${nearestTournament.start_date}T${time}`);
+  }, [nearestTournament]);
   const [parts, setParts] = useState<CountdownParts | null>(null);
 
   useEffect(() => {
@@ -126,20 +130,20 @@ const HeroSection = ({
               {/* Left Column: Scrim Countdown */}
               <div className="hero-card-left flex-1 flex flex-col justify-center border-b border-white/5 pb-8 lg:border-b-0 lg:pb-0 lg:border-r lg:border-white/5 lg:pr-14">
                 <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.3em] text-[#F5C400] mb-4">
-                  <Swords className="h-4 w-4" />
-                  Scrim Terdekat
+                  <Trophy className="h-4 w-4" />
+                  Turnamen Terdekat
                 </div>
 
-                {nearestScrim ? (
+                {nearestTournament ? (
                   <>
                     <h2 className="font-bebas text-4xl sm:text-6xl lg:text-7xl font-black uppercase leading-[0.9] text-white tracking-wide">
-                      vs {nearestScrim.opponent_name}
+                      {nearestTournament.name}
                     </h2>
-                    
+
                     <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs sm:text-sm font-semibold font-orbitron text-white/55">
                       <span className="inline-flex items-center gap-1.5">
                         <Calendar className="h-4 w-4 text-[#F5C400] opacity-80" />
-                        {formatScrimDate(nearestScrim.scheduled_at)}
+                        {formatMatchDate(nearestTournament.start_date, nearestTournament.start_time)}
                       </span>
                     </div>
 
@@ -175,10 +179,10 @@ const HeroSection = ({
                   </>
                 ) : (
                   <div className="flex flex-col items-start py-8 text-white/35">
-                    <Swords className="h-8 w-8 text-white/15 mb-3 animate-pulse" />
-                    <span className="font-bebas text-2xl uppercase tracking-wider text-white/55">Belum Ada Scrim Terdekat</span>
+                    <Trophy className="h-8 w-8 text-white/15 mb-3 animate-pulse" />
+                    <span className="font-bebas text-2xl uppercase tracking-wider text-white/55">Belum Ada Turnamen Terdekat</span>
                     <p className="text-xs mt-1 max-w-xs leading-relaxed text-[#6B6A68]">
-                      Tidak ada jadwal scrim terdekat yang dijadwalkan. Silakan cek kembali nanti.
+                      Tidak ada jadwal turnamen yang akan datang. Silakan cek kembali nanti.
                     </p>
                   </div>
                 )}

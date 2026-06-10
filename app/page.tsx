@@ -20,7 +20,6 @@ import {
   getUpcomingPublicTournaments,
   getNearestPublicTournament,
   getPublishedNewsPosts,
-  getNearestPublicScrim,
 } from "@/features/admin/queries";
 import { UpcomingMatchesSection } from "@/components/landing/UpcomingMatchesSection";
 import { LatestNewsSection } from "@/components/landing/LatestNewsSection";
@@ -105,7 +104,7 @@ export default async function HomePage() {
     }
   }
 
-  const [galleryEntries, manualAchievements, partners, testimonials, settings, featuredTournaments, upcomingMatches, nearestTournament, latestNews, nearestScrim] =
+  const [galleryEntries, manualAchievements, partners, testimonials, settings, featuredTournaments, upcomingMatches, nearestTournament, latestNews] =
     await Promise.all([
       getGalleryEntries(),
       getPublicAchievements(),
@@ -116,7 +115,6 @@ export default async function HomePage() {
       getUpcomingPublicTournaments(3),
       getNearestPublicTournament(),
       getPublishedNewsPosts(),
-      getNearestPublicScrim(),
     ]);
 
   const heroSlides: HeroSlide[] = galleryEntries.slice(0, 3).map((e) => ({
@@ -197,7 +195,7 @@ export default async function HomePage() {
           settings={heroSettings}
           featuredTournaments={heroTournaments}
           heroBackground={settings.hero_background_url || null}
-          nearestScrim={nearestScrim}
+          nearestTournament={nearestTournament}
           upcomingMatches={displayUpcoming}
         />
         <DivisionsSection description={settings.divisions_description} />
