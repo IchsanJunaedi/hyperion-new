@@ -251,10 +251,7 @@ const HeroSection = ({
         </div>
       </div>
 
-      {/* Neon/Gold bottom divider line */}
-      <div className="absolute bottom-0 left-0 right-0 z-20 h-[3px] overflow-hidden">
-        <div className="h-full w-[108%] bg-[#F5C400] opacity-80" style={{ marginLeft: "-4%", transform: "skewX(-8deg)" }} />
-      </div>
+      <div className="absolute bottom-0 left-0 right-0 z-20 h-px bg-white/5" />
     </section>
   );
 };
