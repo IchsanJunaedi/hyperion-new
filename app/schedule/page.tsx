@@ -5,6 +5,7 @@ import { CalendarRange } from "lucide-react";
 import { Header } from "@/components/landing/Header";
 import { Footer } from "@/components/landing/Footer";
 import { ScheduleCountdown } from "@/components/landing/ScheduleCountdown";
+import { InteractiveBackground } from "@/components/landing/InteractiveBackground";
 import { getScheduleTournaments } from "@/features/admin/queries";
 import type { PublicTournament } from "@/features/admin/queries";
 
@@ -65,32 +66,33 @@ const SchedulePage = async () => {
   return (
     <>
       <Header />
-      <main className="flex-1 bg-[#040D1C]">
+      <main className="relative flex-1 bg-[#040D1C] overflow-hidden">
+        <InteractiveBackground />
+        
         {/* Hero */}
-        <section className="relative overflow-hidden border-b border-white/12 px-6 py-20 sm:px-10 lg:px-16">
+        <section className="relative z-10 overflow-hidden border-b border-white/12 px-6 py-20 sm:px-10 lg:px-16">
           <div
-            className="pointer-events-none absolute inset-0 opacity-10"
+            className="pointer-events-none absolute inset-0 opacity-5"
             style={{
               backgroundImage: "radial-gradient(circle, rgba(245,196,0,0.2) 1px, transparent 1px)",
               backgroundSize: "28px 28px",
             }}
           />
-          <div className="relative mx-auto max-w-7xl">
-            <div className="mb-4 flex items-center gap-3">
-              <div className="h-px w-8 bg-[#F5C400]" />
+          <div className="relative mx-auto max-w-7xl flex flex-col items-center text-center">
+            <div className="mb-4 flex items-center justify-center gap-3">
               <span className="text-[11px] font-bold uppercase tracking-[0.3em] text-[#F5C400]">
                 Hyperion Team
               </span>
             </div>
-            <h1 className="text-4xl font-black uppercase tracking-tight text-white sm:text-5xl lg:text-6xl">
-              Schedule
+            <h1 className="font-bebas text-6xl sm:text-7xl lg:text-8xl font-black uppercase tracking-wide text-white leading-none">
+              Tournament Schedule
             </h1>
-            <p className="mt-3 max-w-lg text-sm leading-relaxed text-white/55">
-              Jadwal turnamen mendatang Hyperion Team.
+            <p className="mt-4 max-w-xl text-sm sm:text-base leading-relaxed text-white/55">
+              Jadwal turnamen mendatang dan riwayat pertandingan Hyperion Team di kancah esports profesional.
             </p>
 
             {nearest && (
-              <div className="mt-10">
+              <div className="mt-12 w-full flex justify-center">
                 <ScheduleCountdown tournament={nearest} />
               </div>
             )}
@@ -98,7 +100,7 @@ const SchedulePage = async () => {
         </section>
 
         {/* Tournament list */}
-        <section className="px-6 py-16 sm:px-10 lg:px-16">
+        <section className="relative z-10 px-6 py-16 sm:px-10 lg:px-16">
           <div className="mx-auto max-w-4xl">
             {tournaments.length === 0 ? (
               <div className="border border-white/5 bg-[#071428]/40 backdrop-blur-md rounded-2xl py-20 text-center">
@@ -116,7 +118,11 @@ const SchedulePage = async () => {
                       {items.map((t) => (
                         <div
                           key={t.id}
-                          className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 sm:gap-6 bg-slate-800/40 backdrop-blur-md rounded-2xl border border-white/5 p-6 transition-all duration-300 hover:bg-slate-800/60 hover:scale-[1.01]"
+                          className={`flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 sm:gap-6 bg-slate-800/40 backdrop-blur-md rounded-2xl border p-6 transition-all duration-300 ${
+                            t.status === "ongoing"
+                              ? "border-[#F5C400]/40 shadow-[0_0_20px_rgba(245,196,0,0.08)] hover:border-[#F5C400]/60 hover:shadow-[0_0_25px_rgba(245,196,0,0.15)] animate-[pulse_3s_infinite]"
+                              : "border-white/5 hover:border-[#F5C400]/25 hover:shadow-[0_0_15px_rgba(245,196,0,0.06)]"
+                          } hover:bg-slate-800/60 hover:scale-[1.01]`}
                         >
                           {/* Sisi Kiri: Tanggal & Jam */}
                           <div className="flex flex-row sm:flex-col items-center sm:items-start justify-between sm:justify-center border-b sm:border-b-0 sm:border-r border-white/10 pb-3 sm:pb-0 pr-0 sm:pr-6 shrink-0 sm:w-28 gap-2">

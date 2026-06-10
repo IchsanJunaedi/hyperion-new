@@ -43,28 +43,36 @@ const ScheduleCountdown = ({ tournament }: Props) => {
   }
 
   return (
-    <div>
-      <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.4em] text-white/40">
-        Countdown — {tournament.name}
-      </p>
-      <div
-        className="flex items-baseline gap-1 font-black tabular-nums text-white"
-        style={{ fontSize: "clamp(32px, 5vw, 56px)", letterSpacing: "-0.02em", lineHeight: 1 }}
-      >
-        <span>{pad(timeLeft.days)}</span>
-        <span className="text-[#F5C400]" style={{ opacity: 0.6 }}>·</span>
-        <span>{pad(timeLeft.hours)}</span>
-        <span className="text-[#F5C400]" style={{ opacity: 0.6 }}>·</span>
-        <span>{pad(timeLeft.minutes)}</span>
-        <span className="text-[#F5C400]" style={{ opacity: 0.6 }}>·</span>
-        <span>{pad(timeLeft.seconds)}</span>
-      </div>
-      <div className="mt-1 flex items-center gap-6">
-        {["Hari", "Jam", "Menit", "Detik"].map((label) => (
-          <span key={label} className="text-[9px] font-semibold uppercase tracking-[0.25em] text-white/25">
-            {label}
-          </span>
-        ))}
+    <div className="flex flex-col items-center text-center">
+      <div className="inline-flex flex-col items-center justify-center bg-[#071428]/35 backdrop-blur-md rounded-3xl border border-[#F5C400]/20 p-6 px-8 sm:px-12 shadow-[0_0_40px_rgba(245,196,0,0.08)] relative overflow-hidden transition-all duration-500 hover:border-[#F5C400]/40 group w-full max-w-md sm:max-w-lg">
+        {/* Pulsing neon border layer */}
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#F5C400]/5 to-transparent opacity-30 blur-md pointer-events-none group-hover:opacity-50 transition-opacity" />
+        
+        <p className="relative z-10 mb-4 text-[10px] font-bold uppercase tracking-[0.4em] text-white/40 group-hover:text-white/60 transition-colors">
+          Countdown — {tournament.name}
+        </p>
+        
+        <div className="relative z-10 flex items-center gap-3 sm:gap-5 justify-center">
+          <div className="flex flex-col items-center">
+            <span className="font-bebas text-5xl sm:text-6xl font-black text-white tracking-wide">{pad(timeLeft.days)}</span>
+            <span className="text-[9px] font-bold uppercase tracking-widest text-[#9B9A97]/60 mt-1">Hari</span>
+          </div>
+          <span className="font-bebas text-3xl sm:text-4xl font-black text-[#F5C400]/50 self-start mt-2 sm:mt-3 animate-pulse">:</span>
+          <div className="flex flex-col items-center">
+            <span className="font-bebas text-5xl sm:text-6xl font-black text-white tracking-wide">{pad(timeLeft.hours)}</span>
+            <span className="text-[9px] font-bold uppercase tracking-widest text-[#9B9A97]/60 mt-1">Jam</span>
+          </div>
+          <span className="font-bebas text-3xl sm:text-4xl font-black text-[#F5C400]/50 self-start mt-2 sm:mt-3 animate-pulse">:</span>
+          <div className="flex flex-col items-center">
+            <span className="font-bebas text-5xl sm:text-6xl font-black text-white tracking-wide">{pad(timeLeft.minutes)}</span>
+            <span className="text-[9px] font-bold uppercase tracking-widest text-[#9B9A97]/60 mt-1">Menit</span>
+          </div>
+          <span className="font-bebas text-3xl sm:text-4xl font-black text-[#F5C400]/50 self-start mt-2 sm:mt-3 animate-pulse">:</span>
+          <div className="flex flex-col items-center">
+            <span className="font-bebas text-5xl sm:text-6xl font-black text-white tracking-wide">{pad(timeLeft.seconds)}</span>
+            <span className="text-[9px] font-bold uppercase tracking-widest text-[#9B9A97]/60 mt-1">Detik</span>
+          </div>
+        </div>
       </div>
     </div>
   );
