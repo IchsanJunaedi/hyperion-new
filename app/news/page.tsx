@@ -16,16 +16,10 @@ const NewsPage = async () => {
   return (
     <>
       <Header />
-      <main className="min-h-screen flex-1 bg-[#020202]">
+      <main className="min-h-screen flex-1 bg-[#040D1C]">
         {/* Hero header */}
         <section className="px-6 pb-6 pt-28 sm:px-10 lg:px-16">
           <div className="mx-auto max-w-7xl">
-            <div className="mb-4 flex items-center gap-3">
-              <div className="h-px w-8 bg-[#F5C400]" />
-              <span className="text-[11px] font-bold uppercase tracking-[0.3em] text-[#F5C400]">
-                Hyperion Team
-              </span>
-            </div>
             <h1 className="text-5xl font-black uppercase tracking-tight text-white sm:text-6xl lg:text-7xl">
               News
             </h1>

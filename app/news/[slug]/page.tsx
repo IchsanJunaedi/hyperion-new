@@ -37,7 +37,7 @@ const NewsDetailPage = async ({ params }: { params: Promise<{ slug: string }> })
   return (
     <>
       <Header />
-      <main className="min-h-screen flex-1 bg-[#020202] pt-20">
+      <main className="min-h-screen flex-1 bg-[#040D1C] pt-20">
         {/* Cover image full-width */}
         {post.cover_image_url && (
           <div className="relative h-[40vh] min-h-[280px] w-full overflow-hidden sm:h-[50vh]">
@@ -47,7 +47,7 @@ const NewsDetailPage = async ({ params }: { params: Promise<{ slug: string }> })
               alt={post.title}
               className="h-full w-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#020202] via-transparent to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#040D1C] via-transparent to-transparent" />
           </div>
         )}
 

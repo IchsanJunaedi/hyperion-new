@@ -36,7 +36,7 @@ const NewsListClient = ({ posts }: { posts: NewsPost[] }) => {
           {featured && (
             <Link
               href={`/news/${featured.slug}`}
-              className="group relative flex min-h-[400px] items-end overflow-hidden rounded-2xl border border-white/10"
+              className="group relative flex min-h-[400px] items-end overflow-hidden rounded-2xl border border-white/5"
             >
               {featured.cover_image_url ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -46,7 +46,7 @@ const NewsListClient = ({ posts }: { posts: NewsPost[] }) => {
                   className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
               ) : (
-                <div className="absolute inset-0 bg-gradient-to-br from-[#0C1E3C] to-[#020202]" />
+                <div className="absolute inset-0 bg-gradient-to-br from-[#0C1E3C] to-[#040D1C]" />
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
               <div className="relative z-10 p-6 sm:p-10 w-full lg:w-2/3">
@@ -97,7 +97,7 @@ const NewsListClient = ({ posts }: { posts: NewsPost[] }) => {
                 <Link
                   key={post.id}
                   href={`/news/${post.slug}`}
-                  className="group flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02] transition-all hover:border-[#F5C400]/30 hover:bg-white/[0.04]"
+                  className="group flex flex-col overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02] transition-all hover:border-white/10 hover:bg-white/[0.04]"
                 >
                   <div className="relative h-48 overflow-hidden">
                     {post.cover_image_url ? (
