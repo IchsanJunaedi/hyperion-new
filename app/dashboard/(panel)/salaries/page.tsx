@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { SalaryPageClient } from "@/features/salary/components/SalaryPageClient";
@@ -52,7 +52,7 @@ export default async function DashboardSalariesPage() {
 
   return (
     <>
-      <main className="flex-1 max-w-5xl w-full mx-auto px-8 py-10 space-y-6">
+      <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-8 py-10 space-y-6">
         <div>
           <h1 className="text-2xl font-bold text-white">Salary Player</h1>
           <p className="mt-1 text-sm text-[#9B9A97]">

@@ -1,4 +1,4 @@
-import { Plus, Trophy } from "lucide-react";
+﻿import { Plus, Trophy } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -86,7 +86,7 @@ export default async function DashboardTournamentsPage({
 
   return (
     <>
-      <main className="space-y-6 px-8 py-6">
+      <main className="space-y-6 px-4 sm:px-8 py-6">
         <div className="flex items-center justify-between gap-4">
           <div>
             <h1 className="text-xl font-bold text-[#E5E2E1]">Info Turnamen</h1>

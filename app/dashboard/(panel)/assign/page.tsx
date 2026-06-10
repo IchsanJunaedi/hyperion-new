@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { Plus } from "lucide-react";
 
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -58,7 +58,7 @@ export default async function AssignRolePage() {
 
   return (
     <>
-      <main className="flex-1 max-w-[600px] w-full mx-auto px-8 py-12">
+      <main className="flex-1 max-w-[600px] w-full mx-auto px-4 sm:px-8 py-12">
         <div className="mb-8">
           <Plus className="h-8 w-8 text-[#9B9A97] mb-3" />
           <h1 className="font-bold text-[28px] text-[#E5E2E1]">Assign Role</h1>

@@ -1,4 +1,4 @@
-import { getSiteSettings } from "@/features/admin/queries";
+﻿import { getSiteSettings } from "@/features/admin/queries";
 import { SettingsForm, type SettingsField } from "@/features/admin/components/SettingsForm";
 
 export const dynamic = "force-dynamic";
@@ -20,7 +20,7 @@ export default async function AdminFooterPage() {
           <span className="text-[#D4D4D4]">Footer</span>
         </div>
       </header>
-      <main className="mx-auto w-full max-w-2xl flex-1 px-8 py-10">
+      <main className="mx-auto w-full max-w-2xl flex-1 px-4 sm:px-8 py-10">
         <SettingsForm fields={FOOTER_FIELDS} initialValues={settings} title="Footer" />
       </main>
     </>

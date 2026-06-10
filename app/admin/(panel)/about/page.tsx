@@ -1,4 +1,4 @@
-import { getSiteSettings, getAboutAlumni } from "@/features/admin/queries";
+﻿import { getSiteSettings, getAboutAlumni } from "@/features/admin/queries";
 import { AboutAdminClient } from "@/features/admin/components/AboutAdminClient";
 
 export const dynamic = "force-dynamic";
@@ -13,7 +13,7 @@ export default async function AdminAboutPage() {
           <span className="text-[#D4D4D4]">About</span>
         </div>
       </header>
-      <main className="mx-auto w-full max-w-3xl flex-1 px-8 py-10">
+      <main className="mx-auto w-full max-w-3xl flex-1 px-4 sm:px-8 py-10">
         <AboutAdminClient initialSettings={settings} initialAlumni={alumni} />
       </main>
     </>

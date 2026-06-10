@@ -1,4 +1,4 @@
-import { getNewsPosts } from "@/features/admin/queries";
+﻿import { getNewsPosts } from "@/features/admin/queries";
 import { NewsAdminClient } from "@/features/admin/components/NewsAdminClient";
 
 export const dynamic = "force-dynamic";
@@ -13,7 +13,7 @@ const AdminNewsPage = async () => {
           <span className="text-[#D4D4D4]">News</span>
         </div>
       </header>
-      <main className="mx-auto w-full max-w-4xl flex-1 px-8 py-10">
+      <main className="mx-auto w-full max-w-4xl flex-1 px-4 sm:px-8 py-10">
         <NewsAdminClient posts={posts} />
       </main>
     </>

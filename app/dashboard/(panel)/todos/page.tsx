@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+﻿import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { computeSmartTodos, getManualTodos, getAssignedOutTodos } from "@/features/todos/queries";
@@ -82,7 +82,7 @@ const DashboardTodosPage = async () => {
   }));
 
   return (
-    <main className="max-w-[1100px] w-full mx-auto px-8 py-8">
+    <main className="max-w-[1100px] w-full mx-auto px-4 sm:px-8 py-8">
       <TodosPage
         orgId={org.id}
         todos={todos}

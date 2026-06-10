@@ -1,4 +1,4 @@
-import { getSiteSettings } from "@/features/admin/queries";
+﻿import { getSiteSettings } from "@/features/admin/queries";
 import { NavAdminClient } from "@/features/admin/components/NavAdminClient";
 
 export const dynamic = "force-dynamic";
@@ -26,7 +26,7 @@ export default async function AdminNavigationPage() {
           <span className="text-[#D4D4D4]">Navigation</span>
         </div>
       </header>
-      <main className="mx-auto w-full max-w-2xl flex-1 px-8 py-10">
+      <main className="mx-auto w-full max-w-2xl flex-1 px-4 sm:px-8 py-10">
         <NavAdminClient initialLinks={links} />
       </main>
     </>

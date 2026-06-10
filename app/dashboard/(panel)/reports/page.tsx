@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+﻿import { redirect } from "next/navigation";
 import Link from "next/link";
 import { FileText } from "lucide-react";
 
@@ -60,7 +60,7 @@ export default async function DashboardReportsPage({ searchParams }: ReportsPage
 
   return (
     <>
-      <main className="flex-1 max-w-[900px] w-full mx-auto px-8 py-12 space-y-6">
+      <main className="flex-1 max-w-[900px] w-full mx-auto px-4 sm:px-8 py-12 space-y-6">
         <header>
           <div className="flex items-center gap-2">
             <FileText className="h-5 w-5 text-[#D4D4D4]" />

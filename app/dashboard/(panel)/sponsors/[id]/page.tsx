@@ -35,7 +35,7 @@ export default async function DashboardSponsorDetailPage({ params }: Props) {
 
   return (
     <>
-      <main className="mx-auto w-full max-w-5xl flex-1 px-8 py-10">
+      <main className="mx-auto w-full max-w-5xl flex-1 px-4 sm:px-8 py-10">
         <SponsorDetailClient
           sponsor={sponsor}
           orgId={org.id}

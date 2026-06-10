@@ -244,7 +244,8 @@ const PlayerHeroModal = ({ player, orgId, onClose }: PlayerHeroModalProps) => {
                       </div>
                     </div>
 
-                    <div className="overflow-hidden rounded-xl border border-[#2D2D2D]">
+                    <div className="overflow-x-auto rounded-xl border border-[#2D2D2D]">
+                    <div className="min-w-[420px]">
                       {/* Table header */}
                       <div className="grid grid-cols-[1fr_80px_60px_60px_60px_56px] gap-2 bg-[#202020] px-4 py-2 text-[10px] font-semibold uppercase tracking-wider text-[#6B6A68]">
                         <span>Hero</span>
@@ -297,6 +298,7 @@ const PlayerHeroModal = ({ player, orgId, onClose }: PlayerHeroModalProps) => {
                           </div>
                         ))}
                       </div>
+                    </div>
                     </div>
                   </section>
 

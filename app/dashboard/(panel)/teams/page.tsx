@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+﻿import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Building2 } from "lucide-react";
 
@@ -32,7 +32,7 @@ export default async function DashboardTeamsPage() {
 
   return (
     <>
-      <main className="flex-1 max-w-[900px] w-full mx-auto px-8 py-12">
+      <main className="flex-1 max-w-[900px] w-full mx-auto px-4 sm:px-8 py-12">
         <div className="mb-8">
           <Building2 className="h-8 w-8 text-[#9B9A97] mb-3" />
           <h1 className="font-bold text-[28px] text-[#E5E2E1]">Setting Tim</h1>

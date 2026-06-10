@@ -1,4 +1,4 @@
-import { Plus } from "lucide-react";
+﻿import { Plus } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { format } from "date-fns";
@@ -186,7 +186,7 @@ const DashboardCalendarPage = async ({
 
   return (
     <>
-      <main className="flex-1 px-8 py-6">
+      <main className="flex-1 px-4 sm:px-8 py-6">
         <div className="mb-6 flex items-center justify-between gap-4">
           <h1 className="text-2xl font-bold text-white sm:text-3xl">
             Kalender Tim

@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+﻿import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -52,7 +52,7 @@ export default async function DashboardSponsorsPage({ searchParams }: DashboardS
 
   return (
     <>
-      <main className="mx-auto w-full max-w-5xl flex-1 px-8 py-10 print-main">
+      <main className="mx-auto w-full max-w-5xl flex-1 px-4 sm:px-8 py-10 print-main">
         {/* Team tabs — same pattern as /dashboard/calendar */}
         <div className="mb-6 flex flex-wrap gap-2">
           <Link

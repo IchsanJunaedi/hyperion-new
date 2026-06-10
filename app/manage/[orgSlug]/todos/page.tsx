@@ -69,7 +69,7 @@ const ManageTodosPage = async ({ params }: Props) => {
   const todos: Todo[] = [...smartTodos, ...manualTodos];
 
   return (
-    <main className="max-w-[1100px] w-full mx-auto px-8 py-8">
+    <main className="max-w-[1100px] w-full mx-auto px-4 sm:px-8 py-8">
       <TodosPage
         orgId={org.id}
         todos={todos}

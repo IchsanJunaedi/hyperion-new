@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+﻿import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Users } from "lucide-react";
 
@@ -139,7 +139,7 @@ export default async function DashboardUsersPage({ searchParams }: UsersPageProp
 
   return (
     <>
-      <main className="flex-1 max-w-[1200px] w-full mx-auto px-8 py-12">
+      <main className="flex-1 max-w-[1200px] w-full mx-auto px-4 sm:px-8 py-12">
         <div className="flex items-end justify-between mb-8">
           <div>
             <Users className="h-8 w-8 text-[#9B9A97] mb-3" />

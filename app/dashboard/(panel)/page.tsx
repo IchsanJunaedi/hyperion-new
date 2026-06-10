@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { Crown, Plus, Users, Tags, Settings, FileOutput, Shield, Building2, ChevronRight } from "lucide-react";
 
 import { createClient } from "@/lib/supabase/server";
@@ -88,7 +88,7 @@ export default async function DashboardPage() {
 
   return (
     <>
-      <main className="flex-1 max-w-[900px] w-full mx-auto px-8 py-12 flex flex-col gap-10">
+      <main className="flex-1 max-w-[900px] w-full mx-auto px-4 sm:px-8 py-12 flex flex-col gap-10">
         {/* Title + Stats */}
         <div>
           <Crown className="h-8 w-8 text-[#9B9A97] mb-3" />

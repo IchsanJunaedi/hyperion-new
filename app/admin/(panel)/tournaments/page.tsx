@@ -1,4 +1,4 @@
-import { getTournamentsForAdmin } from "@/features/admin/queries";
+﻿import { getTournamentsForAdmin } from "@/features/admin/queries";
 import { TournamentsAdminClient } from "@/features/admin/components/TournamentsAdminClient";
 
 export const dynamic = "force-dynamic";
@@ -13,7 +13,7 @@ const AdminTournamentsPage = async () => {
           <span className="text-[#D4D4D4]">Tournaments</span>
         </div>
       </header>
-      <main className="mx-auto w-full max-w-4xl flex-1 px-8 py-10">
+      <main className="mx-auto w-full max-w-4xl flex-1 px-4 sm:px-8 py-10">
         <TournamentsAdminClient tournaments={tournaments} />
       </main>
     </>

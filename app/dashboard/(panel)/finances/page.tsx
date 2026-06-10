@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+﻿import { redirect } from "next/navigation";
 import Link from "next/link";
 
 import { createClient } from "@/lib/supabase/server";
@@ -39,7 +39,7 @@ export default async function DashboardFinancesPage({ searchParams }: FinancesPa
 
   return (
     <>
-      <main className="flex-1 max-w-5xl w-full mx-auto px-8 py-10 space-y-6">
+      <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-8 py-10 space-y-6">
         {orgs && orgs.length > 1 && (
           <OrgSwitcher
             orgs={orgs}
