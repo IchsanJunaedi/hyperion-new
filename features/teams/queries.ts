@@ -329,6 +329,139 @@ function startOfMonthIso(): string {
   return new Date(startUtcMs).toISOString();
 }
 
+export interface PublicMember {
+  id: string;
+  role: string;
+  position: string | null;
+  main_role: string | null;
+  division_name: string | null;
+  display_name: string | null;
+  username: string | null;
+  avatar_url: string | null;
+}
+
+export interface PublicTournamentStat {
+  wins: number;
+  losses: number;
+  total: number;
+}
+
+export interface PublicProfile {
+  org: {
+    id: string;
+    name: string;
+    slug: string;
+    logo_url: string | null;
+    banner_url: string | null;
+    description: string | null;
+    game_focus: string[] | null;
+  };
+  members: PublicMember[];
+  tournamentStats: PublicTournamentStat;
+}
+
+/**
+ * Public profile query — no auth required. Returns null if org not found or is_public = false.
+ */
+export async function getPublicProfile(slug: string): Promise<PublicProfile | null> {
+  const admin = createAdminClient();
+
+  const { data: org, error: orgErr } = await admin
+    .from("organizations")
+    .select("id, name, slug, logo_url, banner_url, description, game_focus, is_public")
+    .eq("slug", slug)
+    .maybeSingle();
+  if (orgErr || !org || !org.is_public) return null;
+
+  // Active members (no jersey_number per design decision)
+  const { data: rawMembers, error: membersErr } = await admin
+    .from("team_members")
+    .select("id, user_id, role, position, main_role, division_id")
+    .eq("organization_id", org.id)
+    .eq("is_active", true)
+    .order("role")
+    .limit(50);
+  if (membersErr) console.error("[getPublicProfile] members:", membersErr);
+
+  const members = rawMembers ?? [];
+  const userIds = [...new Set(members.map((m) => m.user_id))];
+  const divisionIds = [...new Set(members.map((m) => m.division_id).filter(Boolean) as string[])];
+
+  const [profilesRes, divisionsRes] = await Promise.all([
+    userIds.length > 0
+      ? admin.from("profiles").select("id, display_name, username, avatar_url").in("id", userIds).limit(50)
+      : { data: [] },
+    divisionIds.length > 0
+      ? admin.from("divisions").select("id, name").in("id", divisionIds).limit(30)
+      : { data: [] },
+  ]);
+
+  const profileMap = new Map((profilesRes.data ?? []).map((p) => [p.id, p]));
+  const divisionMap = new Map((divisionsRes.data ?? []).map((d) => [d.id, d.name]));
+
+  const publicMembers: PublicMember[] = members.map((m) => {
+    const profile = profileMap.get(m.user_id);
+    return {
+      id: m.id,
+      role: m.role,
+      position: m.position,
+      main_role: m.main_role,
+      division_name: m.division_id ? (divisionMap.get(m.division_id) ?? null) : null,
+      display_name: profile?.display_name ?? null,
+      username: profile?.username ?? null,
+      avatar_url: profile?.avatar_url ?? null,
+    };
+  });
+
+  // Tournament W/L from tournament_matches (is_win not null = match recorded)
+  const { data: tournamentsInOrg } = await admin
+    .from("tournaments")
+    .select("id")
+    .eq("organization_id", org.id)
+    .eq("status", "completed")
+    .limit(200);
+  const tournamentIds = (tournamentsInOrg ?? []).map((t) => t.id);
+
+  let wins = 0;
+  let losses = 0;
+  if (tournamentIds.length > 0) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: stages } = await (admin as any)
+      .from("tournament_stages")
+      .select("id")
+      .in("tournament_id", tournamentIds)
+      .limit(500);
+    const stageIds = (stages ?? []).map((s: { id: string }) => s.id);
+    if (stageIds.length > 0) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: matches } = await (admin as any)
+        .from("tournament_matches")
+        .select("is_win")
+        .in("stage_id", stageIds)
+        .not("is_win", "is", null)
+        .limit(500);
+      for (const m of (matches ?? []) as { is_win: boolean }[]) {
+        if (m.is_win) wins++;
+        else losses++;
+      }
+    }
+  }
+
+  return {
+    org: {
+      id: org.id,
+      name: org.name,
+      slug: org.slug,
+      logo_url: org.logo_url,
+      banner_url: org.banner_url,
+      description: org.description,
+      game_focus: org.game_focus,
+    },
+    members: publicMembers,
+    tournamentStats: { wins, losses, total: wins + losses },
+  };
+}
+
 function startOfNextMonthIso(): string {
   const now = new Date();
   const wibNow = new Date(now.getTime() + WIB_OFFSET_MS);

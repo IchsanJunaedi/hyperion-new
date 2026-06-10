@@ -15,6 +15,7 @@
 - Player development panel: set targets per player, update level, history chart
 - Salary & contracts: player contracts with salary/bonus percentages + payment tracking
 - To-Do (`/dashboard/todos`, `/manage/[orgSlug]/todos`): smart auto-todos (7 types: contract expiry, salary due, member unassigned, trial pending, scrim no result, sponsor stale, tournament no bracket) + manual assignable todos. Sidebar badge counts overdue+today items only.
+- Public profile toggle (`is_public` on org): when enabled, `/p/[orgSlug]` shows org info, roster (no jersey number), tournament match W/L stats. Toggle in `/dashboard/teams`.
 
 ### Manager Panel (`/manage`)
 - Roster: assign members to divisions, set roles (captain/coach/member)
@@ -50,6 +51,11 @@
 | `/meta` | MLBB meta tracker: hero picks, win rates, patch notes | ✅ |
 | `/trials` | Open trials kanban pipeline (pending/accepted/rejected/waitlist) | ✅ |
 | `/sponsors` | Active sponsors: name, logo, status, notes (read-only, all workspace roles) | ✅ |
+
+### Public Pages (no auth)
+| Route | Feature | Status |
+|-------|---------|--------|
+| `/p/[orgSlug]` | Public team profile: org info, roster, tournament W/L stats | ✅ |
 
 ### Infrastructure
 - Auth: email/password + Google OAuth, role-based redirect
@@ -335,7 +341,6 @@ All `<input type="number">` must use `<NumberInput>` from `@/components/ui/numbe
 - **AI Insights tab** — placeholder, no backend
 - **Matchmaking** — exists but archived
 - **Reports page** — built but not public-facing yet
-- **Public profile** — infrastructure ready, not activated
 
 ---
 
@@ -345,7 +350,6 @@ All `<input type="number">` must use `<NumberInput>` from `@/components/ui/numbe
 ---
 
 ## What's NOT Done (Future Work)
-- Public profile activation (GH #31 — needs design decision on public data scope)
 - Reports page activation for managers (GH #32 — needs audit of manager-visible data)
 - Light/dark mode CSS variable refactor (GH #33 — DO NOT START before palette finalized)
 - *(all migrations applied — no pending migrations)*

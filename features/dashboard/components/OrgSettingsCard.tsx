@@ -5,7 +5,7 @@ import { Loader2, Pencil, Save, X } from "lucide-react";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
-import { updateOrgAction } from "../actions";
+import { toggleOrgPublicAction, updateOrgAction } from "../actions";
 import { useNotify } from "./NotifyModal";
 
 interface OrgSettingsCardProps {
@@ -14,6 +14,7 @@ interface OrgSettingsCardProps {
     name: string;
     slug: string;
     logo_url: string | null;
+    is_public: boolean;
   };
   divisions: Array<{
     id: string;
@@ -27,9 +28,26 @@ interface OrgSettingsCardProps {
 const OrgSettingsCard = ({ org, divisions }: OrgSettingsCardProps) => {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
+  const [toggling, startToggle] = useTransition();
   const [editing, setEditing] = useState(false);
   const [editName, setEditName] = useState(org.name);
+  const [isPublic, setIsPublic] = useState(org.is_public);
   const { success, error: notifyError } = useNotify();
+
+  function handleTogglePublic() {
+    const next = !isPublic;
+    setIsPublic(next);
+    startToggle(async () => {
+      const res = await toggleOrgPublicAction(org.id, next);
+      if (res.ok) {
+        success(next ? "Profil publik diaktifkan" : "Profil publik dinonaktifkan");
+        router.refresh();
+      } else {
+        setIsPublic(!next);
+        notifyError(res.message);
+      }
+    });
+  }
 
   function handleSave() {
     if (!editName.trim() || editName.trim() === org.name) {
@@ -85,6 +103,37 @@ const OrgSettingsCard = ({ org, divisions }: OrgSettingsCardProps) => {
             </Link>
           </>
         )}
+      </div>
+
+      {/* Public Profile Toggle */}
+      <div className="flex items-center justify-between py-3 border-t border-[#2D2D2D]">
+        <div>
+          <p className="text-sm text-[#D4D4D4]">Profil Publik</p>
+          <p className="text-xs text-[#6B6A68]">
+            {isPublic ? (
+              <span>
+                Aktif ·{" "}
+                <a
+                  href={`/p/${org.slug}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-400 hover:underline"
+                >
+                  /p/{org.slug}
+                </a>
+              </span>
+            ) : "Nonaktif — hanya anggota tim yang bisa melihat"}
+          </p>
+        </div>
+        <button
+          onClick={handleTogglePublic}
+          disabled={toggling}
+          className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors cursor-pointer ${isPublic ? "bg-emerald-500" : "bg-[#2D2D2D]"}`}
+        >
+          <span
+            className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${isPublic ? "translate-x-4" : "translate-x-0.5"}`}
+          />
+        </button>
       </div>
 
       {/* Divisions */}

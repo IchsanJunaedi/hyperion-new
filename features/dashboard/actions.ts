@@ -402,6 +402,34 @@ export async function updateOrgAction(
 }
 
 /**
+ * Toggle org public profile visibility. Owner-only.
+ */
+export async function toggleOrgPublicAction(
+  orgId: string,
+  isPublic: boolean,
+): Promise<ActionError | { ok: true }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, message: "Anda harus login" };
+
+  const ownerEmail = process.env.OWNER_EMAIL;
+  if (user.email !== ownerEmail) return { ok: false, message: "Hanya owner" };
+
+  const admin = createAdminClient();
+  const { error } = await admin
+    .from("organizations")
+    .update({ is_public: isPublic })
+    .eq("id", orgId);
+
+  if (error) return { ok: false, message: error.message };
+
+  revalidatePath("/dashboard/teams");
+  return { ok: true };
+}
+
+/**
  * Archive a division (set is_active = false). Owner-only.
  */
 export async function archiveDivisionAction(
