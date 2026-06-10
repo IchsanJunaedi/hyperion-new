@@ -84,7 +84,8 @@ const WaDeliveryTable = ({ orgId, orgSlug }: WaDeliveryTableProps) => {
         </div>
       ) : (
         <>
-          <div className="rounded-lg border border-[#2D2D2D] overflow-hidden">
+          <div className="overflow-x-auto rounded-lg border border-[#2D2D2D]">
+          <div className="min-w-[600px] overflow-hidden">
             {/* Header row */}
             <div className="grid grid-cols-[160px_1fr_100px_140px_80px] gap-4 px-4 py-2 border-b border-[#2D2D2D] bg-[#202020] text-xs font-medium text-[#9B9A97]">
               <span>Member</span>
@@ -102,6 +103,7 @@ const WaDeliveryTable = ({ orgId, orgSlug }: WaDeliveryTableProps) => {
                 orgId={orgId}
               />
             ))}
+          </div>
           </div>
 
           {/* Pagination */}

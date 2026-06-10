@@ -151,7 +151,8 @@ export default async function DashboardUsersPage({ searchParams }: UsersPageProp
           <UserSearch />
         </div>
 
-        <div className="flex flex-col">
+        <div className="overflow-x-auto">
+        <div className="flex flex-col min-w-[820px]">
           {/* Header */}
           <div className="grid grid-cols-[1fr_120px_1fr_110px_110px_80px_80px_72px] gap-3 px-3 py-2 text-xs font-medium text-[#6B6A68] border-b border-[#2D2D2D]">
             <span>Nama</span>
@@ -195,6 +196,7 @@ export default async function DashboardUsersPage({ searchParams }: UsersPageProp
               </div>
             </div>
           ))}
+        </div>
         </div>
       </main>
     </>

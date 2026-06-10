@@ -44,7 +44,8 @@ const HomeSection = ({ title, icon, href, rows, emptyText = "Belum ada data" }: 
             <ChevronRight className="h-4 w-4 text-[#9B9A97] transition-transform group-hover:translate-x-0.5" />
           </Link>
         </div>
-        <div className="flex flex-col">
+        <div className="overflow-x-auto">
+        <div className="flex flex-col min-w-[420px]">
           {rows.length === 0 ? (
             <p className="py-3 px-3 text-sm text-[#6B6A68]">{emptyText}</p>
           ) : (
@@ -69,6 +70,7 @@ const HomeSection = ({ title, icon, href, rows, emptyText = "Belum ada data" }: 
               </div>
             ))
           )}
+        </div>
         </div>
       </div>
       <UserDetailModal user={selected} onClose={() => setSelected(null)} />

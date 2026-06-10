@@ -44,7 +44,8 @@ const FinanceTable = ({ rows, orgId, canDelete, revalidatePaths }: FinanceTableP
     : "grid-cols-[130px_150px_1fr_170px]";
 
   return (
-    <div className="overflow-hidden rounded-xl border border-[#2D2D2D]">
+    <div className="overflow-x-auto rounded-xl border border-[#2D2D2D]">
+    <div className="min-w-[580px]">
       {/* Header */}
       <div className={`grid ${cols} border-b border-[#2D2D2D] bg-[#202020] px-5 py-3`}>
         <span className="text-[10px] font-semibold uppercase tracking-widest text-[#6B6A68]">Tanggal</span>
@@ -103,6 +104,7 @@ const FinanceTable = ({ rows, orgId, canDelete, revalidatePaths }: FinanceTableP
           </div>
         ))}
       </div>
+    </div>
     </div>
   );
 };
