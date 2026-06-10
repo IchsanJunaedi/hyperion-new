@@ -59,6 +59,27 @@ export async function getSponsors(orgIds: string[]): Promise<SponsorWithStats[]>
   }) as unknown as SponsorWithStats[];
 }
 
+export interface WorkspaceSponsor {
+  id: string;
+  name: string;
+  status: string;
+  logo_url: string | null;
+  notes: string | null;
+}
+
+export async function getWorkspaceSponsors(orgId: string): Promise<WorkspaceSponsor[]> {
+  const admin = createAdminClient();
+  const { data, error } = await admin
+    .from("sponsors")
+    .select("id, name, status, logo_url, notes")
+    .eq("organization_id", orgId)
+    .eq("status", "active")
+    .order("name")
+    .limit(50);
+  if (error) console.error("[getWorkspaceSponsors]", error);
+  return (data ?? []) as WorkspaceSponsor[];
+}
+
 export async function getSponsorDetail(id: string): Promise<SponsorDetail | null> {
   const admin = createAdminClient();
 

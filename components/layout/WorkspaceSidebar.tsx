@@ -218,6 +218,12 @@ const WORKSPACE_NAV_GROUPS: NavGroup[] = [
         label: "Development",
         Icon: TrendingUp,
       },
+      {
+        key: "sponsors",
+        href: "/sponsors",
+        label: "Sponsor",
+        Icon: Handshake,
+      },
     ],
   },
   {

@@ -49,6 +49,7 @@
 | `/development` | Member self-view of own skill targets | ✅ |
 | `/meta` | MLBB meta tracker: hero picks, win rates, patch notes | ✅ |
 | `/trials` | Open trials kanban pipeline (pending/accepted/rejected/waitlist) | ✅ |
+| `/sponsors` | Active sponsors: name, logo, status, notes (read-only, all workspace roles) | ✅ |
 
 ### Infrastructure
 - Auth: email/password + Google OAuth, role-based redirect
@@ -346,11 +347,8 @@ All `<input type="number">` must use `<NumberInput>` from `@/components/ui/numbe
 ## What's NOT Done (Future Work)
 - Public profile activation (GH #31 — needs design decision on public data scope)
 - Reports page activation for managers (GH #32 — needs audit of manager-visible data)
-- `/[slug]/sponsors` workspace page (GH #34 — needs decision: full vs partial sponsor visibility)
 - Light/dark mode CSS variable refactor (GH #33 — DO NOT START before palette finalized)
-- Apply 2 pending DB migrations when Docker available (GH #26):
-  - `20260604150000_polls_coach_permission.sql`
-  - `20260605120000_announcements_coach_permission.sql`
+- *(all migrations applied — no pending migrations)*
 
 ### Light/Dark Mode Theming Refactor (future, before light mode launch)
 - **Problem:** 146 file TSX hardcode hex design-system colors (`#191919`, `#2D2D2D`, dll) — akan salah di light mode
