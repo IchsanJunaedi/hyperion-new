@@ -38,6 +38,13 @@ function formatDate(dateStr: string, timeStr: string | null): string {
   return timeStr ? `${d} · ${timeStr.slice(0, 5)}` : d;
 }
 
+function formatLeftDate(dateStr: string): { day: string; month: string } {
+  const date = new Date(dateStr + "T00:00:00");
+  const day = date.toLocaleDateString("id-ID", { day: "2-digit" });
+  const month = date.toLocaleDateString("id-ID", { month: "short" }).toUpperCase();
+  return { day, month };
+}
+
 const STATUS_LABEL: Record<string, string> = {
   upcoming: "UPCOMING",
   ongoing: "ONGOING",
@@ -92,9 +99,9 @@ const SchedulePage = async () => {
 
         {/* Tournament list */}
         <section className="px-6 py-16 sm:px-10 lg:px-16">
-          <div className="mx-auto max-w-7xl">
+          <div className="mx-auto max-w-4xl">
             {tournaments.length === 0 ? (
-              <div className="border border-white/12 bg-[#071428] py-20 text-center">
+              <div className="border border-white/5 bg-[#071428]/40 backdrop-blur-md rounded-2xl py-20 text-center">
                 <CalendarRange className="mx-auto mb-4 h-8 w-8 text-white/20" />
                 <p className="text-sm text-white/45">Belum ada jadwal turnamen yang dipublikasikan.</p>
               </div>
@@ -105,36 +112,39 @@ const SchedulePage = async () => {
                     <h2 className="mb-4 text-[11px] font-bold uppercase tracking-[0.4em] text-white/40">
                       {formatMonthHeader(monthKey)}
                     </h2>
-                    <div className="divide-y divide-white/8 border border-white/12">
+                    <div className="flex flex-col gap-4">
                       {items.map((t) => (
                         <div
                           key={t.id}
-                          className="flex flex-col gap-3 bg-[#071428] px-5 py-5 sm:flex-row sm:items-center sm:gap-6"
+                          className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 sm:gap-6 bg-slate-800/40 backdrop-blur-md rounded-2xl border border-white/5 p-6 transition-all duration-300 hover:bg-slate-800/60 hover:scale-[1.01]"
                         >
-                          {/* Date */}
-                          <div className="w-full shrink-0 sm:w-52">
-                            <p className="text-[11px] font-bold uppercase tracking-wider text-[#F5C400]">
-                              {formatDate(t.start_date, t.start_time)}
-                            </p>
+                          {/* Sisi Kiri: Tanggal & Jam */}
+                          <div className="flex flex-row sm:flex-col items-center sm:items-start justify-between sm:justify-center border-b sm:border-b-0 sm:border-r border-white/10 pb-3 sm:pb-0 pr-0 sm:pr-6 shrink-0 sm:w-28 gap-2">
+                            <span className="font-bebas text-3xl font-black tracking-wide text-white leading-none">
+                              {formatLeftDate(t.start_date).day} {formatLeftDate(t.start_date).month}
+                            </span>
+                            <span className="text-xs text-[#9B9A97] font-medium">
+                              {t.start_time ? `${t.start_time.slice(0, 5)} WIB` : "TBA"}
+                            </span>
                           </div>
 
-                          {/* Info */}
-                          <div className="min-w-0 flex-1">
-                            <p className="font-black uppercase tracking-tight text-white sm:text-lg">
+                          {/* Bagian Tengah: Detail Turnamen */}
+                          <div className="min-w-0 flex-1 py-1 sm:px-2">
+                            <h3 className="font-black uppercase tracking-tight text-white text-lg sm:text-xl leading-tight">
                               {t.name}
-                            </p>
-                            <div className="mt-0.5 flex flex-wrap items-center gap-2 text-[11px] text-white/45">
+                            </h3>
+                            <div className="mt-1 flex flex-wrap items-center gap-1.5 text-xs text-[#9B9A97] font-normal">
                               {t.game && <span>{t.game}</span>}
                               {t.game && t.division_name && <span>·</span>}
                               {t.division_name && <span>{t.division_name}</span>}
                               {t.organizer && <><span>·</span><span>{t.organizer}</span></>}
-                              {t.prize_pool && <><span>·</span><span className="text-[#F5C400]/70">{t.prize_pool}</span></>}
+                              {t.prize_pool && <><span>·</span><span className="text-[#F5C400] font-medium">{t.prize_pool}</span></>}
                             </div>
                           </div>
 
-                          {/* Right: status + register */}
-                          <div className="flex shrink-0 items-center gap-3">
-                            <span className={`rounded border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${STATUS_COLOR[t.status] ?? STATUS_COLOR.upcoming}`}>
+                          {/* Sisi Kanan: Status Badge & Registrasi */}
+                          <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-3 shrink-0">
+                            <span className={`rounded-full border px-3.5 py-1 text-[10px] font-bold uppercase tracking-wider ${STATUS_COLOR[t.status] ?? STATUS_COLOR.upcoming}`}>
                               {STATUS_LABEL[t.status] ?? t.status.toUpperCase()}
                             </span>
                             {t.registration_url && (
@@ -142,7 +152,7 @@ const SchedulePage = async () => {
                                 href={t.registration_url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="border border-[#F5C400] px-3 py-1 text-[11px] font-black uppercase tracking-widest text-[#F5C400] transition hover:bg-[#F5C400] hover:text-black"
+                                className="inline-flex h-9 items-center justify-center bg-[#F5C400] hover:bg-white text-black font-bebas text-xs font-bold uppercase tracking-[0.1em] px-4 transition-colors duration-200 clip-cyber-btn"
                               >
                                 Daftar →
                               </Link>
