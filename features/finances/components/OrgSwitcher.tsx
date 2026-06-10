@@ -31,8 +31,8 @@ const OrgSwitcher = ({ orgs, currentOrgId, basePath, year, month }: OrgSwitcherP
             className={cn(
               "inline-flex h-8 items-center rounded-full px-3 text-xs font-medium transition",
               active
-                ? "bg-[#E5E2E1] text-[#191919]"
-                : "bg-[#2C2C2C] text-[#9B9A97] hover:bg-[#353535] hover:text-[#D4D4D4]",
+                ? "bg-ui-text text-ui-bg"
+                : "bg-ui-hover text-ui-text-2 hover:bg-ui-hover-strong hover:text-ui-text-dim",
             )}
           >
             {org.name}

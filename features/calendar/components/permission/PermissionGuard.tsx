@@ -116,7 +116,7 @@ const PermissionGuard = ({
   if (loading) {
     return (
       <div className="flex items-center justify-center p-4">
-        <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#6B6A68] border-t-[#E5E2E1]" />
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-ui-text-muted border-t-ui-text" />
       </div>
     );
   }
@@ -201,15 +201,15 @@ const PermissionButton = ({
         px-4 py-2 rounded-lg font-medium transition-colors
         ${
           isDisabled
-            ? "bg-[#2C2C2C] text-[#6B6A68] cursor-not-allowed opacity-50"
-            : "bg-[#2C2C2C] border border-[#2D2D2D] text-[#E5E2E1] hover:border-[#404040] cursor-pointer"
+            ? "bg-ui-hover text-ui-text-muted cursor-not-allowed opacity-50"
+            : "bg-ui-hover border border-ui-border text-ui-text hover:border-[#404040] cursor-pointer"
         }
       `}
       {...props}
     >
       {loading ? (
         <span className="flex items-center gap-2">
-          <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#6B6A68] border-t-[#E5E2E1]" />
+          <span className="h-4 w-4 animate-spin rounded-full border-2 border-ui-text-muted border-t-ui-text" />
         </span>
       ) : (
         children
@@ -276,19 +276,19 @@ const PermissionConfirmDialog = ({
   if (!allowed && open) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-        <div className="rounded-xl border border-[#2D2D2D] bg-[#202020] p-6 max-w-sm mx-4">
+        <div className="rounded-xl border border-ui-border bg-ui-surface p-6 max-w-sm mx-4">
           <div className="flex items-start gap-3">
             <AlertCircle className="h-5 w-5 text-red-400 flex-shrink-0 mt-0.5" />
             <div>
-              <h3 className="font-semibold text-[#E5E2E1]">Permission Denied</h3>
-              <p className="text-sm text-[#9B9A97] mt-2">
+              <h3 className="font-semibold text-ui-text">Permission Denied</h3>
+              <p className="text-sm text-ui-text-2 mt-2">
                 You don&apos;t have permission to perform this action.
               </p>
             </div>
           </div>
           <button
             onClick={handleCancel}
-            className="w-full mt-4 px-4 py-2 rounded-lg bg-[#2C2C2C] border border-[#2D2D2D] hover:border-[#404040] text-[#E5E2E1] transition"
+            className="w-full mt-4 px-4 py-2 rounded-lg bg-ui-hover border border-ui-border hover:border-[#404040] text-ui-text transition"
           >
             Close
           </button>
@@ -302,20 +302,20 @@ const PermissionConfirmDialog = ({
       <button
         onClick={() => setOpen(true)}
         disabled={checking || loading}
-        className="px-4 py-2 rounded-lg bg-[#2C2C2C] border border-[#2D2D2D] hover:border-[#404040] text-[#E5E2E1] transition disabled:opacity-50 disabled:cursor-not-allowed"
+        className="px-4 py-2 rounded-lg bg-ui-hover border border-ui-border hover:border-[#404040] text-ui-text transition disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {checking ? "Checking..." : action}
       </button>
 
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="rounded-xl border border-[#2D2D2D] bg-[#202020] p-6 max-w-sm mx-4">
+          <div className="rounded-xl border border-ui-border bg-ui-surface p-6 max-w-sm mx-4">
             <div className="mb-4">{children}</div>
             <div className="flex gap-3">
               <button
                 onClick={handleCancel}
                 disabled={loading}
-                className="flex-1 px-4 py-2 rounded-lg bg-[#2C2C2C] border border-[#2D2D2D] hover:border-[#404040] text-[#E5E2E1] transition disabled:opacity-50"
+                className="flex-1 px-4 py-2 rounded-lg bg-ui-hover border border-ui-border hover:border-[#404040] text-ui-text transition disabled:opacity-50"
               >
                 Cancel
               </button>

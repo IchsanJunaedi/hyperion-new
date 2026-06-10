@@ -79,7 +79,7 @@ function OverviewTab({ calendar }: TabContentProps) {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <p className="text-xs text-white/40 mb-1">Total Event</p>
-            <p className="text-3xl font-bold text-white">{calendar.eventCount}</p>
+            <p className="text-3xl font-bold text-ui-text">{calendar.eventCount}</p>
           </div>
           <div>
             <p className="text-xs text-white/40 mb-1">Dibuat</p>
@@ -198,7 +198,7 @@ export default function CalendarSettingsPage() {
           </Link>
         </div>
         <div className="mx-auto max-w-2xl w-full text-center py-16">
-          <h1 className="text-xl font-bold text-white mb-2">Akses Ditolak</h1>
+          <h1 className="text-xl font-bold text-ui-text mb-2">Akses Ditolak</h1>
           <p className="text-sm text-white/50">Anda tidak memiliki izin untuk mengakses halaman ini.</p>
         </div>
       </div>
@@ -239,7 +239,7 @@ export default function CalendarSettingsPage() {
           </Link>
         </div>
         <div className="mx-auto max-w-2xl w-full text-center py-16 space-y-4">
-          <h1 className="text-xl font-bold text-white">Tidak Ada Kalender</h1>
+          <h1 className="text-xl font-bold text-ui-text">Tidak Ada Kalender</h1>
           <p className="text-sm text-white/50">Anda belum membuat atau mengelola kalender apapun.</p>
           <Link
             href={`/${teamSlug}/calendar/new`}
@@ -267,7 +267,7 @@ export default function CalendarSettingsPage() {
 
       {/* Konten Terpusat */}
       <div className="mx-auto max-w-2xl w-full space-y-6">
-        <h1 className="text-2xl font-bold text-white sm:text-3xl tracking-tight">
+        <h1 className="text-2xl font-bold text-ui-text sm:text-3xl tracking-tight">
           Pengaturan Kalender
         </h1>
 
@@ -282,7 +282,7 @@ export default function CalendarSettingsPage() {
                   className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
                     selectedCalendar?.id === cal.id
                       ? "bg-yellow-400/10 text-yellow-400"
-                      : "text-white/60 hover:bg-white/5 hover:text-white"
+                      : "text-white/60 hover:bg-white/5 hover:text-ui-text"
                   }`}
                 >
                   <p className="font-medium">{cal.title}</p>

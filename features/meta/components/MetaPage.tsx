@@ -92,7 +92,7 @@ const ROLE_FILTERS: Array<{ value: RoleFilter; label: string }> = [
 ];
 
 const CLASS_FILTERS: Array<{ value: ClassFilter; label: string; color: string }> = [
-  { value: "all", label: "Semua", color: "border-[#2D2D2D] text-white/40 hover:border-white/20 hover:text-white/70" },
+  { value: "all", label: "Semua", color: "border-ui-border text-white/40 hover:border-white/20 hover:text-white/70" },
   { value: "Fighter", label: "Fighter", color: "border-orange-500/50 bg-orange-500/10 text-orange-400" },
   { value: "Tank", label: "Tank", color: "border-blue-500/50 bg-blue-500/10 text-blue-400" },
   { value: "Assassin", label: "Assassin", color: "border-red-500/50 bg-red-500/10 text-red-400" },
@@ -144,7 +144,7 @@ function HeroCard({
         </div>
         {hero.is_ban_priority && (
           <div className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 shadow-md">
-            <Shield className="h-2.5 w-2.5 text-white" />
+            <Shield className="h-2.5 w-2.5 text-ui-text" />
           </div>
         )}
         {hero.priority_to_learn && (
@@ -157,7 +157,7 @@ function HeroCard({
             <button
               type="button"
               onClick={() => onEdit(hero)}
-              className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-full bg-white/20 text-white hover:bg-white/40"
+              className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-full bg-white/20 text-ui-text hover:bg-white/40"
             >
               <Pencil className="h-3 w-3" />
             </button>
@@ -295,19 +295,19 @@ function HeroPickerPanel({
   }
 
   return (
-    <div className={cn("mt-3 rounded-xl border bg-[#171717] p-4", style.border)}>
+    <div className={cn("mt-3 rounded-xl border bg-ui-bg p-4", style.border)}>
       {/* Search bar */}
-      <div className="mb-3 flex items-center gap-2 rounded-lg border border-[#2D2D2D] bg-[#141414] px-3 py-2">
+      <div className="mb-3 flex items-center gap-2 rounded-lg border border-ui-border bg-ui-bg px-3 py-2">
         <Search className="h-3.5 w-3.5 shrink-0 text-white/30" />
         <input
           ref={searchRef}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Cari hero..."
-          className="flex-1 bg-transparent text-sm text-white placeholder-white/30 outline-none"
+          className="flex-1 bg-transparent text-sm text-ui-text placeholder-white/30 outline-none"
         />
         {search && (
-          <button type="button" onClick={() => setSearch("")} className="cursor-pointer text-white/30 hover:text-white">
+          <button type="button" onClick={() => setSearch("")} className="cursor-pointer text-white/30 hover:text-ui-text">
             <X className="h-3.5 w-3.5" />
           </button>
         )}
@@ -315,12 +315,12 @@ function HeroPickerPanel({
 
       {/* Config strip — shown after heroes are selected */}
       {selectedHeroes.size > 0 && (
-        <div className="mb-3 rounded-lg border border-[#2D2D2D] bg-[#1C1C1C] p-3 space-y-3">
+        <div className="mb-3 rounded-lg border border-ui-border bg-ui-surface p-3 space-y-3">
           {/* Selected hero chips */}
           <div className="flex items-start gap-2">
             <div className="flex flex-1 flex-wrap gap-1.5 min-w-0">
               {Array.from(selectedHeroes).map((heroName) => (
-                <div key={heroName} className="flex items-center gap-1 rounded-full border border-[#2D2D2D] bg-[#252525] pl-0.5 pr-1.5 py-0.5">
+                <div key={heroName} className="flex items-center gap-1 rounded-full border border-ui-border bg-ui-elevated pl-0.5 pr-1.5 py-0.5">
                   <div className="h-4 w-4 shrink-0 overflow-hidden rounded-full">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={getHeroImageUrl(heroName)} alt={heroName} className="h-full w-full object-cover" />
@@ -332,7 +332,7 @@ function HeroPickerPanel({
                 </div>
               ))}
             </div>
-            <button type="button" onClick={clearSelection} className="shrink-0 cursor-pointer text-white/30 hover:text-white">
+            <button type="button" onClick={clearSelection} className="shrink-0 cursor-pointer text-white/30 hover:text-ui-text">
               <X className="h-4 w-4" />
             </button>
           </div>
@@ -352,7 +352,7 @@ function HeroPickerPanel({
                   "cursor-pointer rounded-full border px-2.5 py-0.5 text-xs font-medium transition",
                   configRole === r.value
                     ? cn(ROLE_COLORS[r.value!], ROLE_BG[r.value!], "border-transparent")
-                    : "border-[#2D2D2D] text-white/40 hover:border-white/20 hover:text-white/70",
+                    : "border-ui-border text-white/40 hover:border-white/20 hover:text-white/70",
                 )}
               >
                 {r.label}
@@ -369,7 +369,7 @@ function HeroPickerPanel({
                 "inline-flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition",
                 configBan
                   ? "border-red-500/50 bg-red-500/10 text-red-400"
-                  : "border-[#2D2D2D] text-white/40 hover:border-white/20 hover:text-white/60",
+                  : "border-ui-border text-white/40 hover:border-white/20 hover:text-white/60",
               )}
             >
               <Shield className="h-3 w-3" />
@@ -382,7 +382,7 @@ function HeroPickerPanel({
                 "inline-flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition",
                 configLearn
                   ? "border-yellow-500/50 bg-yellow-500/10 text-yellow-400"
-                  : "border-[#2D2D2D] text-white/40 hover:border-white/20 hover:text-white/60",
+                  : "border-ui-border text-white/40 hover:border-white/20 hover:text-white/60",
               )}
             >
               <Star className="h-3 w-3" />
@@ -649,7 +649,7 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
       {/* Header */}
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white sm:text-3xl">Meta MLBB</h1>
+          <h1 className="text-2xl font-bold text-ui-text sm:text-3xl">Meta MLBB</h1>
           <p className="mt-1 text-sm text-white/50">
             Tier list hero per patch — dikelola coach
             {activePatch?.updated_at && (
@@ -663,7 +663,7 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
           <button
             type="button"
             onClick={() => window.print()}
-            className="inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-md border border-white/10 px-3 text-xs text-white/60 transition hover:bg-white/5 hover:text-white"
+            className="inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-md border border-white/10 px-3 text-xs text-white/60 transition hover:bg-white/5 hover:text-ui-text"
           >
             <Download className="h-3.5 w-3.5" />
             Export PDF
@@ -676,7 +676,7 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
                 "inline-flex h-9 cursor-pointer items-center gap-2 rounded-md border px-3 text-sm transition",
                 editMode
                   ? "border-yellow-500/50 bg-yellow-500/10 text-yellow-400"
-                  : "border-[#2D2D2D] text-white/60 hover:bg-white/5",
+                  : "border-ui-border text-white/60 hover:bg-white/5",
               )}
             >
               <Pencil className="h-3.5 w-3.5" />
@@ -703,7 +703,7 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
                 "cursor-pointer rounded-full border px-3 py-1 text-xs transition",
                 activePatch?.id === p.id
                   ? "border-yellow-500/50 bg-yellow-500/10 text-yellow-400"
-                  : "border-[#2D2D2D] text-white/50 hover:border-white/20 hover:text-white/80",
+                  : "border-ui-border text-white/50 hover:border-white/20 hover:text-white/80",
               )}
             >
               {p.patch_version}
@@ -717,7 +717,7 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
           <button
             type="button"
             onClick={() => setShowNewPatchForm((v) => !v)}
-            className="inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-full border border-dashed border-[#2D2D2D] px-3 text-xs text-white/40 transition hover:border-white/20 hover:text-white/70"
+            className="inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-full border border-dashed border-ui-border px-3 text-xs text-white/40 transition hover:border-white/20 hover:text-white/70"
           >
             <Plus className="h-3 w-3" />
             Patch Baru
@@ -735,7 +735,7 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
               "inline-flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border transition",
               showPatchSettings
                 ? "border-yellow-500/50 bg-yellow-500/10 text-yellow-400"
-                : "border-[#2D2D2D] text-white/40 hover:border-white/20 hover:text-white/70",
+                : "border-ui-border text-white/40 hover:border-white/20 hover:text-white/70",
             )}
           >
             <Settings className="h-3.5 w-3.5" />
@@ -745,27 +745,27 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
 
       {/* New patch form */}
       {showNewPatchForm && canEdit && (
-        <div className="print-hide space-y-3 rounded-xl border border-[#2D2D2D] bg-[#1C1C1C] p-4">
+        <div className="print-hide space-y-3 rounded-xl border border-ui-border bg-ui-surface p-4">
           <p className="text-xs font-medium text-white/70">Tambah Patch Baru</p>
           <div className="flex gap-2">
             <input
               value={newPatchVersion}
               onChange={(e) => setNewPatchVersion(e.target.value)}
               placeholder="Versi patch (misal: 33.1)"
-              className="flex-1 rounded-md border border-[#2D2D2D] bg-[#141414] px-3 py-2 text-sm text-white placeholder-white/30 outline-none focus:border-white/30"
+              className="flex-1 rounded-md border border-ui-border bg-ui-bg px-3 py-2 text-sm text-ui-text placeholder-white/30 outline-none focus:border-white/30"
             />
             <input
               value={newPatchNotes}
               onChange={(e) => setNewPatchNotes(e.target.value)}
               placeholder="Catatan singkat (opsional)"
-              className="flex-1 rounded-md border border-[#2D2D2D] bg-[#141414] px-3 py-2 text-sm text-white placeholder-white/30 outline-none focus:border-white/30"
+              className="flex-1 rounded-md border border-ui-border bg-ui-bg px-3 py-2 text-sm text-ui-text placeholder-white/30 outline-none focus:border-white/30"
             />
           </div>
           <div className="flex gap-2">
             <button
               type="button"
               onClick={() => setShowNewPatchForm(false)}
-              className="cursor-pointer rounded-md border border-[#2D2D2D] px-4 py-1.5 text-sm text-white/60 transition hover:bg-white/5"
+              className="cursor-pointer rounded-md border border-ui-border px-4 py-1.5 text-sm text-white/60 transition hover:bg-white/5"
             >
               Batal
             </button>
@@ -783,7 +783,7 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
 
       {/* Patch settings form */}
       {showPatchSettings && activePatch && canEdit && (
-        <div className="print-hide space-y-4 rounded-xl border border-[#2D2D2D] bg-[#1C1C1C] p-4">
+        <div className="print-hide space-y-4 rounded-xl border border-ui-border bg-ui-surface p-4">
           <p className="text-xs font-medium text-white/70">Pengaturan Patch {activePatch.patch_version}</p>
 
           <div>
@@ -792,7 +792,7 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
               value={settingsNotes}
               onChange={(e) => setSettingsNotes(e.target.value)}
               placeholder="Catatan singkat tentang patch ini..."
-              className="w-full rounded-md border border-[#2D2D2D] bg-[#141414] px-3 py-2 text-sm text-white placeholder-white/30 outline-none focus:border-white/30"
+              className="w-full rounded-md border border-ui-border bg-ui-bg px-3 py-2 text-sm text-ui-text placeholder-white/30 outline-none focus:border-white/30"
             />
           </div>
 
@@ -808,7 +808,7 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
                       setSettingsDescriptions((prev) => ({ ...prev, [t]: e.target.value }))
                     }
                     placeholder={TIER_DESCRIPTIONS_DEFAULT[t]}
-                    className="flex-1 rounded-md border border-[#2D2D2D] bg-[#141414] px-3 py-1.5 text-xs text-white placeholder-white/25 outline-none focus:border-white/30"
+                    className="flex-1 rounded-md border border-ui-border bg-ui-bg px-3 py-1.5 text-xs text-ui-text placeholder-white/25 outline-none focus:border-white/30"
                   />
                 </div>
               ))}
@@ -819,7 +819,7 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
             <button
               type="button"
               onClick={() => setShowPatchSettings(false)}
-              className="cursor-pointer rounded-md border border-[#2D2D2D] px-4 py-1.5 text-sm text-white/60 transition hover:bg-white/5"
+              className="cursor-pointer rounded-md border border-ui-border px-4 py-1.5 text-sm text-white/60 transition hover:bg-white/5"
             >
               Batal
             </button>
@@ -877,7 +877,7 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
           )}
 
           {/* Tab navigation */}
-          <div className="print-hide flex gap-1 border-b border-[#2D2D2D]">
+          <div className="print-hide flex gap-1 border-b border-ui-border">
             {(["tier", "ban", "learn", "changelog"] as const).map((tab) => {
               if (tab === "changelog" && previousPatchHeroes.length === 0) return null;
               return (
@@ -921,7 +921,7 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
                         "cursor-pointer rounded-full border px-3 py-1 text-xs font-medium transition",
                         roleFilter === rf.value
                           ? "border-yellow-500/50 bg-yellow-500/10 text-yellow-400"
-                          : "border-[#2D2D2D] text-white/40 hover:border-white/20 hover:text-white/70",
+                          : "border-ui-border text-white/40 hover:border-white/20 hover:text-white/70",
                       )}
                     >
                       {rf.label}
@@ -939,7 +939,7 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
                         "cursor-pointer rounded-full border px-3 py-1 text-xs font-medium transition",
                         classFilter === cf.value
                           ? cf.color
-                          : "border-[#2D2D2D] text-white/40 hover:border-white/20 hover:text-white/70",
+                          : "border-ui-border text-white/40 hover:border-white/20 hover:text-white/70",
                       )}
                     >
                       {cf.label}
@@ -1088,7 +1088,7 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img src={getHeroImageUrl(h.hero_name)} alt={h.hero_name} className="h-full w-full object-cover" />
                           <div className="absolute left-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 shadow-md">
-                            <Shield className="h-2.5 w-2.5 text-white" />
+                            <Shield className="h-2.5 w-2.5 text-ui-text" />
                           </div>
                           <div className={cn("absolute bottom-1 right-1 flex h-4 min-w-4 items-center justify-center rounded px-1 text-[8px] font-black shadow", style.badge)}>
                             {h.tier}

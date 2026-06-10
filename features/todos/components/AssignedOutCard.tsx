@@ -13,7 +13,7 @@ interface AssignedOutTodo {
 const PRIORITY_BADGE: Record<string, string> = {
   high: "bg-red-500/20 text-red-400",
   medium: "bg-orange-500/20 text-orange-400",
-  low: "bg-zinc-700/60 text-[#9B9A97]",
+  low: "bg-zinc-700/60 text-ui-text-2",
 };
 
 const AssignedOutCard = ({ todo }: { todo: AssignedOutTodo }) => {
@@ -31,18 +31,18 @@ const AssignedOutCard = ({ todo }: { todo: AssignedOutTodo }) => {
   const border = isCompleted ? "border-l-zinc-700" : (BORDER[urgency] ?? "border-l-zinc-600");
 
   return (
-    <div className={cn("flex items-start gap-3 rounded-r border-l-2 bg-[#202020] px-4 py-3", border)}>
+    <div className={cn("flex items-start gap-3 rounded-r border-l-2 bg-ui-surface px-4 py-3", border)}>
       <div className="min-w-0 flex-1">
-        <p className={cn("text-sm", isCompleted ? "text-[#6B6A68] line-through" : "text-[#E5E2E1]")}>
+        <p className={cn("text-sm", isCompleted ? "text-ui-text-muted line-through" : "text-ui-text")}>
           {todo.title}
         </p>
         <div className="mt-1 flex flex-wrap items-center gap-2">
-          <span className={cn("rounded px-1.5 py-0.5 text-[10px] font-medium", PRIORITY_BADGE[todo.priority] ?? "bg-zinc-700/60 text-[#9B9A97]")}>
+          <span className={cn("rounded px-1.5 py-0.5 text-[10px] font-medium", PRIORITY_BADGE[todo.priority] ?? "bg-zinc-700/60 text-ui-text-2")}>
             {todo.priority}
           </span>
-          {relDate && <span className="text-xs text-[#6B6A68]">{relDate}</span>}
+          {relDate && <span className="text-xs text-ui-text-muted">{relDate}</span>}
           {todo.assignee && (
-            <span className="text-xs text-[#6B6A68]">
+            <span className="text-xs text-ui-text-muted">
               → {todo.assignee.display_name ?? todo.assignee.id}
             </span>
           )}
@@ -50,7 +50,7 @@ const AssignedOutCard = ({ todo }: { todo: AssignedOutTodo }) => {
       </div>
       <span className={cn(
         "shrink-0 rounded px-2 py-0.5 text-[10px] font-medium",
-        isCompleted ? "bg-green-500/20 text-green-400" : "bg-zinc-700/60 text-[#9B9A97]",
+        isCompleted ? "bg-green-500/20 text-green-400" : "bg-zinc-700/60 text-ui-text-2",
       )}>
         {isCompleted ? "Selesai" : "Pending"}
       </span>

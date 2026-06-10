@@ -18,7 +18,7 @@ interface TournamentCardProps {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  upcoming: "bg-white/5 text-[#9B9A97]",
+  upcoming: "bg-white/5 text-ui-text-2",
   expired: "bg-orange-500/10 text-orange-400",
   ongoing: "bg-yellow-500/10 text-yellow-400",
   completed: "bg-green-500/10 text-green-400",
@@ -60,13 +60,13 @@ const TournamentCard = ({ tournament, orgSlug, placement }: TournamentCardProps)
   return (
     <Link
       href={`/${orgSlug}/tournaments/${tournament.id}`}
-      className="block rounded-xl border border-[#2D2D2D] bg-[#202020] p-4 transition hover:border-[#3D3D3D] hover:bg-[#252525]"
+      className="block rounded-xl border border-ui-border bg-ui-surface p-4 transition hover:border-[#3D3D3D] hover:bg-ui-elevated"
     >
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
-          <h3 className="text-sm font-medium text-[#E5E2E1] truncate">{tournament.name}</h3>
+          <h3 className="text-sm font-medium text-ui-text truncate">{tournament.name}</h3>
           {tournament.organizer && (
-            <p className="text-xs text-[#6B6A68] mt-0.5 truncate">{tournament.organizer}</p>
+            <p className="text-xs text-ui-text-muted mt-0.5 truncate">{tournament.organizer}</p>
           )}
         </div>
         <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium ${displayColor}`}>
@@ -74,7 +74,7 @@ const TournamentCard = ({ tournament, orgSlug, placement }: TournamentCardProps)
         </span>
       </div>
 
-      <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-[#9B9A97]">
+      <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-ui-text-2">
         <span className="inline-flex items-center gap-1">
           <Calendar className="h-3 w-3" />
           {startDate}

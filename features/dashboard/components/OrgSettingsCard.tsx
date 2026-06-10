@@ -67,7 +67,7 @@ const OrgSettingsCard = ({ org, divisions }: OrgSettingsCardProps) => {
   }
 
   return (
-    <div className="border border-[#2D2D2D] rounded-lg p-5">
+    <div className="border border-ui-border rounded-lg p-5">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         {editing ? (
@@ -75,29 +75,29 @@ const OrgSettingsCard = ({ org, divisions }: OrgSettingsCardProps) => {
             <input
               value={editName}
               onChange={(e) => setEditName(e.target.value)}
-              className="h-8 flex-1 rounded border border-[#2D2D2D] bg-[#191919] px-3 text-sm font-semibold text-[#E5E2E1] focus:border-[#D4D4D4] focus:outline-none"
+              className="h-8 flex-1 rounded border border-ui-border bg-ui-bg px-3 text-sm font-semibold text-ui-text focus:border-ui-text-dim focus:outline-none"
               autoFocus
               onKeyDown={(e) => { if (e.key === "Enter") handleSave(); if (e.key === "Escape") setEditing(false); }}
             />
-            <button onClick={handleSave} disabled={pending} className="p-1.5 text-green-400 hover:bg-[#2C2C2C] rounded">
+            <button onClick={handleSave} disabled={pending} className="p-1.5 text-green-400 hover:bg-ui-hover rounded">
               {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
             </button>
-            <button onClick={() => { setEditing(false); setEditName(org.name); }} className="p-1.5 text-[#9B9A97] hover:bg-[#2C2C2C] rounded">
+            <button onClick={() => { setEditing(false); setEditName(org.name); }} className="p-1.5 text-ui-text-2 hover:bg-ui-hover rounded">
               <X className="h-4 w-4" />
             </button>
           </div>
         ) : (
           <>
             <div className="flex items-center gap-3">
-              <h3 className="text-lg font-semibold text-[#E5E2E1]">{org.name}</h3>
-              <span className="text-xs text-[#6B6A68]">/{org.slug}</span>
-              <button onClick={() => setEditing(true)} className="p-1 text-[#9B9A97] hover:text-[#D4D4D4] hover:bg-[#2C2C2C] rounded cursor-pointer">
+              <h3 className="text-lg font-semibold text-ui-text">{org.name}</h3>
+              <span className="text-xs text-ui-text-muted">/{org.slug}</span>
+              <button onClick={() => setEditing(true)} className="p-1 text-ui-text-2 hover:text-ui-text-dim hover:bg-ui-hover rounded cursor-pointer">
                 <Pencil className="h-3.5 w-3.5" />
               </button>
             </div>
             <Link
               href={`/${org.slug}`}
-              className="inline-flex h-8 items-center gap-1.5 rounded bg-white/10 hover:bg-white/15 px-3 text-xs font-medium text-[#E5E2E1] transition-colors cursor-pointer"
+              className="inline-flex h-8 items-center gap-1.5 rounded bg-white/10 hover:bg-white/15 px-3 text-xs font-medium text-ui-text transition-colors cursor-pointer"
             >
               Buka Workspace
             </Link>
@@ -106,10 +106,10 @@ const OrgSettingsCard = ({ org, divisions }: OrgSettingsCardProps) => {
       </div>
 
       {/* Public Profile Toggle */}
-      <div className="flex items-center justify-between py-3 border-t border-[#2D2D2D]">
+      <div className="flex items-center justify-between py-3 border-t border-ui-border">
         <div>
-          <p className="text-sm text-[#D4D4D4]">Profil Publik</p>
-          <p className="text-xs text-[#6B6A68]">
+          <p className="text-sm text-ui-text-dim">Profil Publik</p>
+          <p className="text-xs text-ui-text-muted">
             {isPublic ? (
               <span>
                 Aktif ·{" "}
@@ -128,7 +128,7 @@ const OrgSettingsCard = ({ org, divisions }: OrgSettingsCardProps) => {
         <button
           onClick={handleTogglePublic}
           disabled={toggling}
-          className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors cursor-pointer ${isPublic ? "bg-emerald-500" : "bg-[#2D2D2D]"}`}
+          className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors cursor-pointer ${isPublic ? "bg-emerald-500" : "bg-ui-border"}`}
         >
           <span
             className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${isPublic ? "translate-x-4" : "translate-x-0.5"}`}
@@ -138,19 +138,19 @@ const OrgSettingsCard = ({ org, divisions }: OrgSettingsCardProps) => {
 
       {/* Divisions */}
       <div>
-        <p className="text-xs text-[#6B6A68] mb-2">Divisi</p>
+        <p className="text-xs text-ui-text-muted mb-2">Divisi</p>
         {divisions.length === 0 ? (
-          <p className="text-sm text-[#6B6A68]">Belum ada divisi</p>
+          <p className="text-sm text-ui-text-muted">Belum ada divisi</p>
         ) : (
           <div className="flex flex-col gap-1">
             {divisions.map((div) => (
               <div
                 key={div.id}
-                className="flex items-center justify-between py-1.5 px-3 -mx-3 hover:bg-[#2C2C2C] rounded transition-colors"
+                className="flex items-center justify-between py-1.5 px-3 -mx-3 hover:bg-ui-hover rounded transition-colors"
               >
-                <span className="text-sm text-[#D4D4D4]">{div.name}</span>
+                <span className="text-sm text-ui-text-dim">{div.name}</span>
                 {!div.is_active && (
-                  <span className="text-[10px] text-[#6B6A68] bg-[#2C2C2C] px-1.5 py-0.5 rounded">Arsip</span>
+                  <span className="text-[10px] text-ui-text-muted bg-ui-hover px-1.5 py-0.5 rounded">Arsip</span>
                 )}
               </div>
             ))}

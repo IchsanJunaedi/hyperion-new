@@ -9,7 +9,7 @@ import type { AdminResult } from "@/features/admin/queries";
 
 interface Props { results: AdminResult[]; }
 
-const PLACEMENT_COLOR: Record<number, string> = { 1: "text-[#F5C400]", 2: "text-[#9B9A97]", 3: "text-[#CD7F32]" };
+const PLACEMENT_COLOR: Record<number, string> = { 1: "text-[#F5C400]", 2: "text-ui-text-2", 3: "text-[#CD7F32]" };
 
 const ResultsAdminClient = ({ results: initial }: Props) => {
   const [results, setResults] = useState(initial);
@@ -43,8 +43,8 @@ const ResultsAdminClient = ({ results: initial }: Props) => {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-xl font-black uppercase tracking-tight text-white">Results</h1>
-        <p className="mt-1 text-xs text-[#6B6A68]">
+        <h1 className="text-xl font-black uppercase tracking-tight text-ui-text">Results</h1>
+        <p className="mt-1 text-xs text-ui-text-muted">
           Upload foto podium/poster dan toggle mana hasil turnamen yang tampil di <span className="text-white/50">/results</span>.
           Hasil dicatat otomatis oleh manager saat menyelesaikan turnamen di workspace.
         </p>
@@ -52,15 +52,15 @@ const ResultsAdminClient = ({ results: initial }: Props) => {
       </div>
 
       {results.length === 0 && (
-        <div className="flex flex-col items-center gap-3 py-16 text-center border border-[#2D2D2D]">
-          <Medal className="h-8 w-8 text-[#2D2D2D]" />
-          <p className="text-sm text-[#6B6A68]">Belum ada hasil turnamen. Manager perlu menyelesaikan turnamen di workspace terlebih dahulu.</p>
+        <div className="flex flex-col items-center gap-3 py-16 text-center border border-ui-border">
+          <Medal className="h-8 w-8 text-ui-border" />
+          <p className="text-sm text-ui-text-muted">Belum ada hasil turnamen. Manager perlu menyelesaikan turnamen di workspace terlebih dahulu.</p>
         </div>
       )}
 
       <div className="space-y-3">
         {results.map((r) => (
-          <div key={r.id} className={`rounded border p-4 transition ${r.is_public ? "border-[#F5C400]/30 bg-[#1a1800]" : "border-[#2D2D2D] bg-[#141414]"}`}>
+          <div key={r.id} className={`rounded border p-4 transition ${r.is_public ? "border-[#F5C400]/30 bg-[#F5C400]/5" : "border-ui-border bg-ui-bg"}`}>
             <div className="flex items-start gap-4">
               {/* Photo */}
               <div className="shrink-0">
@@ -75,7 +75,7 @@ const ResultsAdminClient = ({ results: initial }: Props) => {
                   </div>
                 ) : (
                   <button onClick={() => setUploadingId(r.id)}
-                    className="flex h-16 w-24 cursor-pointer flex-col items-center justify-center gap-1 border border-dashed border-[#2D2D2D] text-[#6B6A68] hover:border-[#F5C400]/50 hover:text-[#F5C400] transition">
+                    className="flex h-16 w-24 cursor-pointer flex-col items-center justify-center gap-1 border border-dashed border-ui-border text-ui-text-muted hover:border-[#F5C400]/50 hover:text-[#F5C400] transition">
                     <ImagePlus className="h-5 w-5" />
                     <span className="text-[9px] font-bold uppercase tracking-wide">Foto</span>
                   </button>
@@ -84,33 +84,33 @@ const ResultsAdminClient = ({ results: initial }: Props) => {
 
               {/* Info */}
               <div className="min-w-0 flex-1">
-                <p className="font-bold text-[#D4D4D4] truncate">{r.tournament_name}</p>
+                <p className="font-bold text-ui-text-dim truncate">{r.tournament_name}</p>
                 <div className="mt-0.5 flex flex-wrap items-center gap-2 text-xs">
                   {r.placement ? (
                     <span className={`font-bold ${PLACEMENT_COLOR[r.placement] ?? "text-white/60"}`}>
                       Juara {r.placement}
                     </span>
                   ) : (
-                    <span className="text-[#6B6A68]">Gugur</span>
+                    <span className="text-ui-text-muted">Gugur</span>
                   )}
-                  {r.prize_earned && <span className="text-[#6B6A68]">· Rp {Number(r.prize_earned).toLocaleString("id-ID")}</span>}
-                  <span className="text-[#6B6A68]">· {r.recorded_at.slice(0, 10)}</span>
+                  {r.prize_earned && <span className="text-ui-text-muted">· Rp {Number(r.prize_earned).toLocaleString("id-ID")}</span>}
+                  <span className="text-ui-text-muted">· {r.recorded_at.slice(0, 10)}</span>
                 </div>
-                {r.notes && <p className="mt-1 text-xs text-[#6B6A68] truncate">{r.notes}</p>}
+                {r.notes && <p className="mt-1 text-xs text-ui-text-muted truncate">{r.notes}</p>}
               </div>
 
               {/* Toggle */}
               <button onClick={() => handleTogglePublic(r.id, r.is_public)}
-                className={`shrink-0 cursor-pointer px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider border transition ${r.is_public ? "border-[#F5C400] bg-[#F5C400] text-black" : "border-[#2D2D2D] text-[#6B6A68] hover:border-[#F5C400]/50 hover:text-[#F5C400]"}`}>
+                className={`shrink-0 cursor-pointer px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider border transition ${r.is_public ? "border-[#F5C400] bg-[#F5C400] text-black" : "border-ui-border text-ui-text-muted hover:border-[#F5C400]/50 hover:text-[#F5C400]"}`}>
                 {r.is_public ? "Publik ✓" : "Publik"}
               </button>
             </div>
 
             {/* Inline image upload when triggered */}
             {uploadingId === r.id && (
-              <div className="mt-3 border-t border-[#2D2D2D] pt-3">
+              <div className="mt-3 border-t border-ui-border pt-3">
                 <ImageUpload value={r.result_image_url} onChange={(url) => handleImageChange(r.id, url)} folder="results" label="Upload foto podium / poster" />
-                <button onClick={() => setUploadingId(null)} className="mt-2 text-xs text-[#6B6A68] hover:text-[#9B9A97] cursor-pointer">Batal</button>
+                <button onClick={() => setUploadingId(null)} className="mt-2 text-xs text-ui-text-muted hover:text-ui-text-2 cursor-pointer">Batal</button>
               </div>
             )}
           </div>

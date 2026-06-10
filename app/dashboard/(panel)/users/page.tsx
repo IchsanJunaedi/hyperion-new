@@ -1,4 +1,4 @@
-﻿import { redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Users } from "lucide-react";
 
@@ -142,9 +142,9 @@ export default async function DashboardUsersPage({ searchParams }: UsersPageProp
       <main className="flex-1 max-w-[1200px] w-full mx-auto px-4 sm:px-8 py-12">
         <div className="flex items-end justify-between mb-8">
           <div>
-            <Users className="h-8 w-8 text-[#9B9A97] mb-3" />
-            <h1 className="font-bold text-[28px] text-[#E5E2E1]">Semua User</h1>
-            <p className="text-[#9B9A97] mt-1 text-sm">
+            <Users className="h-8 w-8 text-ui-text-2 mb-3" />
+            <h1 className="font-bold text-[28px] text-ui-text">Semua User</h1>
+            <p className="text-ui-text-2 mt-1 text-sm">
               Semua user terdaftar. User &quot;none&quot; belum di-assign ke tim.
             </p>
           </div>
@@ -154,7 +154,7 @@ export default async function DashboardUsersPage({ searchParams }: UsersPageProp
         <div className="overflow-x-auto">
         <div className="flex flex-col min-w-[820px]">
           {/* Header */}
-          <div className="grid grid-cols-[1fr_120px_1fr_110px_110px_80px_80px_72px] gap-3 px-3 py-2 text-xs font-medium text-[#6B6A68] border-b border-[#2D2D2D]">
+          <div className="grid grid-cols-[1fr_120px_1fr_110px_110px_80px_80px_72px] gap-3 px-3 py-2 text-xs font-medium text-ui-text-muted border-b border-ui-border">
             <span>Nama</span>
             <span>Username</span>
             <span>Email</span>
@@ -169,20 +169,20 @@ export default async function DashboardUsersPage({ searchParams }: UsersPageProp
           {filteredRows.map((row) => (
             <div
               key={row.key}
-              className="grid grid-cols-[1fr_120px_1fr_110px_110px_80px_80px_72px] gap-3 px-3 py-4 items-center border-b border-[#2D2D2D] hover:bg-[#1A1A1A] transition-colors group text-sm"
+              className="grid grid-cols-[1fr_120px_1fr_110px_110px_80px_80px_72px] gap-3 px-3 py-4 items-center border-b border-ui-border hover:bg-ui-hover transition-colors group text-sm"
             >
-              <span className="text-[#D4D4D4] truncate font-medium">{row.name}</span>
-              <span className="text-[#9B9A97] truncate text-xs">{row.username}</span>
-              <span className="text-[#9B9A97] truncate text-xs">{row.email}</span>
-              <span className="text-[#9B9A97] truncate text-xs">{row.phoneWa}</span>
-              <span className="text-[#9B9A97] truncate text-xs">{row.orgName}</span>
-              <span className="text-[#9B9A97] truncate text-xs">{row.divName}</span>
+              <span className="text-ui-text-dim truncate font-medium">{row.name}</span>
+              <span className="text-ui-text-2 truncate text-xs">{row.username}</span>
+              <span className="text-ui-text-2 truncate text-xs">{row.email}</span>
+              <span className="text-ui-text-2 truncate text-xs">{row.phoneWa}</span>
+              <span className="text-ui-text-2 truncate text-xs">{row.orgName}</span>
+              <span className="text-ui-text-2 truncate text-xs">{row.divName}</span>
               <span className={`text-xs font-medium ${
                 row.role === "owner" ? "text-yellow-400" :
                 row.role === "manager" ? "text-blue-400" :
                 row.role === "coach" ? "text-purple-400" :
                 row.role === "captain" ? "text-green-400" :
-                "text-[#6B6A68]"
+                "text-ui-text-muted"
               }`}>
                 {row.role}
               </span>

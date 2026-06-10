@@ -9,7 +9,7 @@ import { updateProfileAction } from "@/features/settings/actions/updateProfile";
 import { cn } from "@/lib/utils/cn";
 
 const inputCls =
-  "w-full rounded border border-[#2D2D2D] bg-[#191919] px-3 py-1.5 text-sm text-[#E5E2E1] placeholder-[#6B6A68] focus:outline-none focus:border-[#4D4D4D] transition disabled:opacity-50 disabled:cursor-not-allowed";
+  "w-full rounded border border-ui-border bg-ui-bg px-3 py-1.5 text-sm text-ui-text placeholder-ui-text-muted focus:outline-none focus:border-[#4D4D4D] transition disabled:opacity-50 disabled:cursor-not-allowed";
 
 const OrgSection = ({
   orgId,
@@ -84,7 +84,7 @@ const OrgSection = ({
   if (loading) {
     return (
       <div className="flex justify-center py-12">
-        <Loader2 className="h-5 w-5 animate-spin text-[#6B6A68]" />
+        <Loader2 className="h-5 w-5 animate-spin text-ui-text-muted" />
       </div>
     );
   }
@@ -92,7 +92,7 @@ const OrgSection = ({
   return (
     <div className="space-y-6">
       {!isOwner && (
-        <div className="flex items-center gap-2 rounded border border-[#2D2D2D] bg-[#1E1E1E] px-4 py-3 text-sm text-[#9B9A97]">
+        <div className="flex items-center gap-2 rounded border border-ui-border bg-ui-surface px-4 py-3 text-sm text-ui-text-2">
           <Lock className="h-4 w-4 shrink-0" />
           Hanya owner yang bisa mengubah data organisasi.
         </div>
@@ -109,7 +109,7 @@ const OrgSection = ({
               className="h-14 w-14 rounded object-cover"
             />
           ) : (
-            <div className="grid h-14 w-14 place-items-center rounded bg-[#353434] text-lg font-semibold text-[#D4D4D4]">
+            <div className="grid h-14 w-14 place-items-center rounded bg-ui-hover-strong text-lg font-semibold text-ui-text-dim">
               {name.slice(0, 1).toUpperCase()}
             </div>
           )}
@@ -117,7 +117,7 @@ const OrgSection = ({
         {isOwner && (
           <label
             className={cn(
-              "flex cursor-pointer items-center gap-2 rounded border border-[#2D2D2D] px-3 py-1.5 text-sm text-[#9B9A97] transition hover:bg-[#2C2C2C]",
+              "flex cursor-pointer items-center gap-2 rounded border border-ui-border px-3 py-1.5 text-sm text-ui-text-2 transition hover:bg-ui-hover",
               uploading && "cursor-not-allowed opacity-50",
             )}
           >
@@ -140,7 +140,7 @@ const OrgSection = ({
 
       {/* Name */}
       <div className="flex flex-col gap-1">
-        <label className="text-xs text-[#9B9A97]">Nama Workspace / Brand</label>
+        <label className="text-xs text-ui-text-2">Nama Workspace / Brand</label>
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
@@ -153,7 +153,7 @@ const OrgSection = ({
         <button
           onClick={handleSave}
           disabled={saving}
-          className="flex items-center gap-2 rounded bg-[#2C2C2C] px-4 py-2 text-sm text-[#D4D4D4] transition hover:bg-[#353434] cursor-pointer disabled:opacity-50"
+          className="flex items-center gap-2 rounded bg-ui-hover px-4 py-2 text-sm text-ui-text-dim transition hover:bg-ui-hover-strong cursor-pointer disabled:opacity-50"
         >
           {saving && <Loader2 className="h-4 w-4 animate-spin" />}
           Simpan Perubahan

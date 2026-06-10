@@ -49,8 +49,8 @@ const ConfirmDeleteDialog = ({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start justify-between mb-3">
-          <h3 className="text-base font-bold text-white">{title}</h3>
-          <button onClick={onCancel} className="rounded p-1 text-white/40 hover:bg-white/10 hover:text-white">
+          <h3 className="text-base font-bold text-ui-text">{title}</h3>
+          <button onClick={onCancel} className="rounded p-1 text-white/40 hover:bg-white/10 hover:text-ui-text">
             <X className="h-4 w-4" />
           </button>
         </div>
@@ -58,7 +58,7 @@ const ConfirmDeleteDialog = ({
         {confirmPhrase && (
           <div className="mb-4 space-y-1">
             <p className="text-xs text-white/50">
-              Ketik <span className="font-mono text-white">{confirmPhrase}</span> untuk konfirmasi:
+              Ketik <span className="font-mono text-ui-text">{confirmPhrase}</span> untuk konfirmasi:
             </p>
             <input
               value={typed}

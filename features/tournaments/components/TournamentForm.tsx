@@ -106,65 +106,65 @@ const TournamentForm = ({ orgSlug, divisionId, tournament, onSuccess }: Tourname
   return (
     <div className="space-y-4">
       <div>
-        <label className="text-xs text-[#9B9A97] mb-1 block">Nama Turnamen *</label>
+        <label className="text-xs text-ui-text-2 mb-1 block">Nama Turnamen *</label>
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="h-9 w-full rounded-md border border-[#2D2D2D] bg-[#202020] px-3 text-sm text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none"
+          className="h-9 w-full rounded-md border border-ui-border bg-ui-surface px-3 text-sm text-ui-text focus:border-yellow-400/50 focus:outline-none"
         />
       </div>
 
       <div>
-        <label className="text-xs text-[#9B9A97] mb-1 block">Penyelenggara</label>
+        <label className="text-xs text-ui-text-2 mb-1 block">Penyelenggara</label>
         <input
           value={organizer}
           onChange={(e) => setOrganizer(e.target.value)}
-          className="h-9 w-full rounded-md border border-[#2D2D2D] bg-[#202020] px-3 text-sm text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none"
+          className="h-9 w-full rounded-md border border-ui-border bg-ui-surface px-3 text-sm text-ui-text focus:border-yellow-400/50 focus:outline-none"
         />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label className="text-xs text-[#9B9A97] mb-1 block">Tanggal Mulai *</label>
+          <label className="text-xs text-ui-text-2 mb-1 block">Tanggal Mulai *</label>
           <input
             type="date"
             value={startDate}
             onChange={(e) => handleStartDateChange(e.target.value)}
-            className="h-9 w-full rounded-md border border-[#2D2D2D] bg-[#202020] px-3 text-sm text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none"
+            className="h-9 w-full rounded-md border border-ui-border bg-ui-surface px-3 text-sm text-ui-text focus:border-yellow-400/50 focus:outline-none"
           />
         </div>
         <div>
-          <label className="text-xs text-[#9B9A97] mb-1 block">Jam Mulai <span className="text-[#6B6A68]">(opsional, untuk reminder H-1)</span></label>
+          <label className="text-xs text-ui-text-2 mb-1 block">Jam Mulai <span className="text-ui-text-muted">(opsional, untuk reminder H-1)</span></label>
           <input
             type="time"
             value={startTime}
             onChange={(e) => setStartTime(e.target.value)}
-            className="h-9 w-full rounded-md border border-[#2D2D2D] bg-[#202020] px-3 text-sm text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none"
+            className="h-9 w-full rounded-md border border-ui-border bg-ui-surface px-3 text-sm text-ui-text focus:border-yellow-400/50 focus:outline-none"
           />
         </div>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label className="text-xs text-[#9B9A97] mb-1 block">Tanggal Selesai</label>
+          <label className="text-xs text-ui-text-2 mb-1 block">Tanggal Selesai</label>
           <input
             type="date"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
-            className="h-9 w-full rounded-md border border-[#2D2D2D] bg-[#202020] px-3 text-sm text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none"
+            className="h-9 w-full rounded-md border border-ui-border bg-ui-surface px-3 text-sm text-ui-text focus:border-yellow-400/50 focus:outline-none"
           />
         </div>
         <div>
-          <label className="text-xs text-[#9B9A97] mb-1 block">Batas Pendaftaran / Pembayaran *</label>
+          <label className="text-xs text-ui-text-2 mb-1 block">Batas Pendaftaran / Pembayaran *</label>
           <input
             type="datetime-local"
             value={registrationDeadline}
             max={deadlineMax}
             onChange={(e) => handleDeadlineChange(e.target.value)}
-            className={`h-9 w-full rounded-md border bg-[#202020] px-3 text-sm text-[#E5E2E1] focus:outline-none ${
+            className={`h-9 w-full rounded-md border bg-ui-surface px-3 text-sm text-ui-text focus:outline-none ${
               deadlineError
                 ? "border-red-500/60 focus:border-red-500"
-                : "border-[#2D2D2D] focus:border-yellow-400/50"
+                : "border-ui-border focus:border-yellow-400/50"
             }`}
           />
           {deadlineError && (
@@ -175,41 +175,41 @@ const TournamentForm = ({ orgSlug, divisionId, tournament, onSuccess }: Tourname
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label className="text-xs text-[#9B9A97] mb-1 block">Prize Pool (Rp)</label>
+          <label className="text-xs text-ui-text-2 mb-1 block">Prize Pool (Rp)</label>
           <input
             value={prizePool}
             onChange={(e) => setPrizePool(formatNumber(e.target.value))}
             inputMode="numeric"
-            className="h-9 w-full rounded-md border border-[#2D2D2D] bg-[#202020] px-3 text-sm text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none"
+            className="h-9 w-full rounded-md border border-ui-border bg-ui-surface px-3 text-sm text-ui-text focus:border-yellow-400/50 focus:outline-none"
           />
         </div>
         <div>
-          <label className="text-xs text-[#9B9A97] mb-1 block">Biaya Registrasi (Rp)</label>
+          <label className="text-xs text-ui-text-2 mb-1 block">Biaya Registrasi (Rp)</label>
           <input
             value={registrationFee}
             onChange={(e) => setRegistrationFee(formatNumber(e.target.value))}
             inputMode="numeric"
-            className="h-9 w-full rounded-md border border-[#2D2D2D] bg-[#202020] px-3 text-sm text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none"
+            className="h-9 w-full rounded-md border border-ui-border bg-ui-surface px-3 text-sm text-ui-text focus:border-yellow-400/50 focus:outline-none"
           />
         </div>
       </div>
 
       <div>
-        <label className="text-xs text-[#9B9A97] mb-1 block">URL Registrasi</label>
+        <label className="text-xs text-ui-text-2 mb-1 block">URL Registrasi</label>
         <input
           value={registrationUrl}
           onChange={(e) => setRegistrationUrl(e.target.value)}
-          className="h-9 w-full rounded-md border border-[#2D2D2D] bg-[#202020] px-3 text-sm text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none"
+          className="h-9 w-full rounded-md border border-ui-border bg-ui-surface px-3 text-sm text-ui-text focus:border-yellow-400/50 focus:outline-none"
         />
       </div>
 
       <div>
-        <label className="text-xs text-[#9B9A97] mb-1 block">Catatan</label>
+        <label className="text-xs text-ui-text-2 mb-1 block">Catatan</label>
         <textarea
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           rows={3}
-          className="w-full rounded-md border border-[#2D2D2D] bg-[#202020] px-3 py-2 text-sm text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none resize-none"
+          className="w-full rounded-md border border-ui-border bg-ui-surface px-3 py-2 text-sm text-ui-text focus:border-yellow-400/50 focus:outline-none resize-none"
         />
       </div>
 

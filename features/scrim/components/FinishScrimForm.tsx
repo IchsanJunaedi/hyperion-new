@@ -392,7 +392,7 @@ const FinishScrimForm = ({
 
         {/* Game notes */}
         <div>
-          <p className="mb-1 text-[10px] font-medium text-[#6B6A68]">Catatan Game {activeGame + 1}</p>
+          <p className="mb-1 text-[10px] font-medium text-ui-text-muted">Catatan Game {activeGame + 1}</p>
           <textarea
             value={game.notes}
             onChange={(e) => updateGame(activeGame, { notes: e.target.value })}
@@ -432,7 +432,7 @@ const FinishScrimForm = ({
       {/* ── Performance Evaluation ───────────────────────────────────────── */}
       {attendingPlayers.length > 0 && (
         <div className="rounded-2xl border border-blue-400/20 bg-blue-400/5 p-5 shadow-xl shadow-black/20 space-y-4">
-          <h3 className="flex items-center gap-2 text-sm font-semibold text-white">
+          <h3 className="flex items-center gap-2 text-sm font-semibold text-ui-text">
             <Star className="h-4 w-4 text-yellow-400" />
             Evaluasi Pemain
             <span className="text-xs font-normal text-white/40">— per scrim</span>
@@ -444,17 +444,17 @@ const FinishScrimForm = ({
                 <div key={p.userId} className="rounded-xl border border-white/5 bg-zinc-900/60 p-3 space-y-2">
                   <div className="flex items-center justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="truncate text-xs font-semibold text-[#E5E2E1]">
+                      <p className="truncate text-xs font-semibold text-ui-text">
                         {p.displayName ?? "Unknown"}
                       </p>
                       {p.mainRole && (
-                        <p className="text-[10px] text-[#6B6A68]">
+                        <p className="text-[10px] text-ui-text-muted">
                           {ROLE_LABELS[p.mainRole as RoleName] ?? p.mainRole}
                         </p>
                       )}
                     </div>
                     <div className="flex shrink-0 items-center gap-1.5">
-                      <span className="text-[10px] text-[#6B6A68]">Rating</span>
+                      <span className="text-[10px] text-ui-text-muted">Rating</span>
                       <NumberInput
                         min={0}
                         max={10}
@@ -496,8 +496,8 @@ const FinishScrimForm = ({
 
       {/* ── Overall coach notes ──────────────────────────────────────────── */}
       <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5 shadow-xl shadow-black/20 space-y-3">
-        <h3 className="flex items-center gap-2 text-sm font-semibold text-white">
-          <ClipboardList className="h-4 w-4 text-[#9B9A97]" />
+        <h3 className="flex items-center gap-2 text-sm font-semibold text-ui-text">
+          <ClipboardList className="h-4 w-4 text-ui-text-2" />
           Catatan Coach
           <span className="text-xs font-normal text-white/40">— keseluruhan scrim</span>
         </h3>

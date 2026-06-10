@@ -48,7 +48,7 @@ const OpponentTab = ({ orgId }: { orgId: string }) => {
     return (
       <div className="space-y-2">
         {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} className="h-11 animate-pulse rounded-xl bg-[#1C1C1C]" />
+          <div key={i} className="h-11 animate-pulse rounded-xl bg-ui-surface" />
         ))}
       </div>
     );
@@ -56,13 +56,13 @@ const OpponentTab = ({ orgId }: { orgId: string }) => {
 
   if (!rows.length) {
     return (
-      <div className="flex min-h-[320px] flex-col items-center justify-center gap-4 rounded-2xl border border-dashed border-[#2D2D2D] bg-[#1C1C1C] p-10 text-center">
-        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#252525]">
-          <Swords className="h-6 w-6 text-[#6B6A68]" />
+      <div className="flex min-h-[320px] flex-col items-center justify-center gap-4 rounded-2xl border border-dashed border-ui-border bg-ui-surface p-10 text-center">
+        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-ui-elevated">
+          <Swords className="h-6 w-6 text-ui-text-muted" />
         </div>
         <div>
-          <p className="text-sm font-semibold text-[#E5E2E1]">Belum ada riwayat lawan</p>
-          <p className="mt-1 text-xs text-[#6B6A68]">
+          <p className="text-sm font-semibold text-ui-text">Belum ada riwayat lawan</p>
+          <p className="mt-1 text-xs text-ui-text-muted">
             Data muncul setelah ada scrim selesai dengan hasil tercatat.
           </p>
         </div>
@@ -78,7 +78,7 @@ const OpponentTab = ({ orgId }: { orgId: string }) => {
         onClick={() => handleSort(col)}
         className={cn(
           "flex w-full cursor-pointer items-center justify-center gap-0.5 text-[10px] font-semibold uppercase tracking-wider transition-colors",
-          active ? "text-yellow-400" : "text-[#6B6A68] hover:text-[#9B9A97]",
+          active ? "text-yellow-400" : "text-ui-text-muted hover:text-ui-text-2",
         )}
       >
         {children}
@@ -93,10 +93,10 @@ const OpponentTab = ({ orgId }: { orgId: string }) => {
   };
 
   return (
-    <div className="overflow-x-auto rounded-2xl border border-[#2D2D2D] bg-[#1C1C1C]">
+    <div className="overflow-x-auto rounded-2xl border border-ui-border bg-ui-surface">
       {/* Header */}
-      <div className={cn("grid min-w-max border-b border-[#2D2D2D] bg-[#1A1A1A] px-3 py-2", GRID)}>
-        <span className="text-left text-[10px] font-semibold uppercase tracking-wider text-[#6B6A68]">
+      <div className={cn("grid min-w-max border-b border-ui-border bg-ui-hover px-3 py-2", GRID)}>
+        <span className="text-left text-[10px] font-semibold uppercase tracking-wider text-ui-text-muted">
           Lawan
         </span>
         <Th col="total">Main</Th>
@@ -107,19 +107,19 @@ const OpponentTab = ({ orgId }: { orgId: string }) => {
       </div>
 
       {/* Rows */}
-      <div className="divide-y divide-[#252525]">
+      <div className="divide-y divide-ui-elevated">
         {sorted.map((row) => (
           <div
             key={row.opponent_name}
-            className={cn("grid min-w-max items-center px-3 py-2.5 text-center transition-colors hover:bg-[#202020]", GRID)}
+            className={cn("grid min-w-max items-center px-3 py-2.5 text-center transition-colors hover:bg-ui-surface", GRID)}
           >
-            <span className="truncate text-left text-xs font-medium text-[#E5E2E1]">
+            <span className="truncate text-left text-xs font-medium text-ui-text">
               {row.opponent_name}
             </span>
-            <span className="text-xs font-semibold text-[#E5E2E1]">{row.total}</span>
+            <span className="text-xs font-semibold text-ui-text">{row.total}</span>
             <span className="text-xs font-semibold text-emerald-400">{row.wins || "—"}</span>
             <span className="text-xs font-semibold text-rose-400">{row.losses || "—"}</span>
-            <span className="text-xs text-[#9B9A97]">{row.draws || "—"}</span>
+            <span className="text-xs text-ui-text-2">{row.draws || "—"}</span>
             <span
               className={cn(
                 "text-xs font-bold",

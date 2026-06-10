@@ -48,7 +48,7 @@ export default async function TrialDetailPage({ params }: Props) {
   return (
     <div className="space-y-6 px-4 py-6 sm:px-8">
       <div>
-        <h1 className="text-2xl font-bold text-white">Detail Trial</h1>
+        <h1 className="text-2xl font-bold text-ui-text">Detail Trial</h1>
       </div>
       <TrialDetailClient
         trial={trial}

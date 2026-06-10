@@ -14,7 +14,7 @@ const ROLE_COLORS: Record<string, string> = {
   manager: "text-green-400",
   coach: "text-blue-400",
   captain: "text-purple-400",
-  member: "text-[#9B9A97]",
+  member: "text-ui-text-2",
 };
 
 const STATUS_BADGE: Record<string, string> = {
@@ -118,19 +118,19 @@ const SalaryCard = ({ contract, orgId, revalidatePaths, onEdit }: SalaryCardProp
   const expiring = isExpiringSoon(contract.end_date);
 
   return (
-    <div className={`rounded-xl border bg-[#202020] p-4 space-y-3 ${expiring ? "border-red-500/40" : "border-[#2D2D2D]"}`}>
+    <div className={`rounded-xl border bg-ui-surface p-4 space-y-3 ${expiring ? "border-red-500/40" : "border-ui-border"}`}>
       {/* Header */}
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#2C2C2C] text-xs font-bold text-[#D4D4D4]">
+          <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-ui-hover text-xs font-bold text-ui-text-dim">
             {initials}
           </div>
           <div>
-            <p className="text-sm font-medium text-[#E5E2E1]">
+            <p className="text-sm font-medium text-ui-text">
               {contract.display_name ?? "—"}
             </p>
             {contract.role && (
-              <p className={`text-[10px] font-semibold uppercase ${ROLE_COLORS[contract.role] ?? "text-[#9B9A97]"}`}>
+              <p className={`text-[10px] font-semibold uppercase ${ROLE_COLORS[contract.role] ?? "text-ui-text-2"}`}>
                 {contract.role}
               </p>
             )}
@@ -141,7 +141,7 @@ const SalaryCard = ({ contract, orgId, revalidatePaths, onEdit }: SalaryCardProp
             {contract.status}
           </span>
           {contract.status === "active" && (
-            <button type="button" onClick={onEdit} className="text-[#6B6A68] hover:text-[#9B9A97] cursor-pointer">
+            <button type="button" onClick={onEdit} className="text-ui-text-muted hover:text-ui-text-2 cursor-pointer">
               <Pencil className="h-3.5 w-3.5" />
             </button>
           )}
@@ -151,12 +151,12 @@ const SalaryCard = ({ contract, orgId, revalidatePaths, onEdit }: SalaryCardProp
       {/* Salary + period */}
       <div className="grid grid-cols-2 gap-2 text-xs">
         <div>
-          <p className="text-[#6B6A68]">Gaji / bulan</p>
+          <p className="text-ui-text-muted">Gaji / bulan</p>
           <p className="text-sm font-semibold text-green-400">{formatRupiah(contract.monthly_salary)}</p>
         </div>
         <div>
-          <p className="text-[#6B6A68]">Periode</p>
-          <p className="text-[#9B9A97]">
+          <p className="text-ui-text-muted">Periode</p>
+          <p className="text-ui-text-2">
             {formatPeriodLabel(contract.start_date)}
             {" — "}
             {contract.end_date ? formatPeriodLabel(contract.end_date) : "Indefinite"}
@@ -165,8 +165,8 @@ const SalaryCard = ({ contract, orgId, revalidatePaths, onEdit }: SalaryCardProp
       </div>
 
       {contract.bonus_percentage > 0 && (
-        <p className="text-[10px] text-[#6B6A68]">
-          Bonus turnamen: <span className="text-[#9B9A97] font-medium">{contract.bonus_percentage}% dari hadiah</span>
+        <p className="text-[10px] text-ui-text-muted">
+          Bonus turnamen: <span className="text-ui-text-2 font-medium">{contract.bonus_percentage}% dari hadiah</span>
         </p>
       )}
 
@@ -178,11 +178,11 @@ const SalaryCard = ({ contract, orgId, revalidatePaths, onEdit }: SalaryCardProp
 
       {/* This month payment */}
       {contract.status === "active" && (
-        <div className="rounded-lg border border-[#2D2D2D] bg-[#191919]">
+        <div className="rounded-lg border border-ui-border bg-ui-bg">
           {/* Status row */}
           <div className="flex flex-col gap-2.5 px-3 py-2.5">
             <div className="flex items-center justify-between">
-              <p className="text-[10px] text-[#6B6A68] uppercase tracking-wide font-medium">Bulan ini</p>
+              <p className="text-[10px] text-ui-text-muted uppercase tracking-wide font-medium">Bulan ini</p>
               {isPaidThisMonth ? (
                 <div className="flex items-center gap-1">
                   <CheckCircle2 className="h-3.5 w-3.5 text-green-400" />
@@ -214,15 +214,15 @@ const SalaryCard = ({ contract, orgId, revalidatePaths, onEdit }: SalaryCardProp
 
           {/* Bonus distributions — read-only */}
           {contract.bonusDistributions.length > 0 && (
-            <div className="border-t border-[#2D2D2D] px-3 py-2.5 space-y-2">
-              <p className="flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-wide text-[#6B6A68]">
+            <div className="border-t border-ui-border px-3 py-2.5 space-y-2">
+              <p className="flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-wide text-ui-text-muted">
                 <Gift className="h-3 w-3" />
                 Bonus Turnamen Bulan Ini
               </p>
               <ul className="space-y-1">
                 {contract.bonusDistributions.map((b) => (
                   <li key={b.id} className="flex items-center justify-between text-xs">
-                    <span className="text-[#9B9A97] truncate max-w-[160px]">
+                    <span className="text-ui-text-2 truncate max-w-[160px]">
                       {b.placement ? `Juara ${b.placement} — ` : ""}{b.tournamentName}
                     </span>
                     <span className="text-green-400 font-semibold shrink-0 ml-2">
@@ -232,8 +232,8 @@ const SalaryCard = ({ contract, orgId, revalidatePaths, onEdit }: SalaryCardProp
                 ))}
               </ul>
               {!isPaidThisMonth && totalBonus > 0 && (
-                <div className="flex items-center justify-between rounded bg-[#2C2C2C]/30 border border-[#2D2D2D] px-2.5 py-1.5">
-                  <span className="text-[10px] text-[#9B9A97]">Total dibayar</span>
+                <div className="flex items-center justify-between rounded bg-ui-hover/30 border border-ui-border px-2.5 py-1.5">
+                  <span className="text-[10px] text-ui-text-2">Total dibayar</span>
                   <span className="text-xs font-bold text-green-400">
                     Rp {(contract.monthly_salary + totalBonus).toLocaleString("id-ID")}
                   </span>
@@ -250,7 +250,7 @@ const SalaryCard = ({ contract, orgId, revalidatePaths, onEdit }: SalaryCardProp
           <button
             type="button"
             onClick={() => setHistoryOpen((v) => !v)}
-            className="flex w-full items-center justify-between text-[11px] text-[#6B6A68] hover:text-[#9B9A97] cursor-pointer"
+            className="flex w-full items-center justify-between text-[11px] text-ui-text-muted hover:text-ui-text-2 cursor-pointer"
           >
             <span>Riwayat Pembayaran ({contract.payments.length} bulan)</span>
             <ChevronDown className={`h-3.5 w-3.5 transition ${historyOpen ? "rotate-180" : ""}`} />
@@ -260,9 +260,9 @@ const SalaryCard = ({ contract, orgId, revalidatePaths, onEdit }: SalaryCardProp
             <ul className="mt-2 space-y-1">
               {contract.payments.map((p) => (
                 <li key={p.id} className="flex items-center justify-between text-xs">
-                  <span className="text-[#9B9A97]">{formatPeriodLabel(p.pay_period)}</span>
+                  <span className="text-ui-text-2">{formatPeriodLabel(p.pay_period)}</span>
                   <div className="flex items-center gap-2">
-                    <span className="text-[#6B6A68]">{formatRupiah(p.amount)}</span>
+                    <span className="text-ui-text-muted">{formatRupiah(p.amount)}</span>
                     {p.status === "paid" ? (
                       <span className="text-green-400 flex items-center gap-0.5">
                         <CheckCircle2 className="h-3.5 w-3.5" /> Dibayar
@@ -287,7 +287,7 @@ const SalaryCard = ({ contract, orgId, revalidatePaths, onEdit }: SalaryCardProp
             type="button"
             onClick={() => setConfirmTerminateOpen(true)}
             disabled={terminating}
-            className="flex w-full items-center justify-center gap-1.5 rounded-md border border-[#2D2D2D] py-1.5 text-xs text-[#6B6A68] hover:text-red-400 hover:border-red-500/30 hover:bg-red-500/5 disabled:opacity-50 cursor-pointer transition-colors"
+            className="flex w-full items-center justify-center gap-1.5 rounded-md border border-ui-border py-1.5 text-xs text-ui-text-muted hover:text-red-400 hover:border-red-500/30 hover:bg-red-500/5 disabled:opacity-50 cursor-pointer transition-colors"
           >
             {terminating ? <Loader2 className="h-3 w-3 animate-spin" /> : <XCircle className="h-3 w-3" />}
             Terminate Kontrak

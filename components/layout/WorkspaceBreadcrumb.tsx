@@ -38,17 +38,17 @@ const WorkspaceBreadcrumb = ({
 
   return (
     <header
-      className={`sticky top-0 z-30 flex h-12 items-center justify-between border-b border-[#2D2D2D] bg-[#191919] px-6 ${className}`}
+      className={`sticky top-0 z-30 flex h-12 items-center justify-between border-b border-ui-border bg-ui-bg px-6 ${className}`}
     >
-      <div className="flex items-center gap-2 text-sm text-[#9B9A97]">
+      <div className="flex items-center gap-2 text-sm text-ui-text-2">
         <Link
           href={`/${orgSlug}`}
-          className="hover:text-[#D4D4D4] font-medium transition"
+          className="hover:text-ui-text-dim font-medium transition"
         >
           {orgName}
         </Link>
-        <span className="text-[#6B6A68]">/</span>
-        <span className="text-white font-medium">{activeLabel}</span>
+        <span className="text-ui-text-muted">/</span>
+        <span className="text-ui-text font-medium">{activeLabel}</span>
       </div>
       <NotificationBell userId={userId} orgSlug={orgSlug} />
     </header>

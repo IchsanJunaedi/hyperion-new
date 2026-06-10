@@ -214,11 +214,11 @@ Permissions: ${permList || "None"}`;
 
   if (compact) {
     return (
-      <div className="flex items-center gap-3 p-3 rounded-lg bg-[#2C2C2C] border border-[#2D2D2D]">
+      <div className="flex items-center gap-3 p-3 rounded-lg bg-ui-hover border border-ui-border">
         <RoleBadge role={userRole} compact />
         <div className="flex-1 min-w-0">
-          <p className="text-xs text-[#6B6A68]">Your Role</p>
-          <p className="text-sm font-medium text-[#E5E2E1] truncate">
+          <p className="text-xs text-ui-text-muted">Your Role</p>
+          <p className="text-sm font-medium text-ui-text truncate">
             {roleInfo.label}
           </p>
         </div>
@@ -238,20 +238,20 @@ Permissions: ${permList || "None"}`;
   }
 
   return (
-    <div className="space-y-6 p-6 rounded-xl bg-[#202020] border border-[#2D2D2D]">
+    <div className="space-y-6 p-6 rounded-xl bg-ui-surface border border-ui-border">
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-[#E5E2E1]">
+          <h3 className="text-lg font-semibold text-ui-text">
             Your Permissions
           </h3>
-          <p className="text-sm text-[#6B6A68] mt-1">
+          <p className="text-sm text-ui-text-muted mt-1">
             {calendarTitle}
           </p>
         </div>
         <button
           onClick={handleCopyPermissions}
-          className="p-2 rounded-lg bg-[#2C2C2C] border border-[#2D2D2D] hover:border-[#404040] text-[#9B9A97] hover:text-[#E5E2E1] transition"
+          className="p-2 rounded-lg bg-ui-hover border border-ui-border hover:border-[#404040] text-ui-text-2 hover:text-ui-text transition"
           title="Copy permission summary"
         >
           <Copy className="h-4 w-4" />
@@ -261,16 +261,16 @@ Permissions: ${permList || "None"}`;
       {/* Role and Visibility Info */}
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <p className="text-xs font-medium text-[#6B6A68] uppercase tracking-wider">
+          <p className="text-xs font-medium text-ui-text-muted uppercase tracking-wider">
             Your Role
           </p>
           <RoleBadge role={userRole} />
         </div>
         <div className="space-y-2">
-          <p className="text-xs font-medium text-[#6B6A68] uppercase tracking-wider">
+          <p className="text-xs font-medium text-ui-text-muted uppercase tracking-wider">
             Visibility Level
           </p>
-          <span className="inline-flex items-center px-3 py-1 rounded-lg text-sm font-medium bg-[#2C2C2C] border border-[#2D2D2D] text-[#E5E2E1]">
+          <span className="inline-flex items-center px-3 py-1 rounded-lg text-sm font-medium bg-ui-hover border border-ui-border text-ui-text">
             {visibilityLabel}
           </span>
         </div>
@@ -278,7 +278,7 @@ Permissions: ${permList || "None"}`;
 
       {/* Permissions Grid */}
       <div className="space-y-3">
-        <p className="text-xs font-medium text-[#6B6A68] uppercase tracking-wider">
+        <p className="text-xs font-medium text-ui-text-muted uppercase tracking-wider">
           Your Permissions
         </p>
         <div className="grid grid-cols-1 gap-2">
@@ -309,7 +309,7 @@ Permissions: ${permList || "None"}`;
       {canRequestAccess && userPermissions.size === 0 && (
         <button
           onClick={onRequestAccess}
-          className="w-full px-4 py-2 rounded-lg bg-[#2C2C2C] border border-[#2D2D2D] hover:border-[#404040] text-[#E5E2E1] transition font-medium"
+          className="w-full px-4 py-2 rounded-lg bg-ui-hover border border-ui-border hover:border-[#404040] text-ui-text transition font-medium"
         >
           Request Access
         </button>

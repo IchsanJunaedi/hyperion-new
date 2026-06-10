@@ -93,7 +93,7 @@ export default async function TeamSlugPage({ params }: TeamSlugPageProps) {
           role: isOwner ? "owner" : (currentUserRole ?? undefined),
         }}
       />
-      <div className="flex min-w-0 flex-1 flex-col bg-[#191919] min-h-screen pb-20 md:pb-0">
+      <div className="flex min-w-0 flex-1 flex-col bg-ui-bg min-h-screen pb-20 md:pb-0">
         <WorkspaceTopbar organization={organization} userId={user.id} />
         <WorkspaceBreadcrumb
           orgName={organization.name}

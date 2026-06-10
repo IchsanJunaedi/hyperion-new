@@ -44,8 +44,8 @@ const NewsAdminClient = ({ posts: initial }: Props) => {
     <div>
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-black uppercase tracking-tight text-white">News</h1>
-          <p className="mt-1 text-xs text-[#6B6A68]">Artikel berita yang tampil di halaman publik <span className="text-white/50">/news</span>.</p>
+          <h1 className="text-xl font-black uppercase tracking-tight text-ui-text">News</h1>
+          <p className="mt-1 text-xs text-ui-text-muted">Artikel berita yang tampil di halaman publik <span className="text-white/50">/news</span>.</p>
         </div>
         <button onClick={() => { setEditing(null); setShowForm(true); }}
           className="flex cursor-pointer items-center gap-2 border border-[#F5C400] px-4 py-2 text-xs font-bold uppercase tracking-wider text-[#F5C400] transition hover:bg-[#F5C400] hover:text-black">
@@ -57,8 +57,8 @@ const NewsAdminClient = ({ posts: initial }: Props) => {
 
       {posts.length === 0 && !showForm && (
         <div className="flex flex-col items-center gap-3 py-16 text-center">
-          <Newspaper className="h-8 w-8 text-[#2D2D2D]" />
-          <p className="text-sm text-[#6B6A68]">Belum ada artikel. Buat artikel pertama.</p>
+          <Newspaper className="h-8 w-8 text-ui-border" />
+          <p className="text-sm text-ui-text-muted">Belum ada artikel. Buat artikel pertama.</p>
         </div>
       )}
 
@@ -68,37 +68,37 @@ const NewsAdminClient = ({ posts: initial }: Props) => {
             {editing?.id === post.id ? (
               <NewsForm entry={post} onDone={handleDone} />
             ) : (
-              <div className="flex items-center gap-4 border border-[#2D2D2D] bg-[#141414] p-4">
+              <div className="flex items-center gap-4 border border-ui-border bg-ui-bg p-4">
                 {post.cover_image_url ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={post.cover_image_url} alt="" className="h-12 w-20 shrink-0 object-cover" />
                 ) : (
-                  <div className="flex h-12 w-20 shrink-0 items-center justify-center bg-[#1E1E1E]">
-                    <Newspaper className="h-5 w-5 text-[#2D2D2D]" />
+                  <div className="flex h-12 w-20 shrink-0 items-center justify-center bg-ui-surface">
+                    <Newspaper className="h-5 w-5 text-ui-border" />
                   </div>
                 )}
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-bold text-[#E5E2E1]">{post.title}</p>
+                  <p className="truncate font-bold text-ui-text">{post.title}</p>
                   <div className="mt-0.5 flex items-center gap-3">
-                    <span className={`text-[10px] font-bold uppercase tracking-widest ${post.status === "published" ? "text-green-400" : "text-[#6B6A68]"}`}>
+                    <span className={`text-[10px] font-bold uppercase tracking-widest ${post.status === "published" ? "text-green-400" : "text-ui-text-muted"}`}>
                       {post.status === "published" ? "Published" : "Draft"}
                     </span>
                     {post.published_at && (
-                      <span className="text-xs text-[#6B6A68]">{post.published_at.slice(0, 10)}</span>
+                      <span className="text-xs text-ui-text-muted">{post.published_at.slice(0, 10)}</span>
                     )}
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <button onClick={() => handleToggleStatus(post)}
-                    className={`cursor-pointer border px-3 py-1 text-[10px] font-bold uppercase tracking-wider transition ${post.status === "published" ? "border-[#2D2D2D] text-[#6B6A68] hover:border-white/30 hover:text-white/60" : "border-green-400/50 text-green-400 hover:bg-green-400/10"}`}>
+                    className={`cursor-pointer border px-3 py-1 text-[10px] font-bold uppercase tracking-wider transition ${post.status === "published" ? "border-ui-border text-ui-text-muted hover:border-white/30 hover:text-white/60" : "border-green-400/50 text-green-400 hover:bg-green-400/10"}`}>
                     {post.status === "published" ? "Draft" : "Publish"}
                   </button>
                   <button onClick={() => setEditing(post)}
-                    className="cursor-pointer rounded p-2 text-[#9B9A97] transition hover:bg-[#2C2C2C] hover:text-[#D4D4D4]">
+                    className="cursor-pointer rounded p-2 text-ui-text-2 transition hover:bg-ui-hover hover:text-ui-text-dim">
                     <Pencil className="h-4 w-4" />
                   </button>
                   <button onClick={() => setDeleting(post)}
-                    className="cursor-pointer rounded p-2 text-[#9B9A97] transition hover:bg-[#2C2C2C] hover:text-red-400">
+                    className="cursor-pointer rounded p-2 text-ui-text-2 transition hover:bg-ui-hover hover:text-red-400">
                     <Trash2 className="h-4 w-4" />
                   </button>
                 </div>

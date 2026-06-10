@@ -80,11 +80,11 @@ const NotifyProvider = ({ children }: { children: React.ReactNode }) => {
           onClick={() => setState((s) => ({ ...s, open: false }))}
         >
           <div
-            className="bg-[#1C1C1C] border border-[#2D2D2D] rounded-2xl px-8 py-7 flex flex-col items-center gap-3 shadow-2xl max-w-xs w-full mx-4 animate-in fade-in zoom-in-95 duration-150"
+            className="bg-ui-surface border border-ui-border rounded-2xl px-8 py-7 flex flex-col items-center gap-3 shadow-2xl max-w-xs w-full mx-4 animate-in fade-in zoom-in-95 duration-150"
             onClick={(e) => e.stopPropagation()}
           >
             {ICON[state.type]}
-            <p className="text-sm text-[#E5E2E1] text-center font-medium leading-relaxed">
+            <p className="text-sm text-ui-text text-center font-medium leading-relaxed">
               {state.message}
             </p>
           </div>

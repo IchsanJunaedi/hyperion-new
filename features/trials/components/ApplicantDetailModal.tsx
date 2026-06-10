@@ -7,7 +7,7 @@ import type { ApplicantRow } from "@/features/trials/queries";
 import { cn } from "@/lib/utils/cn";
 
 const STATUS_COLORS: Record<string, string> = {
-  pending:    "text-[#9B9A97] bg-[#2C2C2C]",
+  pending:    "text-ui-text-2 bg-ui-hover",
   accepted:   "text-green-400 bg-green-500/15",
   waitlisted: "text-yellow-400 bg-yellow-500/15",
   rejected:   "text-red-400 bg-red-500/15",
@@ -20,8 +20,8 @@ function Row({ label, value }: { label: string; value?: string | null }) {
   if (!value) return null;
   return (
     <div className="flex gap-3">
-      <span className="w-32 shrink-0 text-xs text-[#6B6A68]">{label}</span>
-      <span className="text-sm text-[#E5E2E1] break-words">{value}</span>
+      <span className="w-32 shrink-0 text-xs text-ui-text-muted">{label}</span>
+      <span className="text-sm text-ui-text break-words">{value}</span>
     </div>
   );
 }
@@ -47,29 +47,29 @@ const ApplicantDetailModal = ({ applicant, onClose }: ApplicantDetailModalProps)
       onClick={onClose}
     >
       <div
-        className="my-4 w-full max-w-2xl rounded-xl border border-[#2D2D2D] bg-[#202020] shadow-2xl"
+        className="my-4 w-full max-w-2xl rounded-xl border border-ui-border bg-ui-surface shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-[#2D2D2D] px-6 py-4">
+        <div className="flex items-center justify-between border-b border-ui-border px-6 py-4">
           <div className="flex items-center gap-3 min-w-0">
             <div className="min-w-0">
-              <h3 className="text-base font-bold text-[#E5E2E1] truncate">{applicant.name}</h3>
-              <p className="text-xs text-[#9B9A97]">{applicant.ign}</p>
+              <h3 className="text-base font-bold text-ui-text truncate">{applicant.name}</h3>
+              <p className="text-xs text-ui-text-2">{applicant.ign}</p>
             </div>
             <span className={cn("shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-semibold", statusColor)}>
               {statusLabel}
             </span>
           </div>
-          <button type="button" onClick={onClose} className="ml-4 shrink-0 cursor-pointer text-[#9B9A97] hover:text-[#E5E2E1]">
+          <button type="button" onClick={onClose} className="ml-4 shrink-0 cursor-pointer text-ui-text-2 hover:text-ui-text">
             <X className="h-4 w-4" />
           </button>
         </div>
 
-        <div className="divide-y divide-[#2D2D2D]">
+        <div className="divide-y divide-ui-border">
           {/* Data Pribadi */}
           <section className="px-6 py-4 space-y-2.5">
-            <p className="text-xs font-semibold uppercase tracking-wider text-[#6B6A68]">Data Pribadi</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-ui-text-muted">Data Pribadi</p>
             <Row label="Nama" value={applicant.name} />
             <Row label="IGN" value={applicant.ign} />
             <Row label="Umur" value={applicant.age ? `${applicant.age} tahun` : null} />
@@ -82,7 +82,7 @@ const ApplicantDetailModal = ({ applicant, onClose }: ApplicantDetailModalProps)
 
           {/* Info Game */}
           <section className="px-6 py-4 space-y-2.5">
-            <p className="text-xs font-semibold uppercase tracking-wider text-[#6B6A68]">Info Game</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-ui-text-muted">Info Game</p>
             <Row label="Role Dilamar" value={applicant.role_applied} />
             <Row label="Rank" value={applicant.rank} />
             <Row label="ID Game" value={applicant.game_id} />
@@ -90,10 +90,10 @@ const ApplicantDetailModal = ({ applicant, onClose }: ApplicantDetailModalProps)
             <Row label="Win Rate" value={applicant.win_rate ? `${applicant.win_rate}%` : null} />
             {(applicant.hero_pool?.length ?? 0) > 0 && (
               <div className="flex gap-3">
-                <span className="w-32 shrink-0 text-xs text-[#6B6A68]">Hero Pool</span>
+                <span className="w-32 shrink-0 text-xs text-ui-text-muted">Hero Pool</span>
                 <div className="flex flex-wrap gap-1">
                   {applicant.hero_pool!.map((h) => (
-                    <span key={h} className="rounded-full border border-[#2D2D2D] bg-[#2C2C2C] px-2 py-0.5 text-xs text-[#D4D4D4]">{h}</span>
+                    <span key={h} className="rounded-full border border-ui-border bg-ui-hover px-2 py-0.5 text-xs text-ui-text-dim">{h}</span>
                   ))}
                 </div>
               </div>
@@ -103,16 +103,16 @@ const ApplicantDetailModal = ({ applicant, onClose }: ApplicantDetailModalProps)
           {/* Pengalaman */}
           {applicant.competitive_exp && (
             <section className="px-6 py-4 space-y-2">
-              <p className="text-xs font-semibold uppercase tracking-wider text-[#6B6A68]">Pengalaman Kompetitif</p>
-              <p className="text-sm text-[#E5E2E1] whitespace-pre-wrap leading-relaxed">{applicant.competitive_exp}</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-ui-text-muted">Pengalaman Kompetitif</p>
+              <p className="text-sm text-ui-text whitespace-pre-wrap leading-relaxed">{applicant.competitive_exp}</p>
             </section>
           )}
 
           {/* Catatan internal */}
           {applicant.notes && (
             <section className="px-6 py-4 space-y-2">
-              <p className="text-xs font-semibold uppercase tracking-wider text-[#6B6A68]">Catatan Internal</p>
-              <p className="text-sm text-[#9B9A97] whitespace-pre-wrap">{applicant.notes}</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-ui-text-muted">Catatan Internal</p>
+              <p className="text-sm text-ui-text-2 whitespace-pre-wrap">{applicant.notes}</p>
             </section>
           )}
 
@@ -120,12 +120,12 @@ const ApplicantDetailModal = ({ applicant, onClose }: ApplicantDetailModalProps)
           {applicant.screenshot_url && (
             <section className="px-6 py-4 space-y-3">
               <div className="flex items-center justify-between">
-                <p className="text-xs font-semibold uppercase tracking-wider text-[#6B6A68]">Screenshot Profil</p>
+                <p className="text-xs font-semibold uppercase tracking-wider text-ui-text-muted">Screenshot Profil</p>
                 <a
                   href={applicant.screenshot_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-xs text-[#9B9A97] hover:text-[#E5E2E1] cursor-pointer"
+                  className="inline-flex items-center gap-1 text-xs text-ui-text-2 hover:text-ui-text cursor-pointer"
                 >
                   <ExternalLink className="h-3 w-3" />
                   Buka asli
@@ -135,7 +135,7 @@ const ApplicantDetailModal = ({ applicant, onClose }: ApplicantDetailModalProps)
               <img
                 src={applicant.screenshot_url}
                 alt={`Screenshot profil ${applicant.name}`}
-                className="w-full rounded-lg border border-[#2D2D2D] object-contain bg-[#141414] max-h-80"
+                className="w-full rounded-lg border border-ui-border object-contain bg-ui-bg max-h-80"
               />
             </section>
           )}
@@ -143,17 +143,17 @@ const ApplicantDetailModal = ({ applicant, onClose }: ApplicantDetailModalProps)
           {/* CV */}
           {applicant.cv_url && (
             <section className="px-6 py-4 space-y-2">
-              <p className="text-xs font-semibold uppercase tracking-wider text-[#6B6A68]">CV / Pengalaman Turnamen</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-ui-text-muted">CV / Pengalaman Turnamen</p>
               {/\.(png|jpe?g|webp)$/i.test(applicant.cv_url) ? (
                 <div className="space-y-2">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={applicant.cv_url}
                     alt="CV"
-                    className="w-full rounded-lg border border-[#2D2D2D] object-contain bg-[#141414] max-h-80"
+                    className="w-full rounded-lg border border-ui-border object-contain bg-ui-bg max-h-80"
                   />
                   <a href={applicant.cv_url} target="_blank" rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-xs text-[#9B9A97] hover:text-[#E5E2E1]">
+                    className="inline-flex items-center gap-1 text-xs text-ui-text-2 hover:text-ui-text">
                     <ExternalLink className="h-3 w-3" /> Buka asli
                   </a>
                 </div>
@@ -162,7 +162,7 @@ const ApplicantDetailModal = ({ applicant, onClose }: ApplicantDetailModalProps)
                   href={applicant.cv_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-lg border border-[#2D2D2D] bg-[#191919] px-4 py-3 text-sm text-[#9B9A97] hover:bg-[#2C2C2C] hover:text-[#E5E2E1] transition-colors"
+                  className="inline-flex items-center gap-2 rounded-lg border border-ui-border bg-ui-bg px-4 py-3 text-sm text-ui-text-2 hover:bg-ui-hover hover:text-ui-text transition-colors"
                 >
                   <FileText className="h-4 w-4 shrink-0 text-orange-400" />
                   <span className="truncate">Buka CV / Dokumen</span>
@@ -174,7 +174,7 @@ const ApplicantDetailModal = ({ applicant, onClose }: ApplicantDetailModalProps)
 
           {/* Meta */}
           <section className="px-6 py-3">
-            <p className="text-[10px] text-[#6B6A68]">
+            <p className="text-[10px] text-ui-text-muted">
               Daftar: {new Date(applicant.created_at).toLocaleString("id-ID", { timeZone: "Asia/Jakarta", day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}
             </p>
           </section>

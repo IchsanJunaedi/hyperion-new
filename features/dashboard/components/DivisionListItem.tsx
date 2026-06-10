@@ -80,7 +80,7 @@ const DivisionListItem = ({ id, name, isActive }: DivisionListItemProps) => {
             </div>
           ) : (
             <>
-              <span className="text-sm font-medium text-white">{name}</span>
+              <span className="text-sm font-medium text-ui-text">{name}</span>
               {!isActive && (
                 <span className="rounded-full bg-white/5 px-2 py-0.5 text-[10px] text-white/40">Arsip</span>
               )}
@@ -93,7 +93,7 @@ const DivisionListItem = ({ id, name, isActive }: DivisionListItemProps) => {
               type="button"
               disabled={pending}
               onClick={() => setEditing(true)}
-              className="rounded-md p-1.5 text-white/40 hover:bg-white/10 hover:text-white disabled:opacity-40"
+              className="rounded-md p-1.5 text-white/40 hover:bg-white/10 hover:text-ui-text disabled:opacity-40"
               title="Edit nama"
             >
               <Pencil className="h-3.5 w-3.5" />

@@ -43,7 +43,7 @@ export default async function RosterPage({ params, searchParams }: RosterPagePro
         <div className="rounded-full bg-zinc-900/50 p-4 border border-white/5 mb-4">
           <Users className="h-10 w-10 text-white/30" />
         </div>
-        <h1 className="text-xl font-bold text-white sm:text-2xl">Roster Belum Diisi</h1>
+        <h1 className="text-xl font-bold text-ui-text sm:text-2xl">Roster Belum Diisi</h1>
         <p className="mt-2 text-sm text-white/60 max-w-md">
           Roster tim ini belum diisi atau Anda belum terdaftar sebagai anggota aktif. Silakan hubungi Owner atau Manager tim untuk mengelola Roster.
         </p>
@@ -55,7 +55,7 @@ export default async function RosterPage({ params, searchParams }: RosterPagePro
     <div className="space-y-6 px-4 py-6 sm:px-8">
       <header className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white sm:text-3xl">
+          <h1 className="text-2xl font-bold text-ui-text sm:text-3xl">
             Roster
           </h1>
           <p className="mt-1 text-sm text-white/60">
@@ -68,7 +68,7 @@ export default async function RosterPage({ params, searchParams }: RosterPagePro
           </Suspense>
           <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-zinc-900/40 px-4 py-3">
             <Users className="h-5 w-5 text-white/40" />
-            <span className="text-2xl font-bold text-white">
+            <span className="text-2xl font-bold text-ui-text">
               {members.length}
             </span>
           </div>

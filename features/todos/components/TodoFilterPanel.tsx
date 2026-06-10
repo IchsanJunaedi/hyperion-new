@@ -41,18 +41,18 @@ const TodoFilterPanel = ({ filters, onChange }: Props) => {
   return (
     <aside className="w-44 shrink-0 space-y-5 text-sm">
       <div>
-        <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-[#6B6A68]">
+        <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-ui-text-muted">
           Kategori
         </p>
         <ul className="space-y-1.5">
           {CATEGORIES.map(({ value, label }) => (
             <li key={value}>
-              <label className="flex cursor-pointer items-center gap-2 text-[#9B9A97] hover:text-[#D4D4D4]">
+              <label className="flex cursor-pointer items-center gap-2 text-ui-text-2 hover:text-ui-text-dim">
                 <input
                   type="checkbox"
                   checked={filters.categories.includes(value)}
                   onChange={() => toggleCategory(value)}
-                  className="accent-[#D4D4D4]"
+                  className="accent-ui-text-dim"
                 />
                 {label}
               </label>
@@ -62,18 +62,18 @@ const TodoFilterPanel = ({ filters, onChange }: Props) => {
       </div>
 
       <div>
-        <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-[#6B6A68]">
+        <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-ui-text-muted">
           Prioritas
         </p>
         <ul className="space-y-1.5">
           {PRIORITIES.map(({ value, label }) => (
             <li key={value}>
-              <label className="flex cursor-pointer items-center gap-2 text-[#9B9A97] hover:text-[#D4D4D4]">
+              <label className="flex cursor-pointer items-center gap-2 text-ui-text-2 hover:text-ui-text-dim">
                 <input
                   type="checkbox"
                   checked={filters.priorities.includes(value)}
                   onChange={() => togglePriority(value)}
-                  className="accent-[#D4D4D4]"
+                  className="accent-ui-text-dim"
                 />
                 {label}
               </label>
@@ -83,15 +83,15 @@ const TodoFilterPanel = ({ filters, onChange }: Props) => {
       </div>
 
       <div>
-        <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-[#6B6A68]">
+        <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-ui-text-muted">
           Status
         </p>
-        <label className="flex cursor-pointer items-center gap-2 text-[#9B9A97] hover:text-[#D4D4D4]">
+        <label className="flex cursor-pointer items-center gap-2 text-ui-text-2 hover:text-ui-text-dim">
           <input
             type="checkbox"
             checked={filters.showCompleted}
             onChange={(e) => onChange({ ...filters, showCompleted: e.target.checked })}
-            className="accent-[#D4D4D4]"
+            className="accent-ui-text-dim"
           />
           Tampilkan selesai
         </label>

@@ -44,8 +44,8 @@ function SpendChart({ data }: { data: MonthlySpend[] }) {
   const hasData = data.some((d) => d.total > 0);
 
   return (
-    <div className="rounded-xl border border-[#2D2D2D] bg-[#202020] p-4">
-      <div className="flex items-center gap-2 text-[#6B6A68]">
+    <div className="rounded-xl border border-ui-border bg-ui-surface p-4">
+      <div className="flex items-center gap-2 text-ui-text-muted">
         <Wallet className="h-4 w-4" />
         <span className="text-xs uppercase tracking-wide">Pengeluaran Gaji 6 Bulan</span>
       </div>
@@ -53,7 +53,7 @@ function SpendChart({ data }: { data: MonthlySpend[] }) {
         <div className="mt-3 flex h-24 items-end justify-between gap-2">
           {data.map((d) => (
             <div key={d.month} className="flex flex-1 flex-col items-center gap-1">
-              <span className="text-[9px] text-[#6B6A68]">
+              <span className="text-[9px] text-ui-text-muted">
                 {d.total > 0 ? formatCompact(d.total) : ""}
               </span>
               <div
@@ -61,12 +61,12 @@ function SpendChart({ data }: { data: MonthlySpend[] }) {
                 style={{ height: `${Math.max(2, (d.total / max) * 72)}px` }}
                 title={formatRupiah(d.total)}
               />
-              <span className="text-[10px] text-[#9B9A97]">{d.label}</span>
+              <span className="text-[10px] text-ui-text-2">{d.label}</span>
             </div>
           ))}
         </div>
       ) : (
-        <p className="mt-6 text-center text-xs text-[#6B6A68]">
+        <p className="mt-6 text-center text-xs text-ui-text-muted">
           Belum ada pembayaran tercatat.
         </p>
       )}
@@ -133,30 +133,30 @@ const SalaryPageClient = ({
     <>
       {/* Summary header */}
       <div className="grid gap-3 sm:grid-cols-3">
-        <div className="rounded-xl border border-[#2D2D2D] bg-[#202020] p-4">
-          <div className="flex items-center gap-2 text-[#6B6A68]">
+        <div className="rounded-xl border border-ui-border bg-ui-surface p-4">
+          <div className="flex items-center gap-2 text-ui-text-muted">
             <Wallet className="h-4 w-4" />
             <span className="text-xs uppercase tracking-wide">Total Payroll / Bulan</span>
           </div>
-          <p className="mt-2 text-xl font-bold text-[#E5E2E1]">
+          <p className="mt-2 text-xl font-bold text-ui-text">
             {formatRupiah(summary.totalMonthlyPayroll)}
           </p>
         </div>
 
-        <div className="rounded-xl border border-[#2D2D2D] bg-[#202020] p-4">
-          <div className="flex items-center gap-2 text-[#6B6A68]">
+        <div className="rounded-xl border border-ui-border bg-ui-surface p-4">
+          <div className="flex items-center gap-2 text-ui-text-muted">
             <Users className="h-4 w-4" />
             <span className="text-xs uppercase tracking-wide">Kontrak Aktif</span>
           </div>
-          <p className="mt-2 text-xl font-bold text-[#E5E2E1]">{summary.activeCount} player</p>
+          <p className="mt-2 text-xl font-bold text-ui-text">{summary.activeCount} player</p>
         </div>
 
-        <div className={`rounded-xl border p-4 ${summary.expiringCount > 0 ? "border-orange-500/40 bg-orange-500/5" : "border-[#2D2D2D] bg-[#202020]"}`}>
-          <div className="flex items-center gap-2 text-[#6B6A68]">
+        <div className={`rounded-xl border p-4 ${summary.expiringCount > 0 ? "border-orange-500/40 bg-orange-500/5" : "border-ui-border bg-ui-surface"}`}>
+          <div className="flex items-center gap-2 text-ui-text-muted">
             <AlertTriangle className={`h-4 w-4 ${summary.expiringCount > 0 ? "text-orange-400" : ""}`} />
             <span className="text-xs uppercase tracking-wide">Expire dalam 30 Hari</span>
           </div>
-          <p className={`mt-2 text-xl font-bold ${summary.expiringCount > 0 ? "text-orange-400" : "text-[#E5E2E1]"}`}>
+          <p className={`mt-2 text-xl font-bold ${summary.expiringCount > 0 ? "text-orange-400" : "text-ui-text"}`}>
             {summary.expiringCount} kontrak
           </p>
         </div>
@@ -164,8 +164,8 @@ const SalaryPageClient = ({
 
       {/* Cashflow overview: paid this month, outstanding, 6-month spend chart */}
       <div className="grid gap-3 lg:grid-cols-[1fr_1fr_2fr]">
-        <div className="rounded-xl border border-[#2D2D2D] bg-[#202020] p-4">
-          <div className="flex items-center gap-2 text-[#6B6A68]">
+        <div className="rounded-xl border border-ui-border bg-ui-surface p-4">
+          <div className="flex items-center gap-2 text-ui-text-muted">
             <CheckCircle2 className="h-4 w-4 text-emerald-400" />
             <span className="text-xs uppercase tracking-wide">Dibayar Bulan Ini</span>
           </div>
@@ -174,12 +174,12 @@ const SalaryPageClient = ({
           </p>
         </div>
 
-        <div className={`rounded-xl border p-4 ${summary.outstandingThisMonth > 0 ? "border-rose-500/40 bg-rose-500/5" : "border-[#2D2D2D] bg-[#202020]"}`}>
-          <div className="flex items-center gap-2 text-[#6B6A68]">
+        <div className={`rounded-xl border p-4 ${summary.outstandingThisMonth > 0 ? "border-rose-500/40 bg-rose-500/5" : "border-ui-border bg-ui-surface"}`}>
+          <div className="flex items-center gap-2 text-ui-text-muted">
             <CircleDashed className={`h-4 w-4 ${summary.outstandingThisMonth > 0 ? "text-rose-400" : ""}`} />
             <span className="text-xs uppercase tracking-wide">Outstanding</span>
           </div>
-          <p className={`mt-2 text-xl font-bold ${summary.outstandingThisMonth > 0 ? "text-rose-400" : "text-[#E5E2E1]"}`}>
+          <p className={`mt-2 text-xl font-bold ${summary.outstandingThisMonth > 0 ? "text-rose-400" : "text-ui-text"}`}>
             {formatRupiah(summary.outstandingThisMonth)}
           </p>
         </div>
@@ -189,13 +189,13 @@ const SalaryPageClient = ({
 
       {/* Actions */}
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-[#9B9A97] uppercase tracking-wide">
+        <h2 className="text-sm font-semibold text-ui-text-2 uppercase tracking-wide">
           Kontrak Aktif ({active.length})
         </h2>
         <button
           type="button"
           onClick={openCreate}
-          className="inline-flex h-9 items-center gap-2 rounded-md bg-[#E5E2E1] px-4 text-sm font-semibold text-[#191919] hover:bg-white cursor-pointer"
+          className="inline-flex h-9 items-center gap-2 rounded-md bg-ui-text px-4 text-sm font-semibold text-ui-bg hover:bg-white cursor-pointer"
         >
           <Plus className="h-4 w-4" />
           Tambah Kontrak
@@ -203,20 +203,20 @@ const SalaryPageClient = ({
       </div>
 
       {active.length > 0 && (
-        <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between bg-[#202020] p-4 rounded-xl border border-[#2D2D2D]">
+        <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between bg-ui-surface p-4 rounded-xl border border-ui-border">
           <div className="relative flex-1 w-full max-w-sm">
             <input
               type="text"
               placeholder="Cari nama player..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="h-9 w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 pl-8 text-xs text-[#E5E2E1] placeholder-[#6B6A68] focus:border-[#9B9A97] focus:outline-none"
+              className="h-9 w-full rounded-md border border-ui-border bg-ui-bg px-3 pl-8 text-xs text-ui-text placeholder-ui-text-muted focus:border-ui-text-2 focus:outline-none"
             />
-            <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-[#6B6A68]" />
+            <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-ui-text-muted" />
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-xs text-[#9B9A97]">Filter Tim:</span>
+            <span className="text-xs text-ui-text-2">Filter Tim:</span>
             <CustomSelect
               value={selectedOrgFilter}
               options={filterOptions}
@@ -227,21 +227,21 @@ const SalaryPageClient = ({
       )}
 
       {active.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-[#2D2D2D] bg-[#202020]/40 p-10 text-center">
-          <Wallet className="mx-auto h-8 w-8 text-[#6B6A68]" />
-          <p className="mt-3 text-sm text-[#9B9A97]">Belum ada kontrak aktif.</p>
+        <div className="rounded-xl border border-dashed border-ui-border bg-ui-surface/40 p-10 text-center">
+          <Wallet className="mx-auto h-8 w-8 text-ui-text-muted" />
+          <p className="mt-3 text-sm text-ui-text-2">Belum ada kontrak aktif.</p>
           <button
             type="button"
             onClick={openCreate}
-            className="mt-4 inline-flex h-9 items-center rounded-md border border-white/15 px-4 text-sm font-medium text-white transition hover:bg-white/5 cursor-pointer"
+            className="mt-4 inline-flex h-9 items-center rounded-md border border-white/15 px-4 text-sm font-medium text-ui-text transition hover:bg-white/5 cursor-pointer"
           >
             Tambah kontrak pertama
           </button>
         </div>
       ) : filteredActive.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-[#2D2D2D] bg-[#202020]/40 p-10 text-center">
-          <Search className="mx-auto h-8 w-8 text-[#6B6A68]" />
-          <p className="mt-3 text-sm text-[#9B9A97]">Tidak ada player yang cocok dengan filter.</p>
+        <div className="rounded-xl border border-dashed border-ui-border bg-ui-surface/40 p-10 text-center">
+          <Search className="mx-auto h-8 w-8 text-ui-text-muted" />
+          <p className="mt-3 text-sm text-ui-text-2">Tidak ada player yang cocok dengan filter.</p>
         </div>
       ) : (
         <div className="space-y-8">
@@ -249,9 +249,9 @@ const SalaryPageClient = ({
             const groupContracts = groupedActive[orgName] ?? [];
             return (
               <div key={orgName} className="space-y-4">
-                <div className="flex items-center gap-2 border-b border-[#2D2D2D] pb-2">
+                <div className="flex items-center gap-2 border-b border-ui-border pb-2">
                   <div className="h-2.5 w-2.5 rounded bg-emerald-500" />
-                  <h3 className="text-sm font-bold text-[#E5E2E1] uppercase tracking-wider">
+                  <h3 className="text-sm font-bold text-ui-text uppercase tracking-wider">
                     {orgName} ({groupContracts.length})
                   </h3>
                 </div>
@@ -274,7 +274,7 @@ const SalaryPageClient = ({
 
       {inactive.length > 0 && (
         <>
-          <h2 className="text-sm font-semibold text-[#6B6A68] uppercase tracking-wide mt-6">
+          <h2 className="text-sm font-semibold text-ui-text-muted uppercase tracking-wide mt-6">
             Tidak Aktif ({inactive.length})
           </h2>
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3 opacity-60 mt-4">

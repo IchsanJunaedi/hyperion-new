@@ -119,48 +119,48 @@ const HeroPicker = ({
         className={cn(
           "flex h-8 w-full cursor-pointer items-center gap-2 rounded-lg border px-2.5 text-left text-xs transition-colors",
           open
-            ? "border-yellow-400/50 bg-[#1C1C1C]"
-            : "border-[#2D2D2D] bg-[#1a1a1a] hover:border-[#3D3D3D]",
+            ? "border-yellow-400/50 bg-ui-surface"
+            : "border-ui-border bg-ui-hover hover:border-[#3D3D3D]",
         )}
       >
         {value ? (
           <>
             <HeroAvatar name={value} size="sm" />
-            <span className="flex-1 truncate font-medium text-[#E5E2E1]">{value}</span>
+            <span className="flex-1 truncate font-medium text-ui-text">{value}</span>
             <X
-              className="h-3 w-3 shrink-0 text-[#6B6A68] hover:text-rose-400"
+              className="h-3 w-3 shrink-0 text-ui-text-muted hover:text-rose-400"
               onClick={clear}
             />
           </>
         ) : (
           <>
             <span className="h-5 w-5 shrink-0 rounded-full border border-dashed border-[#3D3D3D]" />
-            <span className="flex-1 text-[#6B6A68]">{placeholder}</span>
-            <ChevronDown className="h-3 w-3 shrink-0 text-[#6B6A68]" />
+            <span className="flex-1 text-ui-text-muted">{placeholder}</span>
+            <ChevronDown className="h-3 w-3 shrink-0 text-ui-text-muted" />
           </>
         )}
       </button>
 
       {/* Dropdown */}
       {open && (
-        <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-[200] overflow-hidden rounded-xl border border-[#3A3A3A] bg-[#1C1C1C] shadow-[0_8px_32px_rgba(0,0,0,0.85)] ring-1 ring-white/[0.06]">
+        <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-[200] overflow-hidden rounded-xl border border-[#3A3A3A] bg-ui-surface shadow-[0_8px_32px_rgba(0,0,0,0.85)] ring-1 ring-white/[0.06]">
           {/* Search */}
-          <div className="flex items-center gap-2 border-b border-[#2D2D2D] px-3 py-2.5">
-            <Search className="h-3.5 w-3.5 shrink-0 text-[#6B6A68]" />
+          <div className="flex items-center gap-2 border-b border-ui-border px-3 py-2.5">
+            <Search className="h-3.5 w-3.5 shrink-0 text-ui-text-muted" />
             <input
               ref={inputRef}
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Cari hero…"
-              className="flex-1 bg-transparent text-xs text-[#E5E2E1] outline-none placeholder:text-[#6B6A68]"
+              className="flex-1 bg-transparent text-xs text-ui-text outline-none placeholder:text-ui-text-muted"
             />
           </div>
 
           {/* Hero list */}
           <ul className="sidebar-scroll max-h-52 overflow-y-auto py-1">
             {filtered.length === 0 ? (
-              <li className="px-3 py-4 text-center text-xs text-[#6B6A68]">
+              <li className="px-3 py-4 text-center text-xs text-ui-text-muted">
                 Hero tidak ditemukan
               </li>
             ) : (
@@ -170,10 +170,10 @@ const HeroPicker = ({
                     type="button"
                     onClick={() => select(hero)}
                     className={cn(
-                      "flex w-full cursor-pointer items-center gap-2.5 px-3 py-2 text-xs transition-colors hover:bg-[#252525]",
+                      "flex w-full cursor-pointer items-center gap-2.5 px-3 py-2 text-xs transition-colors hover:bg-ui-elevated",
                       hero === value
                         ? "bg-yellow-400/10 text-yellow-300"
-                        : "text-[#E5E2E1]",
+                        : "text-ui-text",
                     )}
                   >
                     <HeroAvatar name={hero} size="md" />

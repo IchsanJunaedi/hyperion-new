@@ -104,18 +104,18 @@ function VisibilityDiff({
 
   return (
     <div className="p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
-      <p className="text-xs font-medium text-[#6B6A68] uppercase tracking-wider mb-2">
+      <p className="text-xs font-medium text-ui-text-muted uppercase tracking-wider mb-2">
         Visibility Comparison
       </p>
       <div className="flex items-center gap-3 text-sm">
         <div className="flex-1">
-          <p className="text-[#9B9A97]">Calendar Default</p>
-          <p className="font-medium text-[#E5E2E1]">{calendarLabel}</p>
+          <p className="text-ui-text-2">Calendar Default</p>
+          <p className="font-medium text-ui-text">{calendarLabel}</p>
         </div>
-        <div className="text-[#6B6A68]">→</div>
+        <div className="text-ui-text-muted">→</div>
         <div className="flex-1">
-          <p className="text-[#9B9A97]">Event Override</p>
-          <p className="font-medium text-[#E5E2E1]">{eventLabel}</p>
+          <p className="text-ui-text-2">Event Override</p>
+          <p className="font-medium text-ui-text">{eventLabel}</p>
         </div>
       </div>
     </div>
@@ -150,26 +150,26 @@ function MemberSelector({
 
   return (
     <div className="space-y-3">
-      <p className="text-xs font-medium text-[#6B6A68] uppercase tracking-wider">
+      <p className="text-xs font-medium text-ui-text-muted uppercase tracking-wider">
         Select Members
       </p>
 
       {/* Search */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6B6A68]" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-ui-text-muted" />
         <input
           type="text"
           placeholder="Search members..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-10 pr-4 py-2 rounded-lg bg-[#2C2C2C] border border-[#2D2D2D] focus:border-[#404040] text-[#E5E2E1] placeholder-[#6B6A68] outline-none transition"
+          className="w-full pl-10 pr-4 py-2 rounded-lg bg-ui-hover border border-ui-border focus:border-[#404040] text-ui-text placeholder-ui-text-muted outline-none transition"
         />
       </div>
 
       {/* Member List */}
       <div className="max-h-48 overflow-y-auto space-y-2">
         {filtered.length === 0 ? (
-          <div className="text-center py-4 text-[#6B6A68] text-sm">
+          <div className="text-center py-4 text-ui-text-muted text-sm">
             No members found
           </div>
         ) : (
@@ -178,20 +178,20 @@ function MemberSelector({
             return (
               <label
                 key={member.id}
-                className="flex items-center gap-3 p-2 rounded-lg hover:bg-[#2C2C2C] cursor-pointer transition"
+                className="flex items-center gap-3 p-2 rounded-lg hover:bg-ui-hover cursor-pointer transition"
               >
                 <input
                   type="checkbox"
                   checked={isSelected}
                   onChange={() => onToggleMember(member.id)}
-                  className="h-4 w-4 rounded border-[#2D2D2D] bg-[#2C2C2C] cursor-pointer"
+                  className="h-4 w-4 rounded border-ui-border bg-ui-hover cursor-pointer"
                 />
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-[#E5E2E1] truncate">
+                  <p className="text-sm font-medium text-ui-text truncate">
                     {member.display_name || member.username}
                   </p>
                   {member.username && (
-                    <p className="text-xs text-[#6B6A68] truncate">
+                    <p className="text-xs text-ui-text-muted truncate">
                       @{member.username}
                     </p>
                   )}
@@ -291,13 +291,13 @@ const EventVisibilityOverride = ({
   };
 
   return (
-    <div className="space-y-6 p-6 rounded-xl bg-[#202020] border border-[#2D2D2D]">
+    <div className="space-y-6 p-6 rounded-xl bg-ui-surface border border-ui-border">
       {/* Header */}
       <div>
-        <h3 className="text-lg font-semibold text-[#E5E2E1]">
+        <h3 className="text-lg font-semibold text-ui-text">
           Event Visibility
         </h3>
-        <p className="text-sm text-[#6B6A68] mt-1">
+        <p className="text-sm text-ui-text-muted mt-1">
           {eventTitle}
         </p>
       </div>
@@ -318,18 +318,18 @@ const EventVisibilityOverride = ({
       )}
 
       {/* Calendar Default Info */}
-      <div className="p-3 rounded-lg bg-[#2C2C2C] border border-[#2D2D2D]">
-        <p className="text-xs font-medium text-[#6B6A68] uppercase tracking-wider mb-2">
+      <div className="p-3 rounded-lg bg-ui-hover border border-ui-border">
+        <p className="text-xs font-medium text-ui-text-muted uppercase tracking-wider mb-2">
           Calendar Default
         </p>
         <div className="space-y-1">
-          <p className="text-sm font-medium text-[#E5E2E1]">
+          <p className="text-sm font-medium text-ui-text">
             {
               VISIBILITY_OPTIONS.find((o) => o.value === calendarVisibility)
                 ?.label
             }
           </p>
-          <p className="text-xs text-[#9B9A97]">
+          <p className="text-xs text-ui-text-2">
             {
               VISIBILITY_OPTIONS.find((o) => o.value === calendarVisibility)
                 ?.description
@@ -340,7 +340,7 @@ const EventVisibilityOverride = ({
 
       {/* Visibility Options */}
       <div className="space-y-3">
-        <p className="text-xs font-medium text-[#6B6A68] uppercase tracking-wider">
+        <p className="text-xs font-medium text-ui-text-muted uppercase tracking-wider">
           Override Visibility
         </p>
         <div className="space-y-2">
@@ -370,14 +370,14 @@ const EventVisibilityOverride = ({
                 className="mt-1 h-4 w-4 cursor-pointer"
               />
               <div className="flex-1">
-                <p className="font-medium text-[#E5E2E1]">{option.label}</p>
-                <p className="text-sm text-[#9B9A97] mt-0.5">
+                <p className="font-medium text-ui-text">{option.label}</p>
+                <p className="text-sm text-ui-text-2 mt-0.5">
                   {option.description}
                 </p>
               </div>
               {visibility === option.value &&
                 option.value === calendarVisibility && (
-                  <span className="text-xs text-[#6B6A68] font-medium">
+                  <span className="text-xs text-ui-text-muted font-medium">
                     (Calendar default)
                   </span>
                 )}
@@ -388,7 +388,7 @@ const EventVisibilityOverride = ({
 
       {/* Member Selection for selected-members */}
       {visibility === "selected-members" && teamMembers.length > 0 && (
-        <div className="p-4 rounded-lg bg-[#1F1F1F] border border-[#2D2D2D]">
+        <div className="p-4 rounded-lg bg-ui-surface border border-ui-border">
           <MemberSelector
             members={teamMembers}
             selectedMembers={selectedMembers}
@@ -418,7 +418,7 @@ const EventVisibilityOverride = ({
           <button
             onClick={handleReset}
             disabled={saving || isLoading}
-            className="flex-1 px-4 py-2 rounded-lg bg-[#2C2C2C] border border-[#2D2D2D] hover:border-[#404040] text-[#E5E2E1] transition disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+            className="flex-1 px-4 py-2 rounded-lg bg-ui-hover border border-ui-border hover:border-[#404040] text-ui-text transition disabled:opacity-50 disabled:cursor-not-allowed font-medium"
           >
             <RotateCcw className="h-4 w-4 inline mr-2" />
             Reset to Calendar Default
@@ -439,19 +439,19 @@ const EventVisibilityOverride = ({
       {/* Confirmation Dialog */}
       {showConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="rounded-xl border border-[#2D2D2D] bg-[#202020] p-6 max-w-sm mx-4 space-y-4">
+          <div className="rounded-xl border border-ui-border bg-ui-surface p-6 max-w-sm mx-4 space-y-4">
             <div>
-              <h3 className="font-semibold text-[#E5E2E1]">
+              <h3 className="font-semibold text-ui-text">
                 Confirm Visibility Override
               </h3>
-              <p className="text-sm text-[#9B9A97] mt-2">
+              <p className="text-sm text-ui-text-2 mt-2">
                 Are you sure you want to change this event&apos;s visibility?
               </p>
             </div>
 
-            <div className="p-3 rounded-lg bg-[#1F1F1F] border border-[#2D2D2D] text-sm">
-              <p className="text-[#6B6A68] text-xs mb-1">New visibility:</p>
-              <p className="text-[#E5E2E1] font-medium">
+            <div className="p-3 rounded-lg bg-ui-surface border border-ui-border text-sm">
+              <p className="text-ui-text-muted text-xs mb-1">New visibility:</p>
+              <p className="text-ui-text font-medium">
                 {
                   VISIBILITY_OPTIONS.find((o) => o.value === visibility)?.label
                 }
@@ -462,7 +462,7 @@ const EventVisibilityOverride = ({
               <button
                 onClick={() => setShowConfirm(false)}
                 disabled={saving}
-                className="flex-1 px-4 py-2 rounded-lg bg-[#2C2C2C] border border-[#2D2D2D] hover:border-[#404040] text-[#E5E2E1] transition disabled:opacity-50"
+                className="flex-1 px-4 py-2 rounded-lg bg-ui-hover border border-ui-border hover:border-[#404040] text-ui-text transition disabled:opacity-50"
               >
                 Cancel
               </button>

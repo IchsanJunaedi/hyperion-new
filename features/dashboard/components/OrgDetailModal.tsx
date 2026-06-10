@@ -40,12 +40,12 @@ const OrgDetailModal = ({ org, onClose }: OrgDetailModalProps) => {
       >
         <div className="mb-4 flex items-start justify-between">
           <div>
-            <h3 className="text-lg font-bold text-white">{org.name}</h3>
+            <h3 className="text-lg font-bold text-ui-text">{org.name}</h3>
             <p className="text-xs text-white/50">/{org.slug}</p>
           </div>
           <button
             onClick={onClose}
-            className="rounded-md p-1 text-white/40 hover:bg-white/10 hover:text-white"
+            className="rounded-md p-1 text-white/40 hover:bg-white/10 hover:text-ui-text"
           >
             <X className="h-4 w-4" />
           </button>

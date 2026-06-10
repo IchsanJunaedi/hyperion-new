@@ -75,7 +75,7 @@ const TodosPage = ({ orgId, todos, assignedOutTodos, managers, isOwner, revalida
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Todos</h1>
+          <h1 className="text-2xl font-bold text-ui-text">Todos</h1>
           <div className="mt-2">
             <TodoStatsBar
               overdueCount={overdueCount}
@@ -87,7 +87,7 @@ const TodosPage = ({ orgId, todos, assignedOutTodos, managers, isOwner, revalida
         <button
           type="button"
           onClick={() => setCreateOpen(true)}
-          className="flex cursor-pointer items-center gap-2 rounded border border-[#2D2D2D] bg-[#202020] px-3 py-2 text-sm text-[#9B9A97] transition hover:bg-[#2C2C2C] hover:text-[#D4D4D4]"
+          className="flex cursor-pointer items-center gap-2 rounded border border-ui-border bg-ui-surface px-3 py-2 text-sm text-ui-text-2 transition hover:bg-ui-hover hover:text-ui-text-dim"
         >
           <Plus className="h-4 w-4" />
           Tambah
@@ -108,7 +108,7 @@ const TodosPage = ({ orgId, todos, assignedOutTodos, managers, isOwner, revalida
         <div className={cn("min-w-0 flex-1 space-y-1")}>
           {isAssignedOutTab ? (
             assignedOutTodos.length === 0 ? (
-              <p className="py-8 text-center text-sm text-[#6B6A68]">
+              <p className="py-8 text-center text-sm text-ui-text-muted">
                 Belum ada todo yang di-assign ke manager.
               </p>
             ) : (
@@ -119,7 +119,7 @@ const TodosPage = ({ orgId, todos, assignedOutTodos, managers, isOwner, revalida
               </div>
             )
           ) : filtered.length === 0 ? (
-            <p className="py-8 text-center text-sm text-[#6B6A68]">
+            <p className="py-8 text-center text-sm text-ui-text-muted">
               Tidak ada todos yang cocok.
             </p>
           ) : (

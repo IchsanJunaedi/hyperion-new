@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { Loader2, Pencil, Trash2 } from "lucide-react";
 import Link from "next/link";
@@ -42,7 +42,7 @@ const StrategyNoteActions = ({
     <div className="flex flex-wrap gap-2">
       <Link
         href={`/${orgSlug}/strategy/${noteId}/edit`}
-        className="inline-flex h-9 items-center gap-2 rounded-md border border-white/10 px-3 text-xs font-medium text-white/70 transition hover:bg-white/5 hover:text-white"
+        className="inline-flex h-9 items-center gap-2 rounded-md border border-white/10 px-3 text-xs font-medium text-white/70 transition hover:bg-white/5 hover:text-ui-text"
       >
         <Pencil className="h-3.5 w-3.5" />
         Edit catatan
@@ -55,7 +55,7 @@ const StrategyNoteActions = ({
         className={`inline-flex h-9 items-center gap-2 rounded-md border px-3 text-xs font-medium transition disabled:opacity-50 ${
           confirmDelete
             ? "border-red-500/30 bg-red-500/10 text-red-400 hover:bg-red-500/20"
-            : "border-white/10 text-white/70 hover:bg-white/5 hover:text-white"
+            : "border-white/10 text-white/70 hover:bg-white/5 hover:text-ui-text"
         }`}
       >
         {deletePending ? (

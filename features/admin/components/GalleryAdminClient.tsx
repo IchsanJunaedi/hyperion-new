@@ -39,7 +39,7 @@ const GalleryAdminClient = ({ entries: initialEntries }: Props) => {
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-xl font-black uppercase tracking-tight text-white">Gallery & Achievement</h1>
+        <h1 className="text-xl font-black uppercase tracking-tight text-ui-text">Gallery & Achievement</h1>
         <button
           onClick={() => { setEditing(null); setShowForm(true); }}
           className="flex cursor-pointer items-center gap-2 border border-[#F5C400] px-4 py-2 text-xs font-bold uppercase tracking-wider text-[#F5C400] transition hover:bg-[#F5C400] hover:text-black"
@@ -61,23 +61,23 @@ const GalleryAdminClient = ({ entries: initialEntries }: Props) => {
             {editing?.id === entry.id ? (
               <GalleryForm entry={entry} onDone={handleDone} />
             ) : (
-              <div className="flex items-center gap-4 border border-[#2D2D2D] bg-[#141414] p-4">
+              <div className="flex items-center gap-4 border border-ui-border bg-ui-bg p-4">
                 {entry.preview_images?.[0] && (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={entry.preview_images?.[0]} alt="" className="h-12 w-20 shrink-0 object-cover" />
                 )}
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-bold text-[#E5E2E1]">{entry.title}</p>
-                  <p className="text-xs text-[#9B9A97]">
+                  <p className="truncate font-bold text-ui-text">{entry.title}</p>
+                  <p className="text-xs text-ui-text-2">
                     {entry.position} · {entry.tournament_date} · order: {entry.sort_order}
                     {entry.metric_value && ` · metric: [${entry.metric_value}] ${entry.metric_label ?? ""}`}
                   </p>
                 </div>
                 <div className="flex gap-2">
-                  <button onClick={() => setEditing(entry)} className="cursor-pointer rounded p-2 text-[#9B9A97] transition hover:bg-[#2C2C2C] hover:text-[#D4D4D4]">
+                  <button onClick={() => setEditing(entry)} className="cursor-pointer rounded p-2 text-ui-text-2 transition hover:bg-ui-hover hover:text-ui-text-dim">
                     <Pencil className="h-4 w-4" />
                   </button>
-                  <button onClick={() => setDeleting(entry)} className="cursor-pointer rounded p-2 text-[#9B9A97] transition hover:bg-[#2C2C2C] hover:text-red-400">
+                  <button onClick={() => setDeleting(entry)} className="cursor-pointer rounded p-2 text-ui-text-2 transition hover:bg-ui-hover hover:text-red-400">
                     <Trash2 className="h-4 w-4" />
                   </button>
                 </div>

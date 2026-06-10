@@ -12,7 +12,7 @@ import type { ApplicantRow as ApplicantRowType } from "@/features/trials/queries
 import { cn } from "@/lib/utils/cn";
 
 const STATUS_OPTIONS = [
-  { value: "pending",    label: "Pending",  color: "text-[#9B9A97] bg-[#2C2C2C]" },
+  { value: "pending",    label: "Pending",  color: "text-ui-text-2 bg-ui-hover" },
   { value: "accepted",   label: "Diterima", color: "text-green-400 bg-green-500/15" },
   { value: "waitlisted", label: "Waitlist", color: "text-yellow-400 bg-yellow-500/15" },
   { value: "rejected",   label: "Ditolak",  color: "text-red-400 bg-red-500/15" },
@@ -83,50 +83,50 @@ const ApplicantRow = ({ applicant, trialId, canManage, revalidatePaths }: Applic
 
   return (
     <>
-      <div className="border-b border-[#2D2D2D] last:border-0">
+      <div className="border-b border-ui-border last:border-0">
         <div
           role="button"
           tabIndex={0}
           onClick={() => setDetailOpen(true)}
           onKeyDown={(e) => e.key === "Enter" && setDetailOpen(true)}
-          className="grid grid-cols-[1fr_1fr_1fr_auto] gap-4 items-start px-4 py-3 text-sm cursor-pointer hover:bg-[#2C2C2C] transition-colors"
+          className="grid grid-cols-[1fr_1fr_1fr_auto] gap-4 items-start px-4 py-3 text-sm cursor-pointer hover:bg-ui-hover transition-colors"
         >
 
           {/* Identitas */}
           <div className="space-y-0.5">
-            <p className="font-medium text-[#E5E2E1]">{applicant.name}</p>
-            <p className="text-xs text-[#9B9A97]">{applicant.ign}</p>
-            <p className="text-xs text-[#6B6A68]">
+            <p className="font-medium text-ui-text">{applicant.name}</p>
+            <p className="text-xs text-ui-text-2">{applicant.ign}</p>
+            <p className="text-xs text-ui-text-muted">
               {applicant.age} th{applicant.city ? ` · ${applicant.city}` : ""}
             </p>
-            <p className="text-xs text-[#6B6A68]">
+            <p className="text-xs text-ui-text-muted">
               {applicant.is_free_agent ? "Free agent" : "Masih di tim"}
             </p>
           </div>
 
           {/* Kontak */}
           <div className="space-y-0.5">
-            <p className="text-xs text-[#9B9A97]">{applicant.phone}</p>
-            <p className="text-xs text-[#6B6A68] truncate">{applicant.email}</p>
+            <p className="text-xs text-ui-text-2">{applicant.phone}</p>
+            <p className="text-xs text-ui-text-muted truncate">{applicant.email}</p>
             {applicant.social_media && (
-              <p className="text-xs text-[#6B6A68] truncate">{applicant.social_media}</p>
+              <p className="text-xs text-ui-text-muted truncate">{applicant.social_media}</p>
             )}
           </div>
 
           {/* Game Info */}
           <div className="space-y-0.5">
-            <p className="text-xs font-medium text-[#E5E2E1]">{applicant.role_applied}</p>
-            <p className="text-xs text-[#9B9A97]">
+            <p className="text-xs font-medium text-ui-text">{applicant.role_applied}</p>
+            <p className="text-xs text-ui-text-2">
               {applicant.rank}{applicant.win_rate ? ` · ${applicant.win_rate}% WR` : ""}
             </p>
             {applicant.game_id && (
-              <p className="text-xs text-[#6B6A68] truncate">
+              <p className="text-xs text-ui-text-muted truncate">
                 ID: {applicant.game_id}
                 {applicant.game_nickname ? ` (${applicant.game_nickname})` : ""}
               </p>
             )}
             {(applicant.hero_pool?.length ?? 0) > 0 && (
-              <p className="text-xs text-[#6B6A68] truncate">
+              <p className="text-xs text-ui-text-muted truncate">
                 {applicant.hero_pool!.slice(0, 3).join(", ")}
                 {(applicant.hero_pool?.length ?? 0) > 3 ? ` +${applicant.hero_pool!.length - 3}` : ""}
               </p>
@@ -147,16 +147,16 @@ const ApplicantRow = ({ applicant, trialId, canManage, revalidatePaths }: Applic
                   <ChevronDown className="h-3 w-3" />
                 </button>
                 {dropOpen && (
-                  <div className="absolute right-0 top-full z-50 mt-1 w-36 rounded-lg border border-[#2D2D2D] bg-[#202020] py-1 shadow-xl">
+                  <div className="absolute right-0 top-full z-50 mt-1 w-36 rounded-lg border border-ui-border bg-ui-surface py-1 shadow-xl">
                     {STATUS_OPTIONS.map((opt) => (
                       <button
                         key={opt.value}
                         type="button"
                         onClick={() => handleStatus(opt.value)}
-                        className="flex w-full items-center justify-between px-3 py-1.5 text-xs hover:bg-[#2C2C2C] cursor-pointer"
+                        className="flex w-full items-center justify-between px-3 py-1.5 text-xs hover:bg-ui-hover cursor-pointer"
                       >
                         <span className={opt.color.split(" ")[0]}>{opt.label}</span>
-                        {applicant.status === opt.value && <Check className="h-3 w-3 text-[#9B9A97]" />}
+                        {applicant.status === opt.value && <Check className="h-3 w-3 text-ui-text-2" />}
                       </button>
                     ))}
                   </div>
@@ -174,7 +174,7 @@ const ApplicantRow = ({ applicant, trialId, canManage, revalidatePaths }: Applic
                   type="button"
                   onClick={() => setShowNotes((v) => !v)}
                   title="Catatan internal"
-                  className={cn("text-[#6B6A68] hover:text-[#9B9A97] cursor-pointer", showNotes && "text-yellow-400 hover:text-yellow-300")}
+                  className={cn("text-ui-text-muted hover:text-ui-text-2 cursor-pointer", showNotes && "text-yellow-400 hover:text-yellow-300")}
                 >
                   <MessageSquare className="h-3.5 w-3.5" />
                 </button>
@@ -182,7 +182,7 @@ const ApplicantRow = ({ applicant, trialId, canManage, revalidatePaths }: Applic
                   type="button"
                   onClick={() => setConfirmDeleteOpen(true)}
                   disabled={deleting}
-                  className="text-[#6B6A68] hover:text-red-400 cursor-pointer disabled:opacity-50"
+                  className="text-ui-text-muted hover:text-red-400 cursor-pointer disabled:opacity-50"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                 </button>
@@ -202,20 +202,20 @@ const ApplicantRow = ({ applicant, trialId, canManage, revalidatePaths }: Applic
 
         {/* Inline notes editor */}
         {showNotes && canManage && (
-          <div className="border-t border-[#2D2D2D]/50 bg-[#191919] px-4 py-2.5">
+          <div className="border-t border-ui-border/50 bg-ui-bg px-4 py-2.5">
             <div className="flex items-start gap-2">
               <textarea
                 value={notesValue}
                 onChange={(e) => setNotesValue(e.target.value)}
                 placeholder="Catatan internal tentang pendaftar ini…"
                 rows={2}
-                className="flex-1 resize-none rounded-md border border-[#2D2D2D] bg-[#141414] px-3 py-1.5 text-xs text-[#E5E2E1] placeholder-[#6B6A68] focus:border-white/20 focus:outline-none"
+                className="flex-1 resize-none rounded-md border border-ui-border bg-ui-bg px-3 py-1.5 text-xs text-ui-text placeholder-ui-text-muted focus:border-white/20 focus:outline-none"
               />
               <button
                 type="button"
                 disabled={notesSaving}
                 onClick={handleSaveNotes}
-                className="shrink-0 rounded-md bg-[#2C2C2C] px-2.5 py-1.5 text-[10px] font-medium text-[#9B9A97] transition hover:bg-[#353434] hover:text-[#E5E2E1] disabled:opacity-50 cursor-pointer"
+                className="shrink-0 rounded-md bg-ui-hover px-2.5 py-1.5 text-[10px] font-medium text-ui-text-2 transition hover:bg-ui-hover-strong hover:text-ui-text disabled:opacity-50 cursor-pointer"
               >
                 {notesSaving ? "..." : "Simpan"}
               </button>

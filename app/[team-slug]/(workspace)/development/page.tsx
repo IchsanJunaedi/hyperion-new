@@ -29,24 +29,24 @@ export default async function WorkspaceDevelopmentPage({ params }: Props) {
   return (
     <div className="space-y-6 px-4 py-6 sm:px-8">
       <header className="flex items-center gap-3">
-        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#252525]">
+        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-ui-elevated">
           <TrendingUp className="h-4 w-4 text-blue-400" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-white sm:text-3xl">
+          <h1 className="text-2xl font-bold text-ui-text sm:text-3xl">
             Development Kamu
           </h1>
-          <p className="text-xs text-[#6B6A68]">
+          <p className="text-xs text-ui-text-muted">
             Target dan perkembangan skill kamu
           </p>
         </div>
       </header>
 
       {targets.length === 0 ? (
-        <div className="rounded-xl border border-[#2D2D2D] bg-[#202020] p-12 text-center">
-          <TrendingUp className="mx-auto mb-3 h-8 w-8 text-[#6B6A68]" />
-          <p className="text-sm text-[#9B9A97]">Belum ada target yang ditetapkan.</p>
-          <p className="mt-1 text-xs text-[#6B6A68]">
+        <div className="rounded-xl border border-ui-border bg-ui-surface p-12 text-center">
+          <TrendingUp className="mx-auto mb-3 h-8 w-8 text-ui-text-muted" />
+          <p className="text-sm text-ui-text-2">Belum ada target yang ditetapkan.</p>
+          <p className="mt-1 text-xs text-ui-text-muted">
             Coach atau manager akan menetapkan target skill kamu.
           </p>
         </div>

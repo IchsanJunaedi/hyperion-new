@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
@@ -7,7 +7,7 @@ import { notify } from "@/features/dashboard/components/NotifyModal";
 import { createClient } from "@/lib/supabase/client";
 
 const inputCls =
-  "w-full rounded border border-[#2D2D2D] bg-[#191919] px-3 py-1.5 pr-10 text-sm text-[#E5E2E1] placeholder-[#6B6A68] focus:outline-none focus:border-[#4D4D4D] transition";
+  "w-full rounded border border-ui-border bg-ui-bg px-3 py-1.5 pr-10 text-sm text-ui-text placeholder-ui-text-muted focus:outline-none focus:border-[#4D4D4D] transition";
 
 const SecuritySection = () => {
   const [newPassword, setNewPassword] = useState("");
@@ -44,14 +44,14 @@ const SecuritySection = () => {
       {/* Change Password */}
       <form onSubmit={handleChangePassword} className="space-y-4">
         <div>
-          <p className="text-sm font-medium text-[#D4D4D4]">Ganti Password</p>
-          <p className="mt-0.5 text-xs text-[#9B9A97]">
+          <p className="text-sm font-medium text-ui-text-dim">Ganti Password</p>
+          <p className="mt-0.5 text-xs text-ui-text-2">
             Password baru minimal 8 karakter.
           </p>
         </div>
 
         <div className="flex flex-col gap-1">
-          <label className="text-xs text-[#9B9A97]">Password Baru</label>
+          <label className="text-xs text-ui-text-2">Password Baru</label>
           <div className="relative">
             <input
               type={showNew ? "text" : "password"}
@@ -63,7 +63,7 @@ const SecuritySection = () => {
             <button
               type="button"
               onClick={() => setShowNew((v) => !v)}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-[#6B6A68] hover:text-[#9B9A97] cursor-pointer"
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-ui-text-muted hover:text-ui-text-2 cursor-pointer"
             >
               {showNew ? (
                 <EyeOff className="h-4 w-4" />
@@ -75,7 +75,7 @@ const SecuritySection = () => {
         </div>
 
         <div className="flex flex-col gap-1">
-          <label className="text-xs text-[#9B9A97]">Konfirmasi Password Baru</label>
+          <label className="text-xs text-ui-text-2">Konfirmasi Password Baru</label>
           <div className="relative">
             <input
               type={showConfirm ? "text" : "password"}
@@ -87,7 +87,7 @@ const SecuritySection = () => {
             <button
               type="button"
               onClick={() => setShowConfirm((v) => !v)}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-[#6B6A68] hover:text-[#9B9A97] cursor-pointer"
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-ui-text-muted hover:text-ui-text-2 cursor-pointer"
             >
               {showConfirm ? (
                 <EyeOff className="h-4 w-4" />
@@ -101,18 +101,18 @@ const SecuritySection = () => {
         <button
           type="submit"
           disabled={saving || !newPassword}
-          className="flex items-center gap-2 rounded bg-[#2C2C2C] px-4 py-2 text-sm text-[#D4D4D4] transition hover:bg-[#353434] cursor-pointer disabled:opacity-50"
+          className="flex items-center gap-2 rounded bg-ui-hover px-4 py-2 text-sm text-ui-text-dim transition hover:bg-ui-hover-strong cursor-pointer disabled:opacity-50"
         >
           {saving && <Loader2 className="h-4 w-4 animate-spin" />}
           Simpan Password
         </button>
       </form>
 
-      <hr className="border-[#2D2D2D]" />
+      <hr className="border-ui-border" />
 
       <div>
-        <p className="text-sm font-medium text-[#D4D4D4]">Sesi Aktif</p>
-        <p className="mt-1 text-xs text-[#9B9A97]">
+        <p className="text-sm font-medium text-ui-text-dim">Sesi Aktif</p>
+        <p className="mt-1 text-xs text-ui-text-2">
           Kamu sedang login di perangkat ini.
         </p>
       </div>

@@ -19,8 +19,8 @@ const DashboardNavLink = ({ href, Icon, label }: DashboardNavLinkProps) => {
       href={href}
       className={`flex items-center gap-3 rounded px-3 py-1.5 text-sm transition ${
         active
-          ? "bg-[#2C2C2C] font-medium text-[#D4D4D4]"
-          : "text-[#9B9A97] hover:bg-[#2C2C2C] hover:text-[#D4D4D4]"
+          ? "bg-ui-hover font-medium text-ui-text-dim"
+          : "text-ui-text-2 hover:bg-ui-hover hover:text-ui-text-dim"
       }`}
     >
       <Icon className="h-[18px] w-[18px] shrink-0" />

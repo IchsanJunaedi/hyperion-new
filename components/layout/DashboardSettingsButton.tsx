@@ -21,7 +21,7 @@ const DashboardSettingsButton = ({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="flex w-full cursor-pointer items-center gap-3 rounded px-3 py-1.5 text-[#9B9A97] transition hover:bg-[#2C2C2C] hover:text-[#D4D4D4]"
+        className="flex w-full cursor-pointer items-center gap-3 rounded px-3 py-1.5 text-ui-text-2 transition hover:bg-ui-hover hover:text-ui-text-dim"
       >
         <Settings className="h-[18px] w-[18px]" />
         <span>Settings</span>

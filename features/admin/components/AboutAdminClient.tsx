@@ -36,8 +36,8 @@ const AboutAdminClient = ({ initialSettings, initialAlumni }: Props) => {
   const [newImage, setNewImage] = useState<string | null>(null);
   const [addPending, setAddPending] = useState(false);
 
-  const inputClass = "w-full border border-[#2D2D2D] bg-[#191919] px-3 py-2 text-sm text-[#E5E2E1] outline-none transition focus:border-[#F5C400]/50 placeholder:text-[#6B6A68]";
-  const labelClass = "mb-1 block text-xs font-medium text-[#9B9A97]";
+  const inputClass = "w-full border border-ui-border bg-ui-bg px-3 py-2 text-sm text-ui-text outline-none transition focus:border-[#F5C400]/50 placeholder:text-ui-text-muted";
+  const labelClass = "mb-1 block text-xs font-medium text-ui-text-2";
 
   const handleSaveCards = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -87,12 +87,12 @@ const AboutAdminClient = ({ initialSettings, initialAlumni }: Props) => {
 
   return (
     <div className="space-y-10">
-      <h1 className="text-xl font-black uppercase tracking-tight text-white">About Page</h1>
+      <h1 className="text-xl font-black uppercase tracking-tight text-ui-text">About Page</h1>
 
       {/* Org Info */}
       <form onSubmit={handleSaveOrg}>
-        <p className="mb-4 text-xs font-semibold uppercase tracking-wide text-[#9B9A97]">Info Organisasi</p>
-        <div className="space-y-4 rounded border border-[#2D2D2D] bg-[#141414] p-5">
+        <p className="mb-4 text-xs font-semibold uppercase tracking-wide text-ui-text-2">Info Organisasi</p>
+        <div className="space-y-4 rounded border border-ui-border bg-ui-bg p-5">
           {[
             { key: "about_org_name", label: "Nama Organisasi", placeholder: "Hyperion Team" },
             { key: "about_tagline_top", label: "Tagline (atas hero)", placeholder: "Est. 2020 · Palembang, Indonesia" },
@@ -134,7 +134,7 @@ const AboutAdminClient = ({ initialSettings, initialAlumni }: Props) => {
               placeholder={`["https://...", "https://..."]`}
               onChange={(e) => setSettings((p) => ({ ...p, about_timeline_images: e.target.value }))}
             />
-            <p className="mt-1 text-[10px] text-[#6B6A68]">Format: array JSON. Kosongkan untuk sembunyikan marquee.</p>
+            <p className="mt-1 text-[10px] text-ui-text-muted">Format: array JSON. Kosongkan untuk sembunyikan marquee.</p>
           </div>
         </div>
         <button type="submit" disabled={savingCards} className="mt-4 cursor-pointer border border-[#F5C400] px-6 py-2.5 text-xs font-black uppercase tracking-widest text-[#F5C400] transition hover:bg-[#F5C400] hover:text-black disabled:opacity-50">
@@ -144,10 +144,10 @@ const AboutAdminClient = ({ initialSettings, initialAlumni }: Props) => {
 
       {/* Vision / Mission / Values */}
       <form onSubmit={handleSaveCards}>
-        <p className="mb-4 text-xs font-semibold uppercase tracking-wide text-[#9B9A97]">Vision / Mission / Values</p>
+        <p className="mb-4 text-xs font-semibold uppercase tracking-wide text-ui-text-2">Vision / Mission / Values</p>
         <div className="space-y-6">
           {CARD_FIELDS.map((f) => (
-            <div key={f.titleKey} className="rounded border border-[#2D2D2D] bg-[#141414] p-5">
+            <div key={f.titleKey} className="rounded border border-ui-border bg-ui-bg p-5">
               <div className="mb-3">
                 <label className={labelClass}>Judul</label>
                 <input
@@ -176,37 +176,37 @@ const AboutAdminClient = ({ initialSettings, initialAlumni }: Props) => {
 
       {/* Alumni */}
       <div>
-        <p className="mb-4 text-xs font-semibold uppercase tracking-wide text-[#9B9A97]">Alumni</p>
+        <p className="mb-4 text-xs font-semibold uppercase tracking-wide text-ui-text-2">Alumni</p>
 
         {/* Existing alumni */}
         <div className="mb-6 space-y-2">
           {alumni.map((a) => (
-            <div key={a.id} className="flex items-center gap-4 rounded border border-[#2D2D2D] bg-[#1a1a1a] px-4 py-3">
+            <div key={a.id} className="flex items-center gap-4 rounded border border-ui-border bg-ui-hover px-4 py-3">
               {a.image_url && (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={a.image_url} alt={a.name} className="h-10 w-10 rounded-full object-cover" />
               )}
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-semibold text-[#D4D4D4]">{a.name}</p>
-                <p className="text-xs text-[#6B6A68]">{a.role}</p>
+                <p className="truncate text-sm font-semibold text-ui-text-dim">{a.name}</p>
+                <p className="text-xs text-ui-text-muted">{a.role}</p>
               </div>
               <button
                 type="button"
                 onClick={() => setDeleting(a)}
-                className="cursor-pointer p-1.5 text-[#6B6A68] transition hover:text-red-400"
+                className="cursor-pointer p-1.5 text-ui-text-muted transition hover:text-red-400"
               >
                 <Trash2 className="h-4 w-4" />
               </button>
             </div>
           ))}
           {alumni.length === 0 && (
-            <p className="text-sm text-[#6B6A68]">Belum ada alumni. Tambahkan di bawah.</p>
+            <p className="text-sm text-ui-text-muted">Belum ada alumni. Tambahkan di bawah.</p>
           )}
         </div>
 
         {/* Add alumni form */}
-        <form onSubmit={handleAddAlumnus} className="rounded border border-[#2D2D2D] bg-[#141414] p-5">
-          <p className="mb-4 text-xs font-bold uppercase tracking-wide text-[#9B9A97]">Tambah Alumni</p>
+        <form onSubmit={handleAddAlumnus} className="rounded border border-ui-border bg-ui-bg p-5">
+          <p className="mb-4 text-xs font-bold uppercase tracking-wide text-ui-text-2">Tambah Alumni</p>
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <label className={labelClass}>Nama</label>
@@ -220,7 +220,7 @@ const AboutAdminClient = ({ initialSettings, initialAlumni }: Props) => {
           <div className="mt-4">
             <ImageUpload value={newImage} onChange={setNewImage} folder="about-alumni" label="Foto Alumni" />
           </div>
-          <button type="submit" disabled={addPending || !newName.trim()} className="mt-4 flex cursor-pointer items-center gap-2 border border-[#2D2D2D] px-4 py-2 text-xs font-bold uppercase tracking-wider text-[#9B9A97] transition hover:border-[#F5C400] hover:text-[#F5C400] disabled:opacity-50">
+          <button type="submit" disabled={addPending || !newName.trim()} className="mt-4 flex cursor-pointer items-center gap-2 border border-ui-border px-4 py-2 text-xs font-bold uppercase tracking-wider text-ui-text-2 transition hover:border-[#F5C400] hover:text-[#F5C400] disabled:opacity-50">
             <Plus className="h-3.5 w-3.5" />
             {addPending ? "Menambahkan..." : "Tambah Alumni"}
           </button>

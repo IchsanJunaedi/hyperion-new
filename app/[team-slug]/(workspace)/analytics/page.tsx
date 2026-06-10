@@ -56,12 +56,12 @@ export default async function AnalyticsPage({ params, searchParams }: AnalyticsP
     <div className="space-y-6 px-4 py-6 sm:px-8">
       <header className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#252525]">
-            <BarChart3 className="h-4 w-4 text-[#9B9A97]" />
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-ui-elevated">
+            <BarChart3 className="h-4 w-4 text-ui-text-2" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-white sm:text-3xl">Analytics</h1>
-            <p className="text-xs text-[#6B6A68]">Statistik dan performa tim</p>
+            <h1 className="text-2xl font-bold text-ui-text sm:text-3xl">Analytics</h1>
+            <p className="text-xs text-ui-text-muted">Statistik dan performa tim</p>
           </div>
         </div>
         <Suspense>

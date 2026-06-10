@@ -20,13 +20,13 @@ export async function MatchmakingSection({ orgId, orgSlug }: MatchmakingSectionP
 
   return (
     <section className="space-y-4">
-      <h2 className="text-sm font-semibold text-[#E5E2E1]">Matchmaking</h2>
+      <h2 className="text-sm font-semibold text-ui-text">Matchmaking</h2>
 
       {pendingIncoming.length > 0 && (
         <div>
           <div className="flex items-center gap-2 mb-2">
             <Inbox className="h-4 w-4 text-yellow-400" />
-            <span className="text-xs font-medium text-[#9B9A97]">
+            <span className="text-xs font-medium text-ui-text-2">
               Request Masuk ({pendingIncoming.length})
             </span>
           </div>
@@ -38,7 +38,7 @@ export async function MatchmakingSection({ orgId, orgSlug }: MatchmakingSectionP
         <div>
           <div className="flex items-center gap-2 mb-2">
             <Send className="h-4 w-4 text-blue-400" />
-            <span className="text-xs font-medium text-[#9B9A97]">
+            <span className="text-xs font-medium text-ui-text-2">
               Request Keluar ({outgoing.length})
             </span>
           </div>

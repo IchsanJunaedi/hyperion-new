@@ -21,15 +21,15 @@ interface MetricCardProps {
 
 function MetricCard({ icon, label, value, sub, accent }: MetricCardProps) {
   return (
-    <div className="rounded-xl border border-[#2D2D2D] bg-[#202020] p-4 space-y-2">
-      <div className="flex items-center gap-2 text-xs text-[#6B6A68] font-medium uppercase tracking-wider">
+    <div className="rounded-xl border border-ui-border bg-ui-surface p-4 space-y-2">
+      <div className="flex items-center gap-2 text-xs text-ui-text-muted font-medium uppercase tracking-wider">
         {icon}
         {label}
       </div>
-      <p className={`text-2xl font-bold tracking-tight ${accent ?? "text-[#E5E2E1]"}`}>
+      <p className={`text-2xl font-bold tracking-tight ${accent ?? "text-ui-text"}`}>
         {value}
       </p>
-      {sub && <p className="text-xs text-[#6B6A68]">{sub}</p>}
+      {sub && <p className="text-xs text-ui-text-muted">{sub}</p>}
     </div>
   );
 }
@@ -53,8 +53,8 @@ const ExecutiveSummary = ({ summary, orgName }: ExecutiveSummaryProps) => {
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <h2 className="text-base font-semibold text-[#E5E2E1]">Executive Summary</h2>
-        <span className="text-xs text-[#6B6A68]">{orgName}</span>
+        <h2 className="text-base font-semibold text-ui-text">Executive Summary</h2>
+        <span className="text-xs text-ui-text-muted">{orgName}</span>
       </div>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">

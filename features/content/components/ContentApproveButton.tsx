@@ -86,7 +86,7 @@ const ContentActionButtons = ({
           type="button"
           disabled={pending}
           onClick={() => handleStatus("draft")}
-          className="inline-flex h-7 items-center gap-1 rounded-md border border-white/10 px-2 text-xs text-[#9B9A97] hover:bg-[#2C2C2C] disabled:opacity-50"
+          className="inline-flex h-7 items-center gap-1 rounded-md border border-white/10 px-2 text-xs text-ui-text-2 hover:bg-ui-hover disabled:opacity-50"
         >
           <RotateCcw className="h-3 w-3" /> Reject
         </button>
@@ -109,7 +109,7 @@ const ContentActionButtons = ({
         <button
           type="button"
           onClick={() => setDeleteOpen(true)}
-          className="rounded p-1 text-[#9B9A97] hover:bg-[#2C2C2C] hover:text-red-400"
+          className="rounded p-1 text-ui-text-2 hover:bg-ui-hover hover:text-red-400"
           title="Hapus konten"
         >
           <Trash2 className="h-3.5 w-3.5" />

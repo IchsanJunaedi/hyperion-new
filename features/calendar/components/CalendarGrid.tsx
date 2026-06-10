@@ -109,18 +109,18 @@ const CalendarGrid = ({
         <button
           type="button"
           onClick={() => navigateMonth(-1)}
-          className="rounded-md p-2 text-white/60 transition hover:bg-white/10 hover:text-white"
+          className="rounded-md p-2 text-white/60 transition hover:bg-white/10 hover:text-ui-text"
           aria-label="Bulan sebelumnya"
         >
           <ChevronLeft className="h-4 w-4" />
         </button>
-        <h2 className="text-sm font-semibold capitalize text-white">
+        <h2 className="text-sm font-semibold capitalize text-ui-text">
           {monthLabel}
         </h2>
         <button
           type="button"
           onClick={() => navigateMonth(1)}
-          className="rounded-md p-2 text-white/60 transition hover:bg-white/10 hover:text-white"
+          className="rounded-md p-2 text-white/60 transition hover:bg-white/10 hover:text-ui-text"
           aria-label="Bulan berikutnya"
         >
           <ChevronRight className="h-4 w-4" />
@@ -178,7 +178,7 @@ const CalendarGrid = ({
                       e.stopPropagation();
                       handleDayClick(day);
                     }}
-                    className="opacity-0 group-hover:opacity-100 flex h-5 w-5 items-center justify-center rounded text-white/40 transition hover:bg-white/10 hover:text-white"
+                    className="opacity-0 group-hover:opacity-100 flex h-5 w-5 items-center justify-center rounded text-white/40 transition hover:bg-white/10 hover:text-ui-text"
                     aria-label={`Tambah event pada ${day}`}
                   >
                     <Plus className="h-3 w-3" />
@@ -272,15 +272,15 @@ const CalendarGrid = ({
             onClick={() => setExpandedDay(null)}
           >
             <div
-              className="w-full max-w-sm rounded-xl border border-[#2D2D2D] bg-[#1C1C1C] shadow-2xl"
+              className="w-full max-w-sm rounded-xl border border-ui-border bg-ui-surface shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex items-center justify-between border-b border-[#2D2D2D] px-4 py-3">
-                <span className="text-sm font-semibold capitalize text-white">{label}</span>
+              <div className="flex items-center justify-between border-b border-ui-border px-4 py-3">
+                <span className="text-sm font-semibold capitalize text-ui-text">{label}</span>
                 <button
                   type="button"
                   onClick={() => setExpandedDay(null)}
-                  className="cursor-pointer text-white/40 transition hover:text-white"
+                  className="cursor-pointer text-white/40 transition hover:text-ui-text"
                 >
                   <X className="h-4 w-4" />
                 </button>

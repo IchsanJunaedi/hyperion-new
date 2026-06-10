@@ -127,24 +127,24 @@ const ScoutingDetailModal = ({ profile, onClose }: ScoutingDetailModalProps) => 
       onClick={onClose}
     >
       <div
-        className="my-4 w-full max-w-3xl overflow-hidden rounded-xl border border-[#2D2D2D] bg-[#202020] shadow-2xl"
+        className="my-4 w-full max-w-3xl overflow-hidden rounded-xl border border-ui-border bg-ui-surface shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-[#2D2D2D] px-6 py-4">
+        <div className="flex items-center justify-between border-b border-ui-border px-6 py-4">
           <div className="min-w-0">
-            <h3 className="text-base font-bold text-[#E5E2E1] truncate">
+            <h3 className="text-base font-bold text-ui-text truncate">
               {profile.opponent_name}
             </h3>
             {data.playstyle && (
-              <p className="mt-0.5 text-xs text-[#9B9A97] line-clamp-1">{data.playstyle}</p>
+              <p className="mt-0.5 text-xs text-ui-text-2 line-clamp-1">{data.playstyle}</p>
             )}
           </div>
           <div className="flex items-center gap-2 ml-4 shrink-0">
             <button
               type="button"
               onClick={handleExport}
-              className="inline-flex h-8 items-center gap-1.5 rounded-md border border-[#2D2D2D] px-3 text-xs text-[#9B9A97] hover:bg-[#2C2C2C] hover:text-[#E5E2E1] transition-colors cursor-pointer"
+              className="inline-flex h-8 items-center gap-1.5 rounded-md border border-ui-border px-3 text-xs text-ui-text-2 hover:bg-ui-hover hover:text-ui-text transition-colors cursor-pointer"
             >
               <Printer className="h-3.5 w-3.5" />
               Export
@@ -152,7 +152,7 @@ const ScoutingDetailModal = ({ profile, onClose }: ScoutingDetailModalProps) => 
             <button
               type="button"
               onClick={onClose}
-              className="cursor-pointer text-[#9B9A97] hover:text-[#E5E2E1]"
+              className="cursor-pointer text-ui-text-2 hover:text-ui-text"
             >
               <X className="h-4 w-4" />
             </button>
@@ -163,11 +163,11 @@ const ScoutingDetailModal = ({ profile, onClose }: ScoutingDetailModalProps) => 
         <div className="p-4 space-y-3">
           {/* Playstyle — compact inline */}
           {data.playstyle && (
-            <div className="rounded-lg border border-[#2D2D2D] bg-[#191919] px-4 py-2.5 flex items-baseline gap-2">
-              <span className="text-xs font-semibold uppercase tracking-wider text-[#6B6A68] shrink-0">
+            <div className="rounded-lg border border-ui-border bg-ui-bg px-4 py-2.5 flex items-baseline gap-2">
+              <span className="text-xs font-semibold uppercase tracking-wider text-ui-text-muted shrink-0">
                 Playstyle
               </span>
-              <p className="text-sm text-[#E5E2E1]">{data.playstyle}</p>
+              <p className="text-sm text-ui-text">{data.playstyle}</p>
             </div>
           )}
 
@@ -178,21 +178,21 @@ const ScoutingDetailModal = ({ profile, onClose }: ScoutingDetailModalProps) => 
               return (
                 <div
                   key={key}
-                  className={`rounded-lg border border-[#2D2D2D] p-3 space-y-2${idx === 4 ? " col-span-2" : ""}`}
+                  className={`rounded-lg border border-ui-border p-3 space-y-2${idx === 4 ? " col-span-2" : ""}`}
                 >
                   {/* Role header row: number + icon + label + nickname */}
                   <div className="flex items-center gap-2 min-w-0">
-                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#2C2C2C] text-xs font-medium text-[#9B9A97]">
+                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-ui-hover text-xs font-medium text-ui-text-2">
                       {idx + 1}
                     </span>
-                    <Icon className="h-3.5 w-3.5 shrink-0 text-[#9B9A97]" />
-                    <span className="text-xs font-semibold uppercase tracking-wider text-[#9B9A97]">
+                    <Icon className="h-3.5 w-3.5 shrink-0 text-ui-text-2" />
+                    <span className="text-xs font-semibold uppercase tracking-wider text-ui-text-2">
                       {label}
                     </span>
                     {role?.nickname && (
                       <>
-                        <span className="text-[#2D2D2D]">·</span>
-                        <span className="text-sm font-semibold text-[#E5E2E1] truncate">{role.nickname}</span>
+                        <span className="text-ui-border">·</span>
+                        <span className="text-sm font-semibold text-ui-text truncate">{role.nickname}</span>
                       </>
                     )}
                   </div>
@@ -205,7 +205,7 @@ const ScoutingDetailModal = ({ profile, onClose }: ScoutingDetailModalProps) => 
                           {role.heroPool!.map((hero) => (
                             <span
                               key={hero}
-                              className="inline-flex items-center gap-1 rounded-full border border-[#2D2D2D] bg-[#2C2C2C] px-1.5 py-0.5 text-xs text-[#D4D4D4]"
+                              className="inline-flex items-center gap-1 rounded-full border border-ui-border bg-ui-hover px-1.5 py-0.5 text-xs text-ui-text-dim"
                             >
                               <div className="h-3.5 w-3.5 shrink-0 overflow-hidden rounded-full border border-white/10 bg-zinc-800">
                                 <img
@@ -222,11 +222,11 @@ const ScoutingDetailModal = ({ profile, onClose }: ScoutingDetailModalProps) => 
 
                       {/* Habit */}
                       {role.habit && (
-                        <p className="text-xs text-[#9B9A97] leading-relaxed">{role.habit}</p>
+                        <p className="text-xs text-ui-text-2 leading-relaxed">{role.habit}</p>
                       )}
                     </>
                   ) : (
-                    <p className="text-xs text-[#6B6A68]">Belum diisi</p>
+                    <p className="text-xs text-ui-text-muted">Belum diisi</p>
                   )}
                 </div>
               );

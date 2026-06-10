@@ -34,8 +34,8 @@ const NewsForm = ({ entry, onDone }: Props) => {
     if (!slugTouched) setSlug(slugify(title));
   }, [title, slugTouched]);
 
-  const inputClass = "w-full border border-[#2D2D2D] bg-[#191919] px-3 py-2 text-sm text-[#E5E2E1] outline-none transition focus:border-[#F5C400]/50 placeholder:text-[#6B6A68]";
-  const labelClass = "mb-1 block text-xs font-medium text-[#9B9A97]";
+  const inputClass = "w-full border border-ui-border bg-ui-bg px-3 py-2 text-sm text-ui-text outline-none transition focus:border-[#F5C400]/50 placeholder:text-ui-text-muted";
+  const labelClass = "mb-1 block text-xs font-medium text-ui-text-2";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,7 +61,7 @@ const NewsForm = ({ entry, onDone }: Props) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 rounded border border-[#2D2D2D] bg-[#141414] p-5">
+    <form onSubmit={handleSubmit} className="space-y-4 rounded border border-ui-border bg-ui-bg p-5">
       <div>
         <label className={labelClass}>Title *</label>
         <input className={inputClass} value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Juara 1 di MPL Season 15" required />
@@ -69,7 +69,7 @@ const NewsForm = ({ entry, onDone }: Props) => {
       <div>
         <label className={labelClass}>Slug *</label>
         <input className={inputClass} value={slug} onChange={(e) => { setSlug(e.target.value); setSlugTouched(true); }} placeholder="juara-1-di-mpl-season-15" required />
-        <p className="mt-1 text-[10px] text-[#6B6A68]">URL: /news/{slug || "..."}</p>
+        <p className="mt-1 text-[10px] text-ui-text-muted">URL: /news/{slug || "..."}</p>
       </div>
       <div>
         <label className={labelClass}>Excerpt (ringkasan singkat)</label>
@@ -90,9 +90,9 @@ const NewsForm = ({ entry, onDone }: Props) => {
             value={category ?? ""}
             onChange={(e) => setCategory(e.target.value || null)}
           >
-            <option value="" className="bg-[#191919] text-[#6B6A68]">— Pilih Kategori (opsional) —</option>
+            <option value="" className="bg-ui-bg text-ui-text-muted">— Pilih Kategori (opsional) —</option>
             {CATEGORIES.map((cat) => (
-              <option key={cat.value} value={cat.value} className="bg-[#191919] text-[#E5E2E1]">
+              <option key={cat.value} value={cat.value} className="bg-ui-bg text-ui-text">
                 {cat.label}
               </option>
             ))}
@@ -115,7 +115,7 @@ const NewsForm = ({ entry, onDone }: Props) => {
         <div className="flex gap-2">
           {(["draft", "published"] as const).map((s) => (
             <button key={s} type="button" onClick={() => setStatus(s)}
-              className={`px-4 py-1.5 text-xs font-bold uppercase tracking-wider border transition cursor-pointer ${status === s ? "border-[#F5C400] bg-[#F5C400] text-black" : "border-[#2D2D2D] text-[#6B6A68] hover:border-[#F5C400]/50 hover:text-[#F5C400]"}`}>
+              className={`px-4 py-1.5 text-xs font-bold uppercase tracking-wider border transition cursor-pointer ${status === s ? "border-[#F5C400] bg-[#F5C400] text-black" : "border-ui-border text-ui-text-muted hover:border-[#F5C400]/50 hover:text-[#F5C400]"}`}>
               {s === "draft" ? "Draft" : "Published"}
             </button>
           ))}
@@ -127,7 +127,7 @@ const NewsForm = ({ entry, onDone }: Props) => {
           {saving ? "Menyimpan..." : entry ? "Simpan" : "Buat Artikel"}
         </button>
         <button type="button" onClick={onDone}
-          className="cursor-pointer border border-[#2D2D2D] px-5 py-2 text-xs font-bold uppercase tracking-wider text-[#9B9A97] transition hover:border-[#E5E2E1] hover:text-[#E5E2E1]">
+          className="cursor-pointer border border-ui-border px-5 py-2 text-xs font-bold uppercase tracking-wider text-ui-text-2 transition hover:border-ui-text hover:text-ui-text">
           Batal
         </button>
       </div>

@@ -32,7 +32,7 @@ const PollPageClient = ({ polls, orgSlug, canManage, userId }: PollPageClientPro
             <button
               type="button"
               onClick={() => setShowForm(true)}
-              className="inline-flex h-9 items-center gap-2 rounded-md border border-[#2D2D2D] bg-[#202020] px-4 text-xs font-medium text-[#E5E2E1] hover:bg-[#2C2C2C] cursor-pointer"
+              className="inline-flex h-9 items-center gap-2 rounded-md border border-ui-border bg-ui-surface px-4 text-xs font-medium text-ui-text hover:bg-ui-hover cursor-pointer"
             >
               <Plus className="h-3.5 w-3.5" />
               Buat Poll

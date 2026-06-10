@@ -3,49 +3,77 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ── Light theme (default) — warm cream palette ───────────────────────────── */
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  /* shadcn base (updated for warm light theme) */
+  --background: #FDF6E3;
+  --foreground: #2D2B27;
+  --card: #F5EDDA;
+  --card-foreground: #2D2B27;
+  --popover: #F5EDDA;
+  --popover-foreground: #2D2B27;
+  --primary: #2D2B27;
+  --primary-foreground: #FDF6E3;
+  --secondary: #EDE5CF;
+  --secondary-foreground: #2D2B27;
+  --muted: #EDE5CF;
+  --muted-foreground: #6B6460;
+  --accent: #E8DCC8;
+  --accent-foreground: #2D2B27;
   --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --destructive-foreground: #FDF6E3;
+  --border: #E0D5C0;
+  --input: #E0D5C0;
+  --ring: #9B9590;
   --radius: 0.625rem;
+
+  /* ── UI semantic tokens — light ── */
+  --ui-bg: #FDF6E3;
+  --ui-surface: #F5EDDA;
+  --ui-elevated: #EDE5CF;
+  --ui-hover: #E8DCC8;
+  --ui-hover-strong: #DDD4BB;
+  --ui-border: #E0D5C0;
+  --ui-text: #2D2B27;
+  --ui-text-dim: #3D3B36;
+  --ui-text-2: #6B6460;
+  --ui-text-muted: #9B9590;
 }
 
+/* ── Dark theme — existing Notion-dark palette ────────────────────────────── */
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  /* shadcn base */
+  --background: #191919;
+  --foreground: #E5E2E1;
+  --card: #202020;
+  --card-foreground: #E5E2E1;
+  --popover: #202020;
+  --popover-foreground: #E5E2E1;
+  --primary: #E5E2E1;
+  --primary-foreground: #191919;
+  --secondary: #252525;
+  --secondary-foreground: #E5E2E1;
+  --muted: #252525;
+  --muted-foreground: #9B9A97;
+  --accent: #2C2C2C;
+  --accent-foreground: #E5E2E1;
   --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
+  --destructive-foreground: #E5E2E1;
+  --border: #2D2D2D;
+  --input: #2D2D2D;
+  --ring: #6B6A68;
+
+  /* ── UI semantic tokens — dark ── */
+  --ui-bg: #191919;
+  --ui-surface: #202020;
+  --ui-elevated: #252525;
+  --ui-hover: #2C2C2C;
+  --ui-hover-strong: #353434;
+  --ui-border: #2D2D2D;
+  --ui-text: #E5E2E1;
+  --ui-text-dim: #D4D4D4;
+  --ui-text-2: #9B9A97;
+  --ui-text-muted: #6B6A68;
 }
 
 @theme inline {
@@ -77,9 +105,19 @@
   --font-bebas: var(--font-bebas);
   --font-orbitron: var(--font-orbitron);
   --font-serif: var(--font-serif);
-  /* Brand yellow used on the marketing landing — matches the "HYPERION TEAM"
-     wordmark on the live Laravel site (rgb(222, 179, 4)). */
+  /* Brand yellow */
   --color-brand-yellow: oklch(0.781 0.149 86.78);
+  /* ── UI semantic tokens → Tailwind utilities ── */
+  --color-ui-bg: var(--ui-bg);
+  --color-ui-surface: var(--ui-surface);
+  --color-ui-elevated: var(--ui-elevated);
+  --color-ui-hover: var(--ui-hover);
+  --color-ui-hover-strong: var(--ui-hover-strong);
+  --color-ui-border: var(--ui-border);
+  --color-ui-text: var(--ui-text);
+  --color-ui-text-dim: var(--ui-text-dim);
+  --color-ui-text-2: var(--ui-text-2);
+  --color-ui-text-muted: var(--ui-text-muted);
 }
 
 @layer base {

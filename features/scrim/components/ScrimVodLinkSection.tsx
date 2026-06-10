@@ -18,7 +18,7 @@ function detectPlatform(url: string) {
     return { name: "YouTube", icon: Youtube, color: "text-red-500", bg: "bg-red-500/10" };
   }
   if (lowerUrl.includes("tiktok.com")) {
-    return { name: "TikTok", icon: Video, color: "text-white", bg: "bg-white/10" };
+    return { name: "TikTok", icon: Video, color: "text-ui-text", bg: "bg-white/10" };
   }
   if (lowerUrl.includes("twitch.tv")) {
     return { name: "Twitch", icon: Video, color: "text-purple-400", bg: "bg-purple-500/10" };
@@ -61,14 +61,14 @@ const ScrimVodLinkSection = ({ scrimId, initialLink, canEdit }: ScrimVodLinkSect
   return (
     <article className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
       <div className="flex items-center justify-between mb-3">
-        <h2 className="text-sm font-semibold text-white">VOD / Livestream</h2>
+        <h2 className="text-sm font-semibold text-ui-text">VOD / Livestream</h2>
         {canEdit && !isEditing && (
           <button
             onClick={() => {
               setInputUrl(vodLink ?? "");
               setIsEditing(true);
             }}
-            className="text-xs font-medium text-white/50 hover:text-white transition-colors"
+            className="text-xs font-medium text-white/50 hover:text-ui-text transition-colors"
           >
             {vodLink ? "Edit" : "Tambah"}
           </button>
@@ -88,7 +88,7 @@ const ScrimVodLinkSection = ({ scrimId, initialLink, canEdit }: ScrimVodLinkSect
                 <PlatformIcon className={cn("h-4 w-4", platform?.color)} />
               </div>
               <div className="min-w-0">
-                <p className="text-sm font-medium text-white">{platform?.name} VOD</p>
+                <p className="text-sm font-medium text-ui-text">{platform?.name} VOD</p>
                 <p className="truncate text-xs text-white/40">{vodLink}</p>
               </div>
             </div>
@@ -106,14 +106,14 @@ const ScrimVodLinkSection = ({ scrimId, initialLink, canEdit }: ScrimVodLinkSect
             value={inputUrl}
             onChange={(e) => setInputUrl(e.target.value)}
             placeholder="https://youtube.com/..."
-            className="w-full rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder-white/20 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            className="w-full rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm text-ui-text placeholder-white/20 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
             autoFocus
           />
           <div className="flex items-center justify-end gap-2">
             <button
               onClick={() => setIsEditing(false)}
               disabled={isSubmitting}
-              className="rounded-md px-3 py-1.5 text-xs text-white/50 hover:text-white"
+              className="rounded-md px-3 py-1.5 text-xs text-white/50 hover:text-ui-text"
             >
               Batal
             </button>

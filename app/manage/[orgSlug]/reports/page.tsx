@@ -40,9 +40,9 @@ const ManageReportsPage = async ({ params, searchParams }: Props) => {
       <header>
         <div className="flex items-center gap-2">
           <FileText className="h-5 w-5 text-purple-400" />
-          <h1 className="text-xl font-bold text-[#E5E2E1]">Laporan Bulanan</h1>
+          <h1 className="text-xl font-bold text-ui-text">Laporan Bulanan</h1>
         </div>
-        <p className="text-sm text-[#9B9A97] mt-1">
+        <p className="text-sm text-ui-text-2 mt-1">
           Ringkasan performa tim per bulan.
         </p>
       </header>
@@ -57,7 +57,7 @@ const ManageReportsPage = async ({ params, searchParams }: Props) => {
               className={`inline-flex h-8 items-center rounded-full px-3 text-xs font-medium transition ${
                 active
                   ? "bg-white text-black"
-                  : "bg-[#202020] text-[#9B9A97] hover:bg-[#2C2C2C] hover:text-[#E5E2E1]"
+                  : "bg-ui-surface text-ui-text-2 hover:bg-ui-hover hover:text-ui-text"
               }`}
             >
               {m.label}

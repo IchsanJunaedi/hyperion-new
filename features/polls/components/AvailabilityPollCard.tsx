@@ -95,17 +95,17 @@ const AvailabilityPollCard = ({
   const uniqueVoters = new Set(poll.availability_votes.map((v) => v.user_id)).size;
 
   return (
-    <div className="rounded-xl border border-[#2D2D2D] bg-[#202020] p-4 space-y-3">
+    <div className="rounded-xl border border-ui-border bg-ui-surface p-4 space-y-3">
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-center gap-2">
           <CalendarCheck2 className="h-4 w-4 text-teal-400 shrink-0" />
-          <h3 className="text-sm font-medium text-[#E5E2E1]">{poll.question}</h3>
+          <h3 className="text-sm font-medium text-ui-text">{poll.question}</h3>
         </div>
-        {isClosed && <Lock className="h-3.5 w-3.5 text-[#6B6A68] shrink-0" />}
+        {isClosed && <Lock className="h-3.5 w-3.5 text-ui-text-muted shrink-0" />}
       </div>
 
       {slots.length === 0 ? (
-        <p className="text-xs text-[#6B6A68]">Tidak ada slot waktu.</p>
+        <p className="text-xs text-ui-text-muted">Tidak ada slot waktu.</p>
       ) : (
         <div className="space-y-1.5">
           {slots.map((slot, i) => {
@@ -124,7 +124,7 @@ const AvailabilityPollCard = ({
                   "relative w-full overflow-hidden rounded-md border text-left transition cursor-pointer disabled:cursor-default",
                   isSelected
                     ? "border-teal-500/50 bg-teal-500/10"
-                    : "border-[#2D2D2D] hover:border-white/20",
+                    : "border-ui-border hover:border-white/20",
                 )}
               >
                 <div
@@ -132,10 +132,10 @@ const AvailabilityPollCard = ({
                   style={{ width: `${pct}%` }}
                 />
                 <div className="relative flex items-center justify-between px-3 py-2">
-                  <span className={cn("text-xs", isSelected ? "text-teal-400 font-medium" : "text-[#9B9A97]")}>
+                  <span className={cn("text-xs", isSelected ? "text-teal-400 font-medium" : "text-ui-text-2")}>
                     {isSelected && "✓ "}{formatSlot(slot)}
                   </span>
-                  <span className="text-[10px] text-[#6B6A68] shrink-0 ml-2">
+                  <span className="text-[10px] text-ui-text-muted shrink-0 ml-2">
                     {count} bisa
                   </span>
                 </div>
@@ -162,7 +162,7 @@ const AvailabilityPollCard = ({
         </p>
       )}
 
-      <div className="flex items-center justify-between text-[10px] text-[#6B6A68]">
+      <div className="flex items-center justify-between text-[10px] text-ui-text-muted">
         <span>{uniqueVoters} member sudah pilih</span>
         <div className="flex items-center gap-3">
           {poll.expires_at && !isClosed && (

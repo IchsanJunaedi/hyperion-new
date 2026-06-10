@@ -92,7 +92,7 @@ function PremiumSelect({ id, name, options, defaultValue = "" }: PremiumSelectPr
                 className={`flex w-full items-center rounded px-3 py-2 text-left text-sm transition-all duration-150 ${
                   isSelected
                     ? "bg-yellow-400 text-black font-semibold shadow-md"
-                    : "text-white/80 hover:bg-white/5 hover:text-white"
+                    : "text-white/80 hover:bg-white/5 hover:text-ui-text"
                 }`}
               >
                 <span className="truncate">{opt.label}</span>
@@ -148,7 +148,7 @@ const CalendarEventForm = ({ orgSlug, divisions }: CalendarEventFormProps) => {
     >
       {/* Tip Banner */}
       <div className="rounded-lg bg-zinc-950/60 p-4 text-xs leading-relaxed text-white/55 border border-white/5 mb-2">
-        <span className="font-semibold text-yellow-400">Tips Senior:</span> Turnamen resmi tim dibuat melalui menu <strong className="text-white">Turnamen</strong> agar otomatis sinkron dengan sistem kehadiran dan rekapitulasi data.
+        <span className="font-semibold text-yellow-400">Tips Senior:</span> Turnamen resmi tim dibuat melalui menu <strong className="text-ui-text">Turnamen</strong> agar otomatis sinkron dengan sistem kehadiran dan rekapitulasi data.
       </div>
 
       <Field label="Judul event" name="title" errors={fieldErrors["title"]}>

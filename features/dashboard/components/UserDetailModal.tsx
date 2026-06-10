@@ -49,12 +49,12 @@ const UserDetailModal = ({ user, onClose }: UserDetailModalProps) => {
       >
         <div className="flex items-start justify-between mb-4">
           <div>
-            <h3 className="text-lg font-bold text-white">
+            <h3 className="text-lg font-bold text-ui-text">
               {user.fullName ?? user.username ?? "—"}
             </h3>
             {user.username && <p className="text-xs text-white/50">@{user.username}</p>}
           </div>
-          <button onClick={onClose} className="rounded-md p-1 text-white/40 hover:bg-white/10 hover:text-white">
+          <button onClick={onClose} className="rounded-md p-1 text-white/40 hover:bg-white/10 hover:text-ui-text">
             <X className="h-4 w-4" />
           </button>
         </div>

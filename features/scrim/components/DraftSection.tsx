@@ -98,8 +98,8 @@ function BanSlotPicker({
           value
             ? "border-red-500/60 hover:border-red-400"
             : open
-            ? "border-[#5D5D5D] bg-[#1a1a1a]"
-            : "border-dashed border-[#3D3D3D] bg-[#141414] hover:border-[#5D5D5D]",
+            ? "border-[#5D5D5D] bg-ui-hover"
+            : "border-dashed border-[#3D3D3D] bg-ui-bg hover:border-[#5D5D5D]",
         )}
       >
         {value ? (
@@ -124,7 +124,7 @@ function BanSlotPicker({
       {open && (
         <div
           className={cn(
-            "absolute top-[calc(100%+8px)] z-[200] w-52 overflow-hidden rounded-xl border border-[#3A3A3A] bg-[#1C1C1C]",
+            "absolute top-[calc(100%+8px)] z-[200] w-52 overflow-hidden rounded-xl border border-[#3A3A3A] bg-ui-surface",
             "shadow-[0_8px_32px_rgba(0,0,0,0.85)] ring-1 ring-white/[0.06]",
             align === "right" ? "right-0" : "left-0",
           )}
@@ -133,26 +133,26 @@ function BanSlotPicker({
             <button
               type="button"
               onClick={() => { onChange(""); setOpen(false); }}
-              className="flex w-full items-center gap-2 border-b border-[#2D2D2D] px-3 py-2 text-[10px] text-rose-400 transition-colors hover:bg-[#252525]"
+              className="flex w-full items-center gap-2 border-b border-ui-border px-3 py-2 text-[10px] text-rose-400 transition-colors hover:bg-ui-elevated"
             >
               <X className="h-3 w-3" />
               Hapus ban
             </button>
           )}
-          <div className="flex items-center gap-2 border-b border-[#2D2D2D] px-3 py-2.5">
-            <Search className="h-3.5 w-3.5 shrink-0 text-[#6B6A68]" />
+          <div className="flex items-center gap-2 border-b border-ui-border px-3 py-2.5">
+            <Search className="h-3.5 w-3.5 shrink-0 text-ui-text-muted" />
             <input
               ref={inputRef}
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Cari hero…"
-              className="flex-1 bg-transparent text-xs text-[#E5E2E1] outline-none placeholder:text-[#6B6A68]"
+              className="flex-1 bg-transparent text-xs text-ui-text outline-none placeholder:text-ui-text-muted"
             />
           </div>
           <ul className="sidebar-scroll max-h-52 overflow-y-auto py-1">
             {filtered.length === 0 ? (
-              <li className="px-3 py-4 text-center text-xs text-[#6B6A68]">Tidak ditemukan</li>
+              <li className="px-3 py-4 text-center text-xs text-ui-text-muted">Tidak ditemukan</li>
             ) : (
               filtered.map((hero) => (
                 <li key={hero}>
@@ -160,8 +160,8 @@ function BanSlotPicker({
                     type="button"
                     onClick={() => { onChange(hero); setOpen(false); }}
                     className={cn(
-                      "flex w-full cursor-pointer items-center gap-2.5 px-3 py-2 text-xs transition-colors hover:bg-[#252525]",
-                      hero === value ? "bg-red-500/10 text-red-300" : "text-[#E5E2E1]",
+                      "flex w-full cursor-pointer items-center gap-2.5 px-3 py-2 text-xs transition-colors hover:bg-ui-elevated",
+                      hero === value ? "bg-red-500/10 text-red-300" : "text-ui-text",
                     )}
                   >
                     <div className="h-6 w-6 shrink-0 overflow-hidden rounded-full border border-white/10">
@@ -215,7 +215,7 @@ function PlayerDropdown({
           "flex h-6 w-full cursor-pointer items-center gap-1.5 rounded px-1.5 text-[10px] transition-colors",
           selected
             ? "bg-emerald-500/10 text-emerald-300 border border-emerald-500/20"
-            : "bg-[#1a1a1a] border border-[#2D2D2D] text-[#6B6A68] hover:border-[#3D3D3D]",
+            : "bg-ui-hover border border-ui-border text-ui-text-muted hover:border-[#3D3D3D]",
         )}
       >
         <User className="h-2.5 w-2.5 shrink-0" />
@@ -226,11 +226,11 @@ function PlayerDropdown({
       </button>
 
       {open && (
-        <div className="absolute left-0 right-0 top-full z-50 mt-0.5 overflow-hidden rounded-lg border border-[#2D2D2D] bg-[#1C1C1C] shadow-xl shadow-black/60">
+        <div className="absolute left-0 right-0 top-full z-50 mt-0.5 overflow-hidden rounded-lg border border-ui-border bg-ui-surface shadow-xl shadow-black/60">
           <button
             type="button"
             onClick={() => { onChange(null); setOpen(false); }}
-            className="flex w-full px-2 py-1.5 text-[10px] text-[#6B6A68] hover:bg-[#252525] transition-colors"
+            className="flex w-full px-2 py-1.5 text-[10px] text-ui-text-muted hover:bg-ui-elevated transition-colors"
           >
             — Tidak ada —
           </button>
@@ -240,8 +240,8 @@ function PlayerDropdown({
               type="button"
               onClick={() => { onChange(p.userId); setOpen(false); }}
               className={cn(
-                "flex w-full items-center justify-between gap-2 px-2 py-1.5 text-[10px] transition-colors hover:bg-[#252525]",
-                p.userId === playerId ? "bg-emerald-500/10 text-emerald-300" : "text-[#E5E2E1]",
+                "flex w-full items-center justify-between gap-2 px-2 py-1.5 text-[10px] transition-colors hover:bg-ui-elevated",
+                p.userId === playerId ? "bg-emerald-500/10 text-emerald-300" : "text-ui-text",
               )}
             >
               <span className="truncate">{p.displayName ?? "Unknown"}</span>
@@ -303,8 +303,8 @@ const DraftSection = ({ draft, attendingPlayers, onOurChange, onEnemyChange, onB
     <div className="space-y-2">
       {/* ── Section header ───────────────────────────────────────────── */}
       <div className="flex items-center gap-1.5">
-        <Ban className="h-3 w-3 text-[#6B6A68]" />
-        <p className="text-[10px] font-semibold uppercase tracking-wider text-[#6B6A68]">Ban Hero &amp; Draft</p>
+        <Ban className="h-3 w-3 text-ui-text-muted" />
+        <p className="text-[10px] font-semibold uppercase tracking-wider text-ui-text-muted">Ban Hero &amp; Draft</p>
       </div>
 
       {/* ── 2-column grid: Our | Enemy ───────────────────────────────── */}
@@ -334,7 +334,7 @@ const DraftSection = ({ draft, attendingPlayers, onOurChange, onEnemyChange, onB
               : ROLE_LABELS[role];
             return (
               <div key={role}>
-                <p className="mb-0.5 truncate text-[10px] text-[#6B6A68]" title={slotLabel}>
+                <p className="mb-0.5 truncate text-[10px] text-ui-text-muted" title={slotLabel}>
                   {slotLabel}
                 </p>
                 <HeroPicker
@@ -373,7 +373,7 @@ const DraftSection = ({ draft, attendingPlayers, onOurChange, onEnemyChange, onB
           {/* Pick rows */}
           {ROLES.map((role) => (
             <div key={role}>
-              <p className="mb-0.5 text-[10px] text-[#6B6A68]">{ROLE_LABELS[role]}</p>
+              <p className="mb-0.5 text-[10px] text-ui-text-muted">{ROLE_LABELS[role]}</p>
               <HeroPicker
                 value={draft.enemy[role]}
                 onChange={(hero) => onEnemyChange(role, hero)}

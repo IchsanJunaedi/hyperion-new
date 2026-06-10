@@ -3,6 +3,7 @@
 import Link from "next/link";
 
 import { NotificationBell } from "@/features/notifications/components/NotificationBell";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import type { Database } from "@/types/database";
 
 type Organization = Database["public"]["Tables"]["organizations"]["Row"];
@@ -15,7 +16,7 @@ const WorkspaceTopbar = ({
   userId: string;
 }) => {
   return (
-    <header className="print-hide sticky top-0 z-30 flex h-14 items-center justify-between gap-3 border-b border-white/5 bg-background/85 px-4 backdrop-blur md:hidden">
+    <header className="print-hide sticky top-0 z-30 flex h-14 items-center justify-between gap-3 border-b border-ui-border bg-background/85 px-4 backdrop-blur md:hidden">
       <Link href={`/${organization.slug}`} className="flex items-center gap-2">
         {organization.logo_url ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -29,11 +30,14 @@ const WorkspaceTopbar = ({
             {organization.name.slice(0, 1).toUpperCase()}
           </div>
         )}
-        <span className="truncate text-sm font-semibold text-white">
+        <span className="truncate text-sm font-semibold text-ui-text">
           {organization.name}
         </span>
       </Link>
-      <NotificationBell userId={userId} orgSlug={organization.slug} />
+      <div className="flex items-center gap-1.5">
+        <ThemeToggle variant="icon" />
+        <NotificationBell userId={userId} orgSlug={organization.slug} />
+      </div>
     </header>
   );
 };

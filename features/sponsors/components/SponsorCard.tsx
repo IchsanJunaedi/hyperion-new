@@ -33,19 +33,19 @@ const SponsorCard = ({ sponsor, detailHref, showOrgName = false }: SponsorCardPr
   const initials = sponsor.name.slice(0, 2).toUpperCase();
 
   return (
-    <div className="flex flex-col gap-3 rounded-xl border border-[#2D2D2D] bg-[#1C1C1C] p-4">
+    <div className="flex flex-col gap-3 rounded-xl border border-ui-border bg-ui-surface p-4">
       {/* Header */}
       <div className="flex items-start gap-3">
         {sponsor.logo_url ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={sponsor.logo_url} alt={sponsor.name} className="h-10 w-10 shrink-0 rounded-lg object-cover" />
         ) : (
-          <div className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-[#2C2C2C] text-sm font-bold text-white/70">
+          <div className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-ui-hover text-sm font-bold text-white/70">
             {initials}
           </div>
         )}
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-semibold text-white">{sponsor.name}</p>
+          <p className="truncate text-sm font-semibold text-ui-text">{sponsor.name}</p>
           {showOrgName && sponsor.organizationName && (
             <p className="truncate text-[10px] text-white/35 mt-0.5">{sponsor.organizationName}</p>
           )}
@@ -73,7 +73,7 @@ const SponsorCard = ({ sponsor, detailHref, showOrgName = false }: SponsorCardPr
             <span>Deliverable</span>
             <span>{sponsor.deliverableDone}/{sponsor.deliverableTotal}</span>
           </div>
-          <div className="h-1.5 w-full rounded-full bg-[#2D2D2D]">
+          <div className="h-1.5 w-full rounded-full bg-ui-border">
             <div
               className="h-1.5 rounded-full bg-green-500/70 transition-all"
               style={{ width: `${progressPct}%` }}
@@ -84,7 +84,7 @@ const SponsorCard = ({ sponsor, detailHref, showOrgName = false }: SponsorCardPr
 
       <Link
         href={detailHref}
-        className="mt-auto inline-flex h-8 items-center justify-center rounded-md border border-[#2D2D2D] text-xs text-white/60 transition hover:bg-white/5 hover:text-white"
+        className="mt-auto inline-flex h-8 items-center justify-center rounded-md border border-ui-border text-xs text-white/60 transition hover:bg-white/5 hover:text-ui-text"
       >
         Lihat Detail
       </Link>

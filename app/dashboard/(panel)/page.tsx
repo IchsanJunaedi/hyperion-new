@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import { Crown, Plus, Users, Tags, Settings, FileOutput, Shield, Building2, ChevronRight } from "lucide-react";
 
 import { createClient } from "@/lib/supabase/server";
@@ -25,11 +25,11 @@ export default async function DashboardPage() {
   const ownerEmail = process.env.OWNER_EMAIL || process.env.E2E_OWNER_EMAIL;
   if (!user || !ownerEmail || user.email !== ownerEmail) {
     return (
-      <main className="flex min-h-screen items-center justify-center px-4 bg-[#191919]">
+      <main className="flex min-h-screen items-center justify-center px-4 bg-ui-bg">
         <div className="text-center">
-          <h1 className="text-xl font-bold text-[#E5E2E1]">Akses Ditolak</h1>
-          <p className="mt-2 text-sm text-[#9B9A97]">Halaman ini hanya untuk Owner.</p>
-          <Link href="/" className="mt-4 inline-block text-sm text-[#9B9A97] hover:text-[#D4D4D4]">← Kembali</Link>
+          <h1 className="text-xl font-bold text-ui-text">Akses Ditolak</h1>
+          <p className="mt-2 text-sm text-ui-text-2">Halaman ini hanya untuk Owner.</p>
+          <Link href="/" className="mt-4 inline-block text-sm text-ui-text-2 hover:text-ui-text-dim">← Kembali</Link>
         </div>
       </main>
     );
@@ -91,10 +91,10 @@ export default async function DashboardPage() {
       <main className="flex-1 max-w-[900px] w-full mx-auto px-4 sm:px-8 py-12 flex flex-col gap-10">
         {/* Title + Stats */}
         <div>
-          <Crown className="h-8 w-8 text-[#9B9A97] mb-3" />
-          <h1 className="font-bold text-[36px] leading-tight text-[#E5E2E1]">Home</h1>
-          <p className="text-[#9B9A97] mt-1 mb-6">Workspace owner overview and controls.</p>
-          <div className="flex flex-wrap gap-x-12 gap-y-4 border-b border-[#2D2D2D] pb-6">
+          <Crown className="h-8 w-8 text-ui-text-2 mb-3" />
+          <h1 className="font-bold text-[36px] leading-tight text-ui-text">Home</h1>
+          <p className="text-ui-text-2 mt-1 mb-6">Workspace owner overview and controls.</p>
+          <div className="flex flex-wrap gap-x-12 gap-y-4 border-b border-ui-border pb-6">
             <Stat label="Total User" value={totalUsers ?? 0} />
             <Stat label="Total Tim" value={orgs?.length ?? 0} />
             <Stat label="Member Aktif" value={members?.length ?? 0} />
@@ -109,26 +109,26 @@ export default async function DashboardPage() {
 
         {/* Action buttons */}
         <div className="flex flex-wrap gap-2">
-          <Link href="/dashboard/assign" className="inline-flex h-9 items-center gap-2 rounded px-4 text-sm font-medium bg-[#E5E2E1] text-[#191919] hover:bg-white transition-colors">
+          <Link href="/dashboard/assign" className="inline-flex h-9 items-center gap-2 rounded px-4 text-sm font-medium bg-ui-text text-ui-bg hover:bg-white transition-colors">
             <Plus className="h-4 w-4" /> Assign Role
           </Link>
-          <Link href="/dashboard/users" className="inline-flex h-9 items-center gap-2 rounded px-4 text-sm text-[#9B9A97] hover:bg-[#2C2C2C] transition-colors">
+          <Link href="/dashboard/users" className="inline-flex h-9 items-center gap-2 rounded px-4 text-sm text-ui-text-2 hover:bg-ui-hover transition-colors">
             <Users className="h-4 w-4" /> Kelola Anggota
           </Link>
-          <Link href="/dashboard/divisions" className="inline-flex h-9 items-center gap-2 rounded px-4 text-sm text-[#9B9A97] hover:bg-[#2C2C2C] transition-colors">
+          <Link href="/dashboard/divisions" className="inline-flex h-9 items-center gap-2 rounded px-4 text-sm text-ui-text-2 hover:bg-ui-hover transition-colors">
             <Tags className="h-4 w-4" /> Kelola Divisi
           </Link>
-          <Link href="/dashboard/teams" className="inline-flex h-9 items-center gap-2 rounded px-4 text-sm text-[#9B9A97] hover:bg-[#2C2C2C] transition-colors">
+          <Link href="/dashboard/teams" className="inline-flex h-9 items-center gap-2 rounded px-4 text-sm text-ui-text-2 hover:bg-ui-hover transition-colors">
             <Settings className="h-4 w-4" /> Setting Tim
           </Link>
-          <Link href="/dashboard/export" className="inline-flex h-9 items-center gap-2 rounded px-4 text-sm text-[#9B9A97] hover:bg-[#2C2C2C] transition-colors">
+          <Link href="/dashboard/export" className="inline-flex h-9 items-center gap-2 rounded px-4 text-sm text-ui-text-2 hover:bg-ui-hover transition-colors">
             <FileOutput className="h-4 w-4" /> Export Data
           </Link>
         </div>
 
         {/* Buat Tim */}
-        <div className="border border-[#2D2D2D] rounded-lg p-6">
-          <h2 className="text-lg font-semibold text-[#E5E2E1] mb-4">Buat Tim Baru</h2>
+        <div className="border border-ui-border rounded-lg p-6">
+          <h2 className="text-lg font-semibold text-ui-text mb-4">Buat Tim Baru</h2>
           <CreateTeamForm existingDivisions={(allDivisions ?? []).filter((d) => !d.organization_id).map((d) => ({ id: d.id, name: d.name }))} />
         </div>
 
@@ -137,11 +137,11 @@ export default async function DashboardPage() {
           <div className="flex items-center justify-between">
             <Link
               href="/dashboard/managers"
-              className="group flex items-center gap-2 text-lg font-semibold text-[#E5E2E1] hover:text-white transition-colors"
+              className="group flex items-center gap-2 text-lg font-semibold text-ui-text hover:text-ui-text transition-colors"
             >
-              <Shield className="h-4 w-4 text-[#9B9A97]" />
+              <Shield className="h-4 w-4 text-ui-text-2" />
               <span>Manager — Tim & Divisi</span>
-              <ChevronRight className="h-4 w-4 text-[#9B9A97] transition-transform group-hover:translate-x-0.5" />
+              <ChevronRight className="h-4 w-4 text-ui-text-2 transition-transform group-hover:translate-x-0.5" />
             </Link>
           </div>
           <ManagerTimDivisiTable
@@ -164,7 +164,7 @@ export default async function DashboardPage() {
         {/* User Active (max 7) */}
         <HomeSection
           title="User Active"
-          icon={<Users className="h-4 w-4 text-[#9B9A97]" />}
+          icon={<Users className="h-4 w-4 text-ui-text-2" />}
           href="/dashboard/users"
           emptyText="Belum ada user"
           rows={(profiles ?? [])
@@ -252,8 +252,8 @@ export default async function DashboardPage() {
 function Stat({ label, value }: { label: string; value: number }) {
   return (
     <div className="flex flex-col items-center gap-1">
-      <span className="text-[#9B9A97] text-xs font-medium uppercase tracking-wider">{label}</span>
-      <span className="text-[#E5E2E1] text-3xl font-bold tabular-nums tracking-tight leading-none">{value}</span>
+      <span className="text-ui-text-2 text-xs font-medium uppercase tracking-wider">{label}</span>
+      <span className="text-ui-text text-3xl font-bold tabular-nums tracking-tight leading-none">{value}</span>
     </div>
   );
 }

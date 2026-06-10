@@ -87,16 +87,16 @@ const ExportButtons = () => {
           type="button"
           disabled={loading !== null}
           onClick={() => handleExport(exp.key)}
-          className="flex items-center gap-3 rounded-lg border border-[#2D2D2D] bg-[#202020] p-4 text-left transition hover:bg-[#2C2C2C] disabled:opacity-50"
+          className="flex items-center gap-3 rounded-lg border border-ui-border bg-ui-surface p-4 text-left transition hover:bg-ui-hover disabled:opacity-50"
         >
           {loading === exp.key ? (
-            <Loader2 className="h-5 w-5 animate-spin text-[#9B9A97]" />
+            <Loader2 className="h-5 w-5 animate-spin text-ui-text-2" />
           ) : (
-            <Download className="h-5 w-5 text-[#9B9A97]" />
+            <Download className="h-5 w-5 text-ui-text-2" />
           )}
           <div>
-            <p className="text-sm font-medium text-[#D4D4D4]">{exp.label}</p>
-            <p className="text-xs text-[#6B6A68]">{exp.description}</p>
+            <p className="text-sm font-medium text-ui-text-dim">{exp.label}</p>
+            <p className="text-xs text-ui-text-muted">{exp.description}</p>
           </div>
         </button>
       ))}

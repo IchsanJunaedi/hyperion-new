@@ -39,10 +39,10 @@ const TournamentsAdminClient = ({ tournaments: initial }: Props) => {
     <div>
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-xl font-black uppercase tracking-tight text-white">
+        <h1 className="text-xl font-black uppercase tracking-tight text-ui-text">
           Tournaments & Schedule
         </h1>
-        <p className="mt-1 max-w-lg text-xs leading-relaxed text-[#6B6A68]">
+        <p className="mt-1 max-w-lg text-xs leading-relaxed text-ui-text-muted">
           Tandai tournament sebagai <span className="font-semibold text-[#F5C400]/80">Publik</span> untuk
           menampilkannya di halaman <span className="text-white/50">/schedule</span> dan upcoming matches di homepage.
           Tournament publik yang paling dekat otomatis tampil sebagai countdown di hero section.
@@ -64,10 +64,10 @@ const TournamentsAdminClient = ({ tournaments: initial }: Props) => {
 
       {/* Empty state */}
       {tournaments.length === 0 && (
-        <div className="flex flex-col items-center justify-center rounded border border-[#2D2D2D] py-16 text-center">
-          <CalendarRange className="mb-3 h-8 w-8 text-[#6B6A68]" />
-          <p className="text-sm text-[#6B6A68]">Belum ada tournament yang dikonfirmasi pendaftarannya.</p>
-          <p className="mt-1 text-xs text-[#6B6A68]">
+        <div className="flex flex-col items-center justify-center rounded border border-ui-border py-16 text-center">
+          <CalendarRange className="mb-3 h-8 w-8 text-ui-text-muted" />
+          <p className="text-sm text-ui-text-muted">Belum ada tournament yang dikonfirmasi pendaftarannya.</p>
+          <p className="mt-1 text-xs text-ui-text-muted">
             Centang &quot;is_registered&quot; di workspace tournament terlebih dahulu.
           </p>
         </div>
@@ -82,20 +82,20 @@ const TournamentsAdminClient = ({ tournaments: initial }: Props) => {
               key={t.id}
               className={`flex items-center justify-between rounded border px-4 py-3 transition ${
                 t.show_on_schedule
-                  ? "border-[#F5C400]/30 bg-[#1a1800]"
-                  : "border-[#2D2D2D] bg-[#1a1a1a]"
+                  ? "border-[#F5C400]/30 bg-[#F5C400]/5"
+                  : "border-ui-border bg-ui-hover"
               }`}
             >
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <p className="truncate text-sm font-semibold text-[#D4D4D4]">{t.name}</p>
+                  <p className="truncate text-sm font-semibold text-ui-text-dim">{t.name}</p>
                   {isNearest && (
                     <span className="flex shrink-0 items-center gap-1 rounded bg-[#F5C400]/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[#F5C400]">
                       <Zap className="h-2.5 w-2.5" /> Hero
                     </span>
                   )}
                 </div>
-                <p className="mt-0.5 text-xs text-[#6B6A68]">
+                <p className="mt-0.5 text-xs text-ui-text-muted">
                   {t.start_date}
                   {t.start_time ? ` · ${t.start_time.slice(0, 5)}` : ""} &nbsp;·&nbsp; {t.status}
                 </p>
@@ -107,7 +107,7 @@ const TournamentsAdminClient = ({ tournaments: initial }: Props) => {
                 className={`ml-4 shrink-0 cursor-pointer px-4 py-1.5 text-[11px] font-bold uppercase tracking-wider transition disabled:opacity-50 ${
                   t.show_on_schedule
                     ? "border border-[#F5C400] bg-[#F5C400] text-black"
-                    : "border border-[#2D2D2D] text-[#6B6A68] hover:border-[#F5C400]/50 hover:text-[#F5C400]"
+                    : "border border-ui-border text-ui-text-muted hover:border-[#F5C400]/50 hover:text-[#F5C400]"
                 }`}
               >
                 {t.show_on_schedule ? "Publik ✓" : "Publik"}

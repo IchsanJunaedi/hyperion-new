@@ -49,7 +49,7 @@ const CoachSummarySection = ({
       <div className="mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <ClipboardList className="h-4 w-4 text-white/55" />
-          <h2 className="text-sm font-semibold text-white">Catatan Coach</h2>
+          <h2 className="text-sm font-semibold text-ui-text">Catatan Coach</h2>
         </div>
         {canEdit && !isEditing && (
           <button
@@ -58,7 +58,7 @@ const CoachSummarySection = ({
               setDraft(summary ?? "");
               setIsEditing(true);
             }}
-            className="cursor-pointer text-xs font-medium text-white/50 transition-colors hover:text-white"
+            className="cursor-pointer text-xs font-medium text-white/50 transition-colors hover:text-ui-text"
           >
             {summary ? "Edit" : "Tambah Catatan"}
           </button>
@@ -82,7 +82,7 @@ const CoachSummarySection = ({
             onChange={(e) => setDraft(e.target.value)}
             rows={5}
             placeholder="Ringkasan evaluasi keseluruhan scrim: apa yang berjalan baik, kelemahan, fokus latihan berikutnya..."
-            className="w-full resize-y rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder-white/20 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            className="w-full resize-y rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm text-ui-text placeholder-white/20 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
             autoFocus
           />
           <div className="flex items-center justify-end gap-2">
@@ -90,7 +90,7 @@ const CoachSummarySection = ({
               type="button"
               onClick={() => setIsEditing(false)}
               disabled={isSubmitting}
-              className="cursor-pointer rounded-md px-3 py-1.5 text-xs text-white/50 hover:text-white"
+              className="cursor-pointer rounded-md px-3 py-1.5 text-xs text-white/50 hover:text-ui-text"
             >
               Batal
             </button>

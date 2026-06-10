@@ -57,16 +57,16 @@ const EditRoleButton = ({ memberId, currentRole, name }: EditRoleButtonProps) =>
       {open && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          <ul className="absolute right-0 top-full z-50 mt-1 min-w-[110px] rounded border border-[#2D2D2D] bg-[#202020] py-1 shadow-xl text-sm">
+          <ul className="absolute right-0 top-full z-50 mt-1 min-w-[110px] rounded border border-ui-border bg-ui-surface py-1 shadow-xl text-sm">
             {ROLES.map((r) => (
               <li key={r.value}>
                 <button
                   type="button"
                   onClick={() => handleSelect(r.value)}
-                  className={`w-full px-3 py-1.5 text-left transition hover:bg-[#2C2C2C] ${
+                  className={`w-full px-3 py-1.5 text-left transition hover:bg-ui-hover ${
                     r.value === currentRole
-                      ? "text-[#D4D4D4] font-medium"
-                      : "text-[#9B9A97]"
+                      ? "text-ui-text-dim font-medium"
+                      : "text-ui-text-2"
                   }`}
                 >
                   {r.label}

@@ -1,4 +1,4 @@
-﻿import { redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -60,7 +60,7 @@ export default async function DashboardSponsorsPage({ searchParams }: DashboardS
             className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
               isAllOrgs
                 ? "bg-yellow-400 text-black"
-                : "bg-white/5 text-white/50 hover:bg-white/10 hover:text-white"
+                : "bg-white/5 text-white/50 hover:bg-white/10 hover:text-ui-text"
             }`}
           >
             Semua Tim
@@ -74,7 +74,7 @@ export default async function DashboardSponsorsPage({ searchParams }: DashboardS
                 className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
                   isActive
                     ? "bg-yellow-400 text-black"
-                    : "bg-white/5 text-white/50 hover:bg-white/10 hover:text-white"
+                    : "bg-white/5 text-white/50 hover:bg-white/10 hover:text-ui-text"
                 }`}
               >
                 {org.name}

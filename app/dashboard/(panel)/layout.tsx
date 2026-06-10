@@ -12,6 +12,7 @@ import { NotificationRealtimeProvider } from "@/features/notifications/component
 import { DashboardSidebarNav } from "@/components/layout/DashboardSidebarNav";
 import { DashboardHeader } from "@/components/layout/DashboardHeader";
 import { DashboardMobileNav } from "@/components/layout/DashboardMobileNav";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { getTodoBadgeCount } from "@/features/todos/queries";
 
 export const dynamic = "force-dynamic";
@@ -76,25 +77,25 @@ export default async function DashboardLayout({
 
   return (
     <NotifyProvider>
-      <div className="flex min-h-screen bg-[#191919] text-[#E5E2E1]">
+      <div className="flex min-h-screen bg-ui-bg text-ui-text">
         {/* Sidebar — desktop only */}
-        <aside className="hidden md:flex w-[280px] h-screen fixed left-0 top-0 bg-[#202020] flex-col border-r border-[#2D2D2D] text-sm">
+        <aside className="hidden md:flex w-[280px] h-screen fixed left-0 top-0 bg-ui-surface flex-col border-r border-ui-border text-sm">
           {/* Org header */}
-          <div className="flex h-12 shrink-0 items-center border-b border-[#2D2D2D]">
+          <div className="flex h-12 shrink-0 items-center border-b border-ui-border">
             {orgSlug ? (
               <Link
                 href={`/${orgSlug}`}
-                className="flex h-full min-w-0 flex-1 items-center gap-3 px-4 transition hover:bg-[#2C2C2C]"
+                className="flex h-full min-w-0 flex-1 items-center gap-3 px-4 transition hover:bg-ui-hover"
                 title="Buka Workspace"
               >
                 {orgLogoUrl ? (
                   <img src={orgLogoUrl} alt="Logo" className="h-5 w-5 rounded object-cover" />
                 ) : (
-                  <div className="grid h-5 w-5 place-items-center rounded bg-[#353434] text-xs font-semibold text-[#E5E2E1]">
+                  <div className="grid h-5 w-5 place-items-center rounded bg-ui-hover-strong text-xs font-semibold text-ui-text">
                     {workspaceName.slice(0, 1).toUpperCase()}
                   </div>
                 )}
-                <p className="min-w-0 flex-1 truncate text-sm font-medium text-[#D4D4D4]">
+                <p className="min-w-0 flex-1 truncate text-sm font-medium text-ui-text-dim">
                   {workspaceName}
                 </p>
                 <span className="shrink-0 text-[10px] font-bold uppercase tracking-widest text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.5)]">
@@ -106,11 +107,11 @@ export default async function DashboardLayout({
                 {orgLogoUrl ? (
                   <img src={orgLogoUrl} alt="Logo" className="h-5 w-5 rounded object-cover" />
                 ) : (
-                  <div className="grid h-5 w-5 place-items-center rounded bg-[#353434] text-xs font-semibold text-[#E5E2E1]">
+                  <div className="grid h-5 w-5 place-items-center rounded bg-ui-hover-strong text-xs font-semibold text-ui-text">
                     {workspaceName.slice(0, 1).toUpperCase()}
                   </div>
                 )}
-                <p className="min-w-0 flex-1 truncate text-sm font-medium text-[#D4D4D4]">
+                <p className="min-w-0 flex-1 truncate text-sm font-medium text-ui-text-dim">
                   {workspaceName}
                 </p>
                 <span className="shrink-0 text-[10px] font-bold uppercase tracking-widest text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.5)]">
@@ -124,14 +125,18 @@ export default async function DashboardLayout({
           <DashboardSidebarNav badgeCount={todoBadgeCount} />
 
           {/* Settings */}
-          <div className="border-t border-[#2D2D2D] px-2 py-3 shrink-0">
+          <div className="border-t border-ui-border px-2 py-3 shrink-0">
             {user && (
               <DashboardSettingsButton userId={user.id} orgId={dashboardOrgId} />
             )}
+            <div className="mt-1 flex items-center justify-between rounded px-3 py-1.5">
+              <span className="text-sm text-ui-text-2">Tema</span>
+              <ThemeToggle />
+            </div>
           </div>
 
           {/* User footer */}
-          <div className="border-t border-[#2D2D2D] px-3 py-3 shrink-0">
+          <div className="border-t border-ui-border px-3 py-3 shrink-0">
             <div className="flex items-center gap-3 rounded px-2 py-2">
               {avatarUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -141,18 +146,18 @@ export default async function DashboardLayout({
                   className="h-5 w-5 rounded-full object-cover"
                 />
               ) : (
-                <div className="grid h-5 w-5 place-items-center rounded-full bg-[#353434] text-[10px] font-semibold text-[#D4D4D4]">
+                <div className="grid h-5 w-5 place-items-center rounded-full bg-ui-hover-strong text-[10px] font-semibold text-ui-text-dim">
                   {displayName.slice(0, 2).toUpperCase()}
                 </div>
               )}
-              <p className="min-w-0 flex-1 truncate text-xs text-[#9B9A97]">
+              <p className="min-w-0 flex-1 truncate text-xs text-ui-text-2">
                 {user?.email ?? displayName}
               </p>
               <form action={dashboardLogoutAction}>
                 <button
                   type="submit"
                   aria-label="Logout"
-                  className="rounded p-1.5 text-[#9B9A97] transition hover:bg-[#2C2C2C] hover:text-[#D4D4D4]"
+                  className="rounded p-1.5 text-ui-text-2 transition hover:bg-ui-hover hover:text-ui-text-dim"
                   title="Logout"
                 >
                   <LogOut className="h-4 w-4" />

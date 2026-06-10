@@ -23,7 +23,7 @@ const DateRangeSelector = ({ activeRange }: { activeRange: RangeValue }) => {
   }
 
   return (
-    <div className="flex rounded-lg border border-[#2D2D2D] bg-[#202020] p-0.5">
+    <div className="flex rounded-lg border border-ui-border bg-ui-surface p-0.5">
       {RANGES.map((r) => (
         <button
           key={r.value}
@@ -33,7 +33,7 @@ const DateRangeSelector = ({ activeRange }: { activeRange: RangeValue }) => {
             "rounded-md px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer",
             activeRange === r.value
               ? "bg-yellow-400 text-black"
-              : "text-[#9B9A97] hover:text-[#E5E2E1]",
+              : "text-ui-text-2 hover:text-ui-text",
           )}
         >
           {r.label}

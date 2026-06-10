@@ -80,7 +80,7 @@ function PermissionToggle({
         ${
           value
             ? "bg-green-500/20 border border-green-500/30 text-green-400 hover:bg-green-500/30"
-            : "bg-[#2C2C2C] border border-[#2D2D2D] text-[#6B6A68] hover:border-[#404040]"
+            : "bg-ui-hover border border-ui-border text-ui-text-muted hover:border-[#404040]"
         }
         ${toggling || loading ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
       `}
@@ -129,7 +129,7 @@ function BulkActionBar({
         <button
           onClick={onClearAll}
           disabled={processing || isLoading}
-          className="px-3 py-1 text-xs rounded bg-[#2C2C2C] border border-[#2D2D2D] hover:border-[#404040] text-[#9B9A97] transition disabled:opacity-50"
+          className="px-3 py-1 text-xs rounded bg-ui-hover border border-ui-border hover:border-[#404040] text-ui-text-2 transition disabled:opacity-50"
         >
           Clear
         </button>
@@ -152,9 +152,9 @@ function BulkActionBar({
 function EmptyState({ onAddMember }: { onAddMember: () => void }) {
   return (
     <div className="text-center py-12">
-      <User className="h-12 w-12 text-[#6B6A68] mx-auto mb-4 opacity-50" />
-      <p className="text-[#9B9A97] mb-2">No members with permissions yet</p>
-      <p className="text-sm text-[#6B6A68] mb-4">
+      <User className="h-12 w-12 text-ui-text-muted mx-auto mb-4 opacity-50" />
+      <p className="text-ui-text-2 mb-2">No members with permissions yet</p>
+      <p className="text-sm text-ui-text-muted mb-4">
         Add members to grant them access to this calendar
       </p>
       <button
@@ -273,14 +273,14 @@ const MemberPermissionTable = ({
         {members.slice(0, 3).map((member) => (
           <div
             key={member.id}
-            className="flex items-center justify-between p-2 rounded-lg bg-[#2C2C2C] border border-[#2D2D2D]"
+            className="flex items-center justify-between p-2 rounded-lg bg-ui-hover border border-ui-border"
           >
             <div>
-              <p className="text-sm font-medium text-[#E5E2E1]">
+              <p className="text-sm font-medium text-ui-text">
                 {member.display_name || member.username}
               </p>
               {member.permission && (
-                <p className="text-xs text-[#6B6A68]">
+                <p className="text-xs text-ui-text-muted">
                   {[
                     member.permission.can_view && "View",
                     member.permission.can_create_event && "Create",
@@ -300,7 +300,7 @@ const MemberPermissionTable = ({
           </div>
         ))}
         {members.length > 3 && (
-          <p className="text-xs text-[#6B6A68] px-2">
+          <p className="text-xs text-ui-text-muted px-2">
             +{members.length - 3} more
           </p>
         )}
@@ -322,7 +322,7 @@ const MemberPermissionTable = ({
       )}
 
       {/* Table Header */}
-      <div className="hidden md:grid grid-cols-[40px_1fr_1fr_1fr_1fr_1fr_1fr_60px] gap-3 text-xs font-medium text-[#6B6A68] uppercase tracking-wider px-4 py-3 rounded-lg bg-[#1F1F1F] border border-[#2D2D2D]">
+      <div className="hidden md:grid grid-cols-[40px_1fr_1fr_1fr_1fr_1fr_1fr_60px] gap-3 text-xs font-medium text-ui-text-muted uppercase tracking-wider px-4 py-3 rounded-lg bg-ui-surface border border-ui-border">
         <div className="flex items-center justify-center">
           <input
             type="checkbox"
@@ -353,7 +353,7 @@ const MemberPermissionTable = ({
               className={`
                 hidden md:grid grid-cols-[40px_1fr_1fr_1fr_1fr_1fr_1fr_60px] gap-3 items-center
                 p-4 rounded-lg border transition-colors
-                ${isSelected ? "bg-blue-500/10 border-blue-500/20" : "bg-[#2C2C2C] border-[#2D2D2D] hover:border-[#404040]"}
+                ${isSelected ? "bg-blue-500/10 border-blue-500/20" : "bg-ui-hover border-ui-border hover:border-[#404040]"}
               `}
             >
               {/* Select Checkbox */}
@@ -369,11 +369,11 @@ const MemberPermissionTable = ({
 
               {/* Member Info */}
               <div className="min-w-0">
-                <p className="text-sm font-medium text-[#E5E2E1] truncate">
+                <p className="text-sm font-medium text-ui-text truncate">
                   {member.display_name || member.username || "Unknown"}
                 </p>
                 {member.username && (
-                  <p className="text-xs text-[#6B6A68] truncate">
+                  <p className="text-xs text-ui-text-muted truncate">
                     @{member.username}
                   </p>
                 )}
@@ -446,16 +446,16 @@ const MemberPermissionTable = ({
           return (
             <div
               key={member.id}
-              className="p-4 rounded-lg bg-[#2C2C2C] border border-[#2D2D2D] space-y-3"
+              className="p-4 rounded-lg bg-ui-hover border border-ui-border space-y-3"
             >
               {/* Header */}
               <div className="flex items-start justify-between">
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-[#E5E2E1] truncate">
+                  <p className="text-sm font-medium text-ui-text truncate">
                     {member.display_name || member.username || "Unknown"}
                   </p>
                   {member.username && (
-                    <p className="text-xs text-[#6B6A68] truncate">
+                    <p className="text-xs text-ui-text-muted truncate">
                       @{member.username}
                     </p>
                   )}
@@ -471,7 +471,7 @@ const MemberPermissionTable = ({
 
               {/* Permissions Grid */}
               <div className="grid grid-cols-2 gap-2">
-                <label className="flex items-center gap-2 p-2 rounded hover:bg-[#1F1F1F] transition cursor-pointer">
+                <label className="flex items-center gap-2 p-2 rounded hover:bg-ui-surface transition cursor-pointer">
                   <input
                     type="checkbox"
                     checked={perm?.can_view ?? false}
@@ -481,9 +481,9 @@ const MemberPermissionTable = ({
                     disabled={isUpdating}
                     className="h-4 w-4 rounded cursor-pointer"
                   />
-                  <span className="text-xs text-[#9B9A97]">View</span>
+                  <span className="text-xs text-ui-text-2">View</span>
                 </label>
-                <label className="flex items-center gap-2 p-2 rounded hover:bg-[#1F1F1F] transition cursor-pointer">
+                <label className="flex items-center gap-2 p-2 rounded hover:bg-ui-surface transition cursor-pointer">
                   <input
                     type="checkbox"
                     checked={perm?.can_create_event ?? false}
@@ -493,9 +493,9 @@ const MemberPermissionTable = ({
                     disabled={isUpdating}
                     className="h-4 w-4 rounded cursor-pointer"
                   />
-                  <span className="text-xs text-[#9B9A97]">Create</span>
+                  <span className="text-xs text-ui-text-2">Create</span>
                 </label>
-                <label className="flex items-center gap-2 p-2 rounded hover:bg-[#1F1F1F] transition cursor-pointer">
+                <label className="flex items-center gap-2 p-2 rounded hover:bg-ui-surface transition cursor-pointer">
                   <input
                     type="checkbox"
                     checked={perm?.can_edit_event ?? false}
@@ -505,9 +505,9 @@ const MemberPermissionTable = ({
                     disabled={isUpdating}
                     className="h-4 w-4 rounded cursor-pointer"
                   />
-                  <span className="text-xs text-[#9B9A97]">Edit</span>
+                  <span className="text-xs text-ui-text-2">Edit</span>
                 </label>
-                <label className="flex items-center gap-2 p-2 rounded hover:bg-[#1F1F1F] transition cursor-pointer">
+                <label className="flex items-center gap-2 p-2 rounded hover:bg-ui-surface transition cursor-pointer">
                   <input
                     type="checkbox"
                     checked={perm?.can_delete_event ?? false}
@@ -517,7 +517,7 @@ const MemberPermissionTable = ({
                     disabled={isUpdating}
                     className="h-4 w-4 rounded cursor-pointer"
                   />
-                  <span className="text-xs text-[#9B9A97]">Delete</span>
+                  <span className="text-xs text-ui-text-2">Delete</span>
                 </label>
               </div>
             </div>

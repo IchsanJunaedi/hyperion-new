@@ -12,7 +12,7 @@ const ROLE_COLOR: Record<string, string> = {
   captain: "text-purple-400",
   coach: "text-blue-400",
   manager: "text-green-400",
-  member: "text-[#9B9A97]",
+  member: "text-ui-text-2",
 };
 
 const PlayersAdminClient = ({ members: initial }: Props) => {
@@ -43,8 +43,8 @@ const PlayersAdminClient = ({ members: initial }: Props) => {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-xl font-black uppercase tracking-tight text-white">Players Publik</h1>
-        <p className="mt-1 text-xs text-[#6B6A68]">
+        <h1 className="text-xl font-black uppercase tracking-tight text-ui-text">Players Publik</h1>
+        <p className="mt-1 text-xs text-ui-text-muted">
           Kontrol siapa yang tampil di halaman publik <span className="text-white/50">/divisions</span>.
           Bio dan social links dikelola sendiri oleh player di workspace.
         </p>
@@ -52,9 +52,9 @@ const PlayersAdminClient = ({ members: initial }: Props) => {
       </div>
 
       {members.length === 0 && (
-        <div className="flex flex-col items-center gap-3 py-16 text-center border border-[#2D2D2D]">
-          <Users className="h-8 w-8 text-[#2D2D2D]" />
-          <p className="text-sm text-[#6B6A68]">Belum ada anggota aktif.</p>
+        <div className="flex flex-col items-center gap-3 py-16 text-center border border-ui-border">
+          <Users className="h-8 w-8 text-ui-border" />
+          <p className="text-sm text-ui-text-muted">Belum ada anggota aktif.</p>
         </div>
       )}
 
@@ -64,27 +64,27 @@ const PlayersAdminClient = ({ members: initial }: Props) => {
             <h2 className="mb-2 text-[11px] font-bold uppercase tracking-[0.3em] text-white/40">{division}</h2>
             <div className="space-y-1.5">
               {divMembers.map((m) => (
-                <div key={m.id} className={`flex items-center gap-4 rounded border px-4 py-3 transition ${m.is_public ? "border-[#F5C400]/30 bg-[#1a1800]" : "border-[#2D2D2D] bg-[#141414]"}`}>
+                <div key={m.id} className={`flex items-center gap-4 rounded border px-4 py-3 transition ${m.is_public ? "border-[#F5C400]/30 bg-[#F5C400]/5" : "border-ui-border bg-ui-bg"}`}>
                   {m.avatar_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={m.avatar_url} alt="" className="h-9 w-9 shrink-0 rounded-full object-cover" />
                   ) : (
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#2C2C2C] text-xs font-bold text-[#6B6A68]">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-ui-hover text-xs font-bold text-ui-text-muted">
                       {(m.display_name ?? "?").slice(0, 1).toUpperCase()}
                     </div>
                   )}
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-semibold text-[#D4D4D4]">
-                      {m.display_name ?? <span className="text-[#6B6A68]">Unnamed</span>}
+                    <p className="truncate text-sm font-semibold text-ui-text-dim">
+                      {m.display_name ?? <span className="text-ui-text-muted">Unnamed</span>}
                     </p>
                     <div className="flex items-center gap-2 text-xs">
-                      <span className={`font-medium capitalize ${ROLE_COLOR[m.role] ?? "text-[#6B6A68]"}`}>{m.role}</span>
-                      {m.position && <span className="text-[#6B6A68]">· {m.position}</span>}
-                      {m.jersey_number != null && <span className="text-[#6B6A68]">· #{m.jersey_number}</span>}
+                      <span className={`font-medium capitalize ${ROLE_COLOR[m.role] ?? "text-ui-text-muted"}`}>{m.role}</span>
+                      {m.position && <span className="text-ui-text-muted">· {m.position}</span>}
+                      {m.jersey_number != null && <span className="text-ui-text-muted">· #{m.jersey_number}</span>}
                     </div>
                   </div>
                   <button onClick={() => handleToggle(m.id, m.is_public)}
-                    className={`shrink-0 cursor-pointer px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider border transition ${m.is_public ? "border-[#F5C400] bg-[#F5C400] text-black" : "border-[#2D2D2D] text-[#6B6A68] hover:border-[#F5C400]/50 hover:text-[#F5C400]"}`}>
+                    className={`shrink-0 cursor-pointer px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider border transition ${m.is_public ? "border-[#F5C400] bg-[#F5C400] text-black" : "border-ui-border text-ui-text-muted hover:border-[#F5C400]/50 hover:text-[#F5C400]"}`}>
                     {m.is_public ? "Publik ✓" : "Publik"}
                   </button>
                 </div>

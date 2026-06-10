@@ -79,7 +79,7 @@ export default async function ScrimDetailPage({
             {divisionName ? ` · ${divisionName}` : ""}
           </span>
         </div>
-        <h1 className="text-3xl font-bold text-white">vs {scrim.opponent_name}</h1>
+        <h1 className="text-3xl font-bold text-ui-text">vs {scrim.opponent_name}</h1>
         {scrim.status === "scheduled" && (
           <div className="mt-3">
             <ScrimCountdown scrim={scrim} orgSlug={slug} myAttendanceStatus={myAttendance?.status} />
@@ -126,7 +126,7 @@ export default async function ScrimDetailPage({
           {/* Only show attendance RSVP for captain and member (not manager/owner/coach) */}
           {(currentUserRole === "captain" || currentUserRole === "member") && (
           <article className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
-            <h2 className="text-sm font-semibold text-white">
+            <h2 className="text-sm font-semibold text-ui-text">
               Konfirmasi kehadiran kamu
             </h2>
             <p className="mt-1 text-xs text-white/55">
@@ -145,7 +145,7 @@ export default async function ScrimDetailPage({
 
           <article className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
             <div className="flex items-center justify-between">
-              <h2 className="text-sm font-semibold text-white">
+              <h2 className="text-sm font-semibold text-ui-text">
                 Anggota divisi
               </h2>
               <p className="text-xs text-white/55">
@@ -160,7 +160,7 @@ export default async function ScrimDetailPage({
 
           {scrim.notes || scrim.room_info ? (
             <article className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
-              <h2 className="text-sm font-semibold text-white">
+              <h2 className="text-sm font-semibold text-ui-text">
                 Detail tambahan
               </h2>
               {scrim.room_info ? (
@@ -228,7 +228,7 @@ export default async function ScrimDetailPage({
           {/* Scouting info (auto-shown if opponent profile exists) */}
           {opponentProfile && (
             <article className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
-              <h2 className="text-sm font-semibold text-white mb-3">Intel Lawan</h2>
+              <h2 className="text-sm font-semibold text-ui-text mb-3">Intel Lawan</h2>
               <ScoutingCard profile={opponentProfile} />
             </article>
           )}
@@ -237,7 +237,7 @@ export default async function ScrimDetailPage({
           {opponentHistory.length > 0 && (
             <article className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
               <div className="mb-3 flex items-center justify-between">
-                <h2 className="text-sm font-semibold text-white">Riwayat vs {scrim.opponent_name}</h2>
+                <h2 className="text-sm font-semibold text-ui-text">Riwayat vs {scrim.opponent_name}</h2>
                 <span className="text-xs text-white/40">{opponentHistory.length} pertandingan</span>
               </div>
               <div className="space-y-2">

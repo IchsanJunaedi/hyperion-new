@@ -46,7 +46,7 @@ const CoachNotesSection = ({
   return (
     <article className="rounded-2xl border border-blue-400/20 bg-blue-400/5 p-5">
       <div className="flex items-center justify-between mb-3">
-        <h2 className="flex items-center gap-2 text-sm font-semibold text-white">
+        <h2 className="flex items-center gap-2 text-sm font-semibold text-ui-text">
           <BookOpen className="h-4 w-4 text-blue-400" />
           Catatan Coach
         </h2>
@@ -54,7 +54,7 @@ const CoachNotesSection = ({
           <button
             type="button"
             onClick={() => { setDraft(existingNotes ?? ""); setEditing(true); }}
-            className="flex items-center gap-1 text-xs text-white/50 hover:text-white"
+            className="flex items-center gap-1 text-xs text-white/50 hover:text-ui-text"
           >
             <Pencil className="h-3 w-3" />
             {existingNotes ? "Edit" : "Tambah"}
@@ -64,7 +64,7 @@ const CoachNotesSection = ({
           <button
             type="button"
             onClick={() => setEditing(false)}
-            className="text-white/40 hover:text-white"
+            className="text-white/40 hover:text-ui-text"
           >
             <X className="h-4 w-4" />
           </button>

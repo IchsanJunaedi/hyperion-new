@@ -163,7 +163,7 @@ const FileList = ({ orgId, folder = "files" }: FileListProps) => {
                 type="button"
                 disabled={isLoadingThis}
                 onClick={() => handleOpenPreview(file)}
-                className="min-w-0 flex-1 cursor-pointer truncate text-left text-sm text-white/80 underline-offset-2 transition hover:text-white hover:underline disabled:opacity-60"
+                className="min-w-0 flex-1 cursor-pointer truncate text-left text-sm text-white/80 underline-offset-2 transition hover:text-ui-text hover:underline disabled:opacity-60"
               >
                 {stripTimestampPrefix(file.name)}
               </button>

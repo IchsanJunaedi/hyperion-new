@@ -55,7 +55,7 @@ export default async function EditStrategyNotePage({
       </div>
 
       <div className="mx-auto max-w-2xl w-full space-y-4">
-        <h1 className="text-2xl font-bold text-white sm:text-3xl tracking-tight text-left">
+        <h1 className="text-2xl font-bold text-ui-text sm:text-3xl tracking-tight text-left">
           Edit Catatan Strategi
         </h1>
 

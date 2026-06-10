@@ -174,16 +174,16 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
 
       {/* Header */}
       <div className="mx-auto max-w-2xl w-full space-y-2">
-        <h1 className="text-2xl font-bold text-white sm:text-3xl tracking-tight">
+        <h1 className="text-2xl font-bold text-ui-text sm:text-3xl tracking-tight">
           Hasil Pertandingan
         </h1>
         <p className="text-sm text-white/50">
           vs {scrim.opponent_name} · {scrim.format.toUpperCase()}
         </p>
         <div className="flex items-center gap-3 pt-1">
-          <span className="text-3xl font-bold text-white">{wins}</span>
+          <span className="text-3xl font-bold text-ui-text">{wins}</span>
           <span className="text-xl text-white/30">—</span>
-          <span className="text-3xl font-bold text-white">{losses}</span>
+          <span className="text-3xl font-bold text-ui-text">{losses}</span>
           <span className={`ml-3 text-sm font-semibold uppercase tracking-wide ${
             wins > losses ? "text-green-400" : wins < losses ? "text-red-400" : "text-white/40"
           }`}>
@@ -208,7 +208,7 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
             >
               {/* Game header */}
               <div className="flex items-center justify-between px-5 py-3.5 border-b border-white/5">
-                <h3 className="text-sm font-semibold text-white">Game {game.game_number}</h3>
+                <h3 className="text-sm font-semibold text-ui-text">Game {game.game_number}</h3>
                 <div className={`text-xs font-semibold ${
                   game.is_win
                     ? "text-green-400"
@@ -349,7 +349,7 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
       {/* Coach notes */}
       {result?.coach_notes && (
         <div className="mx-auto max-w-2xl w-full rounded-2xl border border-blue-400/20 bg-blue-400/5 p-5 shadow-xl shadow-black/20">
-          <h3 className="text-sm font-semibold text-white mb-2">Catatan Coach</h3>
+          <h3 className="text-sm font-semibold text-ui-text mb-2">Catatan Coach</h3>
           <p className="text-sm text-white/80 whitespace-pre-line">{result.coach_notes}</p>
         </div>
       )}

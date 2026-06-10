@@ -13,22 +13,22 @@ const FinanceTab = ({ finances }: { finances: NonNullable<MonthlyReport["finance
     <div className="space-y-6">
       {/* Stat cards */}
       <div className="grid grid-cols-3 gap-3">
-        <div className="rounded-xl border border-[#2D2D2D] bg-[#1C1C1C] p-4 space-y-1">
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-[#6B6A68]">Pemasukan</p>
+        <div className="rounded-xl border border-ui-border bg-ui-surface p-4 space-y-1">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-ui-text-muted">Pemasukan</p>
           <p className="text-xl font-bold text-emerald-400">{rp(finances.totalIncome)}</p>
-          <p className="text-xs text-[#9B9A97]">{finances.incomeList.length} transaksi</p>
+          <p className="text-xs text-ui-text-2">{finances.incomeList.length} transaksi</p>
         </div>
-        <div className="rounded-xl border border-[#2D2D2D] bg-[#1C1C1C] p-4 space-y-1">
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-[#6B6A68]">Pengeluaran</p>
+        <div className="rounded-xl border border-ui-border bg-ui-surface p-4 space-y-1">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-ui-text-muted">Pengeluaran</p>
           <p className="text-xl font-bold text-rose-400">{rp(finances.totalExpense)}</p>
-          <p className="text-xs text-[#9B9A97]">{finances.expenseList.length} transaksi</p>
+          <p className="text-xs text-ui-text-2">{finances.expenseList.length} transaksi</p>
         </div>
         <div className={`rounded-xl border p-4 space-y-1 ${
           finances.balance >= 0
             ? "border-emerald-500/20 bg-emerald-500/5"
             : "border-rose-500/20 bg-rose-500/5"
         }`}>
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-[#6B6A68]">Saldo</p>
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-ui-text-muted">Saldo</p>
           <p className={`text-xl font-bold ${finances.balance >= 0 ? "text-emerald-400" : "text-rose-400"}`}>
             {finances.balance >= 0 ? "" : "-"}{rp(Math.abs(finances.balance))}
           </p>
@@ -40,14 +40,14 @@ const FinanceTab = ({ finances }: { finances: NonNullable<MonthlyReport["finance
 
       {/* Usage bar */}
       {finances.totalIncome > 0 && (
-        <div className="rounded-xl border border-[#2D2D2D] bg-[#1C1C1C] p-5 space-y-2">
+        <div className="rounded-xl border border-ui-border bg-ui-surface p-5 space-y-2">
           <div className="flex items-center justify-between text-xs">
-            <span className="text-[#9B9A97]">Penggunaan dari pemasukan</span>
+            <span className="text-ui-text-2">Penggunaan dari pemasukan</span>
             <span className={`font-bold ${usagePercent >= 80 ? "text-rose-400" : "text-emerald-400"}`}>
               {usagePercent}%
             </span>
           </div>
-          <div className="h-2 rounded-full bg-[#252525] overflow-hidden">
+          <div className="h-2 rounded-full bg-ui-elevated overflow-hidden">
             <div
               className={`h-full rounded-full transition-all ${usagePercent >= 80 ? "bg-rose-500/60" : "bg-emerald-500/60"}`}
               style={{ width: `${usagePercent}%` }}
@@ -59,16 +59,16 @@ const FinanceTab = ({ finances }: { finances: NonNullable<MonthlyReport["finance
       {/* Transaction tables */}
       <div className="grid gap-4 sm:grid-cols-2">
         {finances.incomeList.length > 0 && (
-          <div className="rounded-xl border border-[#2D2D2D] bg-[#1C1C1C] overflow-hidden">
-            <div className="px-4 py-3 border-b border-[#2D2D2D]">
+          <div className="rounded-xl border border-ui-border bg-ui-surface overflow-hidden">
+            <div className="px-4 py-3 border-b border-ui-border">
               <p className="text-xs font-semibold uppercase tracking-wider text-emerald-400">Pemasukan</p>
             </div>
-            <div className="divide-y divide-[#2D2D2D]">
+            <div className="divide-y divide-ui-border">
               {finances.incomeList.map((f, i) => (
                 <div key={i} className="px-4 py-2.5 flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="text-xs text-[#E5E2E1] truncate">{f.description ?? f.category}</p>
-                    <p className="text-[10px] text-[#6B6A68]">
+                    <p className="text-xs text-ui-text truncate">{f.description ?? f.category}</p>
+                    <p className="text-[10px] text-ui-text-muted">
                       {new Date(f.date).toLocaleDateString("id-ID", { day: "numeric", month: "short" })}
                     </p>
                   </div>
@@ -80,16 +80,16 @@ const FinanceTab = ({ finances }: { finances: NonNullable<MonthlyReport["finance
         )}
 
         {finances.expenseList.length > 0 && (
-          <div className="rounded-xl border border-[#2D2D2D] bg-[#1C1C1C] overflow-hidden">
-            <div className="px-4 py-3 border-b border-[#2D2D2D]">
+          <div className="rounded-xl border border-ui-border bg-ui-surface overflow-hidden">
+            <div className="px-4 py-3 border-b border-ui-border">
               <p className="text-xs font-semibold uppercase tracking-wider text-rose-400">Pengeluaran</p>
             </div>
-            <div className="divide-y divide-[#2D2D2D]">
+            <div className="divide-y divide-ui-border">
               {finances.expenseList.map((f, i) => (
                 <div key={i} className="px-4 py-2.5 flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="text-xs text-[#E5E2E1] truncate">{f.description ?? f.category}</p>
-                    <p className="text-[10px] text-[#6B6A68]">
+                    <p className="text-xs text-ui-text truncate">{f.description ?? f.category}</p>
+                    <p className="text-[10px] text-ui-text-muted">
                       {new Date(f.date).toLocaleDateString("id-ID", { day: "numeric", month: "short" })}
                     </p>
                   </div>
@@ -102,7 +102,7 @@ const FinanceTab = ({ finances }: { finances: NonNullable<MonthlyReport["finance
       </div>
 
       {finances.incomeList.length === 0 && finances.expenseList.length === 0 && (
-        <p className="text-sm text-[#6B6A68] text-center py-8">Tidak ada transaksi di bulan ini.</p>
+        <p className="text-sm text-ui-text-muted text-center py-8">Tidak ada transaksi di bulan ini.</p>
       )}
     </div>
   );

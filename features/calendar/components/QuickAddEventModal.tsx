@@ -158,7 +158,7 @@ const QuickAddEventModal = ({
         role="dialog"
         aria-modal="true"
         aria-label="Tambah event"
-        className="fixed left-1/2 top-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-white/10 bg-[#171717] shadow-[0_0_50px_-12px_rgba(234,179,8,0.15)] transition-all duration-300"
+        className="fixed left-1/2 top-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-white/10 bg-ui-bg shadow-[0_0_50px_-12px_rgba(234,179,8,0.15)] transition-all duration-300"
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-white/5 px-6 py-5">
@@ -166,13 +166,13 @@ const QuickAddEventModal = ({
             <Calendar className="h-5 w-5 text-yellow-400 shrink-0" />
             <div>
               <p className="text-[10px] uppercase tracking-wider font-semibold text-yellow-400">Tambah event</p>
-              <p className="text-sm font-bold text-white tracking-tight">{dateLabel}</p>
+              <p className="text-sm font-bold text-ui-text tracking-tight">{dateLabel}</p>
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-1.5 text-white/40 transition hover:bg-white/5 hover:text-white"
+            className="rounded-lg p-1.5 text-white/40 transition hover:bg-white/5 hover:text-ui-text"
           >
             <X className="h-4 w-4" />
           </button>
@@ -182,7 +182,7 @@ const QuickAddEventModal = ({
         <form onSubmit={handleSubmit} className="space-y-5 px-6 py-5">
           {/* Tip Banner */}
           <div className="rounded-xl bg-zinc-900/60 p-3 text-[11px] leading-relaxed text-white/50 border border-white/5">
-            <span className="font-semibold text-yellow-400">Tips Senior:</span> Turnamen resmi tim dibuat melalui menu <strong className="text-white">Turnamen</strong> agar otomatis sinkron dengan sistem kehadiran dan rekapitulasi data.
+            <span className="font-semibold text-yellow-400">Tips Senior:</span> Turnamen resmi tim dibuat melalui menu <strong className="text-ui-text">Turnamen</strong> agar otomatis sinkron dengan sistem kehadiran dan rekapitulasi data.
           </div>
 
           {/* Title */}
@@ -214,7 +214,7 @@ const QuickAddEventModal = ({
                   className={`rounded-full px-3 py-1 text-xs font-semibold tracking-wide transition-all duration-300 ${
                     eventType === t.value
                       ? "bg-yellow-400 text-black shadow-lg shadow-yellow-400/20 scale-105"
-                      : "bg-white/5 text-white/50 hover:bg-white/10 hover:text-white hover:scale-102"
+                      : "bg-white/5 text-white/50 hover:bg-white/10 hover:text-ui-text hover:scale-102"
                   }`}
                 >
                   {t.label}
@@ -337,7 +337,7 @@ const QuickAddEventModal = ({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-lg px-4 py-2 text-sm font-semibold text-white/60 transition-all duration-300 hover:bg-white/5 hover:text-white active:scale-95"
+              className="rounded-lg px-4 py-2 text-sm font-semibold text-white/60 transition-all duration-300 hover:bg-white/5 hover:text-ui-text active:scale-95"
             >
               Batal
             </button>

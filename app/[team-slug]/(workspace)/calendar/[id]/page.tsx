@@ -84,7 +84,7 @@ export default async function CalendarEventDetailPage({
           )}
         </div>
 
-        <h1 className="text-2xl font-bold text-white sm:text-3xl tracking-tight">{event.title}</h1>
+        <h1 className="text-2xl font-bold text-ui-text sm:text-3xl tracking-tight">{event.title}</h1>
 
         {/* Meta info */}
         <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-white/60">

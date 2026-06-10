@@ -68,7 +68,7 @@ function PlayerCard({ m }: { m: RosterMember }) {
       </div>
 
       {/* Name */}
-      <p className="truncate text-sm font-bold text-white">{m.display_name ?? m.username ?? "Unnamed"}</p>
+      <p className="truncate text-sm font-bold text-ui-text">{m.display_name ?? m.username ?? "Unnamed"}</p>
 
       {/* Main role + position */}
       <div className="mt-1 flex flex-wrap items-center justify-center gap-2">
@@ -101,7 +101,7 @@ function PlayerCard({ m }: { m: RosterMember }) {
           href={`/players/${m.username}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-3 inline-flex items-center gap-1 rounded-md border border-white/10 px-2 py-1 text-[10px] text-white/50 transition hover:bg-white/5 hover:text-white"
+          className="mt-3 inline-flex items-center gap-1 rounded-md border border-white/10 px-2 py-1 text-[10px] text-white/50 transition hover:bg-white/5 hover:text-ui-text"
         >
           <ExternalLink className="h-3 w-3" />
           Profil Publik

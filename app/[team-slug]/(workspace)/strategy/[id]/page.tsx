@@ -61,7 +61,7 @@ export default async function StrategyNoteDetailPage({
       <header className="space-y-2">
         <Link
           href={`/${slug}/strategy`}
-          className="text-xs text-white/55 hover:text-white"
+          className="text-xs text-white/55 hover:text-ui-text"
         >
           ← Bank Strategi
         </Link>
@@ -71,7 +71,7 @@ export default async function StrategyNoteDetailPage({
             {vis.label}
           </span>
         </div>
-        <h1 className="text-3xl font-bold text-white">{note.title}</h1>
+        <h1 className="text-3xl font-bold text-ui-text">{note.title}</h1>
         <p className="text-xs text-white/50">Diperbarui {date}</p>
         {note.tags.length > 0 && (
           <div className="flex flex-wrap gap-1.5">

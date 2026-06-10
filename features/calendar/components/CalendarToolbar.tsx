@@ -212,12 +212,12 @@ const CalendarToolbar = ({
             const newDate = new Date(year, month - 1, 1);
             onNavigate(newDate.getFullYear(), newDate.getMonth());
           }}
-          className="rounded-md p-2 text-white/60 transition hover:bg-white/10 hover:text-white"
+          className="rounded-md p-2 text-white/60 transition hover:bg-white/10 hover:text-ui-text"
           aria-label="Bulan sebelumnya"
         >
           <ChevronLeft className="h-5 w-5" />
         </button>
-        <h2 className="flex-1 text-center text-sm font-semibold capitalize text-white">
+        <h2 className="flex-1 text-center text-sm font-semibold capitalize text-ui-text">
           {monthLabel}
         </h2>
         <button
@@ -226,7 +226,7 @@ const CalendarToolbar = ({
             const newDate = new Date(year, month + 1, 1);
             onNavigate(newDate.getFullYear(), newDate.getMonth());
           }}
-          className="rounded-md p-2 text-white/60 transition hover:bg-white/10 hover:text-white"
+          className="rounded-md p-2 text-white/60 transition hover:bg-white/10 hover:text-ui-text"
           aria-label="Bulan berikutnya"
         >
           <ChevronRight className="h-5 w-5" />

@@ -60,7 +60,7 @@ const AuditExportButton = ({ filters }: AuditExportButtonProps) => {
     <button
       onClick={handleExport}
       disabled={loading}
-      className="flex items-center gap-1.5 px-3 h-8 rounded-md border border-[#2D2D2D] bg-[#202020] text-xs text-[#9B9A97] hover:text-[#E5E2E1] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-colors"
+      className="flex items-center gap-1.5 px-3 h-8 rounded-md border border-ui-border bg-ui-surface text-xs text-ui-text-2 hover:text-ui-text disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-colors"
     >
       {loading ? (
         <Loader2 className="h-3.5 w-3.5 animate-spin" />

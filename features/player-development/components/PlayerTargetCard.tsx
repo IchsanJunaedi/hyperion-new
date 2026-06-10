@@ -50,19 +50,19 @@ const PlayerTargetCard = ({ target, orgSlug, canManage }: PlayerTargetCardProps)
   }
 
   return (
-    <div className="rounded-lg border border-[#2D2D2D] bg-[#202020] p-3 space-y-2">
+    <div className="rounded-lg border border-ui-border bg-ui-surface p-3 space-y-2">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <TrendingUp className="h-3.5 w-3.5 text-blue-400" />
-          <span className="text-xs font-medium text-[#E5E2E1]">{target.skill_name}</span>
+          <span className="text-xs font-medium text-ui-text">{target.skill_name}</span>
         </div>
-        <span className="text-[10px] text-[#6B6A68]">
+        <span className="text-[10px] text-ui-text-muted">
           {target.current_level}/{target.target_level}
         </span>
       </div>
 
       {/* Progress bar */}
-      <div className="h-2 rounded-full bg-[#2D2D2D] overflow-hidden">
+      <div className="h-2 rounded-full bg-ui-border overflow-hidden">
         <div
           className="h-full rounded-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all"
           style={{ width: `${Math.min(progress, 100)}%` }}
@@ -84,11 +84,11 @@ const PlayerTargetCard = ({ target, orgSlug, canManage }: PlayerTargetCardProps)
       )}
 
       {target.notes && (
-        <p className="text-[10px] text-[#6B6A68]">{target.notes}</p>
+        <p className="text-[10px] text-ui-text-muted">{target.notes}</p>
       )}
 
       {canManage && (
-        <div className="flex items-center gap-2 pt-1 border-t border-[#2D2D2D]">
+        <div className="flex items-center gap-2 pt-1 border-t border-ui-border">
           {editing ? (
             <div className="flex items-center gap-2 flex-1">
               <NumberInput
@@ -110,7 +110,7 @@ const PlayerTargetCard = ({ target, orgSlug, canManage }: PlayerTargetCardProps)
               <button
                 type="button"
                 onClick={() => setEditing(false)}
-                className="text-[10px] text-[#6B6A68] hover:underline cursor-pointer"
+                className="text-[10px] text-ui-text-muted hover:underline cursor-pointer"
               >
                 Batal
               </button>

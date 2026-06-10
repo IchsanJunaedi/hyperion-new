@@ -485,7 +485,7 @@ const ReportView = ({ report }: { report: MonthlyReport }) => {
   return (
     <div className="space-y-6">
       {/* Tab bar */}
-      <div className="flex items-center justify-between gap-2 border-b border-[#2D2D2D]">
+      <div className="flex items-center justify-between gap-2 border-b border-ui-border">
         <nav className="flex gap-1">
           {visibleTabs.map((tab) => (
             <button
@@ -507,7 +507,7 @@ const ReportView = ({ report }: { report: MonthlyReport }) => {
           type="button"
           onClick={handleDownload}
           disabled={downloading}
-          className="mb-2 inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-white/10 px-3 py-1.5 text-xs text-white/60 transition hover:bg-white/5 hover:text-white disabled:opacity-50"
+          className="mb-2 inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-white/10 px-3 py-1.5 text-xs text-white/60 transition hover:bg-white/5 hover:text-ui-text disabled:opacity-50"
         >
           {downloading
             ? <Loader2 className="h-3.5 w-3.5 animate-spin" />

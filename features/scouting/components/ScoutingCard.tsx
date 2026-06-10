@@ -71,13 +71,13 @@ const ScoutingCard = ({ orgSlug, profile, onEdit, onView }: ScoutingCardProps) =
         tabIndex={isInteractive ? 0 : undefined}
         onClick={onView}
         onKeyDown={(e) => e.key === "Enter" && onView?.()}
-        className={`group rounded-xl border border-[#2D2D2D] bg-[#202020] p-4 space-y-3 transition-all${isInteractive ? " cursor-pointer hover:border-[#3D3D3D] hover:bg-[#252525]" : ""}`}
+        className={`group rounded-xl border border-ui-border bg-ui-surface p-4 space-y-3 transition-all${isInteractive ? " cursor-pointer hover:border-[#3D3D3D] hover:bg-ui-elevated" : ""}`}
       >
         {/* Header */}
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 min-w-0">
             <Eye className="h-4 w-4 text-orange-400 shrink-0" />
-            <h3 className="text-sm font-semibold text-[#E5E2E1] truncate">
+            <h3 className="text-sm font-semibold text-ui-text truncate">
               {profile.opponent_name}
             </h3>
           </div>
@@ -87,7 +87,7 @@ const ScoutingCard = ({ orgSlug, profile, onEdit, onView }: ScoutingCardProps) =
                 <button
                   type="button"
                   onClick={(e) => { e.stopPropagation(); onEdit(); }}
-                  className="p-1.5 text-[#6B6A68] hover:text-[#9B9A97] transition cursor-pointer"
+                  className="p-1.5 text-ui-text-muted hover:text-ui-text-2 transition cursor-pointer"
                   title="Edit profil"
                 >
                   <Pencil className="h-3.5 w-3.5" />
@@ -97,7 +97,7 @@ const ScoutingCard = ({ orgSlug, profile, onEdit, onView }: ScoutingCardProps) =
                 <button
                   type="button"
                   onClick={(e) => { e.stopPropagation(); setDeleteOpen(true); }}
-                  className="p-1.5 text-[#6B6A68] hover:text-red-400 transition cursor-pointer"
+                  className="p-1.5 text-ui-text-muted hover:text-red-400 transition cursor-pointer"
                   title="Hapus profil"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
@@ -109,7 +109,7 @@ const ScoutingCard = ({ orgSlug, profile, onEdit, onView }: ScoutingCardProps) =
 
         {/* Playstyle */}
         {data.playstyle && (
-          <p className="text-xs text-[#9B9A97] line-clamp-2">{data.playstyle}</p>
+          <p className="text-xs text-ui-text-2 line-clamp-2">{data.playstyle}</p>
         )}
 
         {/* Roster nicknames */}
@@ -117,17 +117,17 @@ const ScoutingCard = ({ orgSlug, profile, onEdit, onView }: ScoutingCardProps) =
           <div className="grid grid-cols-2 gap-x-6 gap-y-1">
             {filledRoles.map(([key, label]) => (
               <div key={key} className="flex items-baseline gap-1.5 text-xs min-w-0">
-                <span className="text-[#6B6A68] shrink-0">{label}</span>
-                <span className="text-[#D4D4D4] truncate">{roster![key]!.nickname}</span>
+                <span className="text-ui-text-muted shrink-0">{label}</span>
+                <span className="text-ui-text-dim truncate">{roster![key]!.nickname}</span>
               </div>
             ))}
           </div>
         ) : (
-          <p className="text-xs text-[#6B6A68]">Belum ada data roster</p>
+          <p className="text-xs text-ui-text-muted">Belum ada data roster</p>
         )}
 
         {isInteractive && (
-          <p className="text-[10px] text-[#6B6A68] group-hover:text-[#9B9A97] transition-colors">
+          <p className="text-[10px] text-ui-text-muted group-hover:text-ui-text-2 transition-colors">
             Klik untuk lihat detail
           </p>
         )}

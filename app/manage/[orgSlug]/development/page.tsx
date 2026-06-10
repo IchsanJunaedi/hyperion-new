@@ -58,9 +58,9 @@ const ManagePlayerDevelopmentPage = async ({ params }: Props) => {
       <header>
         <div className="flex items-center gap-2">
           <TrendingUp className="h-5 w-5 text-blue-400" />
-          <h1 className="text-xl font-bold text-[#E5E2E1]">Player Development</h1>
+          <h1 className="text-xl font-bold text-ui-text">Player Development</h1>
         </div>
-        <p className="text-sm text-[#9B9A97] mt-1">
+        <p className="text-sm text-ui-text-2 mt-1">
           Track skill dan perkembangan setiap player.
         </p>
       </header>

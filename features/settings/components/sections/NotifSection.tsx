@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
@@ -76,14 +76,14 @@ const NotifSection = ({ orgId }: { orgId: string }) => {
   if (loading) {
     return (
       <div className="flex justify-center py-12">
-        <Loader2 className="h-5 w-5 animate-spin text-[#6B6A68]" />
+        <Loader2 className="h-5 w-5 animate-spin text-ui-text-muted" />
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      <p className="text-sm text-[#9B9A97]">
+      <p className="text-sm text-ui-text-2">
         Atur notifikasi WhatsApp yang kamu terima dari tim.
       </p>
 
@@ -91,11 +91,11 @@ const NotifSection = ({ orgId }: { orgId: string }) => {
         {EVENT_TYPES.map((ev) => (
           <div
             key={ev.key}
-            className="flex items-center justify-between rounded border border-[#2D2D2D] px-4 py-3"
+            className="flex items-center justify-between rounded border border-ui-border px-4 py-3"
           >
             <div>
-              <p className="text-sm text-[#D4D4D4]">{ev.label}</p>
-              <p className="text-xs text-[#6B6A68]">{ev.desc}</p>
+              <p className="text-sm text-ui-text-dim">{ev.label}</p>
+              <p className="text-xs text-ui-text-muted">{ev.desc}</p>
             </div>
             <button
               type="button"
@@ -105,7 +105,7 @@ const NotifSection = ({ orgId }: { orgId: string }) => {
                 setPrefs((p) => ({ ...p, [ev.key]: !p[ev.key] }))
               }
               className={`relative h-6 w-11 shrink-0 rounded-full transition-all duration-300 cursor-pointer outline-none border-none p-0 ${
-                prefs[ev.key] ? "bg-[#238636]" : "bg-[#0D0D0D]"
+                prefs[ev.key] ? "bg-[#238636]" : "bg-ui-bg"
               }`}
             >
               {/* Track Shadow Internal */}
@@ -115,7 +115,7 @@ const NotifSection = ({ orgId }: { orgId: string }) => {
                 className={`absolute top-[3px] left-[3px] h-[18px] w-[18px] rounded-full transition-all duration-300 shadow-sm ${
                   prefs[ev.key]
                     ? "translate-x-[20px] bg-white"
-                    : "translate-x-0 bg-[#3A3A3A]"
+                    : "translate-x-0 bg-ui-hover-strong"
                 }`}
               />
             </button>
@@ -126,7 +126,7 @@ const NotifSection = ({ orgId }: { orgId: string }) => {
       <button
         onClick={handleSave}
         disabled={saving}
-        className="group relative flex items-center justify-center gap-2 rounded-lg bg-[#E5E2E1] px-5 py-2.5 text-sm font-semibold text-black transition-all hover:bg-white hover:shadow-[0_0_20px_rgba(255,255,255,0.15)] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+        className="group relative flex items-center justify-center gap-2 rounded-lg bg-ui-text px-5 py-2.5 text-sm font-semibold text-black transition-all hover:bg-white hover:shadow-[0_0_20px_rgba(255,255,255,0.15)] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {saving ? (
           <Loader2 className="h-4 w-4 animate-spin" />

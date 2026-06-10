@@ -63,8 +63,8 @@ const ManageSalariesPage = async ({ params }: Props) => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-white">Salary Player</h1>
-        <p className="mt-1 text-sm text-[#9B9A97]">
+        <h1 className="text-2xl font-bold text-ui-text">Salary Player</h1>
+        <p className="mt-1 text-sm text-ui-text-2">
           Kelola kontrak, gaji bulanan, dan riwayat pembayaran tiap player.
         </p>
       </div>

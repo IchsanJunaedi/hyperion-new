@@ -25,7 +25,7 @@ const StrategyNoteCard = ({ note, orgSlug }: StrategyNoteCardProps) => {
     >
       <div className="flex items-start gap-2">
         <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-yellow-400" />
-        <h3 className="line-clamp-1 text-sm font-semibold text-white">
+        <h3 className="line-clamp-1 text-sm font-semibold text-ui-text">
           {note.title}
         </h3>
       </div>

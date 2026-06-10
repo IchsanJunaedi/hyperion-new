@@ -203,7 +203,7 @@ const VodReviewSection = ({
                     setTimeError(false);
                   }}
                   className={cn(
-                    "w-full rounded-md border bg-white/[0.04] px-3 py-1.5 font-mono text-sm text-white placeholder-white/20 outline-none focus:ring-1 focus:ring-blue-500/50",
+                    "w-full rounded-md border bg-white/[0.04] px-3 py-1.5 font-mono text-sm text-ui-text placeholder-white/20 outline-none focus:ring-1 focus:ring-blue-500/50",
                     timeError ? "border-red-500/50" : "border-white/10",
                   )}
                 />
@@ -221,7 +221,7 @@ const VodReviewSection = ({
                   <select
                     value={selectedPlayerId}
                     onChange={(e) => setSelectedPlayerId(e.target.value)}
-                    className="w-full rounded-md border border-white/10 bg-[#191919] px-3 py-1.5 text-sm text-white outline-none focus:ring-1 focus:ring-blue-500/50 cursor-pointer"
+                    className="w-full rounded-md border border-white/10 bg-ui-bg px-3 py-1.5 text-sm text-ui-text outline-none focus:ring-1 focus:ring-blue-500/50 cursor-pointer"
                   >
                     <option value="">— Tidak ada —</option>
                     {players.map((p) => (
@@ -244,7 +244,7 @@ const VodReviewSection = ({
                   value={noteText}
                   onChange={(e) => setNoteText(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleAdd()}
-                  className="w-full rounded-md border border-white/10 bg-white/[0.04] px-3 py-1.5 text-sm text-white placeholder-white/20 outline-none focus:ring-1 focus:ring-blue-500/50"
+                  className="w-full rounded-md border border-white/10 bg-white/[0.04] px-3 py-1.5 text-sm text-ui-text placeholder-white/20 outline-none focus:ring-1 focus:ring-blue-500/50"
                 />
               </div>
 

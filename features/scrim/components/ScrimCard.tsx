@@ -33,7 +33,7 @@ const ScrimCard = ({
             <Swords className="h-3.5 w-3.5" />
             {scrim.format.toUpperCase()}
           </p>
-          <h3 className="mt-1 truncate text-base font-semibold text-white">
+          <h3 className="mt-1 truncate text-base font-semibold text-ui-text">
             vs {scrim.opponent_name}
           </h3>
         </div>

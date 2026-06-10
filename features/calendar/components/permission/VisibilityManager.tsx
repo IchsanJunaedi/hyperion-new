@@ -116,21 +116,21 @@ function PermissionMatrix({
 
   return (
     <div className="space-y-3">
-      <p className="text-xs font-medium text-[#6B6A68] uppercase tracking-wider">
+      <p className="text-xs font-medium text-ui-text-muted uppercase tracking-wider">
         Preview Permissions
       </p>
 
       <div className="grid grid-cols-[100px_1fr_1fr_1fr] gap-2 text-xs">
         {/* Header */}
-        <div className="font-medium text-[#9B9A97]">Role</div>
-        <div className="font-medium text-[#9B9A97]">View</div>
-        <div className="font-medium text-[#9B9A97]">Create</div>
-        <div className="font-medium text-[#9B9A97]">Manage</div>
+        <div className="font-medium text-ui-text-2">Role</div>
+        <div className="font-medium text-ui-text-2">View</div>
+        <div className="font-medium text-ui-text-2">Create</div>
+        <div className="font-medium text-ui-text-2">Manage</div>
 
         {/* Rows */}
         {roles.map((role) => (
           <div key={role} className="contents">
-            <div className="text-[#E5E2E1]">{role}</div>
+            <div className="text-ui-text">{role}</div>
             <div>
               {canView(role) ? (
                 <CheckCircle2 className="h-4 w-4 text-green-400" />
@@ -201,14 +201,14 @@ function MemberSelector({
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <p className="text-xs font-medium text-[#6B6A68] uppercase tracking-wider">
+        <p className="text-xs font-medium text-ui-text-muted uppercase tracking-wider">
           Select Members
         </p>
         <div className="flex gap-2">
           {onSelectAll && (
             <button
               onClick={onSelectAll}
-              className="text-xs px-2 py-1 rounded bg-[#2C2C2C] border border-[#2D2D2D] hover:border-[#404040] text-[#9B9A97] hover:text-[#E5E2E1] transition"
+              className="text-xs px-2 py-1 rounded bg-ui-hover border border-ui-border hover:border-[#404040] text-ui-text-2 hover:text-ui-text transition"
             >
               All
             </button>
@@ -216,7 +216,7 @@ function MemberSelector({
           {onClearAll && (
             <button
               onClick={onClearAll}
-              className="text-xs px-2 py-1 rounded bg-[#2C2C2C] border border-[#2D2D2D] hover:border-[#404040] text-[#9B9A97] hover:text-[#E5E2E1] transition"
+              className="text-xs px-2 py-1 rounded bg-ui-hover border border-ui-border hover:border-[#404040] text-ui-text-2 hover:text-ui-text transition"
             >
               Clear
             </button>
@@ -226,20 +226,20 @@ function MemberSelector({
 
       {/* Search */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6B6A68]" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-ui-text-muted" />
         <input
           type="text"
           placeholder="Search members..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-10 pr-4 py-2 rounded-lg bg-[#2C2C2C] border border-[#2D2D2D] focus:border-[#404040] text-[#E5E2E1] placeholder-[#6B6A68] outline-none transition"
+          className="w-full pl-10 pr-4 py-2 rounded-lg bg-ui-hover border border-ui-border focus:border-[#404040] text-ui-text placeholder-ui-text-muted outline-none transition"
         />
       </div>
 
       {/* Member List */}
       <div className="max-h-64 overflow-y-auto space-y-2">
         {filtered.length === 0 ? (
-          <div className="text-center py-4 text-[#6B6A68] text-sm">
+          <div className="text-center py-4 text-ui-text-muted text-sm">
             No members found
           </div>
         ) : (
@@ -248,20 +248,20 @@ function MemberSelector({
             return (
               <label
                 key={member.id}
-                className="flex items-center gap-3 p-2 rounded-lg hover:bg-[#2C2C2C] cursor-pointer transition"
+                className="flex items-center gap-3 p-2 rounded-lg hover:bg-ui-hover cursor-pointer transition"
               >
                 <input
                   type="checkbox"
                   checked={isSelected}
                   onChange={() => onToggleMember(member.id)}
-                  className="h-4 w-4 rounded border-[#2D2D2D] bg-[#2C2C2C] cursor-pointer"
+                  className="h-4 w-4 rounded border-ui-border bg-ui-hover cursor-pointer"
                 />
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-[#E5E2E1] truncate">
+                  <p className="text-sm font-medium text-ui-text truncate">
                     {member.display_name || member.username}
                   </p>
                   {member.username && (
-                    <p className="text-xs text-[#6B6A68] truncate">
+                    <p className="text-xs text-ui-text-muted truncate">
                       @{member.username}
                     </p>
                   )}
@@ -355,11 +355,11 @@ const VisibilityManager = ({
 
   if (compact) {
     return (
-      <div className="p-3 rounded-lg bg-[#2C2C2C] border border-[#2D2D2D]">
+      <div className="p-3 rounded-lg bg-ui-hover border border-ui-border">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-xs text-[#6B6A68]">Visibility</p>
-            <p className="text-sm font-medium text-[#E5E2E1]">
+            <p className="text-xs text-ui-text-muted">Visibility</p>
+            <p className="text-sm font-medium text-ui-text">
               {
                 VISIBILITY_OPTIONS.find((o) => o.value === currentVisibility)
                   ?.label
@@ -378,20 +378,20 @@ const VisibilityManager = ({
   }
 
   return (
-    <div className="space-y-6 p-6 rounded-xl bg-[#202020] border border-[#2D2D2D]">
+    <div className="space-y-6 p-6 rounded-xl bg-ui-surface border border-ui-border">
       {/* Header */}
       <div>
-        <h3 className="text-lg font-semibold text-[#E5E2E1]">
+        <h3 className="text-lg font-semibold text-ui-text">
           Visibility Settings
         </h3>
-        <p className="text-sm text-[#6B6A68] mt-1">
+        <p className="text-sm text-ui-text-muted mt-1">
           Control who can see and access this calendar
         </p>
       </div>
 
       {/* Visibility Options */}
       <div className="space-y-3">
-        <p className="text-xs font-medium text-[#6B6A68] uppercase tracking-wider">
+        <p className="text-xs font-medium text-ui-text-muted uppercase tracking-wider">
           Select Visibility Level
         </p>
         <div className="space-y-2">
@@ -421,8 +421,8 @@ const VisibilityManager = ({
                 className="mt-1 h-4 w-4 cursor-pointer"
               />
               <div className="flex-1">
-                <p className="font-medium text-[#E5E2E1]">{option.label}</p>
-                <p className="text-sm text-[#9B9A97] mt-0.5">
+                <p className="font-medium text-ui-text">{option.label}</p>
+                <p className="text-sm text-ui-text-2 mt-0.5">
                   {option.description}
                 </p>
               </div>
@@ -433,7 +433,7 @@ const VisibilityManager = ({
 
       {/* Member Selection for selected-members */}
       {visibility === "selected-members" && teamMembers.length > 0 && (
-        <div className="space-y-3 p-4 rounded-lg bg-[#1F1F1F] border border-[#2D2D2D]">
+        <div className="space-y-3 p-4 rounded-lg bg-ui-surface border border-ui-border">
           <MemberSelector
             members={teamMembers}
             selectedMembers={selectedMembers}
@@ -456,7 +456,7 @@ const VisibilityManager = ({
       )}
 
       {/* Permission Matrix */}
-      <div className="p-4 rounded-lg bg-[#1F1F1F] border border-[#2D2D2D]">
+      <div className="p-4 rounded-lg bg-ui-surface border border-ui-border">
         <PermissionMatrix
           visibility={visibility}
           selectedMembersCount={selectedMembers.size}
@@ -478,7 +478,7 @@ const VisibilityManager = ({
             setSelectedMembers(new Set(initialSelectedMembers));
           }}
           disabled={!hasChanges || saving}
-          className="flex-1 px-4 py-2 rounded-lg bg-[#2C2C2C] border border-[#2D2D2D] hover:border-[#404040] text-[#E5E2E1] transition disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+          className="flex-1 px-4 py-2 rounded-lg bg-ui-hover border border-ui-border hover:border-[#404040] text-ui-text transition disabled:opacity-50 disabled:cursor-not-allowed font-medium"
         >
           Reset
         </button>

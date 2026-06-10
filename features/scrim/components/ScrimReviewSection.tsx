@@ -81,7 +81,7 @@ const ScrimReviewSection = ({
     <article className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5 space-y-3">
       <div className="flex items-center gap-2">
         <ClipboardCheck className="h-4 w-4 text-blue-400" />
-        <h2 className="text-sm font-semibold text-white">Review Coach</h2>
+        <h2 className="text-sm font-semibold text-ui-text">Review Coach</h2>
         {reviewRequest?.status === "reviewed" && (
           <span className="rounded-full bg-green-500/10 px-2 py-0.5 text-[10px] font-semibold text-green-400">
             Selesai
@@ -147,7 +147,7 @@ const ScrimReviewSection = ({
             <button
               type="button"
               onClick={() => setShowForm(true)}
-              className="inline-flex items-center gap-2 rounded-lg border border-white/10 px-3 py-2 text-xs text-white/60 hover:bg-white/5 hover:text-white transition cursor-pointer"
+              className="inline-flex items-center gap-2 rounded-lg border border-white/10 px-3 py-2 text-xs text-white/60 hover:bg-white/5 hover:text-ui-text transition cursor-pointer"
             >
               <MessageSquarePlus className="h-3.5 w-3.5" />
               Minta review dari coach

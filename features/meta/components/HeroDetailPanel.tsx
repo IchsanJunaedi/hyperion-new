@@ -31,7 +31,7 @@ function HeroChip({ name, onClick }: { name: string; onClick: () => void }) {
     <button
       type="button"
       onClick={onClick}
-      className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-[#2D2D2D] bg-[#141414] px-2 py-1 transition hover:border-white/20 hover:bg-[#2C2C2C]"
+      className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-ui-border bg-ui-bg px-2 py-1 transition hover:border-white/20 hover:bg-ui-hover"
     >
       <div className="h-6 w-6 shrink-0 overflow-hidden rounded-md">
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -74,14 +74,14 @@ const HeroDetailPanel = ({ hero: initialHero, allHeroes, onClose }: HeroDetailPa
   return (
     <>
       <div className="fixed inset-0 z-40 bg-black/40" onClick={onClose} />
-      <div className="fixed bottom-0 right-0 top-0 z-50 flex w-full max-w-sm flex-col overflow-hidden border-l border-[#2D2D2D] bg-[#1C1C1C] shadow-2xl">
+      <div className="fixed bottom-0 right-0 top-0 z-50 flex w-full max-w-sm flex-col overflow-hidden border-l border-ui-border bg-ui-surface shadow-2xl">
         {/* Header */}
-        <div className="flex shrink-0 items-center gap-3 border-b border-[#2D2D2D] px-4 py-3">
+        <div className="flex shrink-0 items-center gap-3 border-b border-ui-border px-4 py-3">
           {navStack.length > 0 && (
             <button
               type="button"
               onClick={() => setNavStack((prev) => prev.slice(0, -1))}
-              className="cursor-pointer text-white/40 hover:text-white"
+              className="cursor-pointer text-white/40 hover:text-ui-text"
             >
               <ArrowLeft className="h-4 w-4" />
             </button>
@@ -92,7 +92,7 @@ const HeroDetailPanel = ({ hero: initialHero, allHeroes, onClose }: HeroDetailPa
               <img src={getHeroImageUrl(current.hero_name)} alt={current.hero_name} className="h-full w-full object-cover" />
             </div>
             <div className="min-w-0">
-              <p className="truncate font-semibold text-white">{current.hero_name}</p>
+              <p className="truncate font-semibold text-ui-text">{current.hero_name}</p>
               {!isStub && (
                 <div className="mt-0.5 flex items-center gap-2">
                   {current.tier && (
@@ -111,7 +111,7 @@ const HeroDetailPanel = ({ hero: initialHero, allHeroes, onClose }: HeroDetailPa
               )}
             </div>
           </div>
-          <button type="button" onClick={onClose} className="cursor-pointer text-white/40 hover:text-white">
+          <button type="button" onClick={onClose} className="cursor-pointer text-white/40 hover:text-ui-text">
             <X className="h-4 w-4" />
           </button>
         </div>

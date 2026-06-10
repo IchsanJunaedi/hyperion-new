@@ -188,20 +188,20 @@ const SponsorDetailClient = ({ sponsor: initial, orgId, backHref, listHref }: Sp
     });
   }
 
-  const inputCls = "w-full rounded-md border border-[#2D2D2D] bg-[#141414] px-3 py-2 text-sm text-white placeholder-white/30 outline-none focus:border-white/30";
+  const inputCls = "w-full rounded-md border border-ui-border bg-ui-bg px-3 py-2 text-sm text-ui-text placeholder-white/30 outline-none focus:border-white/30";
   const doneDl = deliverables.filter((d) => d.status === "done").length;
 
   return (
     <div className="mx-auto max-w-4xl space-y-8 px-4 py-6 sm:px-8">
       {/* Back + actions */}
       <div className="flex items-center justify-between gap-4">
-        <Link href={backHref} className="inline-flex items-center gap-2 text-sm text-white/50 transition hover:text-white">
+        <Link href={backHref} className="inline-flex items-center gap-2 text-sm text-white/50 transition hover:text-ui-text">
           <ArrowLeft className="h-4 w-4" />
           Kembali
         </Link>
         <div className="flex gap-2">
           <button type="button" onClick={() => setEditModalOpen(true)}
-            className="inline-flex h-8 cursor-pointer items-center gap-2 rounded-md border border-[#2D2D2D] px-3 text-xs text-white/60 transition hover:bg-white/5">
+            className="inline-flex h-8 cursor-pointer items-center gap-2 rounded-md border border-ui-border px-3 text-xs text-white/60 transition hover:bg-white/5">
             <Pencil className="h-3.5 w-3.5" />
             Edit
           </button>
@@ -223,19 +223,19 @@ const SponsorDetailClient = ({ sponsor: initial, orgId, backHref, listHref }: Sp
       </div>
 
       {/* Sponsor header card */}
-      <div className="rounded-xl border border-[#2D2D2D] bg-[#1C1C1C] p-6">
+      <div className="rounded-xl border border-ui-border bg-ui-surface p-6">
         <div className="flex items-start gap-4">
           {sponsor.logo_url ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={sponsor.logo_url} alt={sponsor.name} className="h-14 w-14 shrink-0 rounded-xl object-cover" />
           ) : (
-            <div className="grid h-14 w-14 shrink-0 place-items-center rounded-xl bg-[#2C2C2C] text-xl font-bold text-white/60">
+            <div className="grid h-14 w-14 shrink-0 place-items-center rounded-xl bg-ui-hover text-xl font-bold text-white/60">
               {sponsor.name.slice(0, 2).toUpperCase()}
             </div>
           )}
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-3">
-              <h1 className="text-xl font-bold text-white">{sponsor.name}</h1>
+              <h1 className="text-xl font-bold text-ui-text">{sponsor.name}</h1>
               <SponsorStatusBadge status={sponsor.status} />
             </div>
             {formatCurrency(sponsor.deal_value, sponsor.currency) && (
@@ -251,7 +251,7 @@ const SponsorDetailClient = ({ sponsor: initial, orgId, backHref, listHref }: Sp
         </div>
 
         {(sponsor.contact_name || sponsor.contact_email || sponsor.contact_phone) && (
-          <div className="mt-4 grid grid-cols-3 gap-3 border-t border-[#2D2D2D] pt-4 text-xs">
+          <div className="mt-4 grid grid-cols-3 gap-3 border-t border-ui-border pt-4 text-xs">
             {sponsor.contact_name && (
               <div><p className="text-white/40">PIC</p><p className="text-white/80">{sponsor.contact_name}</p></div>
             )}
@@ -265,7 +265,7 @@ const SponsorDetailClient = ({ sponsor: initial, orgId, backHref, listHref }: Sp
         )}
 
         {sponsor.notes && (
-          <div className="mt-4 border-t border-[#2D2D2D] pt-4">
+          <div className="mt-4 border-t border-ui-border pt-4">
             <p className="whitespace-pre-wrap text-xs leading-relaxed text-white/50">{sponsor.notes}</p>
           </div>
         )}
@@ -274,21 +274,21 @@ const SponsorDetailClient = ({ sponsor: initial, orgId, backHref, listHref }: Sp
       {/* Deliverables */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-white">
+          <h2 className="text-sm font-semibold text-ui-text">
             Deliverables
             {deliverables.length > 0 && (
               <span className="ml-2 text-xs font-normal text-white/40">{doneDl}/{deliverables.length} selesai</span>
             )}
           </h2>
           <button type="button" onClick={() => setShowDlForm((v) => !v)}
-            className="inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-dashed border-[#2D2D2D] px-3 py-1.5 text-xs text-white/40 transition hover:border-white/20 hover:text-white/70">
+            className="inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-dashed border-ui-border px-3 py-1.5 text-xs text-white/40 transition hover:border-white/20 hover:text-white/70">
             <Plus className="h-3 w-3" />
             Tambah
           </button>
         </div>
 
         {showDlForm && (
-          <div className="space-y-3 rounded-xl border border-[#2D2D2D] bg-[#1C1C1C] p-4">
+          <div className="space-y-3 rounded-xl border border-ui-border bg-ui-surface p-4">
             <div className="grid grid-cols-2 gap-2">
               <input value={dlForm.title} onChange={(e) => setDlForm((f) => ({ ...f, title: e.target.value }))}
                 placeholder="Judul deliverable *" className={cn(inputCls, "col-span-2")} />
@@ -301,7 +301,7 @@ const SponsorDetailClient = ({ sponsor: initial, orgId, backHref, listHref }: Sp
               {CATEGORY_OPTIONS.map((c) => (
                 <button key={c.value} type="button" onClick={() => setDlForm((f) => ({ ...f, category: c.value }))}
                   className={cn("cursor-pointer rounded-full border px-2.5 py-1 text-xs transition",
-                    dlForm.category === c.value ? "border-yellow-500/50 bg-yellow-500/10 text-yellow-400" : "border-[#2D2D2D] text-white/40 hover:border-white/20"
+                    dlForm.category === c.value ? "border-yellow-500/50 bg-yellow-500/10 text-yellow-400" : "border-ui-border text-white/40 hover:border-white/20"
                   )}>
                   {c.label}
                 </button>
@@ -309,14 +309,14 @@ const SponsorDetailClient = ({ sponsor: initial, orgId, backHref, listHref }: Sp
             </div>
             <div className="flex gap-2">
               <button type="button" onClick={() => setShowDlForm(false)}
-                className="cursor-pointer rounded-md border border-[#2D2D2D] px-3 py-1.5 text-xs text-white/60 transition hover:bg-white/5">Batal</button>
+                className="cursor-pointer rounded-md border border-ui-border px-3 py-1.5 text-xs text-white/60 transition hover:bg-white/5">Batal</button>
               <button type="button" onClick={handleAddDeliverable} disabled={pending}
                 className="cursor-pointer rounded-md bg-yellow-400 px-3 py-1.5 text-xs font-semibold text-black transition hover:bg-yellow-300 disabled:opacity-50">Tambahkan</button>
             </div>
           </div>
         )}
 
-        <div className="rounded-xl border border-[#2D2D2D] divide-y divide-[#2D2D2D]">
+        <div className="rounded-xl border border-ui-border divide-y divide-ui-border">
           {deliverables.length === 0 ? (
             <p className="py-6 text-center text-xs text-white/30">Belum ada deliverable</p>
           ) : (
@@ -362,7 +362,7 @@ const SponsorDetailClient = ({ sponsor: initial, orgId, backHref, listHref }: Sp
                     </button>
 
                     {openStatusId === dl.id && (
-                      <ul className="absolute right-0 top-full z-50 mt-1.5 min-w-[140px] overflow-hidden rounded-lg border border-[#2D2D2D] bg-[#1C1C1C] py-1 shadow-xl shadow-black/40">
+                      <ul className="absolute right-0 top-full z-50 mt-1.5 min-w-[140px] overflow-hidden rounded-lg border border-ui-border bg-ui-surface py-1 shadow-xl shadow-black/40">
                         {(Object.keys(STATUS_LABEL) as DeliverableStatus[]).map((s) => (
                           <li key={s}>
                             <button
@@ -374,7 +374,7 @@ const SponsorDetailClient = ({ sponsor: initial, orgId, backHref, listHref }: Sp
                               }}
                               className={cn(
                                 "flex w-full items-center gap-2.5 px-3 py-2 text-xs transition hover:bg-white/5",
-                                dl.status === s ? "text-white" : "text-white/50"
+                                dl.status === s ? "text-ui-text" : "text-white/50"
                               )}
                             >
                               <span className={cn(
@@ -408,10 +408,10 @@ const SponsorDetailClient = ({ sponsor: initial, orgId, backHref, listHref }: Sp
 
       {/* Notes timeline */}
       <div className="space-y-3">
-        <h2 className="text-sm font-semibold text-white">Catatan / Histori</h2>
+        <h2 className="text-sm font-semibold text-ui-text">Catatan / Histori</h2>
 
         {/* Unified input card */}
-        <div className="rounded-xl border border-[#2D2D2D] bg-[#1C1C1C] focus-within:border-white/20 transition">
+        <div className="rounded-xl border border-ui-border bg-ui-surface focus-within:border-white/20 transition">
           <textarea
             value={newNote}
             onChange={(e) => setNewNote(e.target.value)}
@@ -420,9 +420,9 @@ const SponsorDetailClient = ({ sponsor: initial, orgId, backHref, listHref }: Sp
             }}
             rows={3}
             placeholder="Tulis catatan baru..."
-            className="w-full resize-none bg-transparent px-4 pt-3 pb-2 text-sm text-white placeholder-white/30 outline-none"
+            className="w-full resize-none bg-transparent px-4 pt-3 pb-2 text-sm text-ui-text placeholder-white/30 outline-none"
           />
-          <div className="flex items-center justify-end border-t border-[#2D2D2D] px-3 py-2">
+          <div className="flex items-center justify-end border-t border-ui-border px-3 py-2">
             <button
               type="button"
               onClick={handleAddNote}
@@ -439,7 +439,7 @@ const SponsorDetailClient = ({ sponsor: initial, orgId, backHref, listHref }: Sp
             <p className="py-4 text-center text-xs text-white/30">Belum ada catatan</p>
           ) : (
             historyNotes.map((n) => (
-              <div key={n.id} className="group flex gap-3 rounded-lg border border-[#2D2D2D] bg-[#1C1C1C] p-3">
+              <div key={n.id} className="group flex gap-3 rounded-lg border border-ui-border bg-ui-surface p-3">
                 <div className="min-w-0 flex-1">
                   <p className="whitespace-pre-wrap text-sm text-white/80">{n.content}</p>
                   <p className="mt-1 text-[10px] text-white/30">

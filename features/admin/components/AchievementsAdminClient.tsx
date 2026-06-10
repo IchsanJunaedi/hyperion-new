@@ -48,7 +48,7 @@ const AchievementsAdminClient = ({ entries: initialEntries }: Props) => {
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-xl font-black uppercase tracking-tight text-white">Achievements</h1>
+        <h1 className="text-xl font-black uppercase tracking-tight text-ui-text">Achievements</h1>
         <button
           onClick={() => {
             setEditing(null);
@@ -70,9 +70,9 @@ const AchievementsAdminClient = ({ entries: initialEntries }: Props) => {
       <div className="space-y-2">
         {entries.length === 0 && (
           <div className="flex flex-col items-center gap-3 py-16 text-center">
-            <Trophy className="h-8 w-8 text-[#2D2D2D]" />
-            <p className="text-sm text-[#6B6A68]">Belum ada achievement.</p>
-            <p className="text-xs text-[#6B6A68]">
+            <Trophy className="h-8 w-8 text-ui-border" />
+            <p className="text-sm text-ui-text-muted">Belum ada achievement.</p>
+            <p className="text-xs text-ui-text-muted">
               Achievement akan muncul otomatis saat turnamen diselesaikan dengan placement ≤ 3.
             </p>
           </div>
@@ -86,7 +86,7 @@ const AchievementsAdminClient = ({ entries: initialEntries }: Props) => {
               {editing?.id === entry.id ? (
                 <AchievementForm entry={entry} onDone={handleDone} />
               ) : (
-                <div className="flex items-center gap-4 border border-[#2D2D2D] bg-[#141414] p-4">
+                <div className="flex items-center gap-4 border border-ui-border bg-ui-bg p-4">
                   {entry.image_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
@@ -95,12 +95,12 @@ const AchievementsAdminClient = ({ entries: initialEntries }: Props) => {
                       className="h-12 w-20 shrink-0 object-cover"
                     />
                   ) : (
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center bg-[#1E1E1E]">
-                      <Trophy className="h-5 w-5 text-[#2D2D2D]" />
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center bg-ui-surface">
+                      <Trophy className="h-5 w-5 text-ui-border" />
                     </div>
                   )}
                   <div className="min-w-0 flex-1">
-                    <p className="truncate font-bold text-[#E5E2E1]">{entry.title}</p>
+                    <p className="truncate font-bold text-ui-text">{entry.title}</p>
                     <div className="mt-0.5 flex items-center gap-3">
                       {meta && (
                         <span
@@ -110,24 +110,24 @@ const AchievementsAdminClient = ({ entries: initialEntries }: Props) => {
                           {meta.label}
                         </span>
                       )}
-                      <span className="text-xs text-[#6B6A68]">
+                      <span className="text-xs text-ui-text-muted">
                         {entry.achieved_at?.slice(0, 4)}
                       </span>
                       {entry.tournament_id && (
-                        <span className="text-xs text-[#6B6A68]">• Auto</span>
+                        <span className="text-xs text-ui-text-muted">• Auto</span>
                       )}
                     </div>
                   </div>
                   <div className="flex gap-2">
                     <button
                       onClick={() => setEditing(entry)}
-                      className="cursor-pointer rounded p-2 text-[#9B9A97] transition hover:bg-[#2C2C2C] hover:text-[#D4D4D4]"
+                      className="cursor-pointer rounded p-2 text-ui-text-2 transition hover:bg-ui-hover hover:text-ui-text-dim"
                     >
                       <Pencil className="h-4 w-4" />
                     </button>
                     <button
                       onClick={() => setDeleting(entry)}
-                      className="cursor-pointer rounded p-2 text-[#9B9A97] transition hover:bg-[#2C2C2C] hover:text-red-400"
+                      className="cursor-pointer rounded p-2 text-ui-text-2 transition hover:bg-ui-hover hover:text-red-400"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>

@@ -114,14 +114,14 @@ const RichEditor = ({
         <button
           type="button"
           title="Bold (Ctrl+B)"
-          className="rounded px-2 py-1.5 text-white/70 transition hover:bg-white/10 hover:text-white"
+          className="rounded px-2 py-1.5 text-white/70 transition hover:bg-white/10 hover:text-ui-text"
         >
           <Bold className="h-4 w-4" />
         </button>
         <button
           type="button"
           title="Italic (Ctrl+I)"
-          className="rounded px-2 py-1.5 text-white/70 transition hover:bg-white/10 hover:text-white"
+          className="rounded px-2 py-1.5 text-white/70 transition hover:bg-white/10 hover:text-ui-text"
         >
           <Italic className="h-4 w-4" />
         </button>
@@ -129,28 +129,28 @@ const RichEditor = ({
         <button
           type="button"
           title="Bullet list"
-          className="rounded px-2 py-1.5 text-white/70 transition hover:bg-white/10 hover:text-white"
+          className="rounded px-2 py-1.5 text-white/70 transition hover:bg-white/10 hover:text-ui-text"
         >
           <List className="h-4 w-4" />
         </button>
         <button
           type="button"
           title="Checklist"
-          className="rounded px-2 py-1.5 text-white/70 transition hover:bg-white/10 hover:text-white"
+          className="rounded px-2 py-1.5 text-white/70 transition hover:bg-white/10 hover:text-ui-text"
         >
           <ListChecks className="h-4 w-4" />
         </button>
         <button
           type="button"
           title="Quote"
-          className="rounded px-2 py-1.5 text-white/70 transition hover:bg-white/10 hover:text-white"
+          className="rounded px-2 py-1.5 text-white/70 transition hover:bg-white/10 hover:text-ui-text"
         >
           <Quote className="h-4 w-4" />
         </button>
         <button
           type="button"
           title="Link"
-          className="rounded px-2 py-1.5 text-white/70 transition hover:bg-white/10 hover:text-white"
+          className="rounded px-2 py-1.5 text-white/70 transition hover:bg-white/10 hover:text-ui-text"
         >
           <Link2 className="h-4 w-4" />
         </button>

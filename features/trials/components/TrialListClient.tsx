@@ -8,9 +8,9 @@ import { TrialFormModal } from "@/features/trials/components/TrialFormModal";
 import type { TrialWithCount } from "@/features/trials/queries";
 
 const STATUS_BADGE: Record<string, string> = {
-  draft:  "bg-[#2C2C2C] text-[#9B9A97]",
+  draft:  "bg-ui-hover text-ui-text-2",
   active: "bg-green-500/15 text-green-400",
-  closed: "bg-[#2C2C2C] text-[#6B6A68]",
+  closed: "bg-ui-hover text-ui-text-muted",
 };
 
 const STATUS_LABEL: Record<string, string> = {
@@ -33,7 +33,7 @@ const TrialListClient = ({ orgSlug, trials, divisionId, canManage, revalidatePat
   return (
     <>
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-[#9B9A97] uppercase tracking-wide">
+        <h2 className="text-sm font-semibold text-ui-text-2 uppercase tracking-wide">
           Semua Trial ({trials.length})
         </h2>
         {canManage && (
@@ -42,7 +42,7 @@ const TrialListClient = ({ orgSlug, trials, divisionId, canManage, revalidatePat
             onClick={() => setModalOpen(true)}
             disabled={!divisionId}
             title={!divisionId ? "Belum ada divisi aktif di organisasi ini" : undefined}
-            className="inline-flex h-9 items-center gap-2 rounded-md bg-[#E5E2E1] px-4 text-sm font-semibold text-[#191919] hover:bg-white disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+            className="inline-flex h-9 items-center gap-2 rounded-md bg-ui-text px-4 text-sm font-semibold text-ui-bg hover:bg-white disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
           >
             <Plus className="h-4 w-4" />
             Buat Trial
@@ -57,15 +57,15 @@ const TrialListClient = ({ orgSlug, trials, divisionId, canManage, revalidatePat
       )}
 
       {trials.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-[#2D2D2D] bg-[#202020]/40 p-10 text-center">
-          <ClipboardList className="mx-auto h-8 w-8 text-[#6B6A68]" />
-          <p className="mt-3 text-sm text-[#9B9A97]">Belum ada open trial.</p>
+        <div className="rounded-xl border border-dashed border-ui-border bg-ui-surface/40 p-10 text-center">
+          <ClipboardList className="mx-auto h-8 w-8 text-ui-text-muted" />
+          <p className="mt-3 text-sm text-ui-text-2">Belum ada open trial.</p>
           {canManage && (
             <button
               type="button"
               onClick={() => setModalOpen(true)}
               disabled={!divisionId}
-              className="mt-4 inline-flex h-9 items-center rounded-md border border-white/15 px-4 text-sm font-medium text-white transition hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+              className="mt-4 inline-flex h-9 items-center rounded-md border border-white/15 px-4 text-sm font-medium text-ui-text transition hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
             >
               Buat trial pertama
             </button>
@@ -77,17 +77,17 @@ const TrialListClient = ({ orgSlug, trials, divisionId, canManage, revalidatePat
             <Link
               key={t.id}
               href={`/${orgSlug}/trials/${t.id}`}
-              className="flex items-center justify-between rounded-xl border border-[#2D2D2D] bg-[#202020] px-5 py-4 hover:bg-[#2C2C2C] transition"
+              className="flex items-center justify-between rounded-xl border border-ui-border bg-ui-surface px-5 py-4 hover:bg-ui-hover transition"
             >
               <div className="space-y-1">
-                <p className="text-sm font-medium text-[#E5E2E1]">{t.title}</p>
-                <p className="text-xs text-[#6B6A68]">
+                <p className="text-sm font-medium text-ui-text">{t.title}</p>
+                <p className="text-xs text-ui-text-muted">
                   {t.division_name ?? t.game}
                   {t.positions.length > 0 && ` · ${t.positions.join(", ")}`}
                 </p>
               </div>
               <div className="flex items-center gap-3">
-                <span className="text-xs text-[#9B9A97]">{t.applicant_count} pendaftar</span>
+                <span className="text-xs text-ui-text-2">{t.applicant_count} pendaftar</span>
                 <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-semibold ${STATUS_BADGE[t.status]}`}>
                   {STATUS_LABEL[t.status]}
                 </span>

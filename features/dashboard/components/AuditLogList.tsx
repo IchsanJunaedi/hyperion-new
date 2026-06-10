@@ -109,12 +109,12 @@ const AuditLogList = ({ logs, showSearch = false }: AuditLogListProps) => {
     <div className="space-y-4">
       {showSearch && (
         <div className="relative w-64">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#6B6A68] pointer-events-none" />
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-ui-text-muted pointer-events-none" />
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Cari aksi, aktor..."
-            className="pl-8 h-8 text-sm bg-[#202020] border-[#2D2D2D] text-[#E5E2E1] placeholder:text-[#6B6A68] focus-visible:ring-0 focus-visible:border-[#9B9A97]"
+            className="pl-8 h-8 text-sm bg-ui-surface border-ui-border text-ui-text placeholder:text-ui-text-muted focus-visible:ring-0 focus-visible:border-ui-text-2"
           />
         </div>
       )}
@@ -127,7 +127,7 @@ const AuditLogList = ({ logs, showSearch = false }: AuditLogListProps) => {
         <div className="space-y-6">
           {[...groups.entries()].map(([day, dayLogs]) => (
             <div key={day}>
-              <div className="mb-2 text-xs font-medium text-[#6B6A68] uppercase tracking-wider">
+              <div className="mb-2 text-xs font-medium text-ui-text-muted uppercase tracking-wider">
                 {day}
               </div>
               <div className="space-y-1">

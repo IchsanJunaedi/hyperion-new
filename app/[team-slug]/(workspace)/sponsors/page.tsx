@@ -34,40 +34,40 @@ const SponsorsPage = async ({ params }: SponsorsPageProps) => {
   return (
     <div className="space-y-6 p-6">
       <div className="flex items-center gap-3">
-        <Handshake className="h-5 w-5 text-[#9B9A97]" />
-        <h1 className="text-lg font-semibold text-[#E5E2E1]">Sponsor</h1>
+        <Handshake className="h-5 w-5 text-ui-text-2" />
+        <h1 className="text-lg font-semibold text-ui-text">Sponsor</h1>
       </div>
 
       {sponsors.length === 0 ? (
-        <p className="text-sm text-[#6B6A68]">Belum ada sponsor aktif.</p>
+        <p className="text-sm text-ui-text-muted">Belum ada sponsor aktif.</p>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {sponsors.map((sponsor) => (
             <div
               key={sponsor.id}
-              className="rounded-lg border border-[#2D2D2D] bg-[#202020] p-4 space-y-3"
+              className="rounded-lg border border-ui-border bg-ui-surface p-4 space-y-3"
             >
               <div className="flex items-center gap-3">
                 {sponsor.logo_url ? (
                   <img
                     src={sponsor.logo_url}
                     alt={sponsor.name}
-                    className="h-10 w-10 rounded object-contain bg-[#2D2D2D] p-1 shrink-0"
+                    className="h-10 w-10 rounded object-contain bg-ui-border p-1 shrink-0"
                   />
                 ) : (
-                  <div className="h-10 w-10 rounded bg-[#2D2D2D] flex items-center justify-center shrink-0">
-                    <Handshake className="h-5 w-5 text-[#6B6A68]" />
+                  <div className="h-10 w-10 rounded bg-ui-border flex items-center justify-center shrink-0">
+                    <Handshake className="h-5 w-5 text-ui-text-muted" />
                   </div>
                 )}
                 <div className="min-w-0">
-                  <p className="font-medium text-[#E5E2E1] truncate">{sponsor.name}</p>
+                  <p className="font-medium text-ui-text truncate">{sponsor.name}</p>
                   <span className="inline-block text-xs text-emerald-400 bg-emerald-400/10 rounded px-1.5 py-0.5 mt-0.5">
                     {STATUS_LABEL[sponsor.status] ?? sponsor.status}
                   </span>
                 </div>
               </div>
               {sponsor.notes && (
-                <p className="text-sm text-[#9B9A97] leading-relaxed line-clamp-3">
+                <p className="text-sm text-ui-text-2 leading-relaxed line-clamp-3">
                   {sponsor.notes}
                 </p>
               )}

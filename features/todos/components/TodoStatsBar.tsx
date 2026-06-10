@@ -19,8 +19,8 @@ const TodoStatsBar = ({ overdueCount, todayCount, totalCount }: Props) => (
       </span>
     )}
     <span className="flex items-center gap-1.5">
-      <span className="h-2 w-2 rounded-full bg-[#6B6A68]" />
-      <span className="text-[#9B9A97]">{totalCount} total</span>
+      <span className="h-2 w-2 rounded-full bg-ui-text-muted" />
+      <span className="text-ui-text-2">{totalCount} total</span>
     </span>
   </div>
 );

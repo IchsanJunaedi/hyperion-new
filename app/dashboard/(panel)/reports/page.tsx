@@ -1,4 +1,4 @@
-﻿import { redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import { FileText } from "lucide-react";
 
@@ -36,7 +36,7 @@ export default async function DashboardReportsPage({ searchParams }: ReportsPage
   if (!org) {
     return (
       <div className="p-8">
-        <p className="text-sm text-[#9B9A97]">Belum ada organisasi.</p>
+        <p className="text-sm text-ui-text-2">Belum ada organisasi.</p>
       </div>
     );
   }
@@ -63,10 +63,10 @@ export default async function DashboardReportsPage({ searchParams }: ReportsPage
       <main className="flex-1 max-w-[900px] w-full mx-auto px-4 sm:px-8 py-12 space-y-6">
         <header>
           <div className="flex items-center gap-2">
-            <FileText className="h-5 w-5 text-[#D4D4D4]" />
-            <h1 className="text-xl font-bold text-[#E5E2E1]">Laporan Bulanan</h1>
+            <FileText className="h-5 w-5 text-ui-text-dim" />
+            <h1 className="text-xl font-bold text-ui-text">Laporan Bulanan</h1>
           </div>
-          <p className="text-sm text-[#9B9A97] mt-1">
+          <p className="text-sm text-ui-text-2 mt-1">
             Ringkasan performa tim per bulan.
           </p>
         </header>
@@ -81,7 +81,7 @@ export default async function DashboardReportsPage({ searchParams }: ReportsPage
                 className={`inline-flex h-8 items-center rounded-full px-3 text-xs font-medium transition ${
                   active
                     ? "bg-white text-black"
-                    : "bg-[#202020] text-[#9B9A97] hover:bg-[#2C2C2C] hover:text-[#E5E2E1]"
+                    : "bg-ui-surface text-ui-text-2 hover:bg-ui-hover hover:text-ui-text"
                 }`}
               >
                 {m.label}

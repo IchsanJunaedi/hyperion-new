@@ -45,20 +45,20 @@ const FilePreviewModal = ({
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
         onClick={onClose}
       />
-      <div className="relative z-10 mx-4 w-full max-w-2xl overflow-hidden rounded-xl border border-[#2D2D2D] bg-[#1e1e1e] shadow-2xl">
+      <div className="relative z-10 mx-4 w-full max-w-2xl overflow-hidden rounded-xl border border-ui-border bg-ui-surface shadow-2xl">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-[#2D2D2D] px-5 py-4">
+        <div className="flex items-center justify-between border-b border-ui-border px-5 py-4">
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-medium text-[#E5E2E1]">
+            <p className="truncate text-sm font-medium text-ui-text">
               {fileName}
             </p>
-            <p className="mt-0.5 text-xs text-[#6B6A68]">
+            <p className="mt-0.5 text-xs text-ui-text-muted">
               {fileSize} · {fileDate}
             </p>
           </div>
           <button
             onClick={onClose}
-            className="ml-4 shrink-0 cursor-pointer rounded-md p-1.5 text-[#6B6A68] transition hover:bg-white/10 hover:text-white"
+            className="ml-4 shrink-0 cursor-pointer rounded-md p-1.5 text-ui-text-muted transition hover:bg-white/10 hover:text-ui-text"
             aria-label="Tutup"
           >
             <X className="h-4 w-4" />
@@ -66,7 +66,7 @@ const FilePreviewModal = ({
         </div>
 
         {/* Preview */}
-        <div className="flex min-h-[200px] max-h-[60vh] items-center justify-center overflow-auto bg-[#141414]">
+        <div className="flex min-h-[200px] max-h-[60vh] items-center justify-center overflow-auto bg-ui-bg">
           {category === "image" && (
             <img
               src={signedUrl}
@@ -82,7 +82,7 @@ const FilePreviewModal = ({
             />
           )}
           {category === "other" && (
-            <div className="flex flex-col items-center gap-3 py-12 text-[#6B6A68]">
+            <div className="flex flex-col items-center gap-3 py-12 text-ui-text-muted">
               <File className="h-12 w-12" />
               <p className="text-sm">Preview tidak tersedia untuk file ini</p>
             </div>
@@ -90,10 +90,10 @@ const FilePreviewModal = ({
         </div>
 
         {/* Footer */}
-        <div className="flex justify-end border-t border-[#2D2D2D] px-5 py-4">
+        <div className="flex justify-end border-t border-ui-border px-5 py-4">
           <button
             onClick={() => triggerDownload(signedUrl, fileName)}
-            className="flex cursor-pointer items-center gap-2 rounded-lg bg-white/10 px-4 py-2 text-sm text-white transition hover:bg-white/15"
+            className="flex cursor-pointer items-center gap-2 rounded-lg bg-white/10 px-4 py-2 text-sm text-ui-text transition hover:bg-white/15"
           >
             <Download className="h-4 w-4" />
             Download

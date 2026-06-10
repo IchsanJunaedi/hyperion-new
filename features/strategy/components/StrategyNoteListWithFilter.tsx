@@ -73,7 +73,7 @@ const StrategyNoteListWithFilter = ({
                 >
                   <Lightbulb className="mt-0.5 h-3.5 w-3.5 shrink-0 text-yellow-400/60 group-hover:text-yellow-400 transition" />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-white/85 group-hover:text-white transition">{note.title}</p>
+                    <p className="truncate text-sm font-medium text-white/85 group-hover:text-ui-text transition">{note.title}</p>
                     {note.content && (
                       <p className="mt-0.5 line-clamp-1 text-xs text-white/40">{note.content}</p>
                     )}
@@ -99,7 +99,7 @@ const StrategyNoteListWithFilter = ({
               className={`rounded-full px-3 py-1 text-xs font-medium transition ${
                 activeTag === null
                   ? "bg-yellow-400 text-black"
-                  : "bg-white/5 text-white/60 hover:bg-white/10 hover:text-white"
+                  : "bg-white/5 text-white/60 hover:bg-white/10 hover:text-ui-text"
               }`}
             >
               Semua
@@ -112,7 +112,7 @@ const StrategyNoteListWithFilter = ({
                 className={`rounded-full px-3 py-1 text-xs font-medium transition ${
                   activeTag === tag
                     ? "bg-yellow-400 text-black"
-                    : "bg-white/5 text-white/60 hover:bg-white/10 hover:text-white"
+                    : "bg-white/5 text-white/60 hover:bg-white/10 hover:text-ui-text"
                 }`}
               >
                 {tag}
@@ -156,7 +156,7 @@ function ViewToggle({
         title="Tampilan Grid"
         className={cn(
           "flex h-7 w-7 cursor-pointer items-center justify-center rounded transition",
-          viewMode === "grid" ? "bg-white/10 text-white" : "text-white/40 hover:text-white/70",
+          viewMode === "grid" ? "bg-white/10 text-ui-text" : "text-white/40 hover:text-white/70",
         )}
       >
         <LayoutGrid className="h-3.5 w-3.5" />
@@ -167,7 +167,7 @@ function ViewToggle({
         title="Playbook"
         className={cn(
           "flex h-7 w-7 cursor-pointer items-center justify-center rounded transition",
-          viewMode === "playbook" ? "bg-white/10 text-white" : "text-white/40 hover:text-white/70",
+          viewMode === "playbook" ? "bg-white/10 text-ui-text" : "text-white/40 hover:text-white/70",
         )}
       >
         <BookOpen className="h-3.5 w-3.5" />

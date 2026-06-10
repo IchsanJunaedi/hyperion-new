@@ -14,7 +14,7 @@ const ROLE_LABEL: Record<string, string> = {
 
 const ROLE_COLOR: Record<string, string> = {
   captain: "text-purple-400",
-  member: "text-[#9B9A97]",
+  member: "text-ui-text-2",
   coach: "text-blue-400",
 };
 
@@ -66,10 +66,10 @@ const DivisionCard = ({ division }: { division: DivisionWithMembers }) => {
   const coaches = division.members.filter((m) => m.role === "coach");
 
   return (
-    <div className="border border-[#2D2D2D] bg-[#141414]">
+    <div className="border border-ui-border bg-ui-bg">
       {/* Header */}
       <div className="flex items-center gap-4 p-4">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded border border-white/10 bg-[#1E1E1E]">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded border border-white/10 bg-ui-surface">
           {editState.logo_url ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={editState.logo_url} alt={division.name} className="h-full w-full object-contain" />
@@ -79,8 +79,8 @@ const DivisionCard = ({ division }: { division: DivisionWithMembers }) => {
         </div>
 
         <div className="min-w-0 flex-1">
-          <p className="font-bold text-[#E5E2E1]">{division.name}</p>
-          <p className="text-xs text-[#6B6A68]">
+          <p className="font-bold text-ui-text">{division.name}</p>
+          <p className="text-xs text-ui-text-muted">
             {division.game} · {division.members.length} anggota
           </p>
         </div>
@@ -89,7 +89,7 @@ const DivisionCard = ({ division }: { division: DivisionWithMembers }) => {
           <button
             type="button"
             onClick={() => setEditing((v) => !v)}
-            className="cursor-pointer rounded p-1.5 text-[#6B6A68] transition hover:bg-[#2C2C2C] hover:text-[#D4D4D4]"
+            className="cursor-pointer rounded p-1.5 text-ui-text-muted transition hover:bg-ui-hover hover:text-ui-text-dim"
             title="Edit info publik"
           >
             <Pencil className="h-3.5 w-3.5" />
@@ -101,7 +101,7 @@ const DivisionCard = ({ division }: { division: DivisionWithMembers }) => {
             onClick={handleToggle}
             disabled={isPending}
             className={`relative inline-flex h-5 w-9 cursor-pointer items-center rounded-full transition-colors disabled:opacity-50 ${
-              isPublic ? "bg-[#F5C400]" : "bg-[#2D2D2D]"
+              isPublic ? "bg-[#F5C400]" : "bg-ui-border"
             }`}
             title={isPublic ? "Sembunyikan dari public" : "Tampilkan di public"}
           >
@@ -111,7 +111,7 @@ const DivisionCard = ({ division }: { division: DivisionWithMembers }) => {
               }`}
             />
           </button>
-          <span className={`text-xs font-semibold ${isPublic ? "text-[#F5C400]" : "text-[#6B6A68]"}`}>
+          <span className={`text-xs font-semibold ${isPublic ? "text-[#F5C400]" : "text-ui-text-muted"}`}>
             {isPublic ? "Public" : "Hidden"}
           </span>
         </div>
@@ -119,9 +119,9 @@ const DivisionCard = ({ division }: { division: DivisionWithMembers }) => {
 
       {/* Inline edit form */}
       {editing && (
-        <div className="border-t border-[#2D2D2D] bg-[#111111] px-4 py-3 space-y-2">
+        <div className="border-t border-ui-border bg-ui-bg px-4 py-3 space-y-2">
           <div>
-            <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wider text-[#6B6A68]">
+            <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wider text-ui-text-muted">
               Deskripsi
             </label>
             <textarea
@@ -129,11 +129,11 @@ const DivisionCard = ({ division }: { division: DivisionWithMembers }) => {
               onChange={(e) => setEditState((s) => ({ ...s, description: e.target.value }))}
               rows={2}
               placeholder="Deskripsi singkat division ini..."
-              className="w-full resize-none rounded border border-[#2D2D2D] bg-[#191919] px-3 py-2 text-sm text-[#E5E2E1] placeholder-[#6B6A68] focus:border-[#F5C400]/50 focus:outline-none"
+              className="w-full resize-none rounded border border-ui-border bg-ui-bg px-3 py-2 text-sm text-ui-text placeholder-ui-text-muted focus:border-[#F5C400]/50 focus:outline-none"
             />
           </div>
           <div>
-            <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wider text-[#6B6A68]">
+            <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wider text-ui-text-muted">
               Logo URL
             </label>
             <input
@@ -141,7 +141,7 @@ const DivisionCard = ({ division }: { division: DivisionWithMembers }) => {
               value={editState.logo_url}
               onChange={(e) => setEditState((s) => ({ ...s, logo_url: e.target.value }))}
               placeholder="https://..."
-              className="w-full rounded border border-[#2D2D2D] bg-[#191919] px-3 py-2 text-sm text-[#E5E2E1] placeholder-[#6B6A68] focus:border-[#F5C400]/50 focus:outline-none"
+              className="w-full rounded border border-ui-border bg-ui-bg px-3 py-2 text-sm text-ui-text placeholder-ui-text-muted focus:border-[#F5C400]/50 focus:outline-none"
             />
           </div>
           <div className="flex gap-2 pt-1">
@@ -160,7 +160,7 @@ const DivisionCard = ({ division }: { division: DivisionWithMembers }) => {
                 setEditing(false);
                 setEditState({ description: division.description ?? "", logo_url: division.logo_url ?? "" });
               }}
-              className="flex cursor-pointer items-center gap-1.5 rounded border border-[#2D2D2D] px-3 py-1.5 text-xs font-semibold text-[#9B9A97] transition hover:bg-[#2C2C2C]"
+              className="flex cursor-pointer items-center gap-1.5 rounded border border-ui-border px-3 py-1.5 text-xs font-semibold text-ui-text-2 transition hover:bg-ui-hover"
             >
               <X className="h-3 w-3" />
               Batal
@@ -171,16 +171,16 @@ const DivisionCard = ({ division }: { division: DivisionWithMembers }) => {
 
       {/* Members */}
       {division.members.length > 0 && (
-        <div className="border-t border-[#2D2D2D] px-4 py-3 space-y-3">
+        <div className="border-t border-ui-border px-4 py-3 space-y-3">
           {players.length > 0 && (
             <div>
-              <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-[#6B6A68]">
+              <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-ui-text-muted">
                 Pemain ({players.length})
               </p>
               <div className="space-y-1">
                 {players.map((m) => (
                   <div key={m.user_id} className="flex items-center gap-2">
-                    <div className="flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#2C2C2C] text-[9px] font-bold text-white/40">
+                    <div className="flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded-full bg-ui-hover text-[9px] font-bold text-white/40">
                       {m.avatar_url ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={m.avatar_url} alt="" className="h-full w-full object-cover" />
@@ -188,13 +188,13 @@ const DivisionCard = ({ division }: { division: DivisionWithMembers }) => {
                         (m.display_name ?? "?").slice(0, 1).toUpperCase()
                       )}
                     </div>
-                    <span className="text-xs text-[#E5E2E1]">{m.display_name ?? "—"}</span>
+                    <span className="text-xs text-ui-text">{m.display_name ?? "—"}</span>
                     <span className={`text-[10px] ${ROLE_COLOR[m.role]}`}>{ROLE_LABEL[m.role]}</span>
                     {m.jersey_number != null && (
-                      <span className="text-[10px] text-[#6B6A68]">#{m.jersey_number}</span>
+                      <span className="text-[10px] text-ui-text-muted">#{m.jersey_number}</span>
                     )}
                     {m.position && (
-                      <span className="text-[10px] text-[#6B6A68]">· {m.position}</span>
+                      <span className="text-[10px] text-ui-text-muted">· {m.position}</span>
                     )}
                   </div>
                 ))}
@@ -204,13 +204,13 @@ const DivisionCard = ({ division }: { division: DivisionWithMembers }) => {
 
           {coaches.length > 0 && (
             <div>
-              <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-[#6B6A68]">
+              <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-ui-text-muted">
                 Pelatih ({coaches.length})
               </p>
               <div className="space-y-1">
                 {coaches.map((m) => (
                   <div key={m.user_id} className="flex items-center gap-2">
-                    <div className="flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#2C2C2C] text-[9px] font-bold text-blue-400/60">
+                    <div className="flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded-full bg-ui-hover text-[9px] font-bold text-blue-400/60">
                       {m.avatar_url ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={m.avatar_url} alt="" className="h-full w-full object-cover" />
@@ -218,7 +218,7 @@ const DivisionCard = ({ division }: { division: DivisionWithMembers }) => {
                         (m.display_name ?? "?").slice(0, 1).toUpperCase()
                       )}
                     </div>
-                    <span className="text-xs text-[#E5E2E1]">{m.display_name ?? "—"}</span>
+                    <span className="text-xs text-ui-text">{m.display_name ?? "—"}</span>
                     <span className="text-[10px] text-blue-400">Coach</span>
                   </div>
                 ))}
@@ -238,9 +238,9 @@ interface Props {
 const DivisionsAdminClient = ({ divisions }: Props) => {
   if (divisions.length === 0) {
     return (
-      <div className="rounded border border-[#2D2D2D] bg-[#141414] py-16 text-center">
-        <p className="text-sm text-[#6B6A68]">Belum ada division.</p>
-        <p className="mt-1 text-xs text-[#6B6A68]/60">Buat division di workspace terlebih dahulu.</p>
+      <div className="rounded border border-ui-border bg-ui-bg py-16 text-center">
+        <p className="text-sm text-ui-text-muted">Belum ada division.</p>
+        <p className="mt-1 text-xs text-ui-text-muted/60">Buat division di workspace terlebih dahulu.</p>
       </div>
     );
   }
@@ -248,8 +248,8 @@ const DivisionsAdminClient = ({ divisions }: Props) => {
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-xl font-black uppercase tracking-tight text-white">Divisions</h1>
-        <p className="text-xs text-[#6B6A68]">Data otomatis dari workspace · toggle untuk tampilkan di public</p>
+        <h1 className="text-xl font-black uppercase tracking-tight text-ui-text">Divisions</h1>
+        <p className="text-xs text-ui-text-muted">Data otomatis dari workspace · toggle untuk tampilkan di public</p>
       </div>
       <div className="space-y-2">
         {divisions.map((division) => (

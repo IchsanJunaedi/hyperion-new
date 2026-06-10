@@ -127,7 +127,7 @@ const ManagerTimDivisiTable = ({ rows, allDivisions = [] }: ManagerTimDivisiTabl
 
   if (rows.length === 0) {
     return (
-      <p className="py-3 px-3 text-sm text-[#6B6A68]">
+      <p className="py-3 px-3 text-sm text-ui-text-muted">
         Belum ada Manager yang di-assign.
       </p>
     );
@@ -140,10 +140,10 @@ const ManagerTimDivisiTable = ({ rows, allDivisions = [] }: ManagerTimDivisiTabl
         {rows.map((r) => (
           <div
             key={r.memberId}
-            className="grid grid-cols-[200px_1fr_1fr_32px] items-center py-2 px-3 -mx-3 hover:bg-[#2C2C2C] rounded transition-colors gap-4 group"
+            className="grid grid-cols-[200px_1fr_1fr_32px] items-center py-2 px-3 -mx-3 hover:bg-ui-hover rounded transition-colors gap-4 group"
           >
             {/* Manager name */}
-            <span className="text-sm text-[#D4D4D4] truncate">{r.managerName}</span>
+            <span className="text-sm text-ui-text-dim truncate">{r.managerName}</span>
 
             {/* Org name — editable */}
             {editingOrg?.id === r.orgId ? (
@@ -151,23 +151,23 @@ const ManagerTimDivisiTable = ({ rows, allDivisions = [] }: ManagerTimDivisiTabl
                 <input
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
-                  className="h-6 flex-1 rounded border border-[#2D2D2D] bg-[#191919] px-2 text-xs text-[#E5E2E1] focus:border-[#D4D4D4] focus:outline-none"
+                  className="h-6 flex-1 rounded border border-ui-border bg-ui-bg px-2 text-xs text-ui-text focus:border-ui-text-dim focus:outline-none"
                   autoFocus
                   onKeyDown={(e) => {
                     if (e.key === "Enter") handleSaveOrg();
                     if (e.key === "Escape") setEditingOrg(null);
                   }}
                 />
-                <button onClick={handleSaveOrg} disabled={pending} className="p-0.5 text-green-400 hover:bg-[#353434] rounded">
+                <button onClick={handleSaveOrg} disabled={pending} className="p-0.5 text-green-400 hover:bg-ui-hover-strong rounded">
                   <Save className="h-3 w-3" />
                 </button>
-                <button onClick={() => setEditingOrg(null)} className="p-0.5 text-[#9B9A97] hover:bg-[#353434] rounded">
+                <button onClick={() => setEditingOrg(null)} className="p-0.5 text-ui-text-2 hover:bg-ui-hover-strong rounded">
                   <X className="h-3 w-3" />
                 </button>
               </div>
             ) : (
               <span
-                className="flex-1 text-sm text-[#9B9A97] truncate cursor-pointer hover:text-[#D4D4D4] group/org"
+                className="flex-1 text-sm text-ui-text-2 truncate cursor-pointer hover:text-ui-text-dim group/org"
                 onClick={() => startEditOrg(r.orgId, r.orgName)}
                 title="Klik untuk edit nama tim"
               >
@@ -182,7 +182,7 @@ const ManagerTimDivisiTable = ({ rows, allDivisions = [] }: ManagerTimDivisiTabl
                 <button
                   type="button"
                   onClick={() => { setAddDivOrgId(r.orgId); setSelectedAddDiv(""); }}
-                  className="text-xs text-[#6B6A68] hover:text-[#D4D4D4] transition-colors"
+                  className="text-xs text-ui-text-muted hover:text-ui-text-dim transition-colors"
                 >
                   + Tambah divisi
                 </button>
@@ -191,7 +191,7 @@ const ManagerTimDivisiTable = ({ rows, allDivisions = [] }: ManagerTimDivisiTabl
                   <select
                     value={selectedAddDiv}
                     onChange={(e) => setSelectedAddDiv(e.target.value)}
-                    className="h-6 rounded border border-[#2D2D2D] bg-[#191919] px-1 text-[11px] text-[#E5E2E1] focus:outline-none"
+                    className="h-6 rounded border border-ui-border bg-ui-bg px-1 text-[11px] text-ui-text focus:outline-none"
                   >
                     <option value="">Pilih...</option>
                     {allDivisions
@@ -208,7 +208,7 @@ const ManagerTimDivisiTable = ({ rows, allDivisions = [] }: ManagerTimDivisiTabl
                   >
                     OK
                   </button>
-                  <button onClick={() => setAddDivOrgId(null)} className="text-[11px] text-[#9B9A97]">
+                  <button onClick={() => setAddDivOrgId(null)} className="text-[11px] text-ui-text-2">
                     <X className="h-3 w-3" />
                   </button>
                 </div>
@@ -219,7 +219,7 @@ const ManagerTimDivisiTable = ({ rows, allDivisions = [] }: ManagerTimDivisiTabl
                       <input
                         value={editDivName}
                         onChange={(e) => setEditDivName(e.target.value)}
-                        className="h-5 w-20 rounded border border-[#2D2D2D] bg-[#191919] px-1 text-[11px] text-[#E5E2E1] focus:border-[#D4D4D4] focus:outline-none"
+                        className="h-5 w-20 rounded border border-ui-border bg-ui-bg px-1 text-[11px] text-ui-text focus:border-ui-text-dim focus:outline-none"
                         autoFocus
                         onKeyDown={(e) => {
                           if (e.key === "Enter") handleSaveDiv();
@@ -229,14 +229,14 @@ const ManagerTimDivisiTable = ({ rows, allDivisions = [] }: ManagerTimDivisiTabl
                       <button onClick={handleSaveDiv} disabled={pending} className="p-0.5 text-green-400">
                         <Save className="h-2.5 w-2.5" />
                       </button>
-                      <button onClick={() => setEditingDiv(null)} className="p-0.5 text-[#9B9A97]">
+                      <button onClick={() => setEditingDiv(null)} className="p-0.5 text-ui-text-2">
                         <X className="h-2.5 w-2.5" />
                       </button>
                     </div>
                   ) : (
                     <span
                       key={div.id}
-                      className="inline-flex items-center gap-0.5 rounded bg-[#2C2C2C] px-1.5 py-0.5 text-[11px] text-[#9B9A97] cursor-pointer hover:text-[#D4D4D4] group/div"
+                      className="inline-flex items-center gap-0.5 rounded bg-ui-hover px-1.5 py-0.5 text-[11px] text-ui-text-2 cursor-pointer hover:text-ui-text-dim group/div"
                       onClick={() => startEditDiv(div.id, div.name)}
                     >
                       {div.name}
@@ -255,7 +255,7 @@ const ManagerTimDivisiTable = ({ rows, allDivisions = [] }: ManagerTimDivisiTabl
               type="button"
               disabled={pending}
               onClick={() => setDeleteTarget(r)}
-              className="opacity-0 group-hover:opacity-100 rounded p-1 text-[#9B9A97] hover:text-red-400 hover:bg-[#353434] transition-all disabled:opacity-40"
+              className="opacity-0 group-hover:opacity-100 rounded p-1 text-ui-text-2 hover:text-red-400 hover:bg-ui-hover-strong transition-all disabled:opacity-40"
               title="Hapus manager dari tim"
             >
               <Trash2 className="h-3.5 w-3.5" />

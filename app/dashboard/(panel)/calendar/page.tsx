@@ -1,4 +1,4 @@
-﻿import { Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { format } from "date-fns";
@@ -188,7 +188,7 @@ const DashboardCalendarPage = async ({
     <>
       <main className="flex-1 px-4 sm:px-8 py-6">
         <div className="mb-6 flex items-center justify-between gap-4">
-          <h1 className="text-2xl font-bold text-white sm:text-3xl">
+          <h1 className="text-2xl font-bold text-ui-text sm:text-3xl">
             Kalender Tim
           </h1>
           {!isAllOrgs && activeOrgSlug && (
@@ -209,7 +209,7 @@ const DashboardCalendarPage = async ({
             className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
               isAllOrgs
                 ? "bg-yellow-400 text-black"
-                : "bg-white/5 text-white/50 hover:bg-white/10 hover:text-white"
+                : "bg-white/5 text-white/50 hover:bg-white/10 hover:text-ui-text"
             }`}
           >
             Semua Tim
@@ -223,7 +223,7 @@ const DashboardCalendarPage = async ({
                 className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
                   isActive
                     ? "bg-yellow-400 text-black"
-                    : "bg-white/5 text-white/50 hover:bg-white/10 hover:text-white"
+                    : "bg-white/5 text-white/50 hover:bg-white/10 hover:text-ui-text"
                 }`}
               >
                 {org.name}
@@ -247,7 +247,7 @@ const DashboardCalendarPage = async ({
               })}
             </div>
 
-            <div className="rounded-xl border border-[#2D2D2D] bg-[#202020] p-4 sm:p-6">
+            <div className="rounded-xl border border-ui-border bg-ui-surface p-4 sm:p-6">
               <CalendarGrid
                 orgSlug="dashboard"
                 events={allOrgEvents}
@@ -261,11 +261,11 @@ const DashboardCalendarPage = async ({
             </div>
 
             <div className="mt-6">
-              <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-[#9B9A97]">
+              <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-ui-text-2">
                 Agenda bulan ini
               </h2>
               {agendaEvents.length === 0 ? (
-                <div className="rounded-lg border border-[#2D2D2D] bg-[#202020] py-10 text-center text-sm text-[#6B6A68]">
+                <div className="rounded-lg border border-ui-border bg-ui-surface py-10 text-center text-sm text-ui-text-muted">
                   Tidak ada event di bulan ini.
                 </div>
               ) : (
@@ -275,25 +275,25 @@ const DashboardCalendarPage = async ({
                     const color = ORG_COLORS[Math.max(orgIdx, 0) % ORG_COLORS.length]!;
                     const orgName = allOrgs[orgIdx]?.name ?? "";
                     return (
-                      <div key={ev.id} className="flex items-center gap-4 rounded-lg border border-[#2D2D2D] bg-[#202020] px-4 py-3">
+                      <div key={ev.id} className="flex items-center gap-4 rounded-lg border border-ui-border bg-ui-surface px-4 py-3">
                         <div className="w-12 shrink-0 text-center">
-                          <p className="text-lg font-bold text-[#D4D4D4]">
+                          <p className="text-lg font-bold text-ui-text-dim">
                             {format(new Date(ev.starts_at), "d")}
                           </p>
-                          <p className="text-[10px] uppercase text-[#6B6A68]">
+                          <p className="text-[10px] uppercase text-ui-text-muted">
                             {format(new Date(ev.starts_at), "EEE", { locale: localeId })}
                           </p>
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="truncate font-medium text-[#E5E2E1]">{ev.title}</p>
-                          <p className="text-xs text-[#9B9A97]">
+                          <p className="truncate font-medium text-ui-text">{ev.title}</p>
+                          <p className="text-xs text-ui-text-2">
                             {format(new Date(ev.starts_at), "HH:mm")}
                           </p>
                         </div>
                         <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium ${color}`}>
                           {orgName}
                         </span>
-                        <Link href={ev.detailPath} className="shrink-0 text-xs text-[#9B9A97] hover:text-[#D4D4D4] transition">
+                        <Link href={ev.detailPath} className="shrink-0 text-xs text-ui-text-2 hover:text-ui-text-dim transition">
                           Detail →
                         </Link>
                       </div>
@@ -324,7 +324,7 @@ const DashboardCalendarPage = async ({
               ))}
             </div>
 
-            <div className="rounded-xl border border-[#2D2D2D] bg-[#202020] p-4 sm:p-6">
+            <div className="rounded-xl border border-ui-border bg-ui-surface p-4 sm:p-6">
               {activeOrgSlug ? (
                 <CalendarWithQuickAdd
                   orgSlug={activeOrgSlug}
@@ -337,7 +337,7 @@ const DashboardCalendarPage = async ({
                   userRole={isOwner ? "owner" : "manager"}
                 />
               ) : (
-                <p className="py-10 text-center text-sm text-[#6B6A68]">
+                <p className="py-10 text-center text-sm text-ui-text-muted">
                   Pilih tim dari tab di atas.
                 </p>
               )}

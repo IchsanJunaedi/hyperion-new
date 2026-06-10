@@ -60,7 +60,7 @@ const WaDeliveryTable = ({ orgId, orgSlug }: WaDeliveryTableProps) => {
             onClick={() => handleFilterChange(f.value)}
             className={`cursor-pointer rounded-md px-3 py-1.5 text-xs font-medium transition ${
               filter === f.value
-                ? "bg-white/10 text-white"
+                ? "bg-white/10 text-ui-text"
                 : "text-white/50 hover:text-white/80"
             }`}
           >
@@ -79,15 +79,15 @@ const WaDeliveryTable = ({ orgId, orgSlug }: WaDeliveryTableProps) => {
           Gagal memuat data pengiriman. Coba refresh halaman.
         </div>
       ) : !data || data.data.length === 0 ? (
-        <div className="rounded-lg border border-[#2D2D2D] bg-[#191919] px-4 py-8 text-center text-sm text-[#6B6A68]">
+        <div className="rounded-lg border border-ui-border bg-ui-bg px-4 py-8 text-center text-sm text-ui-text-muted">
           {EMPTY_MESSAGES[filter]}
         </div>
       ) : (
         <>
-          <div className="overflow-x-auto rounded-lg border border-[#2D2D2D]">
+          <div className="overflow-x-auto rounded-lg border border-ui-border">
           <div className="min-w-[600px] overflow-hidden">
             {/* Header row */}
-            <div className="grid grid-cols-[160px_1fr_100px_140px_80px] gap-4 px-4 py-2 border-b border-[#2D2D2D] bg-[#202020] text-xs font-medium text-[#9B9A97]">
+            <div className="grid grid-cols-[160px_1fr_100px_140px_80px] gap-4 px-4 py-2 border-b border-ui-border bg-ui-surface text-xs font-medium text-ui-text-2">
               <span>Member</span>
               <span>Notifikasi</span>
               <span>Status</span>
@@ -109,7 +109,7 @@ const WaDeliveryTable = ({ orgId, orgSlug }: WaDeliveryTableProps) => {
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex items-center justify-between">
-              <p className="text-xs text-[#6B6A68]">
+              <p className="text-xs text-ui-text-muted">
                 Halaman {page + 1} dari {totalPages} ({data.total} total)
               </p>
               <div className="flex gap-1">
@@ -117,7 +117,7 @@ const WaDeliveryTable = ({ orgId, orgSlug }: WaDeliveryTableProps) => {
                   type="button"
                   disabled={page === 0}
                   onClick={() => setPage((p) => p - 1)}
-                  className="cursor-pointer rounded-md p-1.5 text-[#9B9A97] transition hover:bg-[#2C2C2C] hover:text-[#E5E2E1] disabled:cursor-not-allowed disabled:opacity-30"
+                  className="cursor-pointer rounded-md p-1.5 text-ui-text-2 transition hover:bg-ui-hover hover:text-ui-text disabled:cursor-not-allowed disabled:opacity-30"
                   aria-label="Halaman sebelumnya"
                 >
                   <ChevronLeft className="h-4 w-4" />
@@ -126,7 +126,7 @@ const WaDeliveryTable = ({ orgId, orgSlug }: WaDeliveryTableProps) => {
                   type="button"
                   disabled={page >= totalPages - 1}
                   onClick={() => setPage((p) => p + 1)}
-                  className="cursor-pointer rounded-md p-1.5 text-[#9B9A97] transition hover:bg-[#2C2C2C] hover:text-[#E5E2E1] disabled:cursor-not-allowed disabled:opacity-30"
+                  className="cursor-pointer rounded-md p-1.5 text-ui-text-2 transition hover:bg-ui-hover hover:text-ui-text disabled:cursor-not-allowed disabled:opacity-30"
                   aria-label="Halaman berikutnya"
                 >
                   <ChevronRight className="h-4 w-4" />
@@ -190,24 +190,24 @@ function WaDeliveryRow({ notif, orgId }: WaDeliveryRowProps) {
   });
 
   return (
-    <div className="grid grid-cols-[160px_1fr_100px_140px_80px] gap-4 px-4 py-3 border-b border-[#2D2D2D] last:border-b-0 hover:bg-[#2C2C2C] transition text-sm text-[#E5E2E1]">
-      <span className="truncate text-[#E5E2E1]">{displayName}</span>
-      <span className="truncate text-[#9B9A97]">{notif.title}</span>
+    <div className="grid grid-cols-[160px_1fr_100px_140px_80px] gap-4 px-4 py-3 border-b border-ui-border last:border-b-0 hover:bg-ui-hover transition text-sm text-ui-text">
+      <span className="truncate text-ui-text">{displayName}</span>
+      <span className="truncate text-ui-text-2">{notif.title}</span>
       <span>
         <WaStatusBadge status={status} />
       </span>
-      <span className="truncate text-xs text-[#6B6A68]">{timestamp}</span>
+      <span className="truncate text-xs text-ui-text-muted">{timestamp}</span>
       <span className="flex items-center justify-end">
         {status === "failed" && (
           <>
             {maxRetriesReached ? (
-              <span className="text-xs text-[#6B6A68]">Maks retry</span>
+              <span className="text-xs text-ui-text-muted">Maks retry</span>
             ) : (
               <button
                 type="button"
                 disabled={isPending}
                 onClick={handleRetry}
-                className="cursor-pointer inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-[#9B9A97] transition hover:bg-[#2C2C2C] hover:text-[#E5E2E1] disabled:cursor-not-allowed disabled:opacity-40"
+                className="cursor-pointer inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-ui-text-2 transition hover:bg-ui-hover hover:text-ui-text disabled:cursor-not-allowed disabled:opacity-40"
                 aria-label="Retry pengiriman"
               >
                 {isPending ? (

@@ -66,7 +66,7 @@ const AdminSidebarNav = () => {
     <nav className="sidebar-scroll flex-1 overflow-y-auto px-2 pt-4 space-y-5">
       {NAV_GROUPS.map((group) => (
         <div key={group.label}>
-          <p className="mb-1.5 px-3 text-[11px] font-semibold uppercase tracking-wide text-[#6B6A68]">
+          <p className="mb-1.5 px-3 text-[11px] font-semibold uppercase tracking-wide text-ui-text-muted">
             {group.label}
           </p>
           <ul className="space-y-0.5">
@@ -78,8 +78,8 @@ const AdminSidebarNav = () => {
                     href={item.href}
                     className={`flex items-center gap-3 rounded px-3 py-1.5 text-sm transition ${
                       active
-                        ? "bg-[#2C2C2C] font-medium text-[#D4D4D4]"
-                        : "text-[#9B9A97] hover:bg-[#2C2C2C] hover:text-[#D4D4D4]"
+                        ? "bg-ui-hover font-medium text-ui-text-dim"
+                        : "text-ui-text-2 hover:bg-ui-hover hover:text-ui-text-dim"
                     }`}
                   >
                     <item.Icon className="h-[18px] w-[18px] shrink-0" />

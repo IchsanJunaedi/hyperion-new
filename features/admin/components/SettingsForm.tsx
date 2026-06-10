@@ -33,13 +33,13 @@ const SettingsForm = ({ fields, initialValues, title }: Props) => {
   };
 
   const inputClass =
-    "w-full border border-[#2D2D2D] bg-[#191919] px-3 py-2 text-sm text-[#E5E2E1] outline-none transition focus:border-[#F5C400]/50 placeholder:text-[#6B6A68]";
-  const labelClass = "mb-1 block text-xs font-medium text-[#9B9A97]";
+    "w-full border border-ui-border bg-ui-bg px-3 py-2 text-sm text-ui-text outline-none transition focus:border-[#F5C400]/50 placeholder:text-ui-text-muted";
+  const labelClass = "mb-1 block text-xs font-medium text-ui-text-2";
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-      <h1 className="text-xl font-black uppercase tracking-tight text-white">{title}</h1>
-      <div className="space-y-4 rounded border border-[#2D2D2D] bg-[#141414] p-6">
+      <h1 className="text-xl font-black uppercase tracking-tight text-ui-text">{title}</h1>
+      <div className="space-y-4 rounded border border-ui-border bg-ui-bg p-6">
         {fields.map((field) => (
           <div key={field.key}>
             <label className={labelClass}>{field.label}</label>

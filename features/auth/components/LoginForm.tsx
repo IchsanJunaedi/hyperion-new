@@ -76,7 +76,7 @@ const LoginForm = ({ next = "/" }: LoginFormProps) => {
           <button
             type="button"
             onClick={() => setShowPassword((v) => !v)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-white hover:opacity-70 cursor-pointer"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-ui-text hover:opacity-70 cursor-pointer"
             tabIndex={-1}
             aria-label={showPassword ? "Sembunyikan password" : "Tampilkan password"}
           >

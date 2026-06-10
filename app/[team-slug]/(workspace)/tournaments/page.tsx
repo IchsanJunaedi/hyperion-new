@@ -52,7 +52,7 @@ export default async function TournamentsPage({ params, searchParams }: Tourname
     <div className="space-y-6 px-4 py-6 sm:px-8">
       <header className="flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white sm:text-3xl">Info Turnamen</h1>
+          <h1 className="text-2xl font-bold text-ui-text sm:text-3xl">Info Turnamen</h1>
         </div>
         {canManage && (
           <Link
@@ -118,7 +118,7 @@ export default async function TournamentsPage({ params, searchParams }: Tourname
           {canManage && (
             <Link
               href={`/${slug}/tournaments/new`}
-              className="mt-4 inline-flex h-9 items-center rounded-md border border-white/15 px-4 text-sm font-medium text-white transition hover:bg-white/5"
+              className="mt-4 inline-flex h-9 items-center rounded-md border border-white/15 px-4 text-sm font-medium text-ui-text transition hover:bg-white/5"
             >
               Tambah turnamen pertama
             </Link>

@@ -95,7 +95,7 @@ const NotificationBell = ({ userId, orgSlug }: NotificationBellProps) => {
         type="button"
         aria-label={ariaLabel}
         onClick={() => setOpen((v) => !v)}
-        className="relative cursor-pointer rounded-full p-2 text-white/70 transition hover:bg-white/10 hover:text-white"
+        className="relative cursor-pointer rounded-full p-2 text-white/70 transition hover:bg-white/10 hover:text-ui-text"
       >
         <Bell className="h-4 w-4" />
         {badgeText && (
@@ -112,12 +112,12 @@ const NotificationBell = ({ userId, orgSlug }: NotificationBellProps) => {
         >
           {/* Header */}
           <div className="flex items-center justify-between border-b border-white/5 px-4 py-3">
-            <h3 className="text-sm font-semibold text-white">Notifikasi</h3>
+            <h3 className="text-sm font-semibold text-ui-text">Notifikasi</h3>
             <button
               type="button"
               disabled={!count}
               onClick={handleMarkAllRead}
-              className="cursor-pointer text-xs text-white/60 transition hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+              className="cursor-pointer text-xs text-white/60 transition hover:text-ui-text disabled:cursor-not-allowed disabled:opacity-40"
             >
               Tandai semua dibaca
             </button>

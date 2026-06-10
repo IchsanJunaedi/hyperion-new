@@ -41,12 +41,12 @@ const ContentList = ({ rows, orgId, currentUserId, isOwner, canCreate }: Content
   return (
     <>
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-[#E5E2E1]">Konten</h1>
+        <h1 className="text-2xl font-bold text-ui-text">Konten</h1>
         {canCreate && (
           <button
             type="button"
             onClick={() => setShowForm(true)}
-            className="inline-flex h-9 items-center gap-2 rounded-md bg-[#E5E2E1] px-4 text-sm font-semibold text-[#191919] hover:bg-white"
+            className="inline-flex h-9 items-center gap-2 rounded-md bg-ui-text px-4 text-sm font-semibold text-ui-bg hover:bg-white"
           >
             <Plus className="h-4 w-4" /> Buat Konten
           </button>
@@ -61,8 +61,8 @@ const ContentList = ({ rows, orgId, currentUserId, isOwner, canCreate }: Content
             onClick={() => setFilter(f.value)}
             className={`h-8 rounded-full px-3 text-xs font-medium transition-colors ${
               filter === f.value
-                ? "bg-[#E5E2E1] text-[#191919]"
-                : "bg-[#202020] text-[#9B9A97] hover:bg-[#2C2C2C]"
+                ? "bg-ui-text text-ui-bg"
+                : "bg-ui-surface text-ui-text-2 hover:bg-ui-hover"
             }`}
           >
             {f.label}
@@ -71,34 +71,34 @@ const ContentList = ({ rows, orgId, currentUserId, isOwner, canCreate }: Content
       </nav>
 
       {filtered.length === 0 ? (
-        <div className="mt-4 rounded-lg border border-dashed border-[#2D2D2D] p-10 text-center">
-          <p className="text-sm text-[#9B9A97]">Belum ada konten.</p>
+        <div className="mt-4 rounded-lg border border-dashed border-ui-border p-10 text-center">
+          <p className="text-sm text-ui-text-2">Belum ada konten.</p>
         </div>
       ) : (
         <div className="mt-4 space-y-2">
           {filtered.map((item) => (
             <div
               key={item.id}
-              className="flex items-start justify-between gap-4 rounded-lg border border-[#2D2D2D] bg-[#202020] p-4"
+              className="flex items-start justify-between gap-4 rounded-lg border border-ui-border bg-ui-surface p-4"
             >
               <div className="flex items-start gap-3 min-w-0">
-                <span className="mt-0.5 text-[#9B9A97]">
+                <span className="mt-0.5 text-ui-text-2">
                   {PLATFORM_ICONS[item.platform]}
                 </span>
                 <div className="min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-xs text-[#9B9A97]">{PLATFORM_LABELS[item.platform]}</span>
-                    <span className="text-xs text-[#6B6A68]">·</span>
-                    <span className="text-xs text-[#9B9A97]">
+                    <span className="text-xs text-ui-text-2">{PLATFORM_LABELS[item.platform]}</span>
+                    <span className="text-xs text-ui-text-muted">·</span>
+                    <span className="text-xs text-ui-text-2">
                       {new Date(item.scheduled_at).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
                     </span>
                   </div>
-                  <p className="mt-1 text-sm font-medium text-[#E5E2E1] truncate">{item.title}</p>
+                  <p className="mt-1 text-sm font-medium text-ui-text truncate">{item.title}</p>
                   {item.description && (
-                    <p className="mt-0.5 text-xs text-[#9B9A97] line-clamp-2">{item.description}</p>
+                    <p className="mt-0.5 text-xs text-ui-text-2 line-clamp-2">{item.description}</p>
                   )}
                   {item.creator_name && (
-                    <p className="mt-1 text-xs text-[#6B6A68]">oleh {item.creator_name}</p>
+                    <p className="mt-1 text-xs text-ui-text-muted">oleh {item.creator_name}</p>
                   )}
                 </div>
               </div>

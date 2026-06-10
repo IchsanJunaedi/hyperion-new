@@ -94,7 +94,7 @@ const AttendanceList = ({ scrimId, rows }: AttendanceListProps) => {
             key={row.attendance.id}
             className="flex items-center gap-3 bg-zinc-900/40 px-4 py-3"
           >
-            <div className="grid h-9 w-9 flex-none place-items-center rounded-full bg-white/10 text-xs font-semibold text-white">
+            <div className="grid h-9 w-9 flex-none place-items-center rounded-full bg-white/10 text-xs font-semibold text-ui-text">
               {row.member.avatar_url ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
@@ -107,7 +107,7 @@ const AttendanceList = ({ scrimId, rows }: AttendanceListProps) => {
               )}
             </div>
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium text-white">{name}</p>
+              <p className="truncate text-sm font-medium text-ui-text">{name}</p>
               <p className="truncate text-xs text-white/55">
                 {row.member.position ?? formatMainRole(row.member.main_role)}
                 {row.member.jersey_number !== null

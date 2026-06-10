@@ -77,15 +77,15 @@ const SettingsModal = ({
       }}
     >
       <div
-        className="flex w-full max-w-3xl h-[600px] flex-col rounded-lg border border-[#2D2D2D] bg-[#202020] shadow-2xl"
+        className="flex w-full max-w-3xl h-[600px] flex-col rounded-lg border border-ui-border bg-ui-surface shadow-2xl"
         style={{ maxHeight: "85vh" }}
       >
         {/* Header */}
-        <div className="flex shrink-0 items-center justify-between border-b border-[#2D2D2D] px-6 py-4">
-          <p className="text-sm font-semibold text-[#D4D4D4]">Settings</p>
+        <div className="flex shrink-0 items-center justify-between border-b border-ui-border px-6 py-4">
+          <p className="text-sm font-semibold text-ui-text-dim">Settings</p>
           <button
             onClick={onClose}
-            className="rounded p-1 text-[#6B6A68] transition hover:bg-[#2C2C2C] hover:text-[#D4D4D4] cursor-pointer"
+            className="rounded p-1 text-ui-text-muted transition hover:bg-ui-hover hover:text-ui-text-dim cursor-pointer"
           >
             <X className="h-4 w-4" />
           </button>
@@ -94,7 +94,7 @@ const SettingsModal = ({
         {/* Body */}
         <div className="flex flex-1 overflow-hidden">
           {/* Left nav */}
-          <nav className="flex w-48 shrink-0 flex-col border-r border-[#2D2D2D] p-2">
+          <nav className="flex w-48 shrink-0 flex-col border-r border-ui-border p-2">
             <div className="flex-1 space-y-0.5">
               {visibleNav.map((item) => (
                 <button
@@ -103,8 +103,8 @@ const SettingsModal = ({
                   className={cn(
                     "flex w-full cursor-pointer items-center gap-3 rounded px-3 py-1.5 text-left text-sm transition",
                     tab === item.key
-                      ? "bg-[#2C2C2C] font-medium text-[#D4D4D4]"
-                      : "text-[#9B9A97] hover:bg-[#2C2C2C] hover:text-[#D4D4D4]",
+                      ? "bg-ui-hover font-medium text-ui-text-dim"
+                      : "text-ui-text-2 hover:bg-ui-hover hover:text-ui-text-dim",
                   )}
                 >
                   <item.Icon className="h-4 w-4 shrink-0" />
@@ -113,11 +113,11 @@ const SettingsModal = ({
               ))}
             </div>
             
-            <div className="mt-2 border-t border-[#2D2D2D] pt-2">
+            <div className="mt-2 border-t border-ui-border pt-2">
               <form action={logoutAction}>
                 <button
                   type="submit"
-                  className="flex w-full cursor-pointer items-center gap-3 rounded px-3 py-1.5 text-left text-sm text-[#9B9A97] transition hover:bg-red-500/10 hover:text-red-400"
+                  className="flex w-full cursor-pointer items-center gap-3 rounded px-3 py-1.5 text-left text-sm text-ui-text-2 transition hover:bg-red-500/10 hover:text-red-400"
                 >
                   <LogOut className="h-4 w-4 shrink-0" />
                   Logout
@@ -128,7 +128,7 @@ const SettingsModal = ({
 
           {/* Content */}
           <div className="flex-1 sidebar-scroll overflow-y-auto p-6">
-            <h2 className="mb-6 text-base font-semibold text-[#D4D4D4]">
+            <h2 className="mb-6 text-base font-semibold text-ui-text-dim">
               {SECTION_LABELS[tab]}
             </h2>
             {tab === "profile" && <ProfileSection userId={userId} />}

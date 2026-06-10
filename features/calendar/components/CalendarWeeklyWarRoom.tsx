@@ -125,15 +125,15 @@ const CalendarWeeklyWarRoom = ({ orgSlug, events }: CalendarWeeklyWarRoomProps) 
           <button
             type="button"
             onClick={() => setWeekOffset((v) => v - 1)}
-            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded border border-white/10 text-white/50 hover:bg-white/5 hover:text-white transition"
+            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded border border-white/10 text-white/50 hover:bg-white/5 hover:text-ui-text transition"
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
-          <span className="text-sm font-semibold text-white min-w-[160px] text-center">{weekLabel}</span>
+          <span className="text-sm font-semibold text-ui-text min-w-[160px] text-center">{weekLabel}</span>
           <button
             type="button"
             onClick={() => setWeekOffset((v) => v + 1)}
-            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded border border-white/10 text-white/50 hover:bg-white/5 hover:text-white transition"
+            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded border border-white/10 text-white/50 hover:bg-white/5 hover:text-ui-text transition"
           >
             <ChevronRight className="h-4 w-4" />
           </button>

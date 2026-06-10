@@ -1,4 +1,4 @@
-﻿import { Plus, Trophy } from "lucide-react";
+import { Plus, Trophy } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -89,12 +89,12 @@ export default async function DashboardTournamentsPage({
       <main className="space-y-6 px-4 sm:px-8 py-6">
         <div className="flex items-center justify-between gap-4">
           <div>
-            <h1 className="text-xl font-bold text-[#E5E2E1]">Info Turnamen</h1>
+            <h1 className="text-xl font-bold text-ui-text">Info Turnamen</h1>
           </div>
           {orgSlug && (
             <Link
               href={`/${orgSlug}/tournaments/new`}
-              className="inline-flex h-9 items-center gap-2 rounded px-4 text-sm font-medium bg-[#2C2C2C] text-[#D4D4D4] border border-[#2D2D2D] transition hover:bg-[#353434] hover:text-[#E5E2E1] cursor-pointer"
+              className="inline-flex h-9 items-center gap-2 rounded px-4 text-sm font-medium bg-ui-hover text-ui-text-dim border border-ui-border transition hover:bg-ui-hover-strong hover:text-ui-text cursor-pointer"
             >
               <Plus className="h-4 w-4" />
               Tambah
@@ -114,8 +114,8 @@ export default async function DashboardTournamentsPage({
                 aria-current={active ? "page" : undefined}
                 className={`relative inline-flex h-8 items-center rounded-full px-3 text-xs font-medium transition ${
                   active
-                    ? "bg-[#D4D4D4] text-[#191919]"
-                    : "bg-[#202020] text-[#9B9A97] hover:bg-[#2C2C2C] hover:text-[#E5E2E1]"
+                    ? "bg-ui-text-dim text-ui-bg"
+                    : "bg-ui-surface text-ui-text-2 hover:bg-ui-hover hover:text-ui-text"
                 }`}
               >
                 {t.label}
@@ -125,7 +125,7 @@ export default async function DashboardTournamentsPage({
                   </span>
                 )}
                 {count > 0 && active && (
-                  <span className="ml-1.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-[#2C2C2C] px-1 text-[10px] font-bold text-[#9B9A97]">
+                  <span className="ml-1.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-ui-hover px-1 text-[10px] font-bold text-ui-text-2">
                     {count}
                   </span>
                 )}
@@ -135,9 +135,9 @@ export default async function DashboardTournamentsPage({
         </nav>
 
         {filtered.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-[#2D2D2D] bg-[#202020] p-10 text-center">
-            <Trophy className="mx-auto h-8 w-8 text-[#6B6A68]" />
-            <p className="mt-3 text-sm text-[#9B9A97]">
+          <div className="rounded-xl border border-dashed border-ui-border bg-ui-surface p-10 text-center">
+            <Trophy className="mx-auto h-8 w-8 text-ui-text-muted" />
+            <p className="mt-3 text-sm text-ui-text-2">
               {tab === "ongoing"
                 ? "Tidak ada turnamen yang sedang berlangsung."
                 : tab === "upcoming"
@@ -151,7 +151,7 @@ export default async function DashboardTournamentsPage({
             {orgSlug && (
               <Link
                 href={`/${orgSlug}/tournaments/new`}
-                className="mt-4 inline-flex h-9 items-center rounded px-4 text-sm font-medium border border-[#2D2D2D] text-[#9B9A97] transition hover:bg-[#2C2C2C] hover:text-[#E5E2E1]"
+                className="mt-4 inline-flex h-9 items-center rounded px-4 text-sm font-medium border border-ui-border text-ui-text-2 transition hover:bg-ui-hover hover:text-ui-text"
               >
                 Tambah turnamen pertama
               </Link>

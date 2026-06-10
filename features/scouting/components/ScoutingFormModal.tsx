@@ -88,25 +88,25 @@ const HeroPicker = ({ selected, onChange }: HeroPickerProps) => {
     <div className="space-y-2">
       {/* Search input */}
       <div className="relative">
-        <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[#6B6A68]" />
+        <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-ui-text-muted" />
         <input
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Cari hero..."
-          className="h-9 w-full rounded-md border border-[#2D2D2D] bg-[#191919] pl-9 pr-3 text-sm text-[#E5E2E1] placeholder:text-[#6B6A68] focus:border-[#9B9A97] focus:outline-none"
+          className="h-9 w-full rounded-md border border-ui-border bg-ui-bg pl-9 pr-3 text-sm text-ui-text placeholder:text-ui-text-muted focus:border-ui-text-2 focus:outline-none"
         />
       </div>
 
       {/* Result list */}
       {filtered.length > 0 && (
-        <div className="divide-y divide-[#2D2D2D] overflow-hidden rounded-md border border-[#2D2D2D] bg-[#191919]">
+        <div className="divide-y divide-ui-border overflow-hidden rounded-md border border-ui-border bg-ui-bg">
           {filtered.map((hero) => (
             <button
               key={hero}
               type="button"
               onClick={() => add(hero)}
-              className="flex w-full cursor-pointer items-center gap-2.5 px-3 py-2 text-left text-sm text-[#E5E2E1] transition-colors hover:bg-[#2C2C2C]"
+              className="flex w-full cursor-pointer items-center gap-2.5 px-3 py-2 text-left text-sm text-ui-text transition-colors hover:bg-ui-hover"
             >
               <div className="h-6 w-6 shrink-0 overflow-hidden rounded-full border border-white/10 bg-zinc-800">
                 <img
@@ -127,7 +127,7 @@ const HeroPicker = ({ selected, onChange }: HeroPickerProps) => {
           {selected.map((hero) => (
             <span
               key={hero}
-              className="inline-flex items-center gap-1.5 rounded-full border border-[#2D2D2D] bg-[#2C2C2C] px-2 py-1 text-xs text-[#D4D4D4]"
+              className="inline-flex items-center gap-1.5 rounded-full border border-ui-border bg-ui-hover px-2 py-1 text-xs text-ui-text-dim"
             >
               <div className="h-4 w-4 shrink-0 overflow-hidden rounded-full border border-white/10 bg-zinc-800">
                 <img
@@ -140,7 +140,7 @@ const HeroPicker = ({ selected, onChange }: HeroPickerProps) => {
               <button
                 type="button"
                 onClick={() => remove(hero)}
-                className="cursor-pointer text-[#6B6A68] transition-colors hover:text-[#E5E2E1]"
+                className="cursor-pointer text-ui-text-muted transition-colors hover:text-ui-text"
               >
                 <X className="h-3 w-3" />
               </button>
@@ -149,7 +149,7 @@ const HeroPicker = ({ selected, onChange }: HeroPickerProps) => {
         </div>
       ) : (
         search.trim().length === 0 && (
-          <p className="text-xs text-[#6B6A68]">Ketik nama hero di atas untuk mencari.</p>
+          <p className="text-xs text-ui-text-muted">Ketik nama hero di atas untuk mencari.</p>
         )
       )}
     </div>
@@ -167,21 +167,21 @@ interface RoleSectionProps {
 const RoleSection = ({ config, data, onUpdate }: RoleSectionProps) => {
   const { Icon, label, index } = config;
   return (
-    <div className="rounded-lg border border-[#2D2D2D] p-4 space-y-3">
+    <div className="rounded-lg border border-ui-border p-4 space-y-3">
       {/* Header */}
       <div className="flex items-center gap-2">
-        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#2C2C2C] text-xs font-medium text-[#9B9A97]">
+        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-ui-hover text-xs font-medium text-ui-text-2">
           {index}
         </span>
-        <Icon className="h-4 w-4 text-[#9B9A97]" />
-        <span className="text-xs font-semibold uppercase tracking-wider text-[#E5E2E1]">
+        <Icon className="h-4 w-4 text-ui-text-2" />
+        <span className="text-xs font-semibold uppercase tracking-wider text-ui-text">
           {label}
         </span>
       </div>
 
       {/* Nickname */}
       <div>
-        <label className="mb-1 block text-xs text-[#9B9A97]">
+        <label className="mb-1 block text-xs text-ui-text-2">
           Nickname <span className="text-red-400">*</span>
         </label>
         <input
@@ -189,13 +189,13 @@ const RoleSection = ({ config, data, onUpdate }: RoleSectionProps) => {
           required
           value={data.nickname}
           onChange={(e) => onUpdate({ nickname: e.target.value })}
-          className="h-9 w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-sm text-[#E5E2E1] placeholder:text-[#6B6A68] focus:border-[#9B9A97] focus:outline-none"
+          className="h-9 w-full rounded-md border border-ui-border bg-ui-bg px-3 text-sm text-ui-text placeholder:text-ui-text-muted focus:border-ui-text-2 focus:outline-none"
         />
       </div>
 
       {/* Hero Pool */}
       <div>
-        <label className="mb-1 block text-xs text-[#9B9A97]">Hero Pool</label>
+        <label className="mb-1 block text-xs text-ui-text-2">Hero Pool</label>
         <HeroPicker
           selected={data.heroPool}
           onChange={(heroes) => onUpdate({ heroPool: heroes })}
@@ -204,12 +204,12 @@ const RoleSection = ({ config, data, onUpdate }: RoleSectionProps) => {
 
       {/* Habit */}
       <div>
-        <label className="mb-1 block text-xs text-[#9B9A97]">Habit</label>
+        <label className="mb-1 block text-xs text-ui-text-2">Habit</label>
         <textarea
           rows={2}
           value={data.habit}
           onChange={(e) => onUpdate({ habit: e.target.value })}
-          className="w-full resize-none rounded-md border border-[#2D2D2D] bg-[#191919] px-3 py-2 text-sm text-[#E5E2E1] placeholder:text-[#6B6A68] focus:border-[#9B9A97] focus:outline-none"
+          className="w-full resize-none rounded-md border border-ui-border bg-ui-bg px-3 py-2 text-sm text-ui-text placeholder:text-ui-text-muted focus:border-ui-text-2 focus:outline-none"
         />
       </div>
     </div>
@@ -290,18 +290,18 @@ const ScoutingFormModal = ({ orgSlug, profile, onClose }: ScoutingFormModalProps
       onClick={onClose}
     >
       <div
-        className="my-4 w-full max-w-2xl overflow-hidden rounded-xl border border-[#2D2D2D] bg-[#202020] shadow-2xl"
+        className="my-4 w-full max-w-2xl overflow-hidden rounded-xl border border-ui-border bg-ui-surface shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Sticky header */}
-        <div className="flex items-center justify-between border-b border-[#2D2D2D] bg-[#202020] px-6 py-5">
-          <h3 className="text-base font-bold text-[#E5E2E1]">
+        <div className="flex items-center justify-between border-b border-ui-border bg-ui-surface px-6 py-5">
+          <h3 className="text-base font-bold text-ui-text">
             {isEdit ? "Edit Profil Lawan" : "Tambah Profil Lawan"}
           </h3>
           <button
             type="button"
             onClick={onClose}
-            className="cursor-pointer text-[#9B9A97] hover:text-[#E5E2E1]"
+            className="cursor-pointer text-ui-text-2 hover:text-ui-text"
           >
             <X className="h-4 w-4" />
           </button>
@@ -312,12 +312,12 @@ const ScoutingFormModal = ({ orgSlug, profile, onClose }: ScoutingFormModalProps
           <form onSubmit={handleSubmit} className="space-y-6 p-6">
             {/* ── Section 1: Team Info ── */}
             <section className="space-y-3">
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-[#6B6A68]">
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-ui-text-muted">
                 Informasi Tim
               </h4>
 
               <div>
-                <label className="mb-1 block text-xs text-[#9B9A97]">
+                <label className="mb-1 block text-xs text-ui-text-2">
                   Nama Tim Lawan <span className="text-red-400">*</span>
                 </label>
                 <input
@@ -325,24 +325,24 @@ const ScoutingFormModal = ({ orgSlug, profile, onClose }: ScoutingFormModalProps
                   required
                   value={teamName}
                   onChange={(e) => setTeamName(e.target.value)}
-                  className="h-10 w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-sm text-[#E5E2E1] placeholder:text-[#6B6A68] focus:border-[#9B9A97] focus:outline-none"
+                  className="h-10 w-full rounded-md border border-ui-border bg-ui-bg px-3 text-sm text-ui-text placeholder:text-ui-text-muted focus:border-ui-text-2 focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="mb-1 block text-xs text-[#9B9A97]">Playstyle Tim</label>
+                <label className="mb-1 block text-xs text-ui-text-2">Playstyle Tim</label>
                 <textarea
                   rows={2}
                   value={playstyle}
                   onChange={(e) => setPlaystyle(e.target.value)}
-                  className="w-full resize-none rounded-md border border-[#2D2D2D] bg-[#191919] px-3 py-2 text-sm text-[#E5E2E1] placeholder:text-[#6B6A68] focus:border-[#9B9A97] focus:outline-none"
+                  className="w-full resize-none rounded-md border border-ui-border bg-ui-bg px-3 py-2 text-sm text-ui-text placeholder:text-ui-text-muted focus:border-ui-text-2 focus:outline-none"
                 />
               </div>
             </section>
 
             {/* ── Section 2: Roster ── */}
             <section className="space-y-3">
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-[#6B6A68]">
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-ui-text-muted">
                 Roster Tim — Semua Role Wajib Diisi
               </h4>
 
@@ -363,18 +363,18 @@ const ScoutingFormModal = ({ orgSlug, profile, onClose }: ScoutingFormModalProps
             )}
 
             {/* Footer */}
-            <div className="flex justify-end gap-3 border-t border-[#2D2D2D] pt-4">
+            <div className="flex justify-end gap-3 border-t border-ui-border pt-4">
               <button
                 type="button"
                 onClick={onClose}
-                className="h-9 cursor-pointer rounded-md border border-[#2D2D2D] px-4 text-sm text-[#9B9A97] transition-colors hover:bg-[#2C2C2C]"
+                className="h-9 cursor-pointer rounded-md border border-ui-border px-4 text-sm text-ui-text-2 transition-colors hover:bg-ui-hover"
               >
                 Batal
               </button>
               <button
                 type="submit"
                 disabled={pending}
-                className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-md bg-[#E5E2E1] px-4 text-sm font-semibold text-[#191919] transition-colors hover:bg-white disabled:opacity-50"
+                className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-md bg-ui-text px-4 text-sm font-semibold text-ui-bg transition-colors hover:bg-white disabled:opacity-50"
               >
                 {pending && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
                 {isEdit ? "Simpan Perubahan" : "Simpan Profil"}

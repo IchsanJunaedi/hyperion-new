@@ -130,7 +130,7 @@ const ContextFiles = ({
           File Terlampir
         </span>
         {canUpload && (
-          <label className="inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-md border border-white/10 px-2.5 text-xs text-white/60 transition hover:bg-white/5 hover:text-white">
+          <label className="inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-md border border-white/10 px-2.5 text-xs text-white/60 transition hover:bg-white/5 hover:text-ui-text">
             {uploading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Upload className="h-3 w-3" />}
             {uploading ? "Mengupload..." : "Upload"}
             <input
@@ -162,7 +162,7 @@ const ContextFiles = ({
                 type="button"
                 disabled={openingId === f.id}
                 onClick={() => handleOpen(f)}
-                className="min-w-0 flex-1 cursor-pointer truncate text-left text-xs text-white/75 hover:text-white hover:underline underline-offset-2 disabled:opacity-50"
+                className="min-w-0 flex-1 cursor-pointer truncate text-left text-xs text-white/75 hover:text-ui-text hover:underline underline-offset-2 disabled:opacity-50"
               >
                 {stripTimestampPrefix(f.file_name)}
               </button>

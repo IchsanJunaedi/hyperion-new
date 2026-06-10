@@ -110,7 +110,7 @@ const TournamentCountdown = ({
           Batas Pendaftaran
         </div>
 
-        <h3 className="mt-3 text-xl font-bold text-white sm:text-2xl">{name}</h3>
+        <h3 className="mt-3 text-xl font-bold text-ui-text sm:text-2xl">{name}</h3>
         {organizer && (
           <p className="mt-1 text-xs uppercase tracking-wide text-white/55">{organizer}</p>
         )}
@@ -169,7 +169,7 @@ const TournamentCountdown = ({
         {isPast ? "Turnamen sedang berlangsung" : "Turnamen berikutnya"}
       </div>
 
-      <h3 className="mt-3 text-xl font-bold text-white sm:text-2xl">{name}</h3>
+      <h3 className="mt-3 text-xl font-bold text-ui-text sm:text-2xl">{name}</h3>
       <p className="mt-1 text-xs uppercase tracking-wide text-white/55">{organizer ?? "—"}</p>
 
       <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-white/75">
@@ -219,7 +219,7 @@ export { TournamentCountdown };
 function CountdownCell({
   value,
   label,
-  color = "text-white",
+  color = "text-ui-text",
 }: {
   value: number;
   label: string;

@@ -44,9 +44,9 @@ const AddTargetForm = ({ orgSlug, members, onDone }: AddTargetFormProps) => {
   }
 
   return (
-    <div className="rounded-lg border border-[#2D2D2D] bg-[#202020] p-4 space-y-3">
+    <div className="rounded-lg border border-ui-border bg-ui-surface p-4 space-y-3">
       <div>
-        <label className="text-xs text-[#9B9A97] mb-1 block">Player</label>
+        <label className="text-xs text-ui-text-2 mb-1 block">Player</label>
         <CustomSelect
           value={userId}
           options={members.map((m) => ({
@@ -58,18 +58,18 @@ const AddTargetForm = ({ orgSlug, members, onDone }: AddTargetFormProps) => {
       </div>
 
       <div>
-        <label className="text-xs text-[#9B9A97] mb-1 block">Nama Skill</label>
+        <label className="text-xs text-ui-text-2 mb-1 block">Nama Skill</label>
         <input
           value={skillName}
           onChange={(e) => setSkillName(e.target.value)}
           placeholder="Contoh: Map Awareness, Mechanical Skill"
-          className="h-8 w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-xs text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none"
+          className="h-8 w-full rounded-md border border-ui-border bg-ui-bg px-3 text-xs text-ui-text focus:border-yellow-400/50 focus:outline-none"
         />
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="text-xs text-[#9B9A97] mb-1 block">Level Sekarang (1-10)</label>
+          <label className="text-xs text-ui-text-2 mb-1 block">Level Sekarang (1-10)</label>
           <NumberInput
             min={1}
             max={10}
@@ -79,7 +79,7 @@ const AddTargetForm = ({ orgSlug, members, onDone }: AddTargetFormProps) => {
           />
         </div>
         <div>
-          <label className="text-xs text-[#9B9A97] mb-1 block">Target Level (1-10)</label>
+          <label className="text-xs text-ui-text-2 mb-1 block">Target Level (1-10)</label>
           <NumberInput
             min={1}
             max={10}
@@ -91,11 +91,11 @@ const AddTargetForm = ({ orgSlug, members, onDone }: AddTargetFormProps) => {
       </div>
 
       <div>
-        <label className="text-xs text-[#9B9A97] mb-1 block">Catatan (opsional)</label>
+        <label className="text-xs text-ui-text-2 mb-1 block">Catatan (opsional)</label>
         <input
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
-          className="h-8 w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-xs text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none"
+          className="h-8 w-full rounded-md border border-ui-border bg-ui-bg px-3 text-xs text-ui-text focus:border-yellow-400/50 focus:outline-none"
         />
       </div>
 
@@ -113,7 +113,7 @@ const AddTargetForm = ({ orgSlug, members, onDone }: AddTargetFormProps) => {
           <button
             type="button"
             onClick={onDone}
-            className="h-8 rounded-md border border-[#2D2D2D] px-3 text-xs text-[#9B9A97] hover:bg-[#2C2C2C] cursor-pointer"
+            className="h-8 rounded-md border border-ui-border px-3 text-xs text-ui-text-2 hover:bg-ui-hover cursor-pointer"
           >
             Batal
           </button>

@@ -101,12 +101,12 @@ const AuditFilterPanel = ({ filters, actors }: AuditFilterPanelProps) => {
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-2">
         <div className="relative">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#6B6A68] pointer-events-none" />
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-ui-text-muted pointer-events-none" />
           <Input
             value={search}
             onChange={(e) => handleSearchChange(e.target.value)}
             placeholder="Cari aksi..."
-            className="pl-8 h-8 w-52 text-sm bg-[#202020] border-[#2D2D2D] text-[#E5E2E1] placeholder:text-[#6B6A68] focus-visible:ring-0 focus-visible:border-[#9B9A97]"
+            className="pl-8 h-8 w-52 text-sm bg-ui-surface border-ui-border text-ui-text placeholder:text-ui-text-muted focus-visible:ring-0 focus-visible:border-ui-text-2"
           />
         </div>
 
@@ -132,20 +132,20 @@ const AuditFilterPanel = ({ filters, actors }: AuditFilterPanelProps) => {
           type="date"
           value={filters.from}
           onChange={(e) => pushFilters({ from: e.target.value })}
-          className="h-8 rounded-md border border-[#2D2D2D] bg-[#202020] px-2 text-xs text-[#E5E2E1] cursor-pointer focus:outline-none focus:border-[#9B9A97]"
+          className="h-8 rounded-md border border-ui-border bg-ui-surface px-2 text-xs text-ui-text cursor-pointer focus:outline-none focus:border-ui-text-2"
         />
-        <span className="text-xs text-[#6B6A68]">s/d</span>
+        <span className="text-xs text-ui-text-muted">s/d</span>
         <input
           type="date"
           value={filters.to}
           onChange={(e) => pushFilters({ to: e.target.value })}
-          className="h-8 rounded-md border border-[#2D2D2D] bg-[#202020] px-2 text-xs text-[#E5E2E1] cursor-pointer focus:outline-none focus:border-[#9B9A97]"
+          className="h-8 rounded-md border border-ui-border bg-ui-surface px-2 text-xs text-ui-text cursor-pointer focus:outline-none focus:border-ui-text-2"
         />
 
         <button
           onClick={handleSavePreset}
           title="Simpan filter sebagai preset"
-          className="h-8 w-8 flex items-center justify-center rounded-md border border-[#2D2D2D] bg-[#202020] text-[#6B6A68] hover:text-[#E5E2E1] cursor-pointer transition-colors"
+          className="h-8 w-8 flex items-center justify-center rounded-md border border-ui-border bg-ui-surface text-ui-text-muted hover:text-ui-text cursor-pointer transition-colors"
         >
           <BookmarkPlus className="h-3.5 w-3.5" />
         </button>
@@ -156,7 +156,7 @@ const AuditFilterPanel = ({ filters, actors }: AuditFilterPanelProps) => {
               setSearch("");
               router.push(pathname);
             }}
-            className="flex items-center gap-1 text-xs text-[#6B6A68] hover:text-[#E5E2E1] cursor-pointer transition-colors"
+            className="flex items-center gap-1 text-xs text-ui-text-muted hover:text-ui-text cursor-pointer transition-colors"
           >
             <X className="h-3 w-3" />
             Reset
@@ -166,7 +166,7 @@ const AuditFilterPanel = ({ filters, actors }: AuditFilterPanelProps) => {
 
       {presets.length > 0 && (
         <div className="flex items-center gap-1.5 flex-wrap">
-          <span className="text-xs text-[#6B6A68] flex items-center gap-1">
+          <span className="text-xs text-ui-text-muted flex items-center gap-1">
             <SlidersHorizontal className="h-3 w-3" />
             Preset:
           </span>
@@ -174,13 +174,13 @@ const AuditFilterPanel = ({ filters, actors }: AuditFilterPanelProps) => {
             <div key={i} className="flex items-center gap-0.5">
               <button
                 onClick={() => handleApplyPreset(preset)}
-                className="px-2 py-0.5 rounded-full border border-[#2D2D2D] bg-[#202020] text-xs text-[#9B9A97] hover:text-[#E5E2E1] hover:border-[#9B9A97] cursor-pointer transition-colors"
+                className="px-2 py-0.5 rounded-full border border-ui-border bg-ui-surface text-xs text-ui-text-2 hover:text-ui-text hover:border-ui-text-2 cursor-pointer transition-colors"
               >
                 {preset.name}
               </button>
               <button
                 onClick={() => handleDeletePreset(i)}
-                className="text-[#6B6A68] hover:text-red-400 cursor-pointer transition-colors"
+                className="text-ui-text-muted hover:text-red-400 cursor-pointer transition-colors"
               >
                 <X className="h-2.5 w-2.5" />
               </button>

@@ -39,7 +39,7 @@ const AuditDashboard = ({
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-white">Audit Log</h1>
+        <h1 className="text-2xl font-bold text-ui-text">Audit Log</h1>
         <p className="mt-1 text-sm text-white/60">
           Riwayat semua aktivitas penting di seluruh tim dan modul.
         </p>
@@ -59,7 +59,7 @@ const AuditDashboard = ({
       />
 
       <div className="flex items-center justify-between">
-        <span className="text-sm text-[#9B9A97]">{total} aktivitas ditemukan</span>
+        <span className="text-sm text-ui-text-2">{total} aktivitas ditemukan</span>
         <AuditExportButton
           filters={{
             search: currentFilters.search,

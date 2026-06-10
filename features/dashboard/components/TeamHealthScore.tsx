@@ -7,7 +7,7 @@ interface TeamHealthScoreProps {
 
 function ScoreBar({ value, color }: { value: number; color: string }) {
   return (
-    <div className="h-1.5 w-full rounded-full bg-[#2D2D2D] overflow-hidden">
+    <div className="h-1.5 w-full rounded-full bg-ui-border overflow-hidden">
       <div
         className={`h-full rounded-full transition-all ${color}`}
         style={{ width: `${value}%` }}
@@ -33,14 +33,14 @@ const TeamHealthScore = ({ score }: TeamHealthScoreProps) => {
   ];
 
   return (
-    <div className="border border-[#2D2D2D] rounded-lg p-6 space-y-4">
+    <div className="border border-ui-border rounded-lg p-6 space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-[#E5E2E1] flex items-center gap-2">
-          <Activity className="h-4 w-4 text-[#9B9A97]" />
+        <h2 className="text-lg font-semibold text-ui-text flex items-center gap-2">
+          <Activity className="h-4 w-4 text-ui-text-2" />
           Team Health Score
         </h2>
         <span className={`text-3xl font-bold ${totalColor}`}>
-          {score.total}<span className="text-base font-normal text-[#9B9A97]">/100</span>
+          {score.total}<span className="text-base font-normal text-ui-text-2">/100</span>
         </span>
       </div>
 
@@ -48,14 +48,14 @@ const TeamHealthScore = ({ score }: TeamHealthScoreProps) => {
         <ScoreBar value={score.total} color={barColor} />
       </div>
 
-      <div className="space-y-3 pt-2 border-t border-[#2D2D2D]">
+      <div className="space-y-3 pt-2 border-t border-ui-border">
         {metrics.map((m) => (
           <div key={m.label} className="space-y-1">
             <div className="flex justify-between text-xs">
-              <span className="text-[#9B9A97]">{m.label}</span>
+              <span className="text-ui-text-2">{m.label}</span>
               <div className="flex items-center gap-2">
-                <span className="text-[#6B6A68]">×{m.weight}</span>
-                <span className="text-[#E5E2E1] font-medium">{m.value}%</span>
+                <span className="text-ui-text-muted">×{m.weight}</span>
+                <span className="text-ui-text font-medium">{m.value}%</span>
               </div>
             </div>
             <ScoreBar value={m.value} color={m.color} />

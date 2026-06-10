@@ -141,12 +141,12 @@ const TournamentBracketCard = ({
   return (
     <article className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
       <div className="flex items-center justify-between mb-3">
-        <h2 className="text-sm font-semibold text-white">Bracket Turnamen</h2>
+        <h2 className="text-sm font-semibold text-ui-text">Bracket Turnamen</h2>
         {canManage && !editing && (
           <button
             type="button"
             onClick={() => setEditing(true)}
-            className="inline-flex items-center gap-1.5 text-xs text-[#9B9A97] hover:text-[#E5E2E1] cursor-pointer transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs text-ui-text-2 hover:text-ui-text cursor-pointer transition-colors"
           >
             <Pencil className="h-3 w-3" />
             Atur Bracket
@@ -157,20 +157,20 @@ const TournamentBracketCard = ({
       {editing ? (
         <div className="space-y-4">
           <div className="space-y-1">
-            <label className="text-xs text-[#6B6A68] font-medium">Link Bracket (Opsional)</label>
+            <label className="text-xs text-ui-text-muted font-medium">Link Bracket (Opsional)</label>
             <input
               type="url"
               placeholder="https://challonge.com/..."
               value={bracketLink}
               onChange={(e) => setBracketLink(e.target.value)}
-              className="h-8 w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-xs text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none"
+              className="h-8 w-full rounded-md border border-ui-border bg-ui-bg px-3 text-xs text-ui-text focus:border-yellow-400/50 focus:outline-none"
             />
           </div>
 
           <div className="space-y-1">
-            <label className="text-xs text-[#6B6A68] font-medium">File Bracket (Opsional)</label>
+            <label className="text-xs text-ui-text-muted font-medium">File Bracket (Opsional)</label>
             {filePath || selectedFile ? (
-              <div className="flex items-center gap-2.5 rounded-lg border border-white/5 bg-[#191919] px-3 py-2">
+              <div className="flex items-center gap-2.5 rounded-lg border border-white/5 bg-ui-bg px-3 py-2">
                 <File className="h-4 w-4 shrink-0 text-white/35" />
                 <span className="min-w-0 flex-1 truncate text-xs text-white/75">
                   {selectedFile ? selectedFile.name : getFileName(filePath)}
@@ -214,7 +214,7 @@ const TournamentBracketCard = ({
             <button
               type="button"
               onClick={handleCancel}
-              className="h-8 rounded-md border border-[#2D2D2D] px-3.5 text-xs text-[#9B9A97] hover:bg-[#2C2C2C] cursor-pointer transition-colors"
+              className="h-8 rounded-md border border-ui-border px-3.5 text-xs text-ui-text-2 hover:bg-ui-hover cursor-pointer transition-colors"
             >
               Batal
             </button>
@@ -227,7 +227,7 @@ const TournamentBracketCard = ({
               href={initialBracketLink.startsWith("http") ? initialBracketLink : `https://${initialBracketLink}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2.5 rounded-lg border border-white/5 bg-white/[0.02] px-3.5 py-2.5 text-xs text-white/70 hover:bg-white/[0.05] hover:text-white transition"
+              className="flex items-center gap-2.5 rounded-lg border border-white/5 bg-white/[0.02] px-3.5 py-2.5 text-xs text-white/70 hover:bg-white/[0.05] hover:text-ui-text transition"
             >
               <ExternalLink className="h-4 w-4 text-yellow-400 shrink-0" />
               <span className="flex-1 truncate font-medium">Buka Link Bracket</span>
@@ -240,7 +240,7 @@ const TournamentBracketCard = ({
               type="button"
               disabled={opening}
               onClick={handleOpen}
-              className="w-full flex items-center gap-2.5 rounded-lg border border-white/5 bg-white/[0.02] px-3.5 py-2.5 text-xs text-white/70 hover:bg-white/[0.05] hover:text-white transition cursor-pointer text-left"
+              className="w-full flex items-center gap-2.5 rounded-lg border border-white/5 bg-white/[0.02] px-3.5 py-2.5 text-xs text-white/70 hover:bg-white/[0.05] hover:text-ui-text transition cursor-pointer text-left"
             >
               {opening ? (
                 <Loader2 className="h-4 w-4 text-blue-400 animate-spin shrink-0" />

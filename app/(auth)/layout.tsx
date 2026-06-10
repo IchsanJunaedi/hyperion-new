@@ -7,7 +7,7 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen flex-col bg-[#040D1C]">
+    <div className="dark flex min-h-screen flex-col bg-[#040D1C]">
       <header className="border-b border-white/5 bg-[#040D1C]/80 backdrop-blur-md">
         <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between px-4">
           <Link href="/" className="flex flex-col items-start leading-none gap-0.5" aria-label="Hyperion Team">

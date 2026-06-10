@@ -4,6 +4,7 @@ import { LogOut, ExternalLink } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { adminLogoutAction } from "@/lib/actions/adminAuth";
 import { AdminSidebarNav } from "@/features/admin/components/AdminSidebarNav";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 export const dynamic = "force-dynamic";
 
@@ -22,17 +23,17 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   }
 
   return (
-    <div className="flex min-h-screen bg-[#191919] text-[#E5E2E1]">
-      <aside className="hidden md:flex w-[260px] h-screen fixed left-0 top-0 bg-[#202020] flex-col border-r border-[#2D2D2D] text-sm">
-        <div className="flex h-12 shrink-0 items-center border-b border-[#2D2D2D] px-4 gap-3">
+    <div className="flex min-h-screen bg-ui-bg text-ui-text">
+      <aside className="hidden md:flex w-[260px] h-screen fixed left-0 top-0 bg-ui-surface flex-col border-r border-ui-border text-sm">
+        <div className="flex h-12 shrink-0 items-center border-b border-ui-border px-4 gap-3">
           <div className="grid h-5 w-5 place-items-center rounded bg-[#F5C400] text-[10px] font-black text-black">
             A
           </div>
-          <p className="flex-1 text-sm font-bold text-[#D4D4D4]">Admin Panel</p>
+          <p className="flex-1 text-sm font-bold text-ui-text-dim">Admin Panel</p>
           <Link
             href="/"
             target="_blank"
-            className="text-[#6B6A68] hover:text-[#D4D4D4] transition"
+            className="text-ui-text-muted hover:text-ui-text-dim transition"
             title="Lihat public site"
           >
             <ExternalLink className="h-3.5 w-3.5" />
@@ -41,17 +42,24 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
         <AdminSidebarNav />
 
-        <div className="border-t border-[#2D2D2D] px-3 py-3 shrink-0">
+        <div className="border-t border-ui-border px-3 py-2 shrink-0">
+          <div className="flex items-center justify-between rounded px-2 py-1.5">
+            <span className="text-sm text-ui-text-2">Tema</span>
+            <ThemeToggle />
+          </div>
+        </div>
+
+        <div className="border-t border-ui-border px-3 py-3 shrink-0">
           <div className="flex items-center gap-3 rounded px-2 py-2">
-            <div className="grid h-5 w-5 place-items-center rounded-full bg-[#353434] text-[10px] font-semibold text-[#D4D4D4]">
+            <div className="grid h-5 w-5 place-items-center rounded-full bg-ui-hover-strong text-[10px] font-semibold text-ui-text-dim">
               {(user.email ?? "A").slice(0, 2).toUpperCase()}
             </div>
-            <p className="min-w-0 flex-1 truncate text-xs text-[#9B9A97]">{user.email}</p>
+            <p className="min-w-0 flex-1 truncate text-xs text-ui-text-2">{user.email}</p>
             <form action={adminLogoutAction}>
               <button
                 type="submit"
                 aria-label="Logout"
-                className="rounded p-1.5 text-[#9B9A97] transition hover:bg-[#2C2C2C] hover:text-[#D4D4D4] cursor-pointer"
+                className="rounded p-1.5 text-ui-text-2 transition hover:bg-ui-hover hover:text-ui-text-dim cursor-pointer"
               >
                 <LogOut className="h-4 w-4" />
               </button>

@@ -27,7 +27,7 @@ export default async function FilesPage({ params }: FilesPageProps) {
   return (
     <div className="space-y-6 px-4 py-6 sm:px-8">
       <header>
-        <h1 className="text-2xl font-bold text-white sm:text-3xl">
+        <h1 className="text-2xl font-bold text-ui-text sm:text-3xl">
           File Tim
         </h1>
         <p className="mt-1 text-sm text-white/60">
@@ -37,7 +37,7 @@ export default async function FilesPage({ params }: FilesPageProps) {
 
       {canUpload && (
         <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5 sm:p-6">
-          <h2 className="text-sm font-semibold text-white">Upload file baru</h2>
+          <h2 className="text-sm font-semibold text-ui-text">Upload file baru</h2>
           <div className="mt-3">
             <FileUpload orgSlug={slug} orgId={organization.id} />
           </div>
@@ -45,7 +45,7 @@ export default async function FilesPage({ params }: FilesPageProps) {
       )}
 
       <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5 sm:p-6">
-        <h2 className="mb-4 text-sm font-semibold text-white">
+        <h2 className="mb-4 text-sm font-semibold text-ui-text">
           File yang tersimpan
         </h2>
         <FileList orgId={organization.id} />

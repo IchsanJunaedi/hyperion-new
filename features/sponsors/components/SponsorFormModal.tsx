@@ -135,17 +135,17 @@ const SponsorFormModal = ({ open, onClose, orgId, editing, onSaved, organization
     });
   }
 
-  const inputCls = "w-full rounded-md border border-[#2D2D2D] bg-[#141414] px-3 py-2 text-sm text-white placeholder-white/30 outline-none focus:border-white/30";
+  const inputCls = "w-full rounded-md border border-ui-border bg-ui-bg px-3 py-2 text-sm text-ui-text placeholder-white/30 outline-none focus:border-white/30";
   const labelCls = "mb-1 block text-xs font-medium text-white/60";
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/60 p-4 pt-12">
-      <div className="w-full max-w-lg rounded-xl border border-[#2D2D2D] bg-[#1C1C1C] shadow-2xl">
-        <div className="flex items-center justify-between border-b border-[#2D2D2D] px-5 py-4">
-          <h2 className="text-sm font-semibold text-white">
+      <div className="w-full max-w-lg rounded-xl border border-ui-border bg-ui-surface shadow-2xl">
+        <div className="flex items-center justify-between border-b border-ui-border px-5 py-4">
+          <h2 className="text-sm font-semibold text-ui-text">
             {editing ? "Edit Sponsor" : "Tambah Sponsor"}
           </h2>
-          <button type="button" onClick={onClose} className="cursor-pointer text-white/40 hover:text-white">
+          <button type="button" onClick={onClose} className="cursor-pointer text-white/40 hover:text-ui-text">
             <X className="h-4 w-4" />
           </button>
         </div>
@@ -158,7 +158,7 @@ const SponsorFormModal = ({ open, onClose, orgId, editing, onSaved, organization
               <select
                 value={selectedOrgId}
                 onChange={(e) => setSelectedOrgId(e.target.value)}
-                className="w-full rounded-md border border-[#2D2D2D] bg-[#141414] px-3 py-2 text-sm text-white outline-none focus:border-white/30 cursor-pointer"
+                className="w-full rounded-md border border-ui-border bg-ui-bg px-3 py-2 text-sm text-ui-text outline-none focus:border-white/30 cursor-pointer"
               >
                 {organizations.map((org) => (
                   <option key={org.id} value={org.id} className="bg-zinc-900">
@@ -188,7 +188,7 @@ const SponsorFormModal = ({ open, onClose, orgId, editing, onSaved, organization
                     "cursor-pointer rounded-full border px-3 py-1 text-xs transition",
                     form.status === s.value
                       ? "border-yellow-500/50 bg-yellow-500/10 text-yellow-400"
-                      : "border-[#2D2D2D] text-white/40 hover:border-white/20 hover:text-white/60",
+                      : "border-ui-border text-white/40 hover:border-white/20 hover:text-white/60",
                   )}
                 >
                   {s.label}
@@ -202,9 +202,9 @@ const SponsorFormModal = ({ open, onClose, orgId, editing, onSaved, organization
             <label className={labelCls}>Logo (opsional)</label>
             <div className="flex items-center gap-3">
               {form.logo_url ? (
-                <img src={form.logo_url} alt="Logo" className="h-12 w-12 rounded-md object-contain bg-[#141414] border border-[#2D2D2D]" />
+                <img src={form.logo_url} alt="Logo" className="h-12 w-12 rounded-md object-contain bg-ui-bg border border-ui-border" />
               ) : (
-                <div className="flex h-12 w-12 items-center justify-center rounded-md border border-dashed border-[#2D2D2D] bg-[#141414] text-white/30">
+                <div className="flex h-12 w-12 items-center justify-center rounded-md border border-dashed border-ui-border bg-ui-bg text-white/30">
                   <ImagePlus className="h-5 w-5" />
                 </div>
               )}
@@ -213,7 +213,7 @@ const SponsorFormModal = ({ open, onClose, orgId, editing, onSaved, organization
                   type="button"
                   disabled={logoUploading}
                   onClick={() => logoInputRef.current?.click()}
-                  className="inline-flex h-8 items-center gap-1.5 rounded-md border border-[#2D2D2D] px-3 text-xs text-white/60 transition hover:bg-white/5 hover:text-white disabled:opacity-50 cursor-pointer"
+                  className="inline-flex h-8 items-center gap-1.5 rounded-md border border-ui-border px-3 text-xs text-white/60 transition hover:bg-white/5 hover:text-ui-text disabled:opacity-50 cursor-pointer"
                 >
                   {logoUploading ? <Loader2 className="h-3 w-3 animate-spin" /> : <ImagePlus className="h-3 w-3" />}
                   {logoUploading ? "Mengupload..." : "Upload logo"}
@@ -273,7 +273,7 @@ const SponsorFormModal = ({ open, onClose, orgId, editing, onSaved, organization
                   {["IDR", "USD"].map((c) => (
                     <button key={c} type="button" onClick={() => set("currency", c)}
                       className={cn("flex-1 cursor-pointer rounded-md border py-2 text-xs font-mono transition",
-                        form.currency === c ? "border-yellow-500/50 bg-yellow-500/10 text-yellow-400" : "border-[#2D2D2D] text-white/40 hover:border-white/20"
+                        form.currency === c ? "border-yellow-500/50 bg-yellow-500/10 text-yellow-400" : "border-ui-border text-white/40 hover:border-white/20"
                       )}>
                       {c}
                     </button>
@@ -300,7 +300,7 @@ const SponsorFormModal = ({ open, onClose, orgId, editing, onSaved, organization
 
           {/* Actions */}
           <div className="flex gap-2 pt-1">
-            <button type="button" onClick={onClose} className="flex-1 cursor-pointer rounded-md border border-[#2D2D2D] py-2 text-sm text-white/60 transition hover:bg-white/5">
+            <button type="button" onClick={onClose} className="flex-1 cursor-pointer rounded-md border border-ui-border py-2 text-sm text-white/60 transition hover:bg-white/5">
               Batal
             </button>
             <button type="button" onClick={handleSave} disabled={pending}

@@ -72,13 +72,13 @@ const MainRoleSelector = ({
         className={cn(
           "inline-flex h-8 w-28 cursor-pointer items-center justify-between gap-1.5 rounded-md px-2.5 text-xs transition-all duration-200 focus:outline-none disabled:opacity-50",
           isInteractive
-            ? "border border-[#2D2D2D] bg-[#141414] text-white"
+            ? "border border-ui-border bg-ui-bg text-ui-text"
             : "border border-transparent bg-transparent",
         )}
       >
         <span
           className={cn(
-            isInteractive ? "font-medium text-white" : (selected?.color ?? "text-white/30 italic"),
+            isInteractive ? "font-medium text-ui-text" : (selected?.color ?? "text-white/30 italic"),
           )}
         >
           {selected?.shortLabel ?? "—"}
@@ -104,7 +104,7 @@ const MainRoleSelector = ({
       {open && (
         <div
           className={cn(
-          "absolute left-0 z-50 w-36 rounded-md border border-[#2D2D2D] bg-[#141414] py-1 shadow-xl",
+          "absolute left-0 z-50 w-36 rounded-md border border-ui-border bg-ui-bg py-1 shadow-xl",
           direction === "up" ? "bottom-full mb-1 origin-bottom-left" : "top-full mt-1 origin-top-left",
         )}
         >
@@ -115,8 +115,8 @@ const MainRoleSelector = ({
             className={cn(
               "flex w-full items-center px-3 py-2 text-left text-xs transition",
               currentMainRole === null
-                ? "bg-[#1C1C1C] text-white/50"
-                : "text-white/40 hover:bg-[#1A1A1A] hover:text-white/60",
+                ? "bg-ui-surface text-white/50"
+                : "text-white/40 hover:bg-ui-hover hover:text-white/60",
             )}
           >
             — Tidak ada —
@@ -129,8 +129,8 @@ const MainRoleSelector = ({
               className={cn(
                 "flex w-full items-center justify-between px-3 py-2 text-left text-xs transition",
                 currentMainRole === opt.value
-                  ? "bg-[#1C1C1C] font-medium text-white"
-                  : "text-white/70 hover:bg-[#1A1A1A] hover:text-white",
+                  ? "bg-ui-surface font-medium text-ui-text"
+                  : "text-white/70 hover:bg-ui-hover hover:text-ui-text",
               )}
             >
               <span>{opt.label}</span>

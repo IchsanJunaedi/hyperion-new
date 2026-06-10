@@ -23,7 +23,7 @@ export default async function StrategyPage({ params }: StrategyPageProps) {
     <div className="space-y-6 px-4 py-6 sm:px-8">
       <header className="flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white sm:text-3xl">
+          <h1 className="text-2xl font-bold text-ui-text sm:text-3xl">
             Bank Strategi
           </h1>
         </div>
@@ -44,7 +44,7 @@ export default async function StrategyPage({ params }: StrategyPageProps) {
           </p>
           <Link
             href={`/${slug}/strategy/new`}
-            className="mt-4 inline-flex h-9 items-center rounded-md border border-white/15 px-4 text-sm font-medium text-white transition hover:bg-white/5"
+            className="mt-4 inline-flex h-9 items-center rounded-md border border-white/15 px-4 text-sm font-medium text-ui-text transition hover:bg-white/5"
           >
             Tulis catatan pertama
           </Link>

@@ -35,6 +35,7 @@ import { useEffect, useState } from "react";
 import { SettingsModal } from "@/features/settings/components/SettingsModal";
 import { useWorkspaceStore } from "@/stores/useWorkspaceStore";
 import { TeamSwitcher } from "@/components/layout/TeamSwitcher";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 interface SidebarDivision {
   id: string;
@@ -324,12 +325,12 @@ const WorkspaceSidebar = ({
     }));
 
   return (
-    <aside className="print-hide hidden md:flex md:w-[280px] md:flex-col md:border-r md:border-[#2D2D2D] md:bg-[#202020] h-screen sticky top-0">
+    <aside className="print-hide hidden md:flex md:w-[280px] md:flex-col md:border-r md:border-ui-border md:bg-ui-surface h-screen sticky top-0">
       {/* Org header */}
-      <div className="flex h-12 shrink-0 items-center border-b border-[#2D2D2D]">
+      <div className="flex h-12 shrink-0 items-center border-b border-ui-border">
         <Link
           href={`/${orgSlug}`}
-          className="flex h-full min-w-0 flex-1 items-center gap-3 px-4 transition hover:bg-[#2C2C2C]"
+          className="flex h-full min-w-0 flex-1 items-center gap-3 px-4 transition hover:bg-ui-hover"
         >
           {orgLogoUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
@@ -339,12 +340,12 @@ const WorkspaceSidebar = ({
               className="h-5 w-5 rounded object-cover"
             />
           ) : (
-            <div className="grid h-5 w-5 place-items-center rounded bg-[#353434] text-xs font-semibold text-[#E5E2E1]">
+            <div className="grid h-5 w-5 place-items-center rounded bg-ui-hover-strong text-xs font-semibold text-ui-text">
               {orgName.slice(0, 1).toUpperCase()}
             </div>
           )}
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-medium text-[#D4D4D4]">
+            <p className="truncate text-sm font-medium text-ui-text-dim">
               {orgName}
             </p>
           </div>
@@ -370,7 +371,7 @@ const WorkspaceSidebar = ({
             type="button"
             aria-expanded={divisionOpen}
             onClick={() => setDivisionOpen((v) => !v)}
-            className="flex w-full items-center justify-between rounded px-3 py-2 text-left text-sm text-[#9B9A97] transition hover:bg-[#2C2C2C]"
+            className="flex w-full items-center justify-between rounded px-3 py-2 text-left text-sm text-ui-text-2 transition hover:bg-ui-hover"
           >
             <span className="truncate">
               {activeDivision?.name ?? "Pilih divisi"}
@@ -380,7 +381,7 @@ const WorkspaceSidebar = ({
             />
           </button>
           {divisionOpen && (
-            <ul className="mt-1 max-h-60 overflow-auto rounded border border-[#2D2D2D] bg-[#202020] p-1 text-sm">
+            <ul className="mt-1 max-h-60 overflow-auto rounded border border-ui-border bg-ui-surface p-1 text-sm">
               {divisions.map((d) => (
                 <li key={d.id}>
                   <button
@@ -389,10 +390,10 @@ const WorkspaceSidebar = ({
                       setActiveDivision(d.id);
                       setDivisionOpen(false);
                     }}
-                    className={`block w-full truncate rounded px-3 py-1.5 text-left transition hover:bg-[#2C2C2C] ${
+                    className={`block w-full truncate rounded px-3 py-1.5 text-left transition hover:bg-ui-hover ${
                       d.id === activeDivision?.id
-                        ? "bg-[#2C2C2C] text-[#D4D4D4]"
-                        : "text-[#9B9A97]"
+                        ? "bg-ui-hover text-ui-text-dim"
+                        : "text-ui-text-2"
                     }`}
                   >
                     {d.name}
@@ -410,10 +411,10 @@ const WorkspaceSidebar = ({
         className="sidebar-scroll flex-1 overflow-y-auto px-2 pt-4 space-y-5"
       >
         {user.role === "owner" && (
-          <div className="pb-1 border-b border-[#2D2D2D] mb-1">
+          <div className="pb-1 border-b border-ui-border mb-1">
             <Link
               href="/dashboard"
-              className="flex items-center gap-2 rounded px-3 py-1.5 text-xs text-[#6B6A68] hover:bg-[#2C2C2C] hover:text-[#9B9A97] transition"
+              className="flex items-center gap-2 rounded px-3 py-1.5 text-xs text-ui-text-muted hover:bg-ui-hover hover:text-ui-text-2 transition"
             >
               <LayoutDashboard className="h-3.5 w-3.5 shrink-0" />
               Owner Dashboard
@@ -422,7 +423,7 @@ const WorkspaceSidebar = ({
         )}
         {allGroups.map((group) => (
           <div key={group.label}>
-            <p className="mb-1.5 px-3 text-[11px] font-semibold uppercase tracking-wide text-[#6B6A68]">
+            <p className="mb-1.5 px-3 text-[11px] font-semibold uppercase tracking-wide text-ui-text-muted">
               {group.label}
             </p>
             <ul className="space-y-0.5">
@@ -434,8 +435,8 @@ const WorkspaceSidebar = ({
                       href={getHref(item)}
                       className={`flex items-center gap-3 rounded px-3 py-1.5 text-sm transition ${
                         active
-                          ? "bg-[#2C2C2C] font-medium text-[#D4D4D4]"
-                          : "text-[#9B9A97] hover:bg-[#2C2C2C] hover:text-[#D4D4D4]"
+                          ? "bg-ui-hover font-medium text-ui-text-dim"
+                          : "text-ui-text-2 hover:bg-ui-hover hover:text-ui-text-dim"
                       }`}
                     >
                       <item.Icon className="h-[18px] w-[18px] shrink-0" />
@@ -455,15 +456,19 @@ const WorkspaceSidebar = ({
       </nav>
 
       {/* Settings — separated */}
-      <div className="border-t border-[#2D2D2D] px-2 py-3">
+      <div className="border-t border-ui-border px-2 py-3">
         <button
           type="button"
           onClick={() => setSettingsOpen(true)}
-          className="flex w-full cursor-pointer items-center gap-3 rounded px-3 py-1.5 text-sm text-[#9B9A97] transition hover:bg-[#2C2C2C] hover:text-[#D4D4D4]"
+          className="flex w-full cursor-pointer items-center gap-3 rounded px-3 py-1.5 text-sm text-ui-text-2 transition hover:bg-ui-hover hover:text-ui-text-dim"
         >
           <Settings className="h-[18px] w-[18px] shrink-0" />
           Settings
         </button>
+        <div className="mt-1 flex items-center justify-between rounded px-3 py-1.5">
+          <span className="text-sm text-ui-text-2">Tema</span>
+          <ThemeToggle />
+        </div>
       </div>
 
       <SettingsModal
@@ -475,7 +480,7 @@ const WorkspaceSidebar = ({
       />
 
       {/* User footer */}
-      <div className="border-t border-[#2D2D2D] px-3 py-3">
+      <div className="border-t border-ui-border px-3 py-3">
         <div className="flex items-center gap-3 rounded px-2 py-2">
           {user.avatarUrl ? (
             <Image
@@ -486,11 +491,11 @@ const WorkspaceSidebar = ({
               className="h-5 w-5 rounded-full object-cover"
             />
           ) : (
-            <div className="grid h-5 w-5 place-items-center rounded-full bg-[#353434] text-[10px] font-semibold text-[#D4D4D4]">
+            <div className="grid h-5 w-5 place-items-center rounded-full bg-ui-hover-strong text-[10px] font-semibold text-ui-text-dim">
               {user.displayName.slice(0, 2).toUpperCase()}
             </div>
           )}
-          <p className="min-w-0 flex-1 truncate text-xs text-[#9B9A97]">
+          <p className="min-w-0 flex-1 truncate text-xs text-ui-text-2">
             {user.email ?? user.displayName}
           </p>
         </div>

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
@@ -48,20 +48,20 @@ const ForgotPasswordForm = () => {
   if (sent) {
     return (
       <div className="space-y-4 text-center">
-        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#2C2C2C]">
-          <Mail className="h-6 w-6 text-[#9B9A97]" />
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-ui-hover">
+          <Mail className="h-6 w-6 text-ui-text-2" />
         </div>
         <div className="space-y-1">
-          <p className="font-medium text-[#E5E2E1]">Cek email kamu</p>
-          <p className="text-sm text-[#9B9A97]">
+          <p className="font-medium text-ui-text">Cek email kamu</p>
+          <p className="text-sm text-ui-text-2">
             Link reset password dikirim ke{" "}
-            <span className="font-medium text-[#E5E2E1]">{getValues("email")}</span>.
+            <span className="font-medium text-ui-text">{getValues("email")}</span>.
             Cek juga folder spam jika tidak muncul.
           </p>
         </div>
         <Link
           href="/login"
-          className="block text-sm text-[#9B9A97] underline-offset-4 hover:underline"
+          className="block text-sm text-ui-text-2 underline-offset-4 hover:underline"
         >
           Kembali ke halaman masuk
         </Link>

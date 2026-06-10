@@ -49,7 +49,7 @@ const ManageCalendarPage = async ({ searchParams }: Props) => {
 
   if (orgIds.length === 0) {
     return (
-      <div className="text-center py-20 text-[#9B9A97] text-sm">
+      <div className="text-center py-20 text-ui-text-2 text-sm">
         Kamu belum di-assign ke tim manapun.
       </div>
     );
@@ -142,23 +142,23 @@ const ManageCalendarPage = async ({ searchParams }: Props) => {
       <header className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Calendar className="h-5 w-5 text-blue-400" />
-          <h1 className="text-xl font-bold text-[#E5E2E1]">
+          <h1 className="text-xl font-bold text-ui-text">
             Kalender Semua Tim
           </h1>
         </div>
         <div className="flex items-center gap-2 text-sm">
           <Link
             href={`/manage/calendar?year=${prevMonth.getFullYear()}&month=${prevMonth.getMonth() + 1}`}
-            className="rounded px-3 py-1.5 text-[#9B9A97] hover:bg-[#2C2C2C] hover:text-[#D4D4D4] transition"
+            className="rounded px-3 py-1.5 text-ui-text-2 hover:bg-ui-hover hover:text-ui-text-dim transition"
           >
             ← Prev
           </Link>
-          <span className="font-medium text-[#D4D4D4] min-w-[120px] text-center">
+          <span className="font-medium text-ui-text-dim min-w-[120px] text-center">
             {format(targetDate, "MMMM yyyy", { locale: localeId })}
           </span>
           <Link
             href={`/manage/calendar?year=${nextMonth.getFullYear()}&month=${nextMonth.getMonth() + 1}`}
-            className="rounded px-3 py-1.5 text-[#9B9A97] hover:bg-[#2C2C2C] hover:text-[#D4D4D4] transition"
+            className="rounded px-3 py-1.5 text-ui-text-2 hover:bg-ui-hover hover:text-ui-text-dim transition"
           >
             Next →
           </Link>
@@ -178,7 +178,7 @@ const ManageCalendarPage = async ({ searchParams }: Props) => {
       </div>
 
       {events.length === 0 ? (
-        <div className="rounded-lg border border-[#2D2D2D] bg-[#202020] py-12 text-center text-sm text-[#6B6A68]">
+        <div className="rounded-lg border border-ui-border bg-ui-surface py-12 text-center text-sm text-ui-text-muted">
           Tidak ada event di bulan ini.
         </div>
       ) : (
@@ -188,21 +188,21 @@ const ManageCalendarPage = async ({ searchParams }: Props) => {
             return (
               <div
                 key={event.id}
-                className="flex items-center gap-4 rounded-lg border border-[#2D2D2D] bg-[#202020] px-4 py-3"
+                className="flex items-center gap-4 rounded-lg border border-ui-border bg-ui-surface px-4 py-3"
               >
                 <div className="w-16 shrink-0 text-center">
-                  <p className="text-lg font-bold text-[#D4D4D4]">
+                  <p className="text-lg font-bold text-ui-text-dim">
                     {format(new Date(event.starts_at), "d")}
                   </p>
-                  <p className="text-[10px] uppercase text-[#6B6A68]">
+                  <p className="text-[10px] uppercase text-ui-text-muted">
                     {format(new Date(event.starts_at), "EEE", { locale: localeId })}
                   </p>
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-medium text-[#E5E2E1]">
+                  <p className="truncate font-medium text-ui-text">
                     {event.title}
                   </p>
-                  <p className="text-xs text-[#9B9A97]">
+                  <p className="text-xs text-ui-text-2">
                     {format(new Date(event.starts_at), "HH:mm")}
                     {event.ends_at &&
                       ` – ${format(new Date(event.ends_at), "HH:mm")}`}
@@ -218,7 +218,7 @@ const ManageCalendarPage = async ({ searchParams }: Props) => {
                 {org && event.detailPath && (
                   <Link
                     href={event.detailPath}
-                    className="shrink-0 text-xs text-[#9B9A97] hover:text-[#D4D4D4] transition"
+                    className="shrink-0 text-xs text-ui-text-2 hover:text-ui-text-dim transition"
                   >
                     Detail →
                   </Link>

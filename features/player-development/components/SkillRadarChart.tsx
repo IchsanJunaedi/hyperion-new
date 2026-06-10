@@ -25,7 +25,7 @@ const SkillRadarChart = ({ targets }: SkillRadarChartProps) => {
   return (
     <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
       <div className="mb-1 flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-white">Skill Radar</h2>
+        <h2 className="text-sm font-semibold text-ui-text">Skill Radar</h2>
         <div className="flex items-center gap-3 text-[10px] text-white/40">
           <span className="flex items-center gap-1">
             <span className="inline-block h-2 w-2 rounded-full bg-blue-500/60" />

@@ -81,7 +81,7 @@ const ManageTeamPage = async ({ params }: Props) => {
   return (
     <div className="space-y-8">
       <header>
-        <h1 className="text-2xl font-bold text-white">Manager Panel</h1>
+        <h1 className="text-2xl font-bold text-ui-text">Manager Panel</h1>
         <p className="mt-1 text-sm text-white/60">
           Kelola roster tim, assign Captain dan Member, lihat statistik.
         </p>
@@ -103,13 +103,13 @@ const ManageTeamPage = async ({ params }: Props) => {
         </Link>
         <Link
           href={`/manage/${orgSlug}/divisions`}
-          className="inline-flex h-10 items-center gap-2 rounded-md bg-white/5 px-4 text-sm font-medium text-white transition hover:bg-white/10"
+          className="inline-flex h-10 items-center gap-2 rounded-md bg-white/5 px-4 text-sm font-medium text-ui-text transition hover:bg-white/10"
         >
           Edit Divisi
         </Link>
         <Link
           href={`/manage/${orgSlug}/captains`}
-          className="inline-flex h-10 items-center gap-2 rounded-md bg-white/5 px-4 text-sm font-medium text-white transition hover:bg-white/10"
+          className="inline-flex h-10 items-center gap-2 rounded-md bg-white/5 px-4 text-sm font-medium text-ui-text transition hover:bg-white/10"
         >
           Edit Captain
         </Link>
@@ -164,7 +164,7 @@ function StatCard({ label, value }: { label: string; value: number }) {
   return (
     <div className="rounded-lg border border-white/5 bg-white/[0.02] p-4">
       <p className="text-xs text-white/50">{label}</p>
-      <p className="mt-1 text-2xl font-bold text-white">{value}</p>
+      <p className="mt-1 text-2xl font-bold text-ui-text">{value}</p>
     </div>
   );
 }

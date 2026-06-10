@@ -17,7 +17,7 @@ interface Props {
 }
 
 const TodoTabBar = ({ activeTab, isOwner, onChange }: Props) => (
-  <div className="flex gap-0 border-b border-[#2D2D2D]">
+  <div className="flex gap-0 border-b border-ui-border">
     {TABS.filter((t) => !t.ownerOnly || isOwner).map((tab) => (
       <button
         key={tab.value}
@@ -26,8 +26,8 @@ const TodoTabBar = ({ activeTab, isOwner, onChange }: Props) => (
         className={cn(
           "-mb-px cursor-pointer border-b-2 px-4 py-2 text-sm transition",
           activeTab === tab.value
-            ? "border-[#D4D4D4] text-[#D4D4D4]"
-            : "border-transparent text-[#9B9A97] hover:text-[#D4D4D4]",
+            ? "border-ui-text-dim text-ui-text-dim"
+            : "border-transparent text-ui-text-2 hover:text-ui-text-dim",
         )}
       >
         {tab.label}

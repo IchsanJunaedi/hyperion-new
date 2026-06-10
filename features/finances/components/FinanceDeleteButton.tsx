@@ -39,7 +39,7 @@ const FinanceDeleteButton = ({ financeId, orgId, description, revalidatePaths }:
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="rounded p-1 text-[#9B9A97] hover:bg-[#2C2C2C] hover:text-red-400"
+        className="rounded p-1 text-ui-text-2 hover:bg-ui-hover hover:text-red-400"
         title="Hapus transaksi"
       >
         <Trash2 className="h-3.5 w-3.5" />

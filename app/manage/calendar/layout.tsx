@@ -70,7 +70,7 @@ const ManageCalendarLayout = async ({ children }: { children: React.ReactNode })
   return (
     <QueryProvider>
     <NotifyProvider>
-      <div className="flex min-h-screen bg-[#191919] text-[#E5E2E1]">
+      <div className="flex min-h-screen bg-ui-bg text-ui-text">
         <WorkspaceSidebar
           orgSlug={firstOrg.slug}
           orgId={firstOrg.id}

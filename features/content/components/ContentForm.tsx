@@ -45,58 +45,58 @@ const ContentForm = ({ orgId, onClose }: ContentFormProps) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" onClick={onClose}>
       <div
-        className="w-full max-w-md rounded-xl border border-[#2D2D2D] bg-[#202020] p-6"
+        className="w-full max-w-md rounded-xl border border-ui-border bg-ui-surface p-6"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-5">
-          <h3 className="text-base font-bold text-[#E5E2E1]">Buat Konten</h3>
-          <button onClick={onClose} className="text-[#9B9A97] hover:text-[#E5E2E1]">
+          <h3 className="text-base font-bold text-ui-text">Buat Konten</h3>
+          <button onClick={onClose} className="text-ui-text-2 hover:text-ui-text">
             <X className="h-4 w-4" />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs text-[#9B9A97] mb-1">Platform</label>
+            <label className="block text-xs text-ui-text-2 mb-1">Platform</label>
             <select
               name="platform"
               required
-              className="h-10 w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-sm text-[#E5E2E1] focus:outline-none"
+              className="h-10 w-full rounded-md border border-ui-border bg-ui-bg px-3 text-sm text-ui-text focus:outline-none"
             >
               {PLATFORMS.map((p) => <option key={p} value={p}>{PLATFORM_LABELS[p]}</option>)}
             </select>
           </div>
 
           <div>
-            <label className="block text-xs text-[#9B9A97] mb-1">Judul</label>
+            <label className="block text-xs text-ui-text-2 mb-1">Judul</label>
             <input
               name="title"
               type="text"
               required
               maxLength={200}
               placeholder="Judul konten..."
-              className="h-10 w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-sm text-[#E5E2E1] focus:border-[#E5E2E1] focus:outline-none"
+              className="h-10 w-full rounded-md border border-ui-border bg-ui-bg px-3 text-sm text-ui-text focus:border-ui-text focus:outline-none"
             />
           </div>
 
           <div>
-            <label className="block text-xs text-[#9B9A97] mb-1">Deskripsi (opsional)</label>
+            <label className="block text-xs text-ui-text-2 mb-1">Deskripsi (opsional)</label>
             <textarea
               name="description"
               rows={3}
               maxLength={2000}
               placeholder="Caption, hashtag, brief..."
-              className="w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 py-2 text-sm text-[#E5E2E1] focus:border-[#E5E2E1] focus:outline-none"
+              className="w-full rounded-md border border-ui-border bg-ui-bg px-3 py-2 text-sm text-ui-text focus:border-ui-text focus:outline-none"
             />
           </div>
 
           <div>
-            <label className="block text-xs text-[#9B9A97] mb-1">Jadwal Posting</label>
+            <label className="block text-xs text-ui-text-2 mb-1">Jadwal Posting</label>
             <input
               name="scheduled_at"
               type="datetime-local"
               required
-              className="h-10 w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-sm text-[#E5E2E1] focus:border-[#E5E2E1] focus:outline-none"
+              className="h-10 w-full rounded-md border border-ui-border bg-ui-bg px-3 text-sm text-ui-text focus:border-ui-text focus:outline-none"
             />
           </div>
 
@@ -105,13 +105,13 @@ const ContentForm = ({ orgId, onClose }: ContentFormProps) => {
           )}
 
           <div className="flex justify-end gap-3 pt-2">
-            <button type="button" onClick={onClose} className="h-9 rounded-md border border-[#2D2D2D] px-4 text-sm text-[#9B9A97] hover:bg-[#2C2C2C]">
+            <button type="button" onClick={onClose} className="h-9 rounded-md border border-ui-border px-4 text-sm text-ui-text-2 hover:bg-ui-hover">
               Batal
             </button>
             <button
               type="submit"
               disabled={pending}
-              className="inline-flex h-9 items-center gap-2 rounded-md bg-[#E5E2E1] px-4 text-sm font-semibold text-[#191919] hover:bg-white disabled:opacity-50"
+              className="inline-flex h-9 items-center gap-2 rounded-md bg-ui-text px-4 text-sm font-semibold text-ui-bg hover:bg-white disabled:opacity-50"
             >
               {pending && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
               Simpan Draft

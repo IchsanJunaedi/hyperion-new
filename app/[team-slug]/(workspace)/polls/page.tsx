@@ -33,7 +33,7 @@ export default async function PollsPage({ params }: PollsPageProps) {
     <div className="space-y-6 px-4 py-6 sm:px-8">
       <header className="flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white sm:text-3xl">Polling Tim</h1>
+          <h1 className="text-2xl font-bold text-ui-text sm:text-3xl">Polling Tim</h1>
         </div>
       </header>
 

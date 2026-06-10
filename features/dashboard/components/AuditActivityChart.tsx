@@ -28,9 +28,9 @@ const AuditActivityChart = ({ data7, data30 }: AuditActivityChartProps) => {
   };
 
   return (
-    <div className="rounded-lg border border-[#2D2D2D] bg-[#202020] p-4">
+    <div className="rounded-lg border border-ui-border bg-ui-surface p-4">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-sm font-medium text-[#E5E2E1]">Aktivitas</h2>
+        <h2 className="text-sm font-medium text-ui-text">Aktivitas</h2>
         <div className="flex items-center gap-1">
           {([7, 30] as const).map((d) => (
             <button
@@ -38,8 +38,8 @@ const AuditActivityChart = ({ data7, data30 }: AuditActivityChartProps) => {
               onClick={() => setRange(d)}
               className={`px-3 py-1 rounded text-xs cursor-pointer transition-colors ${
                 range === d
-                  ? "bg-white/10 text-[#E5E2E1]"
-                  : "text-[#6B6A68] hover:text-[#9B9A97]"
+                  ? "bg-white/10 text-ui-text"
+                  : "text-ui-text-muted hover:text-ui-text-2"
               }`}
             >
               {d} Hari

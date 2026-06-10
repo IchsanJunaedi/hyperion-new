@@ -50,7 +50,7 @@ const AnalyticsDashboard = ({
   return (
     <div className="space-y-6">
       {/* Tab bar */}
-      <div className="print-hide flex items-center justify-between gap-2 border-b border-[#2D2D2D]">
+      <div className="print-hide flex items-center justify-between gap-2 border-b border-ui-border">
         <nav className="flex gap-1">
           {TABS.map((tab) => (
             <button
@@ -71,7 +71,7 @@ const AnalyticsDashboard = ({
         <button
           type="button"
           onClick={() => window.print()}
-          className="mb-2 inline-flex items-center gap-1.5 rounded-md border border-white/10 px-3 py-1.5 text-xs text-white/60 transition hover:bg-white/5 hover:text-white cursor-pointer"
+          className="mb-2 inline-flex items-center gap-1.5 rounded-md border border-white/10 px-3 py-1.5 text-xs text-white/60 transition hover:bg-white/5 hover:text-ui-text cursor-pointer"
         >
           <Download className="h-3.5 w-3.5" />
           Export PDF

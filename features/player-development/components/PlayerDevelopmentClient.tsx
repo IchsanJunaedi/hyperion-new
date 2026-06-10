@@ -32,7 +32,7 @@ const PlayerDevelopmentClient = ({
           <button
             type="button"
             onClick={() => setShowForm(true)}
-            className="inline-flex h-9 items-center gap-2 rounded-md border border-[#2D2D2D] bg-[#202020] px-4 text-xs font-medium text-[#E5E2E1] hover:bg-[#2C2C2C] cursor-pointer"
+            className="inline-flex h-9 items-center gap-2 rounded-md border border-ui-border bg-ui-surface px-4 text-xs font-medium text-ui-text hover:bg-ui-hover cursor-pointer"
           >
             <Plus className="h-3.5 w-3.5" />
             Set Target Baru
@@ -51,9 +51,9 @@ const PlayerDevelopmentClient = ({
             return (
               <section key={userId}>
                 <div className="flex items-center gap-2 mb-3">
-                  <User className="h-4 w-4 text-[#9B9A97]" />
-                  <h2 className="text-sm font-medium text-[#E5E2E1]">{playerName}</h2>
-                  <span className="text-[10px] text-[#6B6A68]">
+                  <User className="h-4 w-4 text-ui-text-2" />
+                  <h2 className="text-sm font-medium text-ui-text">{playerName}</h2>
+                  <span className="text-[10px] text-ui-text-muted">
                     {playerTargets.length} skill{playerTargets.length > 1 ? "s" : ""}
                   </span>
                 </div>

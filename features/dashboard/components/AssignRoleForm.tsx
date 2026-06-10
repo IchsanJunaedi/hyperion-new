@@ -110,7 +110,7 @@ const AssignRoleForm = ({
   }
 
   const selectCls =
-    "h-10 w-full rounded border border-[#2D2D2D] bg-[#191919] px-3 text-sm text-[#E5E2E1] focus:outline-none focus:border-[#4D4D4D] transition appearance-none cursor-pointer";
+    "h-10 w-full rounded border border-ui-border bg-ui-bg px-3 text-sm text-ui-text focus:outline-none focus:border-[#4D4D4D] transition appearance-none cursor-pointer";
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -144,7 +144,7 @@ const AssignRoleForm = ({
             ))}
           </select>
           {availableOrgs.length === 0 && (
-            <p className="mt-1 text-xs text-[#6B6A68]">User ini sudah ada di semua tim.</p>
+            <p className="mt-1 text-xs text-ui-text-muted">User ini sudah ada di semua tim.</p>
           )}
         </Field>
       )}
@@ -196,7 +196,7 @@ const AssignRoleForm = ({
       <button
         type="submit"
         disabled={pending || !selectedUser || !selectedOrg || !selectedRole}
-        className="inline-flex h-9 items-center gap-2 rounded border border-[#2D2D2D] bg-[#252525] px-4 text-xs font-medium text-[#E5E2E1] transition-all hover:bg-[#2D2D2D] hover:border-[#3D3D3D] active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 cursor-pointer"
+        className="inline-flex h-9 items-center gap-2 rounded border border-ui-border bg-ui-elevated px-4 text-xs font-medium text-ui-text transition-all hover:bg-ui-border hover:border-[#3D3D3D] active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 cursor-pointer"
       >
         {pending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
         Assign Role
@@ -217,7 +217,7 @@ function Field({
 }) {
   return (
     <div className="space-y-1.5">
-      <label htmlFor={name} className="text-xs text-[#9B9A97]">
+      <label htmlFor={name} className="text-xs text-ui-text-2">
         {label}
       </label>
       {children}

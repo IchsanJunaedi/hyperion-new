@@ -87,19 +87,19 @@ const SponsorROIDashboard = ({ sponsors }: Props) => {
     : "bg-red-400";
 
   return (
-    <div className="rounded-xl border border-[#2D2D2D] bg-[#1C1C1C] overflow-hidden">
+    <div className="rounded-xl border border-ui-border bg-ui-surface overflow-hidden">
 
       {/* ── Header ───────────────────────────────────────────── */}
-      <div className="flex items-center justify-between border-b border-[#2D2D2D] px-5 py-4">
+      <div className="flex items-center justify-between border-b border-ui-border px-5 py-4">
         <div className="flex items-center gap-2">
           <BarChart3 className="h-4 w-4 text-yellow-400" />
-          <h2 className="text-sm font-semibold text-white">ROI Dashboard</h2>
+          <h2 className="text-sm font-semibold text-ui-text">ROI Dashboard</h2>
         </div>
         <span className="text-[10px] text-white/25 uppercase tracking-widest">Sponsor Analytics</span>
       </div>
 
       {/* ── Top KPI strip ────────────────────────────────────── */}
-      <div className="grid grid-cols-3 divide-x divide-[#2D2D2D] border-b border-[#2D2D2D]">
+      <div className="grid grid-cols-3 divide-x divide-ui-border border-b border-ui-border">
         {/* Completion Rate */}
         <div className="px-5 py-4">
           <p className="text-[10px] uppercase tracking-wider text-white/35 mb-1">Completion Rate</p>
@@ -122,7 +122,7 @@ const SponsorROIDashboard = ({ sponsors }: Props) => {
         {/* Total Deal Value */}
         <div className="px-5 py-4">
           <p className="text-[10px] uppercase tracking-wider text-white/35 mb-1">Total Deal (IDR)</p>
-          <p className="text-2xl font-bold tabular-nums text-white">
+          <p className="text-2xl font-bold tabular-nums text-ui-text">
             {totalIDR > 0 ? formatRupiah(totalIDR) : "—"}
           </p>
           <p className="text-[11px] text-white/30 mt-0.5">{sponsors.length} sponsor total</p>
@@ -141,7 +141,7 @@ const SponsorROIDashboard = ({ sponsors }: Props) => {
         {/* Active Ratio */}
         <div className="px-5 py-4">
           <p className="text-[10px] uppercase tracking-wider text-white/35 mb-1">Sponsor Aktif</p>
-          <p className="text-2xl font-bold tabular-nums text-white">
+          <p className="text-2xl font-bold tabular-nums text-ui-text">
             {activeSponsors.length}
             <span className="text-sm font-normal text-white/30"> / {sponsors.length}</span>
           </p>
@@ -158,7 +158,7 @@ const SponsorROIDashboard = ({ sponsors }: Props) => {
       </div>
 
       {/* ── Body: Deliverable + Expiry ────────────────────────── */}
-      <div className="grid gap-0 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-[#2D2D2D]">
+      <div className="grid gap-0 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-ui-border">
 
         {/* Deliverable Completion per Sponsor */}
         <div className="px-5 py-4 space-y-3">
@@ -277,7 +277,7 @@ const SponsorROIDashboard = ({ sponsors }: Props) => {
 
       {/* ── Value Distribution ───────────────────────────────── */}
       {totalIDR > 0 && (
-        <div className="border-t border-[#2D2D2D] px-5 py-4 space-y-3">
+        <div className="border-t border-ui-border px-5 py-4 space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5">
               <TrendingUp className="h-3.5 w-3.5 text-blue-400" />
@@ -318,7 +318,7 @@ const SponsorROIDashboard = ({ sponsors }: Props) => {
       {/* ── Completion footer callout ─────────────────────────── */}
       {overallPct !== null && (
         <div className={cn(
-          "border-t border-[#2D2D2D] px-5 py-3 flex items-center gap-3",
+          "border-t border-ui-border px-5 py-3 flex items-center gap-3",
           overallPct >= 80 ? "bg-green-500/5" : overallPct >= 50 ? "bg-yellow-500/5" : "bg-red-500/5"
         )}>
           {overallPct >= 80

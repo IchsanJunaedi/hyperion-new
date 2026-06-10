@@ -56,13 +56,13 @@ const FinancePageClient = ({
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#E5E2E1]">Kas Tim</h1>
-          <p className="mt-1 text-sm text-[#9B9A97]">Pencatatan keuangan organisasi.</p>
+          <h1 className="text-2xl font-bold text-ui-text">Kas Tim</h1>
+          <p className="mt-1 text-sm text-ui-text-2">Pencatatan keuangan organisasi.</p>
         </div>
         <button
           type="button"
           onClick={() => setShowForm(true)}
-          className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-md bg-[#E5E2E1] px-4 text-sm font-semibold text-[#191919] transition-colors hover:bg-white"
+          className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-md bg-ui-text px-4 text-sm font-semibold text-ui-bg transition-colors hover:bg-white"
         >
           <Plus className="h-4 w-4" />
           Tambah
@@ -71,21 +71,21 @@ const FinancePageClient = ({
 
       {/* Month navigator */}
       <div className="flex items-center gap-3">
-        <div className="inline-flex items-center overflow-hidden rounded-lg border border-[#2D2D2D] bg-[#202020]">
+        <div className="inline-flex items-center overflow-hidden rounded-lg border border-ui-border bg-ui-surface">
           <button
             type="button"
             onClick={prevMonth}
-            className="cursor-pointer p-2.5 text-[#9B9A97] transition-colors hover:bg-[#2C2C2C] hover:text-[#E5E2E1]"
+            className="cursor-pointer p-2.5 text-ui-text-2 transition-colors hover:bg-ui-hover hover:text-ui-text"
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
-          <span className="min-w-[148px] px-3 py-2 text-center text-sm font-medium text-[#E5E2E1]">
+          <span className="min-w-[148px] px-3 py-2 text-center text-sm font-medium text-ui-text">
             {MONTHS[month - 1]} {year}
           </span>
           <button
             type="button"
             onClick={nextMonth}
-            className="cursor-pointer p-2.5 text-[#9B9A97] transition-colors hover:bg-[#2C2C2C] hover:text-[#E5E2E1]"
+            className="cursor-pointer p-2.5 text-ui-text-2 transition-colors hover:bg-ui-hover hover:text-ui-text"
           >
             <ChevronRight className="h-4 w-4" />
           </button>
@@ -101,10 +101,10 @@ const FinancePageClient = ({
       {/* Transaction list */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-xs font-semibold uppercase tracking-widest text-[#6B6A68]">
+          <h2 className="text-xs font-semibold uppercase tracking-widest text-ui-text-muted">
             Riwayat Transaksi
           </h2>
-          <span className="text-xs text-[#6B6A68]">{rows.length} transaksi</span>
+          <span className="text-xs text-ui-text-muted">{rows.length} transaksi</span>
         </div>
         <FinanceTable
           rows={rows}

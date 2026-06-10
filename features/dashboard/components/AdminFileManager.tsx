@@ -112,7 +112,7 @@ const AdminFileManager = ({
       {/* Header Panel */}
       <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center bg-zinc-900/40 border border-white/5 rounded-2xl p-5">
         <div className="space-y-1">
-          <h2 className="text-lg font-bold text-white tracking-tight">Total File Platform</h2>
+          <h2 className="text-lg font-bold text-ui-text tracking-tight">Total File Platform</h2>
           <p className="text-xs text-white/50">Kelola semua file yang diupload oleh tim esports di Hyperion.</p>
         </div>
         <div className="text-xs font-semibold px-3.5 py-1.5 rounded-full border border-white/5 bg-zinc-900/60 text-yellow-400">
@@ -161,7 +161,7 @@ const AdminFileManager = ({
         <div className="overflow-x-auto rounded-2xl border border-white/10 bg-zinc-900/40 shadow-xl shadow-black/20">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-white/5 text-[11px] font-bold uppercase tracking-wider text-[#6B6A68] bg-zinc-900/20">
+              <tr className="border-b border-white/5 text-[11px] font-bold uppercase tracking-wider text-ui-text-muted bg-zinc-900/20">
                 <th className="px-5 py-4">Nama File</th>
                 <th className="px-5 py-4">Tim / Organisasi</th>
                 <th className="px-5 py-4">Ukuran</th>
@@ -231,7 +231,7 @@ const AdminFileManager = ({
                           type="button"
                           onClick={() => handleDownload(file.id, file.storage_path, file.file_name)}
                           disabled={downloadingId === file.id}
-                          className="rounded-lg p-1.5 text-white/40 hover:bg-white/5 hover:text-white transition disabled:opacity-40"
+                          className="rounded-lg p-1.5 text-white/40 hover:bg-white/5 hover:text-ui-text transition disabled:opacity-40"
                           title="Unduh file"
                         >
                           {downloadingId === file.id ? (

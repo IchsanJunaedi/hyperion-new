@@ -68,8 +68,8 @@ const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
           ref={localRef}
           type="number"
           className={cn(
-            "flex h-10 w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 py-2 text-sm text-[#E5E2E1]",
-            "placeholder:text-white/20 focus:border-[#9B9A97] focus:outline-none disabled:cursor-not-allowed disabled:opacity-50",
+            "flex h-10 w-full rounded-md border border-ui-border bg-ui-bg px-3 py-2 text-sm text-ui-text",
+            "placeholder:text-ui-text-muted focus:border-ui-text-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50",
             "pr-14", // Make room for custom stepper buttons + potential suffix
             className
           )}
@@ -95,14 +95,14 @@ const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
         />
         {/* Custom Stepper Buttons */}
         <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-1.5 pr-1">
-          {suffix && <span className="text-xs text-[#6B6A68] select-none mr-0.5">{suffix}</span>}
-          <div className="flex flex-col border-l border-[#2D2D2D]/60 pl-1.5">
+          {suffix && <span className="text-xs text-ui-text-muted select-none mr-0.5">{suffix}</span>}
+          <div className="flex flex-col border-l border-ui-border/60 pl-1.5">
             <button
               type="button"
               tabIndex={-1}
               onClick={() => handleStep("up")}
               disabled={props.disabled}
-              className="flex items-center justify-center p-0.5 text-[#6B6A68] hover:text-[#E5E2E1] transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+              className="flex items-center justify-center p-0.5 text-ui-text-muted hover:text-ui-text transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <ChevronUp className="h-3.5 w-3.5" />
             </button>
@@ -111,7 +111,7 @@ const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
               tabIndex={-1}
               onClick={() => handleStep("down")}
               disabled={props.disabled}
-              className="flex items-center justify-center p-0.5 text-[#6B6A68] hover:text-[#E5E2E1] transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+              className="flex items-center justify-center p-0.5 text-ui-text-muted hover:text-ui-text transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <ChevronDown className="h-3.5 w-3.5" />
             </button>

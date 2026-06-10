@@ -19,7 +19,7 @@ const ICON_COLOR: Record<string, string> = {
   overdue: "text-red-400",
   today: "text-orange-400",
   this_week: "text-yellow-400",
-  later: "text-[#6B6A68]",
+  later: "text-ui-text-muted",
 };
 const TYPE_ICON: Record<SmartTodoType, React.ComponentType<{ className?: string }>> = {
   contract_expiry: AlertCircle,
@@ -55,18 +55,18 @@ const SmartTodoCard = ({ todo, orgId, revalidatePaths }: Props) => {
   return (
     <div
       className={cn(
-        "flex items-center gap-3 rounded-r border-l-2 bg-[#202020] px-4 py-3 transition hover:bg-[#252525]",
+        "flex items-center gap-3 rounded-r border-l-2 bg-ui-surface px-4 py-3 transition hover:bg-ui-elevated",
         BORDER[todo.urgency] ?? "border-l-zinc-600",
         dismissing && "opacity-40 pointer-events-none",
       )}
     >
-      <Icon className={cn("h-4 w-4 shrink-0", ICON_COLOR[todo.urgency] ?? "text-[#6B6A68]")} />
-      <p className="min-w-0 flex-1 truncate text-sm text-[#E5E2E1]">{todo.title}</p>
+      <Icon className={cn("h-4 w-4 shrink-0", ICON_COLOR[todo.urgency] ?? "text-ui-text-muted")} />
+      <p className="min-w-0 flex-1 truncate text-sm text-ui-text">{todo.title}</p>
       <div className="flex shrink-0 items-center gap-1">
         {isNavigable && (
           <Link
             href={todo.navigate_to}
-            className="flex cursor-pointer items-center gap-1 rounded px-2 py-1 text-xs text-[#9B9A97] transition hover:bg-[#2C2C2C] hover:text-[#D4D4D4]"
+            className="flex cursor-pointer items-center gap-1 rounded px-2 py-1 text-xs text-ui-text-2 transition hover:bg-ui-hover hover:text-ui-text-dim"
           >
             Buka <ExternalLink className="h-3 w-3" />
           </Link>
@@ -76,7 +76,7 @@ const SmartTodoCard = ({ todo, orgId, revalidatePaths }: Props) => {
           onClick={handleDismiss}
           disabled={dismissing}
           aria-label="Dismiss"
-          className="cursor-pointer rounded p-1 text-[#6B6A68] transition hover:bg-[#2C2C2C] hover:text-[#9B9A97]"
+          className="cursor-pointer rounded p-1 text-ui-text-muted transition hover:bg-ui-hover hover:text-ui-text-2"
         >
           <X className="h-3.5 w-3.5" />
         </button>

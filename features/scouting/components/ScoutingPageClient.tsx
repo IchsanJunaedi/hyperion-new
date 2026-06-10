@@ -43,20 +43,20 @@ const ScoutingPageClient = ({ orgSlug, profiles }: ScoutingPageClientProps) => {
     <>
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white sm:text-3xl">Scouting Lawan</h1>
-          <p className="mt-1 text-sm text-[#9B9A97]">
+          <h1 className="text-2xl font-bold text-ui-text sm:text-3xl">Scouting Lawan</h1>
+          <p className="mt-1 text-sm text-ui-text-2">
             Database profil tim lawan — rank, hero pool, playstyle, dan kelemahan.
           </p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
           <div className="relative">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[#6B6A68]" />
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-ui-text-muted" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Cari tim lawan..."
-              className="h-10 w-44 rounded-md border border-[#2D2D2D] bg-[#191919] pl-9 pr-3 text-sm text-[#E5E2E1] placeholder:text-[#6B6A68] focus:border-[#9B9A97] focus:outline-none focus:w-56 transition-all"
+              className="h-10 w-44 rounded-md border border-ui-border bg-ui-bg pl-9 pr-3 text-sm text-ui-text placeholder:text-ui-text-muted focus:border-ui-text-2 focus:outline-none focus:w-56 transition-all"
             />
           </div>
           <button
@@ -71,21 +71,21 @@ const ScoutingPageClient = ({ orgSlug, profiles }: ScoutingPageClientProps) => {
       </header>
 
       {profiles.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-[#2D2D2D] bg-[#202020]/40 p-12 text-center">
-          <Radar className="mx-auto h-8 w-8 text-[#6B6A68]" />
-          <p className="mt-3 text-sm text-[#9B9A97]">Belum ada profil lawan tersimpan.</p>
+        <div className="rounded-xl border border-dashed border-ui-border bg-ui-surface/40 p-12 text-center">
+          <Radar className="mx-auto h-8 w-8 text-ui-text-muted" />
+          <p className="mt-3 text-sm text-ui-text-2">Belum ada profil lawan tersimpan.</p>
           <button
             type="button"
             onClick={openCreate}
-            className="mt-4 inline-flex h-9 items-center rounded-md border border-white/15 px-4 text-sm font-medium text-white transition hover:bg-white/5 cursor-pointer"
+            className="mt-4 inline-flex h-9 items-center rounded-md border border-white/15 px-4 text-sm font-medium text-ui-text transition hover:bg-white/5 cursor-pointer"
           >
             Tambah profil pertama
           </button>
         </div>
       ) : filtered.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-[#2D2D2D] bg-[#202020]/40 p-10 text-center">
-          <Search className="mx-auto h-7 w-7 text-[#6B6A68]" />
-          <p className="mt-3 text-sm text-[#9B9A97]">
+        <div className="rounded-xl border border-dashed border-ui-border bg-ui-surface/40 p-10 text-center">
+          <Search className="mx-auto h-7 w-7 text-ui-text-muted" />
+          <p className="mt-3 text-sm text-ui-text-2">
             Tidak ada tim lawan yang cocok dengan &ldquo;{search}&rdquo;.
           </p>
         </div>

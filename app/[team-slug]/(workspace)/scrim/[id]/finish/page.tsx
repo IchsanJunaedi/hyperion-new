@@ -42,7 +42,7 @@ export default async function FinishScrimPage({ params }: FinishScrimPageProps) 
 
       {/* Centered title */}
       <div className="mx-auto max-w-2xl w-full space-y-1">
-        <h1 className="text-2xl font-bold text-white sm:text-3xl tracking-tight">
+        <h1 className="text-2xl font-bold text-ui-text sm:text-3xl tracking-tight">
           Selesai Pertandingan
         </h1>
         <p className="text-sm text-white/50">

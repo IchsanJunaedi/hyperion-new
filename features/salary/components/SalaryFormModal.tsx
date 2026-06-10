@@ -30,7 +30,7 @@ const ROLE_BADGES: Record<string, { text: string; bg: string }> = {
   manager: { text: "text-emerald-400", bg: "bg-emerald-400/10" },
   coach: { text: "text-sky-400", bg: "bg-sky-400/10" },
   captain: { text: "text-violet-400", bg: "bg-violet-400/10" },
-  member: { text: "text-[#E5E2E1]", bg: "bg-white/5" },
+  member: { text: "text-ui-text", bg: "bg-white/5" },
 };
 
 function formatSalaryDisplay(raw: string): string {
@@ -140,14 +140,14 @@ const SalaryFormModal = ({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-md rounded-xl border border-[#2D2D2D] bg-[#202020] p-6 shadow-2xl"
+        className="w-full max-w-md rounded-xl border border-ui-border bg-ui-surface p-6 shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-5">
-          <h3 className="text-base font-bold text-[#E5E2E1]">
+          <h3 className="text-base font-bold text-ui-text">
             {isEdit ? "Edit Kontrak" : "Tambah Kontrak Player"}
           </h3>
-          <button type="button" onClick={onClose} className="text-[#9B9A97] hover:text-[#E5E2E1]">
+          <button type="button" onClick={onClose} className="text-ui-text-2 hover:text-ui-text">
             <X className="h-4 w-4" />
           </button>
         </div>
@@ -155,7 +155,7 @@ const SalaryFormModal = ({
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Player custom dropdown */}
           <div>
-            <label className="block text-xs text-[#9B9A97] mb-1">
+            <label className="block text-xs text-ui-text-2 mb-1">
               Player <span className="text-red-400">*</span>
             </label>
             <div ref={dropdownRef} className="relative">
@@ -163,48 +163,48 @@ const SalaryFormModal = ({
                 type="button"
                 disabled={isEdit}
                 onClick={() => setDropdownOpen((v) => !v)}
-                className="h-10 w-full flex items-center justify-between rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-sm text-[#E5E2E1] focus:border-[#9B9A97] focus:outline-none cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                className="h-10 w-full flex items-center justify-between rounded-md border border-ui-border bg-ui-bg px-3 text-sm text-ui-text focus:border-ui-text-2 focus:outline-none cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {selectedMember ? (
                   <div className="flex-1 flex items-center justify-between min-w-0 mr-2">
                     <span className="truncate pr-2 text-left">
                       {selectedMember.display_name ?? selectedMember.user_id}{" "}
-                      <span className="text-[#6B6A68] text-xs font-normal">
+                      <span className="text-ui-text-muted text-xs font-normal">
                         {selectedMember.org_name ? `(${selectedMember.org_name})` : ""}
                       </span>
                     </span>
                     {selectedMember.role && (
                       <span className={`inline-flex items-center rounded-full px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider shrink-0 ${
-                        (ROLE_BADGES[selectedMember.role.toLowerCase()] || { text: "text-[#9B9A97]", bg: "bg-white/5" }).text
+                        (ROLE_BADGES[selectedMember.role.toLowerCase()] || { text: "text-ui-text-2", bg: "bg-white/5" }).text
                       } ${
-                        (ROLE_BADGES[selectedMember.role.toLowerCase()] || { text: "text-[#9B9A97]", bg: "bg-white/5" }).bg
+                        (ROLE_BADGES[selectedMember.role.toLowerCase()] || { text: "text-ui-text-2", bg: "bg-white/5" }).bg
                       }`}>
                         {selectedMember.role}
                       </span>
                     )}
                   </div>
                 ) : (
-                  <span className="text-[#6B6A68]">— Pilih player —</span>
+                  <span className="text-ui-text-muted">— Pilih player —</span>
                 )}
-                <ChevronDown className={`h-4 w-4 text-[#6B6A68] shrink-0 transition-transform ${dropdownOpen ? "rotate-180" : ""}`} />
+                <ChevronDown className={`h-4 w-4 text-ui-text-muted shrink-0 transition-transform ${dropdownOpen ? "rotate-180" : ""}`} />
               </button>
 
               {dropdownOpen && (
-                <div className="absolute left-0 top-full z-50 mt-1 w-full rounded-lg border border-[#2D2D2D] bg-[#202020] shadow-xl max-h-60 flex flex-col overflow-hidden">
-                  <div className="p-2 border-b border-[#2D2D2D] shrink-0 bg-[#202020]">
+                <div className="absolute left-0 top-full z-50 mt-1 w-full rounded-lg border border-ui-border bg-ui-surface shadow-xl max-h-60 flex flex-col overflow-hidden">
+                  <div className="p-2 border-b border-ui-border shrink-0 bg-ui-surface">
                     <input
                       type="text"
                       placeholder="Cari player..."
                       autoFocus
                       value={playerQuery}
                       onChange={(e) => setPlayerQuery(e.target.value)}
-                      className="h-8 w-full rounded border border-[#2D2D2D] bg-[#191919] px-2.5 text-xs text-[#E5E2E1] placeholder-[#6B6A68] focus:border-[#9B9A97] focus:outline-none"
+                      className="h-8 w-full rounded border border-ui-border bg-ui-bg px-2.5 text-xs text-ui-text placeholder-ui-text-muted focus:border-ui-text-2 focus:outline-none"
                       onClick={(e) => e.stopPropagation()}
                     />
                   </div>
-                  <div className="overflow-y-auto flex-1 py-1 bg-[#202020] scroll-premium">
+                  <div className="overflow-y-auto flex-1 py-1 bg-ui-surface scroll-premium">
                     {filteredDropdownMembers.length === 0 ? (
-                      <p className="px-3 py-2 text-xs text-[#6B6A68]">Tidak ada player yang cocok</p>
+                      <p className="px-3 py-2 text-xs text-ui-text-muted">Tidak ada player yang cocok</p>
                     ) : (
                       filteredDropdownMembers.map((m) => (
                         <button
@@ -216,27 +216,27 @@ const SalaryFormModal = ({
                             setDropdownOpen(false);
                             setPlayerQuery("");
                           }}
-                          className="flex w-full items-center justify-between px-3 py-2 text-sm text-[#E5E2E1] hover:bg-[#2C2C2C] cursor-pointer"
+                          className="flex w-full items-center justify-between px-3 py-2 text-sm text-ui-text hover:bg-ui-hover cursor-pointer"
                         >
                           <div className="flex-1 flex items-center justify-between min-w-0 mr-2">
                             <span className="truncate pr-2 text-left">
                               {m.display_name ?? m.user_id}{" "}
-                              <span className="text-[#6B6A68] text-xs font-normal">
+                              <span className="text-ui-text-muted text-xs font-normal">
                                 {m.org_name ? `(${m.org_name})` : ""}
                               </span>
                             </span>
                             {m.role && (
                               <span className={`inline-flex items-center rounded-full px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider shrink-0 ${
-                                (ROLE_BADGES[m.role.toLowerCase()] || { text: "text-[#9B9A97]", bg: "bg-white/5" }).text
+                                (ROLE_BADGES[m.role.toLowerCase()] || { text: "text-ui-text-2", bg: "bg-white/5" }).text
                               } ${
-                                (ROLE_BADGES[m.role.toLowerCase()] || { text: "text-[#9B9A97]", bg: "bg-white/5" }).bg
+                                (ROLE_BADGES[m.role.toLowerCase()] || { text: "text-ui-text-2", bg: "bg-white/5" }).bg
                               }`}>
                                 {m.role}
                               </span>
                             )}
                           </div>
                           {selectedUserId === m.user_id && selectedOrgId === m.organization_id ? (
-                            <Check className="h-3.5 w-3.5 text-[#9B9A97] shrink-0" />
+                            <Check className="h-3.5 w-3.5 text-ui-text-2 shrink-0" />
                           ) : (
                             <div className="h-3.5 w-3.5 shrink-0" />
                           )}
@@ -254,7 +254,7 @@ const SalaryFormModal = ({
 
           {/* Salary */}
           <div>
-            <label className="block text-xs text-[#9B9A97] mb-1">
+            <label className="block text-xs text-ui-text-2 mb-1">
               Gaji per Bulan (Rp) <span className="text-red-400">*</span>
             </label>
             <input
@@ -268,13 +268,13 @@ const SalaryFormModal = ({
                 setSalaryRaw(digits);
                 setSalaryDisplay(formatSalaryDisplay(e.target.value));
               }}
-              className="h-10 w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-sm text-[#E5E2E1] focus:border-[#9B9A97] focus:outline-none"
+              className="h-10 w-full rounded-md border border-ui-border bg-ui-bg px-3 text-sm text-ui-text focus:border-ui-text-2 focus:outline-none"
             />
           </div>
 
           {/* Bonus percentage */}
           <div>
-            <label className="block text-xs text-[#9B9A97] mb-1">
+            <label className="block text-xs text-ui-text-2 mb-1">
               Persentase Bonus Turnamen (%)
             </label>
             <NumberInput
@@ -286,7 +286,7 @@ const SalaryFormModal = ({
               placeholder="0"
               suffix="%"
             />
-            <p className="mt-1 text-[10px] text-[#6B6A68]">
+            <p className="mt-1 text-[10px] text-ui-text-muted">
               Jatah otomatis saat tim menang turnamen berhadiah. 0 = tidak dapat bonus.
             </p>
           </div>
@@ -294,7 +294,7 @@ const SalaryFormModal = ({
           {/* Dates */}
           <div className="space-y-3">
             <div>
-              <label className="block text-xs text-[#9B9A97] mb-1">
+              <label className="block text-xs text-ui-text-2 mb-1">
                 Tanggal Mulai <span className="text-red-400">*</span>
               </label>
               <input
@@ -306,30 +306,30 @@ const SalaryFormModal = ({
                   setStartDate(e.target.value);
                   if (endDate && e.target.value > endDate) setEndDate("");
                 }}
-                className="h-10 w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-sm text-[#E5E2E1] focus:border-[#9B9A97] focus:outline-none"
+                className="h-10 w-full rounded-md border border-ui-border bg-ui-bg px-3 text-sm text-ui-text focus:border-ui-text-2 focus:outline-none"
               />
             </div>
             <div>
-              <label className="block text-xs text-[#9B9A97] mb-1">Tanggal Berakhir</label>
+              <label className="block text-xs text-ui-text-2 mb-1">Tanggal Berakhir</label>
               <input
                 name="end_date"
                 type="date"
                 value={endDate}
                 min={startDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="h-10 w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-sm text-[#E5E2E1] focus:border-[#9B9A97] focus:outline-none"
+                className="h-10 w-full rounded-md border border-ui-border bg-ui-bg px-3 text-sm text-ui-text focus:border-ui-text-2 focus:outline-none"
               />
             </div>
           </div>
 
           {/* Notes */}
           <div>
-            <label className="block text-xs text-[#9B9A97] mb-1">Catatan</label>
+            <label className="block text-xs text-ui-text-2 mb-1">Catatan</label>
             <textarea
               name="notes"
               rows={2}
               defaultValue={contract?.notes ?? ""}
-              className="w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 py-2 text-sm text-[#E5E2E1] focus:border-[#9B9A97] focus:outline-none resize-none"
+              className="w-full rounded-md border border-ui-border bg-ui-bg px-3 py-2 text-sm text-ui-text focus:border-ui-text-2 focus:outline-none resize-none"
             />
           </div>
 
@@ -343,14 +343,14 @@ const SalaryFormModal = ({
             <button
               type="button"
               onClick={onClose}
-              className="h-9 rounded-md border border-[#2D2D2D] px-4 text-sm text-[#9B9A97] hover:bg-[#2C2C2C] cursor-pointer"
+              className="h-9 rounded-md border border-ui-border px-4 text-sm text-ui-text-2 hover:bg-ui-hover cursor-pointer"
             >
               Batal
             </button>
             <button
               type="submit"
               disabled={pending || !selectedUserId}
-              className="inline-flex h-9 items-center gap-2 rounded-md bg-[#E5E2E1] px-4 text-sm font-semibold text-[#191919] hover:bg-white disabled:opacity-50 cursor-pointer"
+              className="inline-flex h-9 items-center gap-2 rounded-md bg-ui-text px-4 text-sm font-semibold text-ui-bg hover:bg-white disabled:opacity-50 cursor-pointer"
             >
               {pending && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
               {isEdit ? "Simpan" : "Tambah Kontrak"}

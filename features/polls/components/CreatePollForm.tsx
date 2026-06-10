@@ -105,7 +105,7 @@ const CreatePollForm = ({ orgSlug, onDone }: CreatePollFormProps) => {
   }
 
   return (
-    <div className="rounded-xl border border-[#2D2D2D] bg-[#202020] p-4 space-y-3">
+    <div className="rounded-xl border border-ui-border bg-ui-surface p-4 space-y-3">
       {/* Type toggle */}
       <div className="flex gap-1.5">
         <button
@@ -115,7 +115,7 @@ const CreatePollForm = ({ orgSlug, onDone }: CreatePollFormProps) => {
             "inline-flex h-7 items-center gap-1.5 rounded-md px-3 text-xs font-medium transition cursor-pointer border",
             pollType === "regular"
               ? "border-purple-500/50 bg-purple-500/10 text-purple-400"
-              : "border-[#2D2D2D] text-[#6B6A68] hover:text-[#9B9A97]",
+              : "border-ui-border text-ui-text-muted hover:text-ui-text-2",
           )}
         >
           Poll Biasa
@@ -127,7 +127,7 @@ const CreatePollForm = ({ orgSlug, onDone }: CreatePollFormProps) => {
             "inline-flex h-7 items-center gap-1.5 rounded-md px-3 text-xs font-medium transition cursor-pointer border",
             pollType === "availability"
               ? "border-teal-500/50 bg-teal-500/10 text-teal-400"
-              : "border-[#2D2D2D] text-[#6B6A68] hover:text-[#9B9A97]",
+              : "border-ui-border text-ui-text-muted hover:text-ui-text-2",
           )}
         >
           <CalendarCheck2 className="h-3 w-3" />
@@ -140,25 +140,25 @@ const CreatePollForm = ({ orgSlug, onDone }: CreatePollFormProps) => {
         onChange={(e) => setQuestion(e.target.value)}
         placeholder={pollType === "availability" ? "Siapa bisa kapan? (e.g. Scrim minggu ini)" : "Pertanyaan poll..."}
         maxLength={500}
-        className="h-9 w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-sm text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none"
+        className="h-9 w-full rounded-md border border-ui-border bg-ui-bg px-3 text-sm text-ui-text focus:border-yellow-400/50 focus:outline-none"
       />
 
       {pollType === "regular" ? (
         <div className="space-y-2">
-          <label className="text-xs text-[#9B9A97]">Opsi jawaban</label>
+          <label className="text-xs text-ui-text-2">Opsi jawaban</label>
           {options.map((opt, i) => (
             <div key={i} className="flex items-center gap-2">
               <input
                 value={opt}
                 onChange={(e) => updateOption(i, e.target.value)}
                 placeholder={`Opsi ${i + 1}`}
-                className="h-8 flex-1 rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-xs text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none"
+                className="h-8 flex-1 rounded-md border border-ui-border bg-ui-bg px-3 text-xs text-ui-text focus:border-yellow-400/50 focus:outline-none"
               />
               {options.length > 2 && (
                 <button
                   type="button"
                   onClick={() => removeOption(i)}
-                  className="h-8 w-8 rounded-md border border-[#2D2D2D] grid place-items-center text-[#6B6A68] hover:text-red-400 hover:border-red-400/30 cursor-pointer"
+                  className="h-8 w-8 rounded-md border border-ui-border grid place-items-center text-ui-text-muted hover:text-red-400 hover:border-red-400/30 cursor-pointer"
                 >
                   <Minus className="h-3 w-3" />
                 </button>
@@ -169,7 +169,7 @@ const CreatePollForm = ({ orgSlug, onDone }: CreatePollFormProps) => {
             <button
               type="button"
               onClick={addOption}
-              className="inline-flex items-center gap-1 text-xs text-[#9B9A97] hover:text-[#E5E2E1] cursor-pointer"
+              className="inline-flex items-center gap-1 text-xs text-ui-text-2 hover:text-ui-text cursor-pointer"
             >
               <Plus className="h-3 w-3" />
               Tambah opsi
@@ -178,20 +178,20 @@ const CreatePollForm = ({ orgSlug, onDone }: CreatePollFormProps) => {
         </div>
       ) : (
         <div className="space-y-2">
-          <label className="text-xs text-[#9B9A97]">Slot waktu</label>
+          <label className="text-xs text-ui-text-2">Slot waktu</label>
           {slots.map((slot, i) => (
             <div key={i} className="flex items-center gap-2">
               <input
                 type="datetime-local"
                 value={slot}
                 onChange={(e) => updateSlot(i, e.target.value)}
-                className="h-8 flex-1 rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-xs text-[#E5E2E1] focus:border-teal-400/50 focus:outline-none"
+                className="h-8 flex-1 rounded-md border border-ui-border bg-ui-bg px-3 text-xs text-ui-text focus:border-teal-400/50 focus:outline-none"
               />
               {slots.length > 1 && (
                 <button
                   type="button"
                   onClick={() => removeSlot(i)}
-                  className="h-8 w-8 rounded-md border border-[#2D2D2D] grid place-items-center text-[#6B6A68] hover:text-red-400 hover:border-red-400/30 cursor-pointer"
+                  className="h-8 w-8 rounded-md border border-ui-border grid place-items-center text-ui-text-muted hover:text-red-400 hover:border-red-400/30 cursor-pointer"
                 >
                   <Minus className="h-3 w-3" />
                 </button>
@@ -202,7 +202,7 @@ const CreatePollForm = ({ orgSlug, onDone }: CreatePollFormProps) => {
             <button
               type="button"
               onClick={addSlot}
-              className="inline-flex items-center gap-1 text-xs text-[#9B9A97] hover:text-[#E5E2E1] cursor-pointer"
+              className="inline-flex items-center gap-1 text-xs text-ui-text-2 hover:text-ui-text cursor-pointer"
             >
               <Plus className="h-3 w-3" />
               Tambah slot
@@ -212,12 +212,12 @@ const CreatePollForm = ({ orgSlug, onDone }: CreatePollFormProps) => {
       )}
 
       <div>
-        <label className="text-xs text-[#9B9A97] mb-1 block">Batas waktu (opsional)</label>
+        <label className="text-xs text-ui-text-2 mb-1 block">Batas waktu (opsional)</label>
         <input
           type="datetime-local"
           value={expiresAt}
           onChange={(e) => setExpiresAt(e.target.value)}
-          className="h-8 w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-xs text-[#E5E2E1] focus:border-yellow-400/50 focus:outline-none"
+          className="h-8 w-full rounded-md border border-ui-border bg-ui-bg px-3 text-xs text-ui-text focus:border-yellow-400/50 focus:outline-none"
         />
       </div>
 
@@ -240,7 +240,7 @@ const CreatePollForm = ({ orgSlug, onDone }: CreatePollFormProps) => {
           <button
             type="button"
             onClick={onDone}
-            className="h-8 rounded-md border border-[#2D2D2D] px-3 text-xs text-[#9B9A97] hover:bg-[#2C2C2C] cursor-pointer"
+            className="h-8 rounded-md border border-ui-border px-3 text-xs text-ui-text-2 hover:bg-ui-hover cursor-pointer"
           >
             Batal
           </button>

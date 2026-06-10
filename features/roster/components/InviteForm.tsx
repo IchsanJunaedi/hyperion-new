@@ -97,7 +97,7 @@ const InviteForm = ({
   if (inviteUrl) {
     return (
       <div className="space-y-3">
-        <p className="text-sm font-semibold text-white">Link undangan siap!</p>
+        <p className="text-sm font-semibold text-ui-text">Link undangan siap!</p>
         <p className="text-xs text-white/60">
           Bagikan link ini kepada calon member. Link berlaku 7 hari.
         </p>
@@ -111,7 +111,7 @@ const InviteForm = ({
               navigator.clipboard.writeText(inviteUrl);
               notify.success("Link disalin ke clipboard");
             }}
-            className="shrink-0 rounded-md p-1 text-white/40 transition hover:bg-white/10 hover:text-white"
+            className="shrink-0 rounded-md p-1 text-white/40 transition hover:bg-white/10 hover:text-ui-text"
             title="Salin link"
           >
             <Copy className="h-4 w-4" />
@@ -123,7 +123,7 @@ const InviteForm = ({
             setInviteUrl(null);
             onClose();
           }}
-          className="text-xs text-white/50 underline-offset-2 hover:text-white hover:underline"
+          className="text-xs text-white/50 underline-offset-2 hover:text-ui-text hover:underline"
         >
           Tutup
         </button>
@@ -134,11 +134,11 @@ const InviteForm = ({
   return (
     <form onSubmit={handleSubmit} className="space-y-3">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-white">Undang Member Baru</h3>
+        <h3 className="text-sm font-semibold text-ui-text">Undang Member Baru</h3>
         <button
           type="button"
           onClick={onClose}
-          className="rounded-md p-1 text-white/40 transition hover:bg-white/10 hover:text-white"
+          className="rounded-md p-1 text-white/40 transition hover:bg-white/10 hover:text-ui-text"
         >
           <X className="h-4 w-4" />
         </button>
@@ -171,7 +171,7 @@ const InviteForm = ({
                     className={`flex w-full items-center rounded px-3 py-1.5 text-left text-sm transition ${
                       selectedDivisionId === d.id
                         ? "bg-yellow-400/10 text-yellow-400 font-semibold"
-                        : "text-white/80 hover:bg-white/5 hover:text-white"
+                        : "text-white/80 hover:bg-white/5 hover:text-ui-text"
                     }`}
                   >
                     {d.name}
@@ -210,7 +210,7 @@ const InviteForm = ({
                   className={`flex w-full items-center rounded px-3 py-1.5 text-left text-sm transition ${
                     selectedRole === r.value
                       ? "bg-yellow-400/10 text-yellow-400 font-semibold"
-                      : "text-white/80 hover:bg-white/5 hover:text-white"
+                      : "text-white/80 hover:bg-white/5 hover:text-ui-text"
                   }`}
                 >
                   {r.label}

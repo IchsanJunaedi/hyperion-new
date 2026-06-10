@@ -150,7 +150,7 @@ function FilterSection({ visibilityFilter, onFilterChange }: FilterSectionProps)
           className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors border ${
             visibilityFilter === filter.value
               ? "bg-yellow-400/10 text-yellow-400 border-yellow-400/30"
-              : "bg-white/5 text-white/50 border-white/10 hover:bg-white/10 hover:text-white"
+              : "bg-white/5 text-white/50 border-white/10 hover:bg-white/10 hover:text-ui-text"
           }`}
         >
           {filter.label}
@@ -226,7 +226,7 @@ export default function CalendarViewSettingsPage() {
       {/* Konten Terpusat */}
       <div className="mx-auto max-w-2xl w-full space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-white sm:text-3xl tracking-tight">
+          <h1 className="text-2xl font-bold text-ui-text sm:text-3xl tracking-tight">
             Pengaturan Tampilan
           </h1>
           <p className="text-sm text-white/50 mt-1">
@@ -243,7 +243,7 @@ export default function CalendarViewSettingsPage() {
           ].map((stat) => (
             <div key={stat.label} className="rounded-2xl border border-white/10 bg-zinc-900/40 p-4 shadow-xl shadow-black/20">
               <p className="text-xs text-white/40">{stat.label}</p>
-              <p className="text-2xl font-bold text-white mt-2">{stat.value}</p>
+              <p className="text-2xl font-bold text-ui-text mt-2">{stat.value}</p>
             </div>
           ))}
         </div>

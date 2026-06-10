@@ -16,7 +16,7 @@ interface ScrimRequestListProps {
 const ScrimRequestList = ({ requests, type, orgSlug }: ScrimRequestListProps) => {
   if (requests.length === 0) {
     return (
-      <p className="text-sm text-[#6B6A68] py-4 text-center">
+      <p className="text-sm text-ui-text-muted py-4 text-center">
         {type === "incoming" ? "Belum ada request masuk." : "Belum ada request keluar."}
       </p>
     );
@@ -78,7 +78,7 @@ function ScrimRequestCard({
     : null;
 
   return (
-    <div className="rounded-lg border border-[#2D2D2D] bg-[#202020] p-4">
+    <div className="rounded-lg border border-ui-border bg-ui-surface p-4">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
@@ -86,15 +86,15 @@ function ScrimRequestCard({
               // eslint-disable-next-line @next/next/no-img-element
               <img src={otherOrg.logo_url} alt="" className="h-5 w-5 rounded object-cover" />
             ) : (
-              <div className="h-5 w-5 rounded bg-[#353434] grid place-items-center text-[10px] font-semibold text-[#E5E2E1]">
+              <div className="h-5 w-5 rounded bg-ui-hover-strong grid place-items-center text-[10px] font-semibold text-ui-text">
                 {otherOrg?.name?.slice(0, 1).toUpperCase() ?? "?"}
               </div>
             )}
-            <span className="text-sm font-medium text-[#E5E2E1] truncate">
+            <span className="text-sm font-medium text-ui-text truncate">
               {otherOrg?.name ?? "Tim tidak dikenal"}
             </span>
           </div>
-          <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-[#9B9A97]">
+          <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-ui-text-2">
             <span>{request.division?.name ?? "—"}</span>
             <span>·</span>
             <span>{request.format.toUpperCase()}</span>
@@ -109,7 +109,7 @@ function ScrimRequestCard({
             )}
           </div>
           {request.message && (
-            <p className="mt-2 text-xs text-[#9B9A97]">{request.message}</p>
+            <p className="mt-2 text-xs text-ui-text-2">{request.message}</p>
           )}
         </div>
 

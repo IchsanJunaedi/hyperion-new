@@ -72,7 +72,7 @@ const InviteSection = ({ orgId, orgSlug, divisions, pendingInvites }: InviteSect
   return (
     <section className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-white">Invite Member</h2>
+        <h2 className="text-sm font-semibold text-ui-text">Invite Member</h2>
         <button
           type="button"
           onClick={() => { setShowForm(true); setGeneratedUrl(null); }}
@@ -87,7 +87,7 @@ const InviteSection = ({ orgId, orgSlug, divisions, pendingInvites }: InviteSect
         <div className="rounded-lg border border-white/10 bg-white/[0.02] p-4 space-y-3">
           <div className="flex items-center justify-between">
             <p className="text-xs font-medium text-white/70">Buat link undangan baru</p>
-            <button onClick={() => setShowForm(false)} className="text-white/40 hover:text-white">
+            <button onClick={() => setShowForm(false)} className="text-white/40 hover:text-ui-text">
               <X className="h-4 w-4" />
             </button>
           </div>

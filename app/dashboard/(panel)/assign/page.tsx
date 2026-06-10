@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import { Plus } from "lucide-react";
 
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -60,9 +60,9 @@ export default async function AssignRolePage() {
     <>
       <main className="flex-1 max-w-[600px] w-full mx-auto px-4 sm:px-8 py-12">
         <div className="mb-8">
-          <Plus className="h-8 w-8 text-[#9B9A97] mb-3" />
-          <h1 className="font-bold text-[28px] text-[#E5E2E1]">Assign Role</h1>
-          <p className="text-[#9B9A97] mt-1 text-sm">
+          <Plus className="h-8 w-8 text-ui-text-2 mb-3" />
+          <h1 className="font-bold text-[28px] text-ui-text">Assign Role</h1>
+          <p className="text-ui-text-2 mt-1 text-sm">
             Tambahkan user ke tim dan assign role. Owner tidak ditampilkan.
           </p>
         </div>

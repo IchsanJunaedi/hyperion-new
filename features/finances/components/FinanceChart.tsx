@@ -45,12 +45,12 @@ const FinanceChart = ({ rows, summary }: FinanceChartProps) => {
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_1fr]">
       {/* Income vs Expense */}
-      <div className="rounded-xl border border-[#2D2D2D] bg-[#202020] p-5 space-y-5">
-        <p className="text-xs font-semibold uppercase tracking-widest text-[#6B6A68]">Ringkasan Bulan Ini</p>
+      <div className="rounded-xl border border-ui-border bg-ui-surface p-5 space-y-5">
+        <p className="text-xs font-semibold uppercase tracking-widest text-ui-text-muted">Ringkasan Bulan Ini</p>
 
         {/* Stacked bar */}
         <div>
-          <div className="flex h-2.5 w-full overflow-hidden rounded-full bg-[#2D2D2D]">
+          <div className="flex h-2.5 w-full overflow-hidden rounded-full bg-ui-border">
             <div
               className="h-full bg-green-500 transition-all duration-700"
               style={{ width: `${incomeW}%` }}
@@ -60,7 +60,7 @@ const FinanceChart = ({ rows, summary }: FinanceChartProps) => {
               style={{ width: `${expenseW}%` }}
             />
           </div>
-          <div className="mt-2 flex gap-4 text-[11px] text-[#9B9A97]">
+          <div className="mt-2 flex gap-4 text-[11px] text-ui-text-2">
             <span className="flex items-center gap-1.5">
               <span className="inline-block h-2 w-2 rounded-full bg-green-500" />
               Masuk {incomeW.toFixed(0)}%
@@ -89,10 +89,10 @@ const FinanceChart = ({ rows, summary }: FinanceChartProps) => {
         {/* Top income */}
         {topIncome.length > 0 && (
           <div className="space-y-2">
-            <p className="text-[10px] uppercase tracking-wider text-[#6B6A68]">Sumber Pemasukan</p>
+            <p className="text-[10px] uppercase tracking-wider text-ui-text-muted">Sumber Pemasukan</p>
             {topIncome.map(([cat, amt]) => (
               <div key={cat} className="flex items-center justify-between text-xs">
-                <span className="text-[#9B9A97]">{cat}</span>
+                <span className="text-ui-text-2">{cat}</span>
                 <span className="font-medium text-green-400">{fmt(amt)}</span>
               </div>
             ))}
@@ -101,12 +101,12 @@ const FinanceChart = ({ rows, summary }: FinanceChartProps) => {
       </div>
 
       {/* Category breakdown */}
-      <div className="rounded-xl border border-[#2D2D2D] bg-[#202020] p-5 space-y-4">
-        <p className="text-xs font-semibold uppercase tracking-widest text-[#6B6A68]">Rincian Pengeluaran</p>
+      <div className="rounded-xl border border-ui-border bg-ui-surface p-5 space-y-4">
+        <p className="text-xs font-semibold uppercase tracking-widest text-ui-text-muted">Rincian Pengeluaran</p>
 
         {topExpense.length === 0 ? (
           <div className="flex items-center justify-center py-8">
-            <p className="text-sm text-[#6B6A68]">Tidak ada pengeluaran</p>
+            <p className="text-sm text-ui-text-muted">Tidak ada pengeluaran</p>
           </div>
         ) : (
           <div className="space-y-3.5">
@@ -117,17 +117,17 @@ const FinanceChart = ({ rows, summary }: FinanceChartProps) => {
                 <div key={cat}>
                   <div className="mb-1.5 flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="flex h-4 w-4 items-center justify-center rounded text-[10px] font-bold text-[#6B6A68] bg-[#2D2D2D]">
+                      <span className="flex h-4 w-4 items-center justify-center rounded text-[10px] font-bold text-ui-text-muted bg-ui-border">
                         {rank}
                       </span>
-                      <span className="text-sm text-[#E5E2E1]">{cat}</span>
+                      <span className="text-sm text-ui-text">{cat}</span>
                     </div>
                     <div className="text-right">
                       <span className="text-xs font-semibold text-red-400">{fmt(amt)}</span>
-                      <span className="ml-2 text-[10px] text-[#6B6A68]">{((amt / (summary.totalExpense || 1)) * 100).toFixed(0)}%</span>
+                      <span className="ml-2 text-[10px] text-ui-text-muted">{((amt / (summary.totalExpense || 1)) * 100).toFixed(0)}%</span>
                     </div>
                   </div>
-                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#2D2D2D]">
+                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-ui-border">
                     <div
                       className="h-full rounded-full bg-red-500/50 transition-all duration-700"
                       style={{ width: `${pct}%` }}
@@ -140,9 +140,9 @@ const FinanceChart = ({ rows, summary }: FinanceChartProps) => {
         )}
 
         {/* Transaction count */}
-        <div className="mt-4 border-t border-[#2D2D2D] pt-4 flex items-center justify-between text-[11px] text-[#6B6A68]">
+        <div className="mt-4 border-t border-ui-border pt-4 flex items-center justify-between text-[11px] text-ui-text-muted">
           <span>Total transaksi</span>
-          <span className="font-medium text-[#9B9A97]">{rows.length} transaksi</span>
+          <span className="font-medium text-ui-text-2">{rows.length} transaksi</span>
         </div>
       </div>
     </div>

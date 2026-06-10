@@ -32,9 +32,9 @@ interface FinanceTableProps {
 const FinanceTable = ({ rows, orgId, canDelete, revalidatePaths }: FinanceTableProps) => {
   if (rows.length === 0) {
     return (
-      <div className="rounded-xl border border-dashed border-[#2D2D2D] py-14 text-center">
-        <p className="text-sm text-[#6B6A68]">Belum ada transaksi bulan ini.</p>
-        <p className="mt-1 text-xs text-[#6B6A68]/60">Tambahkan transaksi pertama kamu.</p>
+      <div className="rounded-xl border border-dashed border-ui-border py-14 text-center">
+        <p className="text-sm text-ui-text-muted">Belum ada transaksi bulan ini.</p>
+        <p className="mt-1 text-xs text-ui-text-muted/60">Tambahkan transaksi pertama kamu.</p>
       </div>
     );
   }
@@ -44,25 +44,25 @@ const FinanceTable = ({ rows, orgId, canDelete, revalidatePaths }: FinanceTableP
     : "grid-cols-[130px_150px_1fr_170px]";
 
   return (
-    <div className="overflow-x-auto rounded-xl border border-[#2D2D2D]">
+    <div className="overflow-x-auto rounded-xl border border-ui-border">
     <div className="min-w-[580px]">
       {/* Header */}
-      <div className={`grid ${cols} border-b border-[#2D2D2D] bg-[#202020] px-5 py-3`}>
-        <span className="text-[10px] font-semibold uppercase tracking-widest text-[#6B6A68]">Tanggal</span>
-        <span className="text-[10px] font-semibold uppercase tracking-widest text-[#6B6A68]">Kategori</span>
-        <span className="text-[10px] font-semibold uppercase tracking-widest text-[#6B6A68]">Deskripsi</span>
-        <span className="text-right text-[10px] font-semibold uppercase tracking-widest text-[#6B6A68]">Jumlah</span>
+      <div className={`grid ${cols} border-b border-ui-border bg-ui-surface px-5 py-3`}>
+        <span className="text-[10px] font-semibold uppercase tracking-widest text-ui-text-muted">Tanggal</span>
+        <span className="text-[10px] font-semibold uppercase tracking-widest text-ui-text-muted">Kategori</span>
+        <span className="text-[10px] font-semibold uppercase tracking-widest text-ui-text-muted">Deskripsi</span>
+        <span className="text-right text-[10px] font-semibold uppercase tracking-widest text-ui-text-muted">Jumlah</span>
         {canDelete && <span />}
       </div>
 
       {/* Rows */}
-      <div className="divide-y divide-[#2D2D2D]">
+      <div className="divide-y divide-ui-border">
         {rows.map((r) => (
           <div
             key={r.id}
-            className={`grid ${cols} items-center px-5 py-3.5 transition-colors hover:bg-[#202020]/70`}
+            className={`grid ${cols} items-center px-5 py-3.5 transition-colors hover:bg-ui-surface/70`}
           >
-            <span className="text-sm text-[#9B9A97]">
+            <span className="text-sm text-ui-text-2">
               {new Date(r.date).toLocaleDateString("id-ID", {
                 day: "numeric",
                 month: "short",
@@ -72,13 +72,13 @@ const FinanceTable = ({ rows, orgId, canDelete, revalidatePaths }: FinanceTableP
             <span>
               <span
                 className={`inline-block max-w-[130px] truncate rounded-full px-2.5 py-0.5 text-[11px] font-medium ${
-                  CAT_STYLE[r.category] ?? "bg-[#2D2D2D] text-[#9B9A97]"
+                  CAT_STYLE[r.category] ?? "bg-ui-border text-ui-text-2"
                 }`}
               >
                 {r.category}
               </span>
             </span>
-            <span className="truncate pr-4 text-sm text-[#9B9A97]">{r.description ?? "—"}</span>
+            <span className="truncate pr-4 text-sm text-ui-text-2">{r.description ?? "—"}</span>
             <span
               className={`flex items-center justify-end gap-1.5 text-sm font-semibold tabular-nums ${
                 r.type === "income" ? "text-green-400" : "text-red-400"

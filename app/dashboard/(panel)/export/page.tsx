@@ -23,7 +23,7 @@ export default async function DashboardExportPage() {
     <>
       <main className="mx-auto max-w-7xl px-4 py-6 space-y-6">
         <header>
-          <h1 className="text-2xl font-bold text-white">Export Data Tim</h1>
+          <h1 className="text-2xl font-bold text-ui-text">Export Data Tim</h1>
           <p className="mt-1 text-sm text-white/60">
             Download semua data tim dalam format CSV. Data termasuk member, scrim, hasil, dan pengumuman.
           </p>

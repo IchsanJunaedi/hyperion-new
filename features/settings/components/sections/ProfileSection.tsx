@@ -26,7 +26,7 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>;
 
 const inputCls =
-  "w-full rounded border border-[#2D2D2D] bg-[#191919] px-3 py-1.5 text-sm text-[#E5E2E1] placeholder-[#6B6A68] focus:outline-none focus:border-[#4D4D4D] transition";
+  "w-full rounded border border-ui-border bg-ui-bg px-3 py-1.5 text-sm text-ui-text placeholder-ui-text-muted focus:outline-none focus:border-[#4D4D4D] transition";
 
 function Field({
   label,
@@ -41,7 +41,7 @@ function Field({
 }) {
   return (
     <div className={cn("flex flex-col gap-1", className)}>
-      <label className="text-xs text-[#9B9A97]">{label}</label>
+      <label className="text-xs text-ui-text-2">{label}</label>
       {children}
       {error && <p className="text-xs text-red-400">{error}</p>}
     </div>
@@ -126,7 +126,7 @@ const ProfileSection = ({ userId }: { userId: string }) => {
   if (loading) {
     return (
       <div className="flex justify-center py-12">
-        <Loader2 className="h-5 w-5 animate-spin text-[#6B6A68]" />
+        <Loader2 className="h-5 w-5 animate-spin text-ui-text-muted" />
       </div>
     );
   }
@@ -144,14 +144,14 @@ const ProfileSection = ({ userId }: { userId: string }) => {
               className="h-14 w-14 rounded-full object-cover"
             />
           ) : (
-            <div className="grid h-14 w-14 place-items-center rounded-full bg-[#353434] text-lg font-semibold text-[#D4D4D4]">
+            <div className="grid h-14 w-14 place-items-center rounded-full bg-ui-hover-strong text-lg font-semibold text-ui-text-dim">
               ?
             </div>
           )}
         </div>
         <label
           className={cn(
-            "flex cursor-pointer items-center gap-2 rounded border border-[#2D2D2D] px-3 py-1.5 text-sm text-[#9B9A97] transition hover:bg-[#2C2C2C]",
+            "flex cursor-pointer items-center gap-2 rounded border border-ui-border px-3 py-1.5 text-sm text-ui-text-2 transition hover:bg-ui-hover",
             uploading && "cursor-not-allowed opacity-50",
           )}
         >
@@ -218,7 +218,7 @@ const ProfileSection = ({ userId }: { userId: string }) => {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="flex items-center gap-2 rounded bg-[#2C2C2C] px-4 py-2 text-sm text-[#D4D4D4] transition hover:bg-[#353434] cursor-pointer disabled:opacity-50"
+        className="flex items-center gap-2 rounded bg-ui-hover px-4 py-2 text-sm text-ui-text-dim transition hover:bg-ui-hover-strong cursor-pointer disabled:opacity-50"
       >
         {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
         Simpan Perubahan

@@ -50,11 +50,11 @@ const ImageUpload = ({ value, onChange, folder = "uploads", label = "Gambar" }: 
 
   return (
     <div>
-      <p className="mb-1.5 text-xs font-medium text-[#9B9A97]">{label}</p>
+      <p className="mb-1.5 text-xs font-medium text-ui-text-2">{label}</p>
       {value ? (
         <div className="relative inline-block">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={value} alt="preview" className="h-20 w-32 object-cover border border-[#2D2D2D]" />
+          <img src={value} alt="preview" className="h-20 w-32 object-cover border border-ui-border" />
           <button
             type="button"
             onClick={() => onChange(null)}
@@ -68,7 +68,7 @@ const ImageUpload = ({ value, onChange, folder = "uploads", label = "Gambar" }: 
           type="button"
           disabled={uploading}
           onClick={() => inputRef.current?.click()}
-          className="flex h-20 w-32 cursor-pointer flex-col items-center justify-center border border-dashed border-[#2D2D2D] text-[#6B6A68] transition hover:border-[#F5C400]/50 hover:text-[#F5C400] disabled:opacity-50"
+          className="flex h-20 w-32 cursor-pointer flex-col items-center justify-center border border-dashed border-ui-border text-ui-text-muted transition hover:border-[#F5C400]/50 hover:text-[#F5C400] disabled:opacity-50"
         >
           <Upload className="mb-1 h-4 w-4" />
           <span className="text-[10px]">{uploading ? "Uploading..." : "Upload"}</span>

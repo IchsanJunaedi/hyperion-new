@@ -130,7 +130,7 @@ const NotificationItem = ({
 
       {/* Content */}
       <div className="min-w-0 flex-1">
-        <p className="line-clamp-1 text-sm font-medium text-white">
+        <p className="line-clamp-1 text-sm font-medium text-ui-text">
           {notification.title}
         </p>
         {notification.body && (

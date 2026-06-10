@@ -90,7 +90,7 @@ export default async function AnnouncementDetailPage({
       <header className="space-y-2">
         <Link
           href={`/${slug}/announcements`}
-          className="text-xs text-white/55 hover:text-white"
+          className="text-xs text-white/55 hover:text-ui-text"
         >
           ← Pengumuman
         </Link>
@@ -108,7 +108,7 @@ export default async function AnnouncementDetailPage({
             </span>
           )}
         </div>
-        <h1 className="text-3xl font-bold text-white">{announcement.title}</h1>
+        <h1 className="text-3xl font-bold text-ui-text">{announcement.title}</h1>
         <div className="flex flex-wrap items-center gap-4 text-sm text-white/55">
           <div className="inline-flex items-center gap-2">
             <Calendar className="h-3.5 w-3.5" />
@@ -167,7 +167,7 @@ export default async function AnnouncementDetailPage({
         <div className="max-w-3xl rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
           <div className="flex items-center gap-2 mb-4">
             <Users className="h-4 w-4 text-white/40" />
-            <h3 className="text-sm font-semibold text-white">Status Konfirmasi Member</h3>
+            <h3 className="text-sm font-semibold text-ui-text">Status Konfirmasi Member</h3>
             <span className="ml-auto text-xs text-white/40">
               {ackDetails.acknowledgedCount}/{ackDetails.acknowledgedCount + ackDetails.pendingCount} sudah konfirmasi
             </span>

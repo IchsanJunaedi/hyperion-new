@@ -33,14 +33,14 @@ const CustomSelect = ({ value, options, onChange, disabled }: CustomSelectProps)
         type="button"
         disabled={disabled}
         onClick={() => setOpen((v) => !v)}
-        className={`inline-flex items-center gap-1.5 rounded px-2.5 py-1 text-xs font-medium transition border border-[#2D2D2D] bg-[#202020] hover:bg-[#2C2C2C] disabled:opacity-50 ${selected?.color ?? "text-[#D4D4D4]"}`}
+        className={`inline-flex items-center gap-1.5 rounded px-2.5 py-1 text-xs font-medium transition border border-ui-border bg-ui-surface hover:bg-ui-hover disabled:opacity-50 ${selected?.color ?? "text-ui-text-dim"}`}
       >
         {selected?.label ?? value}
-        <ChevronDown className="h-3 w-3 text-[#9B9A97]" />
+        <ChevronDown className="h-3 w-3 text-ui-text-2" />
       </button>
 
       {open && (
-        <div className="absolute left-0 top-full z-50 mt-1 min-w-[120px] rounded-lg border border-[#2D2D2D] bg-[#202020] py-1 shadow-xl">
+        <div className="absolute left-0 top-full z-50 mt-1 min-w-[120px] rounded-lg border border-ui-border bg-ui-surface py-1 shadow-xl">
           {options.map((opt) => (
             <button
               key={opt.value}
@@ -49,9 +49,9 @@ const CustomSelect = ({ value, options, onChange, disabled }: CustomSelectProps)
                 onChange(opt.value);
                 setOpen(false);
               }}
-              className={`flex w-full items-center px-3 py-1.5 text-xs transition hover:bg-[#2C2C2C] ${
-                opt.value === value ? "bg-[#2C2C2C]" : ""
-              } ${opt.color ?? "text-[#D4D4D4]"}`}
+              className={`flex w-full items-center px-3 py-1.5 text-xs transition hover:bg-ui-hover ${
+                opt.value === value ? "bg-ui-hover" : ""
+              } ${opt.color ?? "text-ui-text-dim"}`}
             >
               {opt.label}
             </button>

@@ -134,47 +134,47 @@ const PlayerHeroModal = ({ player, orgId, onClose }: PlayerHeroModalProps) => {
       onClick={onClose}
     >
       <div
-        className="relative flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-[#2D2D2D] bg-[#181818] shadow-2xl"
+        className="relative flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-ui-border bg-ui-surface shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         {/* ── Header ── */}
-        <div className="flex items-center gap-4 border-b border-[#2D2D2D] bg-[#1C1C1C] px-6 py-4">
+        <div className="flex items-center gap-4 border-b border-ui-border bg-ui-surface px-6 py-4">
           {player.avatar_url ? (
             <img
               src={player.avatar_url}
               alt={player.display_name ?? "Player"}
-              className="h-12 w-12 rounded-full border border-[#2D2D2D] object-cover"
+              className="h-12 w-12 rounded-full border border-ui-border object-cover"
             />
           ) : (
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-[#2D2D2D] bg-[#252525] text-sm font-bold text-[#9B9A97]">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-ui-border bg-ui-elevated text-sm font-bold text-ui-text-2">
               {getInitials(player.display_name)}
             </div>
           )}
           <div className="min-w-0 flex-1">
-            <h2 className="truncate text-base font-bold text-[#E5E2E1]">
+            <h2 className="truncate text-base font-bold text-ui-text">
               {player.display_name ?? "Unknown"}
             </h2>
             <div className="mt-0.5 flex flex-wrap items-center gap-2">
               {player.main_role && (
-                <span className="inline-flex items-center gap-1 rounded bg-[#252525] px-1.5 py-0.5 text-[10px] font-medium text-[#9B9A97]">
+                <span className="inline-flex items-center gap-1 rounded bg-ui-elevated px-1.5 py-0.5 text-[10px] font-medium text-ui-text-2">
                   <Gamepad2 className="h-2.5 w-2.5" />
                   {ROLE_LABELS[player.main_role as keyof typeof ROLE_LABELS] ?? player.main_role}
                 </span>
               )}
               {player.jersey_number && (
-                <span className="text-[11px] text-[#6B6A68]">#{player.jersey_number}</span>
+                <span className="text-[11px] text-ui-text-muted">#{player.jersey_number}</span>
               )}
-              <span className="text-[11px] text-[#6B6A68]">
+              <span className="text-[11px] text-ui-text-muted">
                 WR hadir: <span className={cn("font-semibold", player.winRateWhenPresent >= 50 ? "text-emerald-400" : "text-rose-400")}>{player.winRateWhenPresent}%</span>
               </span>
-              <span className="text-[11px] text-[#6B6A68]">
-                Hadir: <span className="font-semibold text-[#D4D4D4]">{player.attendanceRate}%</span>
+              <span className="text-[11px] text-ui-text-muted">
+                Hadir: <span className="font-semibold text-ui-text-dim">{player.attendanceRate}%</span>
               </span>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="shrink-0 rounded-lg p-1.5 text-[#6B6A68] transition hover:bg-[#2C2C2C] hover:text-[#D4D4D4]"
+            className="shrink-0 rounded-lg p-1.5 text-ui-text-muted transition hover:bg-ui-hover hover:text-ui-text-dim"
           >
             <X className="h-4 w-4" />
           </button>
@@ -186,7 +186,7 @@ const PlayerHeroModal = ({ player, orgId, onClose }: PlayerHeroModalProps) => {
             <div className="space-y-4 p-6">
               {/* Skeleton */}
               {[...Array(3)].map((_, i) => (
-                <div key={i} className="h-10 animate-pulse rounded-lg bg-[#252525]" />
+                <div key={i} className="h-10 animate-pulse rounded-lg bg-ui-elevated" />
               ))}
             </div>
           )}
@@ -194,7 +194,7 @@ const PlayerHeroModal = ({ player, orgId, onClose }: PlayerHeroModalProps) => {
           {!loading && data && data.heroStats.length === 0 && data.ratingHistory.length === 0 && (
             <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
               <Swords className="h-8 w-8 text-[#3D3D3D]" />
-              <p className="text-sm text-[#6B6A68]">Belum ada data untuk player ini.</p>
+              <p className="text-sm text-ui-text-muted">Belum ada data untuk player ini.</p>
               <p className="text-xs text-[#4B4A48]">
                 Data muncul setelah scrim dicatat dengan player_id.
               </p>
@@ -219,9 +219,9 @@ const PlayerHeroModal = ({ player, orgId, onClose }: PlayerHeroModalProps) => {
                   <section>
                     <div className="mb-3 flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <TrendingUp className="h-4 w-4 text-[#9B9A97]" />
-                        <h3 className="text-sm font-semibold text-[#E5E2E1]">Hero Pool</h3>
-                        <span className="rounded bg-[#252525] px-1.5 py-0.5 text-[10px] text-[#6B6A68]">
+                        <TrendingUp className="h-4 w-4 text-ui-text-2" />
+                        <h3 className="text-sm font-semibold text-ui-text">Hero Pool</h3>
+                        <span className="rounded bg-ui-elevated px-1.5 py-0.5 text-[10px] text-ui-text-muted">
                           {data.heroStats.length} hero
                         </span>
                       </div>
@@ -235,7 +235,7 @@ const PlayerHeroModal = ({ player, orgId, onClose }: PlayerHeroModalProps) => {
                               "rounded px-2 py-0.5 text-[11px] font-medium transition",
                               sortKey === key
                                 ? "bg-yellow-400 text-black"
-                                : "bg-[#252525] text-[#6B6A68] hover:text-[#D4D4D4]",
+                                : "bg-ui-elevated text-ui-text-muted hover:text-ui-text-dim",
                             )}
                           >
                             {key === "picks" ? "Picks" : "Win Rate"}
@@ -244,10 +244,10 @@ const PlayerHeroModal = ({ player, orgId, onClose }: PlayerHeroModalProps) => {
                       </div>
                     </div>
 
-                    <div className="overflow-x-auto rounded-xl border border-[#2D2D2D]">
+                    <div className="overflow-x-auto rounded-xl border border-ui-border">
                     <div className="min-w-[420px]">
                       {/* Table header */}
-                      <div className="grid grid-cols-[1fr_80px_60px_60px_60px_56px] gap-2 bg-[#202020] px-4 py-2 text-[10px] font-semibold uppercase tracking-wider text-[#6B6A68]">
+                      <div className="grid grid-cols-[1fr_80px_60px_60px_60px_56px] gap-2 bg-ui-surface px-4 py-2 text-[10px] font-semibold uppercase tracking-wider text-ui-text-muted">
                         <span>Hero</span>
                         <span>Role</span>
                         <span className="text-center">Picks</span>
@@ -256,11 +256,11 @@ const PlayerHeroModal = ({ player, orgId, onClose }: PlayerHeroModalProps) => {
                         <span className="text-center">WR</span>
                       </div>
 
-                      <div className="divide-y divide-[#252525]">
+                      <div className="divide-y divide-ui-elevated">
                         {sortedHeroStats.map((h: PlayerHeroStatExtended, idx) => (
                           <div
                             key={`${h.hero_name}:${h.role}`}
-                            className="grid grid-cols-[1fr_80px_60px_60px_60px_56px] items-center gap-2 px-4 py-2.5 transition-colors hover:bg-[#202020]"
+                            className="grid grid-cols-[1fr_80px_60px_60px_60px_56px] items-center gap-2 px-4 py-2.5 transition-colors hover:bg-ui-surface"
                           >
                             {/* Hero name + winrate bar */}
                             <div className="min-w-0">
@@ -273,12 +273,12 @@ const PlayerHeroModal = ({ player, orgId, onClose }: PlayerHeroModalProps) => {
                                     className="h-full w-full object-cover"
                                   />
                                 </div>
-                                <span className="truncate text-xs font-medium text-[#E5E2E1]">
+                                <span className="truncate text-xs font-medium text-ui-text">
                                   {h.hero_name}
                                 </span>
                               </div>
                               {/* Mini winrate bar */}
-                              <div className="mt-1 ml-7 h-1 w-full max-w-[120px] overflow-hidden rounded-full bg-[#252525]">
+                              <div className="mt-1 ml-7 h-1 w-full max-w-[120px] overflow-hidden rounded-full bg-ui-elevated">
                                 <div
                                   className={cn("h-full rounded-full transition-all", winRateBarColor(h.winRate))}
                                   style={{ width: `${h.winRate}%` }}
@@ -286,10 +286,10 @@ const PlayerHeroModal = ({ player, orgId, onClose }: PlayerHeroModalProps) => {
                               </div>
                             </div>
 
-                            <span className="truncate text-[10px] text-[#6B6A68]">
+                            <span className="truncate text-[10px] text-ui-text-muted">
                               {ROLE_LABELS[h.role as keyof typeof ROLE_LABELS] ?? h.role}
                             </span>
-                            <span className="text-center text-xs font-semibold text-[#E5E2E1]">{h.picks}</span>
+                            <span className="text-center text-xs font-semibold text-ui-text">{h.picks}</span>
                             <span className="text-center text-xs font-semibold text-emerald-400">{h.wins}</span>
                             <span className="text-center text-xs font-semibold text-rose-400">{h.losses}</span>
                             <span className={cn("text-center text-xs font-bold", winRateColor(h.winRate))}>
@@ -306,9 +306,9 @@ const PlayerHeroModal = ({ player, orgId, onClose }: PlayerHeroModalProps) => {
                   {groupedScrims.length > 0 && (
                     <section>
                       <div className="mb-3 flex items-center gap-2">
-                        <Swords className="h-4 w-4 text-[#9B9A97]" />
-                        <h3 className="text-sm font-semibold text-[#E5E2E1]">Scrim History</h3>
-                        <span className="rounded bg-[#252525] px-1.5 py-0.5 text-[10px] text-[#6B6A68]">
+                        <Swords className="h-4 w-4 text-ui-text-2" />
+                        <h3 className="text-sm font-semibold text-ui-text">Scrim History</h3>
+                        <span className="rounded bg-ui-elevated px-1.5 py-0.5 text-[10px] text-ui-text-muted">
                           {groupedScrims.length} scrim
                         </span>
                       </div>
@@ -317,10 +317,10 @@ const PlayerHeroModal = ({ player, orgId, onClose }: PlayerHeroModalProps) => {
                         {groupedScrims.map((scrim) => (
                           <div
                             key={scrim.scrim_id}
-                            className="overflow-hidden rounded-xl border border-[#2D2D2D] bg-[#1C1C1C]"
+                            className="overflow-hidden rounded-xl border border-ui-border bg-ui-surface"
                           >
                             {/* Scrim header */}
-                            <div className="flex items-center justify-between gap-3 border-b border-[#252525] bg-[#202020] px-4 py-2">
+                            <div className="flex items-center justify-between gap-3 border-b border-ui-elevated bg-ui-surface px-4 py-2">
                               <div className="flex items-center gap-2 min-w-0">
                                 <span
                                   className={cn(
@@ -329,25 +329,25 @@ const PlayerHeroModal = ({ player, orgId, onClose }: PlayerHeroModalProps) => {
                                       ? "bg-emerald-500/15 text-emerald-400"
                                       : scrim.scrim_is_win === false
                                         ? "bg-rose-500/15 text-rose-400"
-                                        : "bg-[#252525] text-[#6B6A68]",
+                                        : "bg-ui-elevated text-ui-text-muted",
                                   )}
                                 >
                                   {scrim.scrim_is_win === true ? "WIN" : scrim.scrim_is_win === false ? "LOSE" : "DRAW"}
                                 </span>
-                                <span className="truncate text-xs font-semibold text-[#D4D4D4]">
+                                <span className="truncate text-xs font-semibold text-ui-text-dim">
                                   vs {scrim.opponent_name}
                                 </span>
-                                <span className="shrink-0 rounded bg-[#252525] px-1.5 py-0.5 text-[9px] font-medium uppercase text-[#6B6A68]">
+                                <span className="shrink-0 rounded bg-ui-elevated px-1.5 py-0.5 text-[9px] font-medium uppercase text-ui-text-muted">
                                   {scrim.format}
                                 </span>
                               </div>
-                              <span className="shrink-0 text-[11px] text-[#6B6A68]">
+                              <span className="shrink-0 text-[11px] text-ui-text-muted">
                                 {formatDate(scrim.scheduled_at)}
                               </span>
                             </div>
 
                             {/* Per-game picks */}
-                            <div className="divide-y divide-[#252525]">
+                            <div className="divide-y divide-ui-elevated">
                               {scrim.games.map((g) => (
                                 <div
                                   key={`${g.scrim_id}:${g.game_number}`}
@@ -362,10 +362,10 @@ const PlayerHeroModal = ({ player, orgId, onClose }: PlayerHeroModalProps) => {
                                   >
                                     {g.game_is_win ? "W" : "L"}
                                   </span>
-                                  <span className="flex-1 truncate text-xs text-[#D4D4D4]">
+                                  <span className="flex-1 truncate text-xs text-ui-text-dim">
                                     {g.hero_name}
                                   </span>
-                                  <span className="text-[10px] text-[#6B6A68]">
+                                  <span className="text-[10px] text-ui-text-muted">
                                     {ROLE_LABELS[g.role as keyof typeof ROLE_LABELS] ?? g.role}
                                   </span>
                                 </div>
@@ -391,9 +391,9 @@ function MonthlyTrendSection({ trend }: { trend: PlayerMonthlyTrend[] }) {
   return (
     <section>
       <div className="mb-3 flex items-center gap-2">
-        <CalendarRange className="h-4 w-4 text-[#9B9A97]" />
-        <h3 className="text-sm font-semibold text-[#E5E2E1]">Tren 6 Bulan</h3>
-        <span className="ml-auto flex items-center gap-3 text-[10px] text-[#6B6A68]">
+        <CalendarRange className="h-4 w-4 text-ui-text-2" />
+        <h3 className="text-sm font-semibold text-ui-text">Tren 6 Bulan</h3>
+        <span className="ml-auto flex items-center gap-3 text-[10px] text-ui-text-muted">
           <span className="flex items-center gap-1">
             <span className="h-2 w-2 rounded-sm bg-sky-400/70" /> Kehadiran
           </span>
@@ -403,7 +403,7 @@ function MonthlyTrendSection({ trend }: { trend: PlayerMonthlyTrend[] }) {
         </span>
       </div>
 
-      <div className="flex items-end justify-between gap-2 rounded-xl border border-[#2D2D2D] bg-[#1C1C1C] p-4">
+      <div className="flex items-end justify-between gap-2 rounded-xl border border-ui-border bg-ui-surface p-4">
         {trend.map((m) => (
           <div key={m.month} className="flex flex-1 flex-col items-center gap-1">
             <div className="flex h-24 w-full items-end justify-center gap-1">
@@ -418,8 +418,8 @@ function MonthlyTrendSection({ trend }: { trend: PlayerMonthlyTrend[] }) {
                 title={`Win rate ${m.winRate}%`}
               />
             </div>
-            <span className="text-[10px] text-[#9B9A97]">{m.label}</span>
-            <span className="text-[9px] tabular-nums text-[#6B6A68]">
+            <span className="text-[10px] text-ui-text-2">{m.label}</span>
+            <span className="text-[9px] tabular-nums text-ui-text-muted">
               {m.scrims > 0 ? `${m.attendanceRate}/${m.winRate}` : "—"}
             </span>
           </div>
@@ -441,12 +441,12 @@ function RatingTrendSection({
     <section>
       <div className="mb-3 flex items-center gap-2">
         <Star className="h-4 w-4 text-yellow-400/70" />
-        <h3 className="text-sm font-semibold text-[#E5E2E1]">Rating Coach</h3>
-        <span className="rounded bg-[#252525] px-1.5 py-0.5 text-[10px] text-[#6B6A68]">
+        <h3 className="text-sm font-semibold text-ui-text">Rating Coach</h3>
+        <span className="rounded bg-ui-elevated px-1.5 py-0.5 text-[10px] text-ui-text-muted">
           {ratingHistory.length} sesi
         </span>
         {avgRating !== null && (
-          <span className={cn("ml-auto rounded-full bg-[#252525] px-2.5 py-0.5 text-xs font-bold tabular-nums", ratingColor(avgRating))}>
+          <span className={cn("ml-auto rounded-full bg-ui-elevated px-2.5 py-0.5 text-xs font-bold tabular-nums", ratingColor(avgRating))}>
             rata-rata {avgRating.toFixed(1)}
           </span>
         )}
@@ -458,7 +458,7 @@ function RatingTrendSection({
           const h = Math.round((entry.rating / 10) * 36) + 8;
           return (
             <div key={entry.scrim_id} className="flex shrink-0 flex-col items-center gap-0.5">
-              <span className="text-[8px] tabular-nums text-[#6B6A68]">{entry.rating.toFixed(1)}</span>
+              <span className="text-[8px] tabular-nums text-ui-text-muted">{entry.rating.toFixed(1)}</span>
               <div
                 style={{ height: `${h}px` }}
                 className={cn("w-5 rounded-sm", ratingBarColor(entry.rating))}
@@ -469,19 +469,19 @@ function RatingTrendSection({
       </div>
 
       {/* Recent rated entries */}
-      <div className="overflow-hidden rounded-xl border border-[#2D2D2D]">
+      <div className="overflow-hidden rounded-xl border border-ui-border">
         {recent.map((entry) => (
           <div
             key={entry.scrim_id}
-            className="flex items-center gap-3 border-b border-[#252525] px-4 py-2.5 last:border-0 hover:bg-[#202020] transition-colors"
+            className="flex items-center gap-3 border-b border-ui-elevated px-4 py-2.5 last:border-0 hover:bg-ui-surface transition-colors"
           >
             <span className={cn("w-8 shrink-0 text-center text-sm font-bold tabular-nums", ratingColor(entry.rating))}>
               {entry.rating.toFixed(1)}
             </span>
             <div className="min-w-0 flex-1">
-              <p className="truncate text-xs font-medium text-[#D4D4D4]">vs {entry.opponent_name}</p>
+              <p className="truncate text-xs font-medium text-ui-text-dim">vs {entry.opponent_name}</p>
               {entry.coach_notes && (
-                <p className="mt-0.5 line-clamp-1 text-[10px] text-[#6B6A68]">{entry.coach_notes}</p>
+                <p className="mt-0.5 line-clamp-1 text-[10px] text-ui-text-muted">{entry.coach_notes}</p>
               )}
             </div>
             <span className="shrink-0 text-[10px] text-[#4B4A48]">{formatDate(entry.scheduled_at)}</span>

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
@@ -82,7 +82,7 @@ const ResetPasswordForm = () => {
         </Alert>
       ) : null}
 
-      <p className="text-xs text-[#6B6A68]">
+      <p className="text-xs text-ui-text-muted">
         Password minimal 8 karakter, mengandung huruf kapital, angka, dan karakter spesial (. ! @ #).
       </p>
 

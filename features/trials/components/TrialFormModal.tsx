@@ -62,31 +62,31 @@ const TrialFormModal = ({ divisionId, revalidatePaths, onClose }: TrialFormModal
       onClick={onClose}
     >
       <div
-        className="w-full max-w-md rounded-xl border border-[#2D2D2D] bg-[#202020] p-6 shadow-2xl"
+        className="w-full max-w-md rounded-xl border border-ui-border bg-ui-surface p-6 shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-5">
-          <h3 className="text-base font-bold text-[#E5E2E1]">Buat Open Trial</h3>
-          <button type="button" onClick={onClose} className="text-[#9B9A97] hover:text-[#E5E2E1] cursor-pointer">
+          <h3 className="text-base font-bold text-ui-text">Buat Open Trial</h3>
+          <button type="button" onClick={onClose} className="text-ui-text-2 hover:text-ui-text cursor-pointer">
             <X className="h-4 w-4" />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs text-[#9B9A97] mb-1">
+            <label className="block text-xs text-ui-text-2 mb-1">
               Judul Trial <span className="text-red-400">*</span>
             </label>
             <input
               name="title"
               type="text"
               required
-              className="h-10 w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-sm text-[#E5E2E1] focus:border-[#9B9A97] focus:outline-none"
+              className="h-10 w-full rounded-md border border-ui-border bg-ui-bg px-3 text-sm text-ui-text focus:border-ui-text-2 focus:outline-none"
             />
           </div>
 
           <div>
-            <label className="block text-xs text-[#9B9A97] mb-1">Posisi yang Dibutuhkan</label>
+            <label className="block text-xs text-ui-text-2 mb-1">Posisi yang Dibutuhkan</label>
             <div className="flex gap-2">
               <input
                 type="text"
@@ -95,12 +95,12 @@ const TrialFormModal = ({ divisionId, revalidatePaths, onClose }: TrialFormModal
                 onKeyDown={(e) => {
                   if (e.key === "Enter") { e.preventDefault(); addPosition(posInput); }
                 }}
-                className="h-9 flex-1 rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-sm text-[#E5E2E1] focus:border-[#9B9A97] focus:outline-none"
+                className="h-9 flex-1 rounded-md border border-ui-border bg-ui-bg px-3 text-sm text-ui-text focus:border-ui-text-2 focus:outline-none"
               />
               <button
                 type="button"
                 onClick={() => addPosition(posInput)}
-                className="h-9 rounded-md border border-[#2D2D2D] px-3 text-[#9B9A97] hover:bg-[#2C2C2C] cursor-pointer"
+                className="h-9 rounded-md border border-ui-border px-3 text-ui-text-2 hover:bg-ui-hover cursor-pointer"
               >
                 <Plus className="h-4 w-4" />
               </button>
@@ -114,7 +114,7 @@ const TrialFormModal = ({ divisionId, revalidatePaths, onClose }: TrialFormModal
                       key={s}
                       type="button"
                       onClick={() => addPosition(s)}
-                      className="rounded-full border border-[#2D2D2D] px-2 py-0.5 text-[10px] text-[#6B6A68] hover:border-[#9B9A97] hover:text-[#9B9A97] cursor-pointer"
+                      className="rounded-full border border-ui-border px-2 py-0.5 text-[10px] text-ui-text-muted hover:border-ui-text-2 hover:text-ui-text-2 cursor-pointer"
                     >
                       + {s}
                     </button>
@@ -123,7 +123,7 @@ const TrialFormModal = ({ divisionId, revalidatePaths, onClose }: TrialFormModal
                     <button
                       type="button"
                       onClick={() => setPositions((prev) => [...prev, ...remaining])}
-                      className="rounded-full border border-[#2D2D2D] bg-[#2C2C2C] px-2 py-0.5 text-[10px] text-[#9B9A97] hover:border-[#9B9A97] hover:text-[#E5E2E1] cursor-pointer"
+                      className="rounded-full border border-ui-border bg-ui-hover px-2 py-0.5 text-[10px] text-ui-text-2 hover:border-ui-text-2 hover:text-ui-text cursor-pointer"
                     >
                       + Semua
                     </button>
@@ -136,11 +136,11 @@ const TrialFormModal = ({ divisionId, revalidatePaths, onClose }: TrialFormModal
                 {positions.map((p) => (
                   <span
                     key={p}
-                    className="inline-flex items-center gap-1 rounded-full bg-[#2C2C2C] px-2 py-0.5 text-xs text-[#E5E2E1]"
+                    className="inline-flex items-center gap-1 rounded-full bg-ui-hover px-2 py-0.5 text-xs text-ui-text"
                   >
                     {p}
                     <button type="button" onClick={() => removePosition(p)} className="cursor-pointer">
-                      <X className="h-2.5 w-2.5 text-[#9B9A97]" />
+                      <X className="h-2.5 w-2.5 text-ui-text-2" />
                     </button>
                   </span>
                 ))}
@@ -158,14 +158,14 @@ const TrialFormModal = ({ divisionId, revalidatePaths, onClose }: TrialFormModal
             <button
               type="button"
               onClick={onClose}
-              className="h-9 rounded-md border border-[#2D2D2D] px-4 text-sm text-[#9B9A97] hover:bg-[#2C2C2C] cursor-pointer"
+              className="h-9 rounded-md border border-ui-border px-4 text-sm text-ui-text-2 hover:bg-ui-hover cursor-pointer"
             >
               Batal
             </button>
             <button
               type="submit"
               disabled={pending}
-              className="inline-flex h-9 items-center gap-2 rounded-md bg-[#E5E2E1] px-4 text-sm font-semibold text-[#191919] hover:bg-white disabled:opacity-50 cursor-pointer"
+              className="inline-flex h-9 items-center gap-2 rounded-md bg-ui-text px-4 text-sm font-semibold text-ui-bg hover:bg-white disabled:opacity-50 cursor-pointer"
             >
               {pending && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
               Buat Trial

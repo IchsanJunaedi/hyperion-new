@@ -24,8 +24,8 @@ const roleColors: Record<string, string> = {
   manager: "text-green-400",
   coach: "text-blue-400",
   captain: "text-purple-400",
-  member: "text-[#9B9A97]",
-  none: "text-[#6B6A68]",
+  member: "text-ui-text-2",
+  none: "text-ui-text-muted",
 };
 
 const HomeSection = ({ title, icon, href, rows, emptyText = "Belum ada data" }: HomeSectionProps) => {
@@ -37,31 +37,31 @@ const HomeSection = ({ title, icon, href, rows, emptyText = "Belum ada data" }: 
         <div className="flex items-center justify-between">
           <Link
             href={href}
-            className="group flex items-center gap-2 text-lg font-semibold text-[#E5E2E1] hover:text-white transition-colors"
+            className="group flex items-center gap-2 text-lg font-semibold text-ui-text hover:text-ui-text transition-colors"
           >
             {icon}
             <span>{title}</span>
-            <ChevronRight className="h-4 w-4 text-[#9B9A97] transition-transform group-hover:translate-x-0.5" />
+            <ChevronRight className="h-4 w-4 text-ui-text-2 transition-transform group-hover:translate-x-0.5" />
           </Link>
         </div>
         <div className="overflow-x-auto">
         <div className="flex flex-col min-w-[420px]">
           {rows.length === 0 ? (
-            <p className="py-3 px-3 text-sm text-[#6B6A68]">{emptyText}</p>
+            <p className="py-3 px-3 text-sm text-ui-text-muted">{emptyText}</p>
           ) : (
             rows.map((row) => (
               <div
                 key={row.id}
                 onClick={() => row.userDetail && setSelected(row.userDetail)}
-                className={`grid grid-cols-[200px_1fr_100px] items-center py-2 px-3 -mx-3 hover:bg-[#2C2C2C] rounded transition-colors gap-4 ${row.userDetail ? "cursor-pointer" : ""}`}
+                className={`grid grid-cols-[200px_1fr_100px] items-center py-2 px-3 -mx-3 hover:bg-ui-hover rounded transition-colors gap-4 ${row.userDetail ? "cursor-pointer" : ""}`}
               >
                 {row.cols.map((col, i) => (
                   <span
                     key={i}
                     className={`text-sm truncate ${
-                      i === 0 ? "text-[#D4D4D4]" :
-                      i === row.roleCol ? `font-medium ${roleColors[col] ?? "text-[#9B9A97]"}` :
-                      "text-[#9B9A97]"
+                      i === 0 ? "text-ui-text-dim" :
+                      i === row.roleCol ? `font-medium ${roleColors[col] ?? "text-ui-text-2"}` :
+                      "text-ui-text-2"
                     }`}
                   >
                     {col}

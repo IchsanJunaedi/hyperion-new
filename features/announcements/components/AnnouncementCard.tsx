@@ -33,7 +33,7 @@ const AnnouncementCard = ({
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2">
           <Megaphone className="h-4 w-4 text-yellow-400" />
-          <h3 className="line-clamp-1 text-sm font-semibold text-white">
+          <h3 className="line-clamp-1 text-sm font-semibold text-ui-text">
             {announcement.title}
           </h3>
         </div>

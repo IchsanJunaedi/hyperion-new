@@ -67,13 +67,13 @@ function MultiHeroPicker({
           {selected.map((name) => (
             <span
               key={name}
-              className="flex items-center gap-1 rounded-full border border-[#2D2D2D] bg-[#141414] px-2 py-0.5 text-xs text-white/70"
+              className="flex items-center gap-1 rounded-full border border-ui-border bg-ui-bg px-2 py-0.5 text-xs text-white/70"
             >
               {name}
               <button
                 type="button"
                 onClick={() => onToggle(name)}
-                className="cursor-pointer text-white/30 hover:text-white"
+                className="cursor-pointer text-white/30 hover:text-ui-text"
               >
                 <X className="h-2.5 w-2.5" />
               </button>
@@ -81,17 +81,17 @@ function MultiHeroPicker({
           ))}
         </div>
       )}
-      <div className="flex items-center gap-2 rounded-md border border-[#2D2D2D] bg-[#141414] px-3 py-1.5">
+      <div className="flex items-center gap-2 rounded-md border border-ui-border bg-ui-bg px-3 py-1.5">
         <Search className="h-3 w-3 shrink-0 text-white/30" />
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Cari hero..."
-          className="flex-1 bg-transparent text-xs text-white placeholder-white/30 outline-none"
+          className="flex-1 bg-transparent text-xs text-ui-text placeholder-white/30 outline-none"
         />
       </div>
       {search && (
-        <ul className="sidebar-scroll mt-1 max-h-28 overflow-y-auto rounded-md border border-[#2D2D2D] bg-[#141414]">
+        <ul className="sidebar-scroll mt-1 max-h-28 overflow-y-auto rounded-md border border-ui-border bg-ui-bg">
           {filtered.slice(0, 30).map((h) => (
             <li key={h}>
               <button
@@ -101,7 +101,7 @@ function MultiHeroPicker({
                   "w-full cursor-pointer px-3 py-1 text-left text-xs transition",
                   selected.includes(h)
                     ? "text-yellow-400 hover:bg-yellow-500/10"
-                    : "text-white/60 hover:bg-[#2C2C2C] hover:text-white",
+                    : "text-white/60 hover:bg-ui-hover hover:text-ui-text",
                 )}
               >
                 {selected.includes(h) ? `✓ ${h}` : h}
@@ -190,13 +190,13 @@ const AddHeroModal = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-      <div className="w-full max-w-md rounded-xl border border-[#2D2D2D] bg-[#1C1C1C] shadow-2xl">
+      <div className="w-full max-w-md rounded-xl border border-ui-border bg-ui-surface shadow-2xl">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-[#2D2D2D] px-5 py-4">
-          <h2 className="text-sm font-semibold text-white">
+        <div className="flex items-center justify-between border-b border-ui-border px-5 py-4">
+          <h2 className="text-sm font-semibold text-ui-text">
             {editing ? `Edit — ${editing.hero_name}` : "Tambah Hero ke Meta"}
           </h2>
-          <button type="button" onClick={() => onClose()} className="cursor-pointer text-white/40 hover:text-white">
+          <button type="button" onClick={() => onClose()} className="cursor-pointer text-white/40 hover:text-ui-text">
             <X className="h-4 w-4" />
           </button>
         </div>
@@ -207,31 +207,31 @@ const AddHeroModal = ({
             <div>
               <label className="mb-1.5 block text-xs font-medium text-white/60">Hero</label>
               {selectedHero ? (
-                <div className="flex items-center justify-between rounded-md border border-[#2D2D2D] bg-[#141414] px-3 py-2">
-                  <span className="text-sm font-medium text-white">{selectedHero}</span>
-                  <button type="button" onClick={() => setSelectedHero("")} className="cursor-pointer text-white/40 hover:text-white">
+                <div className="flex items-center justify-between rounded-md border border-ui-border bg-ui-bg px-3 py-2">
+                  <span className="text-sm font-medium text-ui-text">{selectedHero}</span>
+                  <button type="button" onClick={() => setSelectedHero("")} className="cursor-pointer text-white/40 hover:text-ui-text">
                     <X className="h-3.5 w-3.5" />
                   </button>
                 </div>
               ) : (
                 <div className="space-y-1.5">
-                  <div className="flex items-center gap-2 rounded-md border border-[#2D2D2D] bg-[#141414] px-3 py-2">
+                  <div className="flex items-center gap-2 rounded-md border border-ui-border bg-ui-bg px-3 py-2">
                     <Search className="h-3.5 w-3.5 shrink-0 text-white/40" />
                     <input
                       ref={searchRef}
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
                       placeholder="Cari hero..."
-                      className="flex-1 bg-transparent text-sm text-white placeholder-white/30 outline-none"
+                      className="flex-1 bg-transparent text-sm text-ui-text placeholder-white/30 outline-none"
                     />
                   </div>
-                  <ul className="sidebar-scroll max-h-40 overflow-y-auto rounded-md border border-[#2D2D2D] bg-[#141414]">
+                  <ul className="sidebar-scroll max-h-40 overflow-y-auto rounded-md border border-ui-border bg-ui-bg">
                     {filtered.slice(0, 50).map((h) => (
                       <li key={h}>
                         <button
                           type="button"
                           onClick={() => setSelectedHero(h)}
-                          className="w-full cursor-pointer px-3 py-1.5 text-left text-sm text-white/70 hover:bg-[#2C2C2C] hover:text-white"
+                          className="w-full cursor-pointer px-3 py-1.5 text-left text-sm text-white/70 hover:bg-ui-hover hover:text-ui-text"
                         >
                           {h}
                         </button>
@@ -257,7 +257,7 @@ const AddHeroModal = ({
                   onClick={() => setTier(t)}
                   className={cn(
                     "h-9 w-12 cursor-pointer rounded-md border text-sm font-bold transition",
-                    tier === t ? TIER_COLORS[t] : "border-[#2D2D2D] text-white/30 hover:border-white/20 hover:text-white/60",
+                    tier === t ? TIER_COLORS[t] : "border-ui-border text-white/30 hover:border-white/20 hover:text-white/60",
                   )}
                 >
                   {t}
@@ -279,7 +279,7 @@ const AddHeroModal = ({
                     "cursor-pointer rounded-full border px-3 py-1 text-xs transition",
                     roleTag === r.value
                       ? "border-yellow-500/50 bg-yellow-500/10 text-yellow-400"
-                      : "border-[#2D2D2D] text-white/40 hover:border-white/20 hover:text-white/60",
+                      : "border-ui-border text-white/40 hover:border-white/20 hover:text-white/60",
                   )}
                 >
                   {r.label}
@@ -318,7 +318,7 @@ const AddHeroModal = ({
               onChange={(e) => setNotes(e.target.value)}
               rows={2}
               placeholder="Misal: kuat di early game, counter Fanny..."
-              className="w-full resize-none rounded-md border border-[#2D2D2D] bg-[#141414] px-3 py-2 text-sm text-white placeholder-white/30 outline-none focus:border-white/30"
+              className="w-full resize-none rounded-md border border-ui-border bg-ui-bg px-3 py-2 text-sm text-ui-text placeholder-white/30 outline-none focus:border-white/30"
             />
           </div>
 
@@ -330,7 +330,7 @@ const AddHeroModal = ({
               onChange={(e) => setDraftNotes(e.target.value)}
               rows={2}
               placeholder="Misal: kuat di turtle fight, pair dengan Atlas..."
-              className="w-full resize-none rounded-md border border-[#2D2D2D] bg-[#141414] px-3 py-2 text-sm text-white placeholder-white/30 outline-none focus:border-white/30"
+              className="w-full resize-none rounded-md border border-ui-border bg-ui-bg px-3 py-2 text-sm text-ui-text placeholder-white/30 outline-none focus:border-white/30"
             />
           </div>
 
@@ -363,7 +363,7 @@ const AddHeroModal = ({
             <button
               type="button"
               onClick={() => onClose()}
-              className="flex-1 cursor-pointer rounded-md border border-[#2D2D2D] py-2 text-sm text-white/60 transition hover:bg-white/5"
+              className="flex-1 cursor-pointer rounded-md border border-ui-border py-2 text-sm text-white/60 transition hover:bg-white/5"
             >
               Batal
             </button>

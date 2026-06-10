@@ -106,7 +106,7 @@ const ManageTeamLayout = async ({ children, params }: ManageTeamLayoutProps) => 
   return (
     <QueryProvider>
     <NotifyProvider>
-      <div className="flex min-h-screen bg-[#191919] text-[#E5E2E1]">
+      <div className="flex min-h-screen bg-ui-bg text-ui-text">
         <WorkspaceSidebar
           orgSlug={org.slug}
           orgId={org.id}

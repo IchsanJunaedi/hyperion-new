@@ -20,7 +20,7 @@ const ROLE_CONFIG: Record<MemberRole, { label: string; className: string }> = {
   },
   member: {
     label: "member",
-    className: "text-[#6B6A68]",
+    className: "text-ui-text-muted",
   },
 };
 
@@ -35,7 +35,7 @@ const RoleBadge = ({ role }: { role: MemberRole | string }) => {
   const cleanRole = standardizeRole(role);
   const config = ROLE_CONFIG[cleanRole] || {
     label: cleanRole,
-    className: "text-[#6B6A68]",
+    className: "text-ui-text-muted",
   };
 
   return (

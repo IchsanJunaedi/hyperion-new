@@ -1,4 +1,4 @@
-﻿import { redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import { FileText } from "lucide-react";
 
@@ -30,7 +30,7 @@ export default async function DashboardContentPage() {
     return (
       <>
         <main className="flex-1 max-w-[900px] w-full mx-auto px-4 sm:px-8 py-12">
-          <p className="text-sm text-[#6B6A68]">Buat tim terlebih dahulu.</p>
+          <p className="text-sm text-ui-text-muted">Buat tim terlebih dahulu.</p>
         </main>
       </>
     );
@@ -42,9 +42,9 @@ export default async function DashboardContentPage() {
     <>
       <main className="flex-1 max-w-[900px] w-full mx-auto px-4 sm:px-8 py-12">
         <div className="mb-8">
-          <FileText className="h-8 w-8 text-[#9B9A97] mb-3" />
-          <h1 className="font-bold text-[28px] text-[#E5E2E1]">Content Calendar</h1>
-          <p className="text-[#9B9A97] mt-1 text-sm">
+          <FileText className="h-8 w-8 text-ui-text-2 mb-3" />
+          <h1 className="font-bold text-[28px] text-ui-text">Content Calendar</h1>
+          <p className="text-ui-text-2 mt-1 text-sm">
             Jadwalkan dan approve konten sosial media tim.
           </p>
         </div>

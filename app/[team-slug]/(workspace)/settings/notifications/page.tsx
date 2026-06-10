@@ -29,7 +29,7 @@ export default async function NotificationsSettingsPage({
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-6">
-      <h1 className="text-xl font-semibold text-white">
+      <h1 className="text-xl font-semibold text-ui-text">
         Status Pengiriman WhatsApp
       </h1>
       <p className="mt-1 text-sm text-white/60">

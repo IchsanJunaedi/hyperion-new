@@ -69,7 +69,7 @@ const FinishScrimSection = ({
   if (!showForm) {
     return (
       <article className="rounded-2xl border border-yellow-400/20 bg-yellow-400/5 p-5">
-        <h2 className="flex items-center gap-2 text-sm font-semibold text-white">
+        <h2 className="flex items-center gap-2 text-sm font-semibold text-ui-text">
           <Trophy className="h-4 w-4 text-yellow-400" />
           Pertandingan selesai?
         </h2>
@@ -112,14 +112,14 @@ function ResultDisplay({
   return (
     <article className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
       <div className="flex items-center justify-between">
-        <h2 className="flex items-center gap-2 text-sm font-semibold text-white">
+        <h2 className="flex items-center gap-2 text-sm font-semibold text-ui-text">
           <Trophy className="h-4 w-4 text-yellow-400" />
           Hasil pertandingan
         </h2>
         {orgSlug && scrimId && (
           <a
             href={`/${orgSlug}/scrim/${scrimId}/results`}
-            className="text-xs text-white/50 hover:text-white transition-colors"
+            className="text-xs text-white/50 hover:text-ui-text transition-colors"
           >
             Lihat detail →
           </a>
@@ -127,7 +127,7 @@ function ResultDisplay({
       </div>
       <div className="mt-4 space-y-3">
         <div>
-          <p className="text-3xl font-bold text-white">
+          <p className="text-3xl font-bold text-ui-text">
             {result.our_score}{" "}
             <span className="text-white/45">—</span>{" "}
             {result.opponent_score}
@@ -278,7 +278,7 @@ function ResultForm({
   return (
     <article className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
       <div className="flex items-center justify-between">
-        <h2 className="flex items-center gap-2 text-sm font-semibold text-white">
+        <h2 className="flex items-center gap-2 text-sm font-semibold text-ui-text">
           <Trophy className="h-4 w-4 text-yellow-400" />
           Hasil pertandingan
         </h2>

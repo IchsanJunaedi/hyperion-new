@@ -22,7 +22,7 @@ const MobileBottomNav = ({ orgSlug }: { orgSlug: string }) => {
   return (
     <nav
       aria-label="Workspace"
-      className="print-hide fixed inset-x-0 bottom-0 z-40 border-t border-white/5 bg-zinc-950/95 backdrop-blur md:hidden"
+      className="print-hide fixed inset-x-0 bottom-0 z-40 border-t border-ui-border bg-ui-surface/95 backdrop-blur md:hidden"
     >
       <ul className="grid grid-cols-5">
         {ITEMS.map(({ key, href, label, Icon }) => {
@@ -38,7 +38,7 @@ const MobileBottomNav = ({ orgSlug }: { orgSlug: string }) => {
                 className={`flex flex-1 flex-col items-center gap-0.5 py-2 text-[10px] transition ${
                   active
                     ? "text-yellow-400"
-                    : "text-white/55 hover:text-white"
+                    : "text-ui-text-2 hover:text-ui-text"
                 }`}
               >
                 <Icon className="h-5 w-5" />

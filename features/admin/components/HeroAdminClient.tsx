@@ -35,17 +35,17 @@ const HeroAdminClient = ({ initialValues }: Props) => {
     toast.success("Pengaturan hero disimpan");
   };
 
-  const inputClass = "w-full border border-[#2D2D2D] bg-[#191919] px-3 py-2 text-sm text-[#E5E2E1] outline-none transition focus:border-[#F5C400]/50 placeholder:text-[#6B6A68]";
-  const labelClass = "mb-1 block text-xs font-medium text-[#9B9A97]";
+  const inputClass = "w-full border border-ui-border bg-ui-bg px-3 py-2 text-sm text-ui-text outline-none transition focus:border-[#F5C400]/50 placeholder:text-ui-text-muted";
+  const labelClass = "mb-1 block text-xs font-medium text-ui-text-2";
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-      <h1 className="text-xl font-black uppercase tracking-tight text-white">Hero Section</h1>
+      <h1 className="text-xl font-black uppercase tracking-tight text-ui-text">Hero Section</h1>
 
       {/* Background image */}
-      <div className="rounded border border-[#2D2D2D] bg-[#141414] p-6">
-        <p className="mb-4 text-xs font-semibold uppercase tracking-wide text-[#9B9A97]">Background Image</p>
-        <p className="mb-4 text-xs text-[#6B6A68]">
+      <div className="rounded border border-ui-border bg-ui-bg p-6">
+        <p className="mb-4 text-xs font-semibold uppercase tracking-wide text-ui-text-2">Background Image</p>
+        <p className="mb-4 text-xs text-ui-text-muted">
           Gambar ini ditampilkan sebagai background hero. Kalau kosong, hero menggunakan foto dari Gallery.
           Saat countdown aktif, gambar ini akan lebih terlihat (opacity lebih tinggi).
         </p>
@@ -53,7 +53,7 @@ const HeroAdminClient = ({ initialValues }: Props) => {
         {bgUrl ? (
           <div className="relative">
             {/* Preview */}
-            <div className="relative mb-3 h-40 w-full overflow-hidden rounded border border-[#2D2D2D]">
+            <div className="relative mb-3 h-40 w-full overflow-hidden rounded border border-ui-border">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={bgUrl} alt="Hero background preview" className="h-full w-full object-cover" style={{ filter: "brightness(0.6)" }} />
               <div className="absolute inset-0 flex items-center justify-center">
@@ -70,7 +70,7 @@ const HeroAdminClient = ({ initialValues }: Props) => {
               <button
                 type="button"
                 onClick={() => setBgUrl(null)}
-                className="cursor-pointer border border-[#2D2D2D] px-3 py-1.5 text-xs text-[#6B6A68] transition hover:border-red-500/50 hover:text-red-400"
+                className="cursor-pointer border border-ui-border px-3 py-1.5 text-xs text-ui-text-muted transition hover:border-red-500/50 hover:text-red-400"
               >
                 Hapus Background
               </button>
@@ -87,8 +87,8 @@ const HeroAdminClient = ({ initialValues }: Props) => {
       </div>
 
       {/* Text settings */}
-      <div className="space-y-4 rounded border border-[#2D2D2D] bg-[#141414] p-6">
-        <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[#9B9A97]">Teks & CTA</p>
+      <div className="space-y-4 rounded border border-ui-border bg-ui-bg p-6">
+        <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ui-text-2">Teks & CTA</p>
         {TEXT_FIELDS.map((field) => (
           <div key={field.key}>
             <label className={labelClass}>{field.label}</label>

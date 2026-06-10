@@ -77,7 +77,7 @@ const CancelScrimButton = ({ scrimId, orgSlug }: CancelScrimButtonProps) => {
               type="button"
               onClick={handleCancel}
               disabled={pending}
-              className="text-sm text-white/50 hover:text-white transition-colors disabled:opacity-60"
+              className="text-sm text-white/50 hover:text-ui-text transition-colors disabled:opacity-60"
             >
               Batal
             </button>

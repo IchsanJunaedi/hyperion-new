@@ -17,12 +17,12 @@ const DATE_COLOR: Record<string, string> = {
   overdue: "text-red-400",
   today: "text-orange-400",
   this_week: "text-yellow-400",
-  later: "text-[#6B6A68]",
+  later: "text-ui-text-muted",
 };
 const PRIORITY_BADGE: Record<string, string> = {
   high: "bg-red-500/20 text-red-400",
   medium: "bg-orange-500/20 text-orange-400",
-  low: "bg-zinc-700/60 text-[#9B9A97]",
+  low: "bg-zinc-700/60 text-ui-text-2",
 };
 const PRIORITY_LABEL: Record<string, string> = {
   high: "Tinggi", medium: "Sedang", low: "Rendah",
@@ -58,7 +58,7 @@ const ManualTodoCard = ({ todo, revalidatePaths }: Props) => {
   return (
     <div
       className={cn(
-        "flex items-start gap-3 rounded-r border-l-2 bg-[#202020] px-4 py-3 transition hover:bg-[#252525]",
+        "flex items-start gap-3 rounded-r border-l-2 bg-ui-surface px-4 py-3 transition hover:bg-ui-elevated",
         border,
         (completing || deleting) && "opacity-40 pointer-events-none",
       )}
@@ -68,17 +68,17 @@ const ManualTodoCard = ({ todo, revalidatePaths }: Props) => {
         onClick={handleToggle}
         disabled={completing}
         aria-label={isCompleted ? "Tandai belum selesai" : "Tandai selesai"}
-        className="mt-0.5 flex h-4 w-4 shrink-0 cursor-pointer items-center justify-center rounded border border-[#3D3D3D] bg-[#191919] transition hover:border-[#9B9A97]"
+        className="mt-0.5 flex h-4 w-4 shrink-0 cursor-pointer items-center justify-center rounded border border-[#3D3D3D] bg-ui-bg transition hover:border-ui-text-2"
       >
         {isCompleted && (
-          <svg viewBox="0 0 12 12" className="h-2.5 w-2.5 text-[#9B9A97]" fill="none" stroke="currentColor" strokeWidth={2}>
+          <svg viewBox="0 0 12 12" className="h-2.5 w-2.5 text-ui-text-2" fill="none" stroke="currentColor" strokeWidth={2}>
             <path d="M2 6l3 3 5-5" />
           </svg>
         )}
       </button>
 
       <div className="min-w-0 flex-1">
-        <p className={cn("text-sm", isCompleted ? "text-[#6B6A68] line-through" : "text-[#E5E2E1]")}>
+        <p className={cn("text-sm", isCompleted ? "text-ui-text-muted line-through" : "text-ui-text")}>
           {todo.title}
         </p>
         <div className="mt-1 flex flex-wrap items-center gap-2">
@@ -91,7 +91,7 @@ const ManualTodoCard = ({ todo, revalidatePaths }: Props) => {
             </span>
           )}
           {todo.assigned_to && (
-            <span className="text-xs text-[#6B6A68]">→ {todo.assigned_to.name}</span>
+            <span className="text-xs text-ui-text-muted">→ {todo.assigned_to.name}</span>
           )}
         </div>
       </div>
@@ -101,7 +101,7 @@ const ManualTodoCard = ({ todo, revalidatePaths }: Props) => {
         onClick={handleDelete}
         disabled={deleting}
         aria-label="Hapus todo"
-        className="cursor-pointer rounded p-1 text-[#6B6A68] transition hover:bg-[#2C2C2C] hover:text-red-400"
+        className="cursor-pointer rounded p-1 text-ui-text-muted transition hover:bg-ui-hover hover:text-red-400"
       >
         <Trash2 className="h-3.5 w-3.5" />
       </button>

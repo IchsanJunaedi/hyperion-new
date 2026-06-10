@@ -83,11 +83,11 @@ const AvailabilitySelector = ({
         onMouseLeave={() => setIsHovered(false)}
         className={`inline-flex h-8 w-36 items-center justify-between gap-2 rounded-md px-3 text-xs transition-all duration-200 focus:outline-none disabled:opacity-50 ${
           isInteractive
-            ? "border border-[#2D2D2D] bg-[#141414] text-white cursor-pointer"
+            ? "border border-ui-border bg-ui-bg text-ui-text cursor-pointer"
             : "border border-transparent bg-transparent cursor-pointer"
         }`}
       >
-        <span className={isInteractive ? "text-white font-medium" : statusTextColor}>
+        <span className={isInteractive ? "text-ui-text font-medium" : statusTextColor}>
           {currentOption?.label ?? "Aktif"}
         </span>
         
@@ -110,7 +110,7 @@ const AvailabilitySelector = ({
 
       {isOpen && (
         <div
-          className={`absolute right-0 z-50 w-36 rounded-md border border-[#2D2D2D] bg-[#141414] shadow-xl backdrop-blur-md focus:outline-none py-1 ${
+          className={`absolute right-0 z-50 w-36 rounded-md border border-ui-border bg-ui-bg shadow-xl backdrop-blur-md focus:outline-none py-1 ${
             direction === "up"
               ? "bottom-full mb-1 origin-bottom-right"
               : "top-full mt-1 origin-top-right"
@@ -125,8 +125,8 @@ const AvailabilitySelector = ({
                 onClick={() => handleSelect(opt.value)}
                 className={`flex w-full items-center gap-2 px-3 py-2 text-left text-xs transition duration-150 ${
                   active
-                    ? "bg-[#1C1C1C] text-white font-medium"
-                    : "text-white/70 hover:bg-[#1A1A1A] hover:text-white"
+                    ? "bg-ui-surface text-ui-text font-medium"
+                    : "text-white/70 hover:bg-ui-hover hover:text-ui-text"
                 }`}
               >
                 <span className={`h-2 w-2 rounded-full ${opt.dotColor}`} />

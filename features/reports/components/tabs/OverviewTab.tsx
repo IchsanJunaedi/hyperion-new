@@ -9,13 +9,13 @@ function StatCard({ label, value, sub, color = "default" }: {
 }) {
   const valueClass = {
     green: "text-emerald-400", red: "text-rose-400", blue: "text-blue-400",
-    yellow: "text-yellow-400", default: "text-[#E5E2E1]",
+    yellow: "text-yellow-400", default: "text-ui-text",
   }[color];
   return (
-    <div className="rounded-xl border border-[#2D2D2D] bg-[#1C1C1C] p-4 space-y-1">
-      <p className="text-[10px] font-semibold uppercase tracking-wider text-[#6B6A68]">{label}</p>
+    <div className="rounded-xl border border-ui-border bg-ui-surface p-4 space-y-1">
+      <p className="text-[10px] font-semibold uppercase tracking-wider text-ui-text-muted">{label}</p>
       <p className={`text-2xl font-bold ${valueClass}`}>{value}</p>
-      <p className="text-xs text-[#9B9A97]">{sub}</p>
+      <p className="text-xs text-ui-text-2">{sub}</p>
     </div>
   );
 }
@@ -62,8 +62,8 @@ const OverviewTab = ({ report }: { report: MonthlyReport }) => {
       </div>
 
       {/* Row 2 — Win rate trend */}
-      <div className="rounded-xl border border-[#2D2D2D] bg-[#1C1C1C] p-5 space-y-3">
-        <p className="text-xs font-semibold uppercase tracking-wider text-[#9B9A97]">
+      <div className="rounded-xl border border-ui-border bg-ui-surface p-5 space-y-3">
+        <p className="text-xs font-semibold uppercase tracking-wider text-ui-text-2">
           Tren Win Rate Scrim (6 Bulan)
         </p>
         <WinRateTrendChart data={trend.scrimWinRate} />
@@ -72,25 +72,25 @@ const OverviewTab = ({ report }: { report: MonthlyReport }) => {
       {/* Row 3 — Finance/attendance trend + activity */}
       <div className="grid gap-4 sm:grid-cols-2">
         {trend.finance ? (
-          <div className="rounded-xl border border-[#2D2D2D] bg-[#1C1C1C] p-5 space-y-3">
-            <p className="text-xs font-semibold uppercase tracking-wider text-[#9B9A97]">
+          <div className="rounded-xl border border-ui-border bg-ui-surface p-5 space-y-3">
+            <p className="text-xs font-semibold uppercase tracking-wider text-ui-text-2">
               Tren Keuangan (6 Bulan)
             </p>
             <FinanceTrendChart data={trend.finance} />
           </div>
         ) : (
-          <div className="rounded-xl border border-[#2D2D2D] bg-[#1C1C1C] p-5 space-y-3">
-            <p className="text-xs font-semibold uppercase tracking-wider text-[#9B9A97]">
+          <div className="rounded-xl border border-ui-border bg-ui-surface p-5 space-y-3">
+            <p className="text-xs font-semibold uppercase tracking-wider text-ui-text-2">
               Tren Kehadiran (6 Bulan)
             </p>
             <div className="space-y-2 pt-1">
               {trend.attendance.map((p) => (
                 <div key={p.monthLabel} className="flex items-center gap-3">
-                  <span className="w-12 text-[11px] text-[#6B6A68]">{p.monthLabel}</span>
-                  <div className="flex-1 h-2 rounded-full bg-[#252525] overflow-hidden">
+                  <span className="w-12 text-[11px] text-ui-text-muted">{p.monthLabel}</span>
+                  <div className="flex-1 h-2 rounded-full bg-ui-elevated overflow-hidden">
                     <div className="h-full bg-blue-500/60 rounded-full" style={{ width: `${p.avgRate}%` }} />
                   </div>
-                  <span className="w-9 text-right text-[11px] text-[#9B9A97]">{p.avgRate}%</span>
+                  <span className="w-9 text-right text-[11px] text-ui-text-2">{p.avgRate}%</span>
                 </div>
               ))}
             </div>
@@ -98,32 +98,32 @@ const OverviewTab = ({ report }: { report: MonthlyReport }) => {
         )}
 
         {/* Activity */}
-        <div className="rounded-xl border border-[#2D2D2D] bg-[#1C1C1C] p-5 space-y-3">
-          <p className="text-xs font-semibold uppercase tracking-wider text-[#9B9A97]">
+        <div className="rounded-xl border border-ui-border bg-ui-surface p-5 space-y-3">
+          <p className="text-xs font-semibold uppercase tracking-wider text-ui-text-2">
             Aktivitas Bulan Ini
           </p>
           <ul className="space-y-2.5">
             <li className="flex items-center gap-3 text-sm">
-              <Trophy className="h-4 w-4 text-[#6B6A68] shrink-0" />
-              <span className="text-[#9B9A97]">Scrim dijadwalkan</span>
-              <span className="ml-auto font-semibold text-[#E5E2E1]">{activity.scrimsScheduled}</span>
+              <Trophy className="h-4 w-4 text-ui-text-muted shrink-0" />
+              <span className="text-ui-text-2">Scrim dijadwalkan</span>
+              <span className="ml-auto font-semibold text-ui-text">{activity.scrimsScheduled}</span>
             </li>
             <li className="flex items-center gap-3 text-sm">
-              <Calendar className="h-4 w-4 text-[#6B6A68] shrink-0" />
-              <span className="text-[#9B9A97]">Turnamen aktif</span>
-              <span className="ml-auto font-semibold text-[#E5E2E1]">{activity.tournamentsActive}</span>
+              <Calendar className="h-4 w-4 text-ui-text-muted shrink-0" />
+              <span className="text-ui-text-2">Turnamen aktif</span>
+              <span className="ml-auto font-semibold text-ui-text">{activity.tournamentsActive}</span>
             </li>
             {activity.sponsorsActive !== null && (
               <li className="flex items-center gap-3 text-sm">
-                <Handshake className="h-4 w-4 text-[#6B6A68] shrink-0" />
-                <span className="text-[#9B9A97]">Sponsor aktif</span>
-                <span className="ml-auto font-semibold text-[#E5E2E1]">{activity.sponsorsActive}</span>
+                <Handshake className="h-4 w-4 text-ui-text-muted shrink-0" />
+                <span className="text-ui-text-2">Sponsor aktif</span>
+                <span className="ml-auto font-semibold text-ui-text">{activity.sponsorsActive}</span>
               </li>
             )}
             <li className="flex items-center gap-3 text-sm">
-              <Users className="h-4 w-4 text-[#6B6A68] shrink-0" />
-              <span className="text-[#9B9A97]">Member aktif</span>
-              <span className="ml-auto font-semibold text-[#E5E2E1]">{activity.membersActive}</span>
+              <Users className="h-4 w-4 text-ui-text-muted shrink-0" />
+              <span className="text-ui-text-2">Member aktif</span>
+              <span className="ml-auto font-semibold text-ui-text">{activity.membersActive}</span>
             </li>
           </ul>
         </div>

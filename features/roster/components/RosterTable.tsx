@@ -82,7 +82,7 @@ const RosterTable = ({
             <button
               type="button"
               onClick={() => setShowInviteForm(true)}
-              className="inline-flex items-center gap-2 rounded-md border border-white/10 px-3 py-2 text-sm text-white/70 transition hover:bg-white/5 hover:text-white"
+              className="inline-flex items-center gap-2 rounded-md border border-white/10 px-3 py-2 text-sm text-white/70 transition hover:bg-white/5 hover:text-ui-text"
             >
               <UserPlus className="h-4 w-4" />
               Undang Member
@@ -138,12 +138,12 @@ const RosterTable = ({
                     className="h-9 w-9 shrink-0 rounded-full object-cover"
                   />
                 ) : (
-                  <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-white/10 text-xs font-semibold text-white">
+                  <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-white/10 text-xs font-semibold text-ui-text">
                     {initials}
                   </div>
                 )}
                 <div className="min-w-0">
-                  <p className="flex items-center gap-1.5 truncate text-sm font-medium text-white">
+                  <p className="flex items-center gap-1.5 truncate text-sm font-medium text-ui-text">
                     <span className="truncate">
                       {m.display_name ?? m.username ?? "Unnamed"}
                     </span>
@@ -159,7 +159,7 @@ const RosterTable = ({
                         rel="noopener noreferrer"
                         onClick={(e) => e.stopPropagation()}
                         title="Buka profil publik"
-                        className="shrink-0 text-white/30 transition hover:text-white"
+                        className="shrink-0 text-white/30 transition hover:text-ui-text"
                       >
                         <ExternalLink className="h-3.5 w-3.5" />
                       </a>

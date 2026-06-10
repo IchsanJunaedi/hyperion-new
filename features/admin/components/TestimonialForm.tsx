@@ -44,11 +44,11 @@ const TestimonialForm = ({ testimonial, onDone }: Props) => {
     onDone();
   };
 
-  const inputClass = "w-full border border-[#2D2D2D] bg-[#191919] px-3 py-2 text-sm text-[#E5E2E1] outline-none transition focus:border-[#F5C400]/50 placeholder:text-[#6B6A68]";
-  const labelClass = "mb-1 block text-xs font-medium text-[#9B9A97]";
+  const inputClass = "w-full border border-ui-border bg-ui-bg px-3 py-2 text-sm text-ui-text outline-none transition focus:border-[#F5C400]/50 placeholder:text-ui-text-muted";
+  const labelClass = "mb-1 block text-xs font-medium text-ui-text-2";
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 rounded border border-[#2D2D2D] bg-[#141414] p-5">
+    <form onSubmit={handleSubmit} className="space-y-4 rounded border border-ui-border bg-ui-bg p-5">
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className={labelClass}>Nama *</label>
@@ -82,7 +82,7 @@ const TestimonialForm = ({ testimonial, onDone }: Props) => {
             onChange={e => setSortOrder(Number(e.target.value))}
           />
         </div>
-        <label className="flex cursor-pointer items-center gap-2 text-sm text-[#9B9A97]">
+        <label className="flex cursor-pointer items-center gap-2 text-sm text-ui-text-2">
           <input type="checkbox" checked={isActive} onChange={e => setIsActive(e.target.checked)} className="accent-[#F5C400]" />
           Aktif
         </label>
@@ -91,7 +91,7 @@ const TestimonialForm = ({ testimonial, onDone }: Props) => {
         <button type="submit" disabled={saving} className="cursor-pointer border border-[#F5C400] px-5 py-2 text-xs font-bold uppercase tracking-wider text-[#F5C400] transition hover:bg-[#F5C400] hover:text-black disabled:opacity-50">
           {saving ? "Menyimpan..." : testimonial ? "Simpan" : "Tambah"}
         </button>
-        <button type="button" onClick={onDone} className="cursor-pointer border border-[#2D2D2D] px-5 py-2 text-xs font-bold uppercase tracking-wider text-[#9B9A97] transition hover:border-[#E5E2E1] hover:text-[#E5E2E1]">
+        <button type="button" onClick={onDone} className="cursor-pointer border border-ui-border px-5 py-2 text-xs font-bold uppercase tracking-wider text-ui-text-2 transition hover:border-ui-text hover:text-ui-text">
           Batal
         </button>
       </div>

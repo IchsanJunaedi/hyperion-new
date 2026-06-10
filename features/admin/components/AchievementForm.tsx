@@ -21,8 +21,8 @@ const AchievementForm = ({ entry, onDone }: Props) => {
   const [saving, setSaving] = useState(false);
 
   const inputClass =
-    "w-full border border-[#2D2D2D] bg-[#191919] px-3 py-2 text-sm text-[#E5E2E1] outline-none transition focus:border-[#F5C400]/50 placeholder:text-[#6B6A68]";
-  const labelClass = "mb-1 block text-xs font-medium text-[#9B9A97]";
+    "w-full border border-ui-border bg-ui-bg px-3 py-2 text-sm text-ui-text outline-none transition focus:border-[#F5C400]/50 placeholder:text-ui-text-muted";
+  const labelClass = "mb-1 block text-xs font-medium text-ui-text-2";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,7 +53,7 @@ const AchievementForm = ({ entry, onDone }: Props) => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-4 rounded border border-[#2D2D2D] bg-[#141414] p-5"
+      className="space-y-4 rounded border border-ui-border bg-ui-bg p-5"
     >
       <div className="grid grid-cols-2 gap-4">
         <div className="col-span-2">
@@ -115,7 +115,7 @@ const AchievementForm = ({ entry, onDone }: Props) => {
         <button
           type="button"
           onClick={onDone}
-          className="cursor-pointer border border-[#2D2D2D] px-5 py-2 text-xs font-bold uppercase tracking-wider text-[#9B9A97] transition hover:border-[#E5E2E1] hover:text-[#E5E2E1]"
+          className="cursor-pointer border border-ui-border px-5 py-2 text-xs font-bold uppercase tracking-wider text-ui-text-2 transition hover:border-ui-text hover:text-ui-text"
         >
           Batal
         </button>

@@ -69,26 +69,26 @@ const CreateTeamForm = ({ existingDivisions }: CreateTeamFormProps) => {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {noDivisions && (
-        <p className="rounded border border-[#2D2D2D] bg-[#2C2C2C] px-3 py-2 text-sm text-[#9B9A97]">
+        <p className="rounded border border-ui-border bg-ui-hover px-3 py-2 text-sm text-ui-text-2">
           Buat divisi terlebih dahulu di halaman &quot;Kelola Divisi&quot; sebelum membuat tim.
         </p>
       )}
 
       <div className="space-y-1">
-        <label className="text-xs font-medium text-[#9B9A97]">Nama Tim</label>
+        <label className="text-xs font-medium text-ui-text-2">Nama Tim</label>
         <input
           value={teamName}
           onChange={(e) => setTeamName(e.target.value)}
           required
           disabled={noDivisions}
           maxLength={80}
-          className="h-10 w-full rounded border border-[#2D2D2D] bg-[#191919] px-3 text-sm text-[#E5E2E1] focus:border-[#D4D4D4] focus:outline-none disabled:opacity-40"
+          className="h-10 w-full rounded border border-ui-border bg-ui-bg px-3 text-sm text-ui-text focus:border-ui-text-dim focus:outline-none disabled:opacity-40"
         />
       </div>
 
       {uniqueDivisions.length > 0 && (
         <div className="space-y-2">
-          <label className="text-xs font-medium text-[#9B9A97]">Pilih Divisi</label>
+          <label className="text-xs font-medium text-ui-text-2">Pilih Divisi</label>
           <div className="flex flex-wrap gap-2">
             {uniqueDivisions.map((div) => {
               const selected = selectedDivisionIds.includes(div.id);
@@ -99,8 +99,8 @@ const CreateTeamForm = ({ existingDivisions }: CreateTeamFormProps) => {
                   onClick={() => toggleDivision(div.id)}
                   className={`rounded-full px-3 py-1.5 text-xs font-medium transition ${
                     selected
-                      ? "bg-[#E5E2E1] text-[#191919]"
-                      : "bg-[#2C2C2C] text-[#9B9A97] hover:bg-[#353434]"
+                      ? "bg-ui-text text-ui-bg"
+                      : "bg-ui-hover text-ui-text-2 hover:bg-ui-hover-strong"
                   }`}
                 >
                   {div.name}
@@ -108,7 +108,7 @@ const CreateTeamForm = ({ existingDivisions }: CreateTeamFormProps) => {
               );
             })}
           </div>
-          <p className="text-[10px] text-[#6B6A68]">
+          <p className="text-[10px] text-ui-text-muted">
             Klik untuk pilih. Buat divisi baru di &quot;Kelola Divisi&quot;.
           </p>
         </div>
@@ -123,7 +123,7 @@ const CreateTeamForm = ({ existingDivisions }: CreateTeamFormProps) => {
       <button
         type="submit"
         disabled={pending || noDivisions || selectedDivisionIds.length === 0}
-        className="inline-flex h-9 items-center gap-2 rounded px-4 text-sm font-medium bg-[#E5E2E1] text-[#191919] hover:bg-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+        className="inline-flex h-9 items-center gap-2 rounded px-4 text-sm font-medium bg-ui-text text-ui-bg hover:bg-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
       >
         {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
         Buat Tim

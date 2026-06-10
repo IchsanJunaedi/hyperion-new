@@ -79,13 +79,13 @@ const TournamentTechMeetCard = ({
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <Video className="h-3.5 w-3.5 text-blue-400" />
-          <h3 className="text-sm font-semibold text-white">Tech Meeting</h3>
+          <h3 className="text-sm font-semibold text-ui-text">Tech Meeting</h3>
         </div>
         {canManage && !editing && (
           <button
             type="button"
             onClick={() => setEditing(true)}
-            className="inline-flex items-center gap-1.5 text-xs text-[#9B9A97] hover:text-[#E5E2E1] cursor-pointer transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs text-ui-text-2 hover:text-ui-text cursor-pointer transition-colors"
           >
             <Pencil className="h-3 w-3" />
             Atur
@@ -96,31 +96,31 @@ const TournamentTechMeetCard = ({
       {editing ? (
         <div className="space-y-3">
           <div className="space-y-1">
-            <label className="text-xs text-[#6B6A68] font-medium">Tanggal</label>
+            <label className="text-xs text-ui-text-muted font-medium">Tanggal</label>
             <input
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="h-8 w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-xs text-[#E5E2E1] focus:border-blue-400/50 focus:outline-none"
+              className="h-8 w-full rounded-md border border-ui-border bg-ui-bg px-3 text-xs text-ui-text focus:border-blue-400/50 focus:outline-none"
             />
           </div>
           <div className="space-y-1">
-            <label className="text-xs text-[#6B6A68] font-medium">Jam (WIB)</label>
+            <label className="text-xs text-ui-text-muted font-medium">Jam (WIB)</label>
             <input
               type="time"
               value={time}
               onChange={(e) => setTime(e.target.value)}
-              className="h-8 w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-xs text-[#E5E2E1] focus:border-blue-400/50 focus:outline-none"
+              className="h-8 w-full rounded-md border border-ui-border bg-ui-bg px-3 text-xs text-ui-text focus:border-blue-400/50 focus:outline-none"
             />
           </div>
           <div className="space-y-1">
-            <label className="text-xs text-[#6B6A68] font-medium">Link Zoom / Google Meet</label>
+            <label className="text-xs text-ui-text-muted font-medium">Link Zoom / Google Meet</label>
             <input
               type="url"
               placeholder="https://zoom.us/j/... atau meet.google.com/..."
               value={link}
               onChange={(e) => setLink(e.target.value)}
-              className="h-8 w-full rounded-md border border-[#2D2D2D] bg-[#191919] px-3 text-xs text-[#E5E2E1] focus:border-blue-400/50 focus:outline-none"
+              className="h-8 w-full rounded-md border border-ui-border bg-ui-bg px-3 text-xs text-ui-text focus:border-blue-400/50 focus:outline-none"
             />
           </div>
           <div className="flex gap-2 pt-1">
@@ -136,7 +136,7 @@ const TournamentTechMeetCard = ({
             <button
               type="button"
               onClick={handleCancel}
-              className="h-8 rounded-md border border-[#2D2D2D] px-3.5 text-xs text-[#9B9A97] hover:bg-[#2C2C2C] cursor-pointer transition-colors"
+              className="h-8 rounded-md border border-ui-border px-3.5 text-xs text-ui-text-2 hover:bg-ui-hover cursor-pointer transition-colors"
             >
               Batal
             </button>
@@ -148,14 +148,14 @@ const TournamentTechMeetCard = ({
             <>
               {initialDate && (
                 <div className="flex items-start gap-2.5">
-                  <span className="mt-0.5 text-xs font-medium text-[#6B6A68] w-14 shrink-0">Tanggal</span>
-                  <span className="text-xs text-[#E5E2E1]">{formatMeetDate(initialDate)}</span>
+                  <span className="mt-0.5 text-xs font-medium text-ui-text-muted w-14 shrink-0">Tanggal</span>
+                  <span className="text-xs text-ui-text">{formatMeetDate(initialDate)}</span>
                 </div>
               )}
               {initialTime && (
                 <div className="flex items-start gap-2.5">
-                  <span className="mt-0.5 text-xs font-medium text-[#6B6A68] w-14 shrink-0">Jam</span>
-                  <span className="text-xs text-[#E5E2E1]">{formatMeetTime(initialTime)}</span>
+                  <span className="mt-0.5 text-xs font-medium text-ui-text-muted w-14 shrink-0">Jam</span>
+                  <span className="text-xs text-ui-text">{formatMeetTime(initialTime)}</span>
                 </div>
               )}
               {initialLink && (
@@ -163,7 +163,7 @@ const TournamentTechMeetCard = ({
                   href={initialLink.startsWith("http") ? initialLink : `https://${initialLink}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-1 flex items-center gap-2.5 rounded-lg border border-white/5 bg-white/[0.02] px-3.5 py-2.5 text-xs text-white/70 hover:bg-white/[0.05] hover:text-white transition"
+                  className="mt-1 flex items-center gap-2.5 rounded-lg border border-white/5 bg-white/[0.02] px-3.5 py-2.5 text-xs text-white/70 hover:bg-white/[0.05] hover:text-ui-text transition"
                 >
                   <ExternalLink className="h-4 w-4 text-blue-400 shrink-0" />
                   <span className="flex-1 truncate font-medium">{getMeetLabel(initialLink)}</span>
