@@ -90,7 +90,7 @@ export default async function AnnouncementDetailPage({
       <header className="space-y-2">
         <Link
           href={`/${slug}/announcements`}
-          className="text-xs text-white/55 hover:text-ui-text"
+          className="text-xs text-ui-text-2 hover:text-ui-text"
         >
           ← Pengumuman
         </Link>
@@ -109,7 +109,7 @@ export default async function AnnouncementDetailPage({
           )}
         </div>
         <h1 className="text-3xl font-bold text-ui-text">{announcement.title}</h1>
-        <div className="flex flex-wrap items-center gap-4 text-sm text-white/55">
+        <div className="flex flex-wrap items-center gap-4 text-sm text-ui-text-2">
           <div className="inline-flex items-center gap-2">
             <Calendar className="h-3.5 w-3.5" />
             {date}
@@ -127,7 +127,7 @@ export default async function AnnouncementDetailPage({
       </header>
 
       <article className="max-w-3xl rounded-2xl border border-white/10 bg-zinc-900/40 p-5 sm:p-6">
-        <div className="whitespace-pre-line text-sm leading-relaxed text-white/85">
+        <div className="whitespace-pre-line text-sm leading-relaxed text-ui-text">
           {announcement.body}
         </div>
       </article>
@@ -144,7 +144,7 @@ export default async function AnnouncementDetailPage({
               <CheckCircle2 className="h-5 w-5 shrink-0 text-green-400" />
               <div>
                 <p className="text-sm font-semibold text-green-400">Sudah Dikonfirmasi</p>
-                <p className="text-xs text-white/40">Kamu telah mengkonfirmasi pengumuman ini.</p>
+                <p className="text-xs text-ui-text-muted">Kamu telah mengkonfirmasi pengumuman ini.</p>
               </div>
             </div>
           ) : (
@@ -153,7 +153,7 @@ export default async function AnnouncementDetailPage({
                 <Clock className="mt-0.5 h-4 w-4 shrink-0 text-orange-400" />
                 <div>
                   <p className="text-sm font-semibold text-orange-400">Konfirmasi Diperlukan</p>
-                  <p className="text-xs text-white/50">Klik tombol untuk mengkonfirmasi bahwa kamu telah membaca dan memahami pengumuman ini.</p>
+                  <p className="text-xs text-ui-text-2">Klik tombol untuk mengkonfirmasi bahwa kamu telah membaca dan memahami pengumuman ini.</p>
                 </div>
               </div>
               <AcknowledgeButton orgSlug={slug} announcementId={id} />
@@ -166,9 +166,9 @@ export default async function AnnouncementDetailPage({
       {isManager && announcement.requires_ack && ackDetails && (
         <div className="max-w-3xl rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
           <div className="flex items-center gap-2 mb-4">
-            <Users className="h-4 w-4 text-white/40" />
+            <Users className="h-4 w-4 text-ui-text-muted" />
             <h3 className="text-sm font-semibold text-ui-text">Status Konfirmasi Member</h3>
-            <span className="ml-auto text-xs text-white/40">
+            <span className="ml-auto text-xs text-ui-text-muted">
               {ackDetails.acknowledgedCount}/{ackDetails.acknowledgedCount + ackDetails.pendingCount} sudah konfirmasi
             </span>
           </div>
@@ -187,7 +187,7 @@ export default async function AnnouncementDetailPage({
           </div>
           {ackDetails.pendingCount > 0 ? (
             <div>
-              <p className="mb-2 text-xs font-medium text-white/50">Belum konfirmasi ({ackDetails.pendingCount}):</p>
+              <p className="mb-2 text-xs font-medium text-ui-text-2">Belum konfirmasi ({ackDetails.pendingCount}):</p>
               <div className="flex flex-wrap gap-1.5">
                 {ackDetails.pendingNames.map((name) => (
                   <span key={name} className="rounded-full bg-orange-500/10 px-2.5 py-1 text-xs text-orange-400">

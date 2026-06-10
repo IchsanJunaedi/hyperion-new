@@ -78,17 +78,17 @@ const MainRoleSelector = ({
       >
         <span
           className={cn(
-            isInteractive ? "font-medium text-ui-text" : (selected?.color ?? "text-white/30 italic"),
+            isInteractive ? "font-medium text-ui-text" : (selected?.color ?? "text-ui-text-muted italic"),
           )}
         >
           {selected?.shortLabel ?? "—"}
         </span>
         {pending ? (
-          <Loader2 className="h-3 w-3 animate-spin text-white/40" />
+          <Loader2 className="h-3 w-3 animate-spin text-ui-text-muted" />
         ) : (
           <svg
             className={cn(
-              "h-3 w-3 text-white/55 transition-all duration-200",
+              "h-3 w-3 text-ui-text-2 transition-all duration-200",
               isInteractive ? "opacity-100" : "opacity-0",
             )}
             style={{ transform: open ? "rotate(180deg)" : "rotate(0deg)" }}
@@ -115,8 +115,8 @@ const MainRoleSelector = ({
             className={cn(
               "flex w-full items-center px-3 py-2 text-left text-xs transition",
               currentMainRole === null
-                ? "bg-ui-surface text-white/50"
-                : "text-white/40 hover:bg-ui-hover hover:text-white/60",
+                ? "bg-ui-surface text-ui-text-2"
+                : "text-ui-text-muted hover:bg-ui-hover hover:text-ui-text-2",
             )}
           >
             — Tidak ada —
@@ -130,7 +130,7 @@ const MainRoleSelector = ({
                 "flex w-full items-center justify-between px-3 py-2 text-left text-xs transition",
                 currentMainRole === opt.value
                   ? "bg-ui-surface font-medium text-ui-text"
-                  : "text-white/70 hover:bg-ui-hover hover:text-ui-text",
+                  : "text-ui-text hover:bg-ui-hover hover:text-ui-text",
               )}
             >
               <span>{opt.label}</span>
@@ -148,7 +148,7 @@ const MainRoleBadge = ({ mainRole }: { mainRole: MainRole }) => {
   const opt = ROLE_OPTIONS.find((o) => o.value === mainRole);
   return (
     <div className="inline-flex h-8 w-28 items-center px-2.5">
-      <span className={opt ? `text-xs font-semibold ${opt.color}` : "text-xs text-white/20"}>
+      <span className={opt ? `text-xs font-semibold ${opt.color}` : "text-xs text-ui-text-muted"}>
         {opt?.shortLabel ?? "—"}
       </span>
     </div>

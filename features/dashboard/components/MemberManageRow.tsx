@@ -24,7 +24,7 @@ const ROLE_COLORS: Record<string, string> = {
   manager: "text-green-400",
   coach: "text-blue-400",
   captain: "text-purple-400",
-  member: "text-white/60",
+  member: "text-ui-text-2",
 };
 
 const MemberManageRow = ({
@@ -72,8 +72,8 @@ const MemberManageRow = ({
 
   return (
     <tr className="transition hover:bg-white/[0.02]">
-      <td className="px-4 py-3 text-white/80">{name}</td>
-      <td className="px-4 py-3 text-white/60">{orgName}</td>
+      <td className="px-4 py-3 text-ui-text">{name}</td>
+      <td className="px-4 py-3 text-ui-text-2">{orgName}</td>
       <td className="px-4 py-3">
         {isOwner ? (
           <span className={`text-xs font-medium ${ROLE_COLORS.owner}`}>owner</span>
@@ -91,7 +91,7 @@ const MemberManageRow = ({
         )}
       </td>
       <td className="px-4 py-3">
-        <span className={`text-xs ${isActive ? "text-green-400" : "text-white/40"}`}>
+        <span className={`text-xs ${isActive ? "text-green-400" : "text-ui-text-muted"}`}>
           {isActive ? "Aktif" : "Nonaktif"}
         </span>
       </td>
@@ -102,7 +102,7 @@ const MemberManageRow = ({
               type="button"
               disabled={deletePending}
               onClick={() => setDeleteOpen(true)}
-              className="rounded-md p-1.5 text-white/40 hover:bg-white/10 hover:text-red-400 disabled:opacity-40"
+              className="rounded-md p-1.5 text-ui-text-muted hover:bg-white/10 hover:text-red-400 disabled:opacity-40"
               title="Hapus dari tim"
             >
               {deletePending ? (

@@ -43,7 +43,7 @@ const ScrimCard = ({
             <span
               className={`text-xs font-semibold ${
                 result.is_win === null
-                  ? "text-white/55"
+                  ? "text-ui-text-2"
                   : result.is_win
                     ? "text-emerald-400"
                     : "text-rose-400"
@@ -56,14 +56,14 @@ const ScrimCard = ({
         </div>
       </div>
 
-      <dl className="mt-3 grid gap-1.5 text-xs text-white/70">
+      <dl className="mt-3 grid gap-1.5 text-xs text-ui-text">
         <div className="inline-flex items-center gap-1.5">
-          <Calendar className="h-3.5 w-3.5 text-white/45" />
+          <Calendar className="h-3.5 w-3.5 text-ui-text-2" />
           <span>{scheduled}</span>
         </div>
         {scrim.server_region ? (
           <div className="inline-flex items-center gap-1.5">
-            <MapPin className="h-3.5 w-3.5 text-white/45" />
+            <MapPin className="h-3.5 w-3.5 text-ui-text-2" />
             <span>{scrim.server_region}</span>
           </div>
         ) : null}

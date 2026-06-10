@@ -36,12 +36,12 @@ const STATUS_META: Record<
   declined: { Icon: X, className: "text-rose-400", label: "Tidak" },
   tentative: {
     Icon: Circle,
-    className: "text-white/40",
+    className: "text-ui-text-muted",
     label: "Belum konfirmasi",
   },
   pending: {
     Icon: Circle,
-    className: "text-white/40",
+    className: "text-ui-text-muted",
     label: "Belum konfirmasi",
   },
 };
@@ -108,7 +108,7 @@ const AttendanceList = ({ scrimId, rows }: AttendanceListProps) => {
             </div>
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-medium text-ui-text">{name}</p>
-              <p className="truncate text-xs text-white/55">
+              <p className="truncate text-xs text-ui-text-2">
                 {row.member.position ?? formatMainRole(row.member.main_role)}
                 {row.member.jersey_number !== null
                   ? ` · #${row.member.jersey_number}`

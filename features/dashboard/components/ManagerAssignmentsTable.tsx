@@ -53,7 +53,7 @@ const ManagerAssignmentsTable = ({
 
   if (managers.length === 0) {
     return (
-      <p className="rounded-lg border border-white/5 bg-white/[0.02] px-4 py-6 text-center text-sm text-white/40">
+      <p className="rounded-lg border border-white/5 bg-white/[0.02] px-4 py-6 text-center text-sm text-ui-text-muted">
         Belum ada Manager yang di-assign. Gunakan &quot;Assign Role&quot; untuk menambahkan.
       </p>
     );
@@ -65,13 +65,13 @@ const ManagerAssignmentsTable = ({
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-white/5 bg-white/[0.02]">
-              <th className="px-4 py-3 text-left text-xs font-medium text-white/50">
+              <th className="px-4 py-3 text-left text-xs font-medium text-ui-text-2">
                 Manager
               </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-white/50">
+              <th className="px-4 py-3 text-left text-xs font-medium text-ui-text-2">
                 Tim
               </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-white/50">
+              <th className="px-4 py-3 text-left text-xs font-medium text-ui-text-2">
                 Divisi
               </th>
             </tr>
@@ -85,7 +85,7 @@ const ManagerAssignmentsTable = ({
               );
               return (
                 <tr key={m.id} className="transition hover:bg-white/[0.02]">
-                  <td className="px-4 py-3 text-white/80">
+                  <td className="px-4 py-3 text-ui-text">
                     {p?.full_name ?? p?.display_name ?? p?.username ?? "—"}
                   </td>
                   <td className="px-4 py-3">
@@ -98,10 +98,10 @@ const ManagerAssignmentsTable = ({
                         {org.name}
                       </button>
                     ) : (
-                      <span className="text-white/60">—</span>
+                      <span className="text-ui-text-2">—</span>
                     )}
                   </td>
-                  <td className="px-4 py-3 text-white/60">
+                  <td className="px-4 py-3 text-ui-text-2">
                     {orgDivisions.length > 0
                       ? orgDivisions.map((d) => d.name).join(", ")
                       : "—"}

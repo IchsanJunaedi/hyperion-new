@@ -17,12 +17,12 @@ const UserActiveTable = ({ users }: UserActiveTableProps) => {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-white/5 bg-white/[0.02]">
-              <th className="px-4 py-3 text-left text-xs font-medium text-white/50">Nama</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-white/50">Username</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-white/50">Email</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-white/50">Role</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-white/50">Divisi</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-white/50">WA</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-ui-text-2">Nama</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-ui-text-2">Username</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-ui-text-2">Email</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-ui-text-2">Role</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-ui-text-2">Divisi</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-ui-text-2">WA</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-white/5">
@@ -32,9 +32,9 @@ const UserActiveTable = ({ users }: UserActiveTableProps) => {
                 onClick={() => setSelected(u)}
                 className="cursor-pointer transition hover:bg-white/[0.04]"
               >
-                <td className="px-4 py-3 text-white/80">{u.fullName ?? "—"}</td>
-                <td className="px-4 py-3 text-white/60">{u.username ?? "—"}</td>
-                <td className="px-4 py-3 text-white/60">{u.email ?? "—"}</td>
+                <td className="px-4 py-3 text-ui-text">{u.fullName ?? "—"}</td>
+                <td className="px-4 py-3 text-ui-text-2">{u.username ?? "—"}</td>
+                <td className="px-4 py-3 text-ui-text-2">{u.email ?? "—"}</td>
                 <td className="px-4 py-3">
                   {u.role ? (
                     <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
@@ -42,14 +42,14 @@ const UserActiveTable = ({ users }: UserActiveTableProps) => {
                       u.role === "manager" ? "bg-green-500/10 text-green-400" :
                       u.role === "coach" ? "bg-blue-500/10 text-blue-400" :
                       u.role === "captain" ? "bg-purple-500/10 text-purple-400" :
-                      "bg-white/5 text-white/60"
+                      "bg-white/5 text-ui-text-2"
                     }`}>{u.role}</span>
                   ) : (
-                    <span className="text-xs text-white/30">none</span>
+                    <span className="text-xs text-ui-text-muted">none</span>
                   )}
                 </td>
-                <td className="px-4 py-3 text-white/60">{u.division ?? "—"}</td>
-                <td className="px-4 py-3 text-white/60">{u.phoneWa ?? "—"}</td>
+                <td className="px-4 py-3 text-ui-text-2">{u.division ?? "—"}</td>
+                <td className="px-4 py-3 text-ui-text-2">{u.phoneWa ?? "—"}</td>
               </tr>
             ))}
           </tbody>

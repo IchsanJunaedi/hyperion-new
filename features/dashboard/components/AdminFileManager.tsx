@@ -113,7 +113,7 @@ const AdminFileManager = ({
       <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center bg-zinc-900/40 border border-white/5 rounded-2xl p-5">
         <div className="space-y-1">
           <h2 className="text-lg font-bold text-ui-text tracking-tight">Total File Platform</h2>
-          <p className="text-xs text-white/50">Kelola semua file yang diupload oleh tim esports di Hyperion.</p>
+          <p className="text-xs text-ui-text-2">Kelola semua file yang diupload oleh tim esports di Hyperion.</p>
         </div>
         <div className="text-xs font-semibold px-3.5 py-1.5 rounded-full border border-white/5 bg-zinc-900/60 text-yellow-400">
           {files.length} File Terdaftar
@@ -124,7 +124,7 @@ const AdminFileManager = ({
       <div className="flex flex-col sm:flex-row gap-3 w-full">
         {/* Search */}
         <div className="relative flex-1">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-white/30" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-ui-text-muted" />
           <input
             type="text"
             value={searchTerm}
@@ -154,8 +154,8 @@ const AdminFileManager = ({
       {/* Files List Table/Card */}
       {filteredFiles.length === 0 ? (
         <div className="rounded-2xl border border-white/5 bg-zinc-900/20 p-12 text-center">
-          <File className="h-10 w-10 text-white/20 mx-auto mb-3" />
-          <p className="text-sm text-white/40">Tidak ada file yang cocok dengan pencarian.</p>
+          <File className="h-10 w-10 text-ui-text-muted mx-auto mb-3" />
+          <p className="text-sm text-ui-text-muted">Tidak ada file yang cocok dengan pencarian.</p>
         </div>
       ) : (
         <div className="overflow-x-auto rounded-2xl border border-white/10 bg-zinc-900/40 shadow-xl shadow-black/20">
@@ -188,12 +188,12 @@ const AdminFileManager = ({
                     {/* File Name with Clickable Download */}
                     <td className="px-5 py-3.5">
                       <div className="flex items-center gap-3">
-                        <File className="h-4 w-4 shrink-0 text-white/40 group-hover:text-yellow-400/80 transition-colors" />
+                        <File className="h-4 w-4 shrink-0 text-ui-text-muted group-hover:text-yellow-400/80 transition-colors" />
                         <button
                           type="button"
                           onClick={() => handleDownload(file.id, file.storage_path, file.file_name)}
                           disabled={downloadingId === file.id}
-                          className="min-w-0 font-medium text-sm text-white/80 hover:text-yellow-400 hover:underline text-left truncate transition-colors disabled:opacity-50"
+                          className="min-w-0 font-medium text-sm text-ui-text hover:text-yellow-400 hover:underline text-left truncate transition-colors disabled:opacity-50"
                         >
                           {file.file_name}
                         </button>
@@ -202,24 +202,24 @@ const AdminFileManager = ({
 
                     {/* Org Name */}
                     <td className="px-5 py-3.5">
-                      <div className="flex items-center gap-2 text-xs text-white/70">
-                        <Building2 className="h-3.5 w-3.5 text-white/30 shrink-0" />
+                      <div className="flex items-center gap-2 text-xs text-ui-text">
+                        <Building2 className="h-3.5 w-3.5 text-ui-text-muted shrink-0" />
                         <span>{file.orgName}</span>
                       </div>
                     </td>
 
                     {/* Size */}
-                    <td className="px-5 py-3.5 text-xs text-white/50 font-mono">
+                    <td className="px-5 py-3.5 text-xs text-ui-text-2 font-mono">
                       {formatFileSize(file.file_size)}
                     </td>
 
                     {/* Uploaded By */}
-                    <td className="px-5 py-3.5 text-xs text-white/60">
+                    <td className="px-5 py-3.5 text-xs text-ui-text-2">
                       {file.uploadedByName}
                     </td>
 
                     {/* Date */}
-                    <td className="px-5 py-3.5 text-xs text-white/40">
+                    <td className="px-5 py-3.5 text-xs text-ui-text-muted">
                       {date}
                     </td>
 
@@ -231,7 +231,7 @@ const AdminFileManager = ({
                           type="button"
                           onClick={() => handleDownload(file.id, file.storage_path, file.file_name)}
                           disabled={downloadingId === file.id}
-                          className="rounded-lg p-1.5 text-white/40 hover:bg-white/5 hover:text-ui-text transition disabled:opacity-40"
+                          className="rounded-lg p-1.5 text-ui-text-muted hover:bg-white/5 hover:text-ui-text transition disabled:opacity-40"
                           title="Unduh file"
                         >
                           {downloadingId === file.id ? (

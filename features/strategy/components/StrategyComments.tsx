@@ -122,8 +122,8 @@ const StrategyComments = ({
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-2">
-        <MessageSquare className="h-4 w-4 text-white/40" />
-        <span className="text-sm font-medium text-white/60">
+        <MessageSquare className="h-4 w-4 text-ui-text-muted" />
+        <span className="text-sm font-medium text-ui-text-2">
           Diskusi ({comments.length})
         </span>
       </div>
@@ -136,9 +136,9 @@ const StrategyComments = ({
               className="group flex gap-3 rounded-xl border border-white/5 bg-zinc-900/40 px-4 py-3"
             >
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium text-white/60">
+                <p className="text-xs font-medium text-ui-text-2">
                   {c.display_name ?? "Member"}
-                  <span className="ml-2 text-[10px] text-white/30">
+                  <span className="ml-2 text-[10px] text-ui-text-muted">
                     {new Date(c.created_at).toLocaleString("id-ID", {
                       day: "numeric",
                       month: "short",
@@ -147,14 +147,14 @@ const StrategyComments = ({
                     })}
                   </span>
                 </p>
-                <p className="mt-1 text-sm text-white/85 whitespace-pre-wrap">{c.content}</p>
+                <p className="mt-1 text-sm text-ui-text whitespace-pre-wrap">{c.content}</p>
               </div>
               {c.user_id === currentUserId && (
                 <button
                   type="button"
                   disabled={deletingId === c.id}
                   onClick={() => handleDelete(c.id)}
-                  className="opacity-0 group-hover:opacity-100 shrink-0 text-white/30 hover:text-red-400 transition cursor-pointer"
+                  className="opacity-0 group-hover:opacity-100 shrink-0 text-ui-text-muted hover:text-red-400 transition cursor-pointer"
                 >
                   {deletingId === c.id ? (
                     <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -183,7 +183,7 @@ const StrategyComments = ({
           type="button"
           disabled={addPending || !text.trim()}
           onClick={handleAdd}
-          className="shrink-0 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-xs font-medium text-white/70 transition hover:bg-white/10 hover:text-ui-text disabled:opacity-40 cursor-pointer"
+          className="shrink-0 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-xs font-medium text-ui-text transition hover:bg-white/10 hover:text-ui-text disabled:opacity-40 cursor-pointer"
         >
           {addPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Kirim"}
         </button>

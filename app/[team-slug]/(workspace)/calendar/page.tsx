@@ -133,7 +133,7 @@ export default async function CalendarPage({
       </div>
 
       {!canCreate && (
-        <p className="text-center text-xs text-white/30">
+        <p className="text-center text-xs text-ui-text-muted">
           Hanya captain atau manager yang dapat menambah event
         </p>
       )}

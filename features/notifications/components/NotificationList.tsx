@@ -42,7 +42,7 @@ const NotificationList = ({ userId, orgSlug, limit = 10, onClose }: Notification
   if (!data || data.length === 0) {
     return (
       <div className="scroll-premium max-h-96 overflow-y-auto p-4">
-        <p className="text-center text-sm text-white/50">
+        <p className="text-center text-sm text-ui-text-2">
           Belum ada notifikasi
         </p>
       </div>

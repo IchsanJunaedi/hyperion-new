@@ -42,7 +42,7 @@ function HeroChip({ name, onClick }: { name: string; onClick: () => void }) {
           onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
         />
       </div>
-      <span className="text-xs text-white/70">{name}</span>
+      <span className="text-xs text-ui-text">{name}</span>
     </button>
   );
 }
@@ -81,7 +81,7 @@ const HeroDetailPanel = ({ hero: initialHero, allHeroes, onClose }: HeroDetailPa
             <button
               type="button"
               onClick={() => setNavStack((prev) => prev.slice(0, -1))}
-              className="cursor-pointer text-white/40 hover:text-ui-text"
+              className="cursor-pointer text-ui-text-muted hover:text-ui-text"
             >
               <ArrowLeft className="h-4 w-4" />
             </button>
@@ -111,7 +111,7 @@ const HeroDetailPanel = ({ hero: initialHero, allHeroes, onClose }: HeroDetailPa
               )}
             </div>
           </div>
-          <button type="button" onClick={onClose} className="cursor-pointer text-white/40 hover:text-ui-text">
+          <button type="button" onClick={onClose} className="cursor-pointer text-ui-text-muted hover:text-ui-text">
             <X className="h-4 w-4" />
           </button>
         </div>
@@ -119,13 +119,13 @@ const HeroDetailPanel = ({ hero: initialHero, allHeroes, onClose }: HeroDetailPa
         {/* Body */}
         <div className="sidebar-scroll flex-1 overflow-y-auto">
           {isStub ? (
-            <p className="p-6 text-center text-sm text-white/40">Hero ini belum ada di tier list patch ini</p>
+            <p className="p-6 text-center text-sm text-ui-text-muted">Hero ini belum ada di tier list patch ini</p>
           ) : (
             <div className="space-y-5 p-4">
               <div>
-                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-white/40">Counters</p>
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ui-text-muted">Counters</p>
                 {counters.length === 0 ? (
-                  <p className="text-xs text-white/25">Belum ditambahkan</p>
+                  <p className="text-xs text-ui-text-muted">Belum ditambahkan</p>
                 ) : (
                   <div className="flex flex-wrap gap-2">
                     {counters.map((name) => (
@@ -136,9 +136,9 @@ const HeroDetailPanel = ({ hero: initialHero, allHeroes, onClose }: HeroDetailPa
               </div>
 
               <div>
-                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-white/40">Synergies</p>
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ui-text-muted">Synergies</p>
                 {synergies.length === 0 ? (
-                  <p className="text-xs text-white/25">Belum ditambahkan</p>
+                  <p className="text-xs text-ui-text-muted">Belum ditambahkan</p>
                 ) : (
                   <div className="flex flex-wrap gap-2">
                     {synergies.map((name) => (
@@ -150,15 +150,15 @@ const HeroDetailPanel = ({ hero: initialHero, allHeroes, onClose }: HeroDetailPa
 
               {current.draft_notes && (
                 <div>
-                  <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-white/40">Draft Notes</p>
-                  <p className="text-sm leading-relaxed text-white/70">{current.draft_notes}</p>
+                  <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-ui-text-muted">Draft Notes</p>
+                  <p className="text-sm leading-relaxed text-ui-text">{current.draft_notes}</p>
                 </div>
               )}
 
               {current.notes && (
                 <div>
-                  <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-white/40">Coach Notes</p>
-                  <p className="text-sm italic leading-relaxed text-white/50">{current.notes}</p>
+                  <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-ui-text-muted">Coach Notes</p>
+                  <p className="text-sm italic leading-relaxed text-ui-text-2">{current.notes}</p>
                 </div>
               )}
             </div>

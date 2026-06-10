@@ -117,18 +117,18 @@ const VodReviewSection = ({
         className="flex w-full items-center justify-between px-5 py-3 text-left hover:bg-white/[0.02] transition-colors cursor-pointer"
       >
         <div className="flex items-center gap-2">
-          <Video className="h-3.5 w-3.5 text-white/40" />
-          <span className="text-xs font-semibold text-white/60">VOD Review</span>
+          <Video className="h-3.5 w-3.5 text-ui-text-muted" />
+          <span className="text-xs font-semibold text-ui-text-2">VOD Review</span>
           {timestamps.length > 0 && (
-            <span className="rounded-full bg-white/10 px-1.5 py-0.5 text-[10px] font-bold text-white/60">
+            <span className="rounded-full bg-white/10 px-1.5 py-0.5 text-[10px] font-bold text-ui-text-2">
               {timestamps.length}
             </span>
           )}
         </div>
         {expanded ? (
-          <ChevronUp className="h-3.5 w-3.5 text-white/30" />
+          <ChevronUp className="h-3.5 w-3.5 text-ui-text-muted" />
         ) : (
-          <ChevronDown className="h-3.5 w-3.5 text-white/30" />
+          <ChevronDown className="h-3.5 w-3.5 text-ui-text-muted" />
         )}
       </button>
 
@@ -136,7 +136,7 @@ const VodReviewSection = ({
         <div className="px-5 pb-4 space-y-3">
           {/* Timestamp list */}
           {timestamps.length === 0 && !showForm && (
-            <p className="text-xs text-white/30 py-1">Belum ada timestamp.</p>
+            <p className="text-xs text-ui-text-muted py-1">Belum ada timestamp.</p>
           )}
 
           {timestamps.length > 0 && (
@@ -156,7 +156,7 @@ const VodReviewSection = ({
                         @{ts.tagged_player_name}
                       </span>
                     )}
-                    <span className="text-xs text-white/80">{ts.note}</span>
+                    <span className="text-xs text-ui-text">{ts.note}</span>
                   </div>
                   {canDelete(ts) && (
                     <button
@@ -164,7 +164,7 @@ const VodReviewSection = ({
                       onClick={() => handleDelete(ts.id)}
                       disabled={deletingId === ts.id}
                       className={cn(
-                        "shrink-0 rounded p-0.5 text-white/20 opacity-0 group-hover:opacity-100 transition-opacity hover:text-red-400 cursor-pointer",
+                        "shrink-0 rounded p-0.5 text-ui-text-muted opacity-0 group-hover:opacity-100 transition-opacity hover:text-red-400 cursor-pointer",
                         deletingId === ts.id && "opacity-100 animate-pulse",
                       )}
                     >
@@ -180,7 +180,7 @@ const VodReviewSection = ({
           {canEdit && !showForm && (
             <button
               onClick={() => setShowForm(true)}
-              className="flex items-center gap-1.5 text-xs text-white/40 hover:text-white/70 transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 text-xs text-ui-text-muted hover:text-ui-text transition-colors cursor-pointer"
             >
               <Plus className="h-3.5 w-3.5" />
               Tambah Timestamp
@@ -191,7 +191,7 @@ const VodReviewSection = ({
             <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3 space-y-2.5">
               {/* Time input */}
               <div className="space-y-1">
-                <label className="text-[10px] font-semibold uppercase tracking-wider text-white/40">
+                <label className="text-[10px] font-semibold uppercase tracking-wider text-ui-text-muted">
                   Waktu (MM:SS)
                 </label>
                 <input
@@ -215,7 +215,7 @@ const VodReviewSection = ({
               {/* Player dropdown */}
               {players.length > 0 && (
                 <div className="space-y-1">
-                  <label className="text-[10px] font-semibold uppercase tracking-wider text-white/40">
+                  <label className="text-[10px] font-semibold uppercase tracking-wider text-ui-text-muted">
                     Player (opsional)
                   </label>
                   <select
@@ -235,7 +235,7 @@ const VodReviewSection = ({
 
               {/* Note */}
               <div className="space-y-1">
-                <label className="text-[10px] font-semibold uppercase tracking-wider text-white/40">
+                <label className="text-[10px] font-semibold uppercase tracking-wider text-ui-text-muted">
                   Catatan
                 </label>
                 <input
@@ -265,7 +265,7 @@ const VodReviewSection = ({
                     setNoteText("");
                     setTimeError(false);
                   }}
-                  className="rounded-md px-3 py-1.5 text-xs text-white/40 hover:text-white/70 transition-colors cursor-pointer"
+                  className="rounded-md px-3 py-1.5 text-xs text-ui-text-muted hover:text-ui-text transition-colors cursor-pointer"
                 >
                   Batal
                 </button>

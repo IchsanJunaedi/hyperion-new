@@ -92,7 +92,7 @@ const ROLE_FILTERS: Array<{ value: RoleFilter; label: string }> = [
 ];
 
 const CLASS_FILTERS: Array<{ value: ClassFilter; label: string; color: string }> = [
-  { value: "all", label: "Semua", color: "border-ui-border text-white/40 hover:border-white/20 hover:text-white/70" },
+  { value: "all", label: "Semua", color: "border-ui-border text-ui-text-muted hover:border-white/20 hover:text-ui-text" },
   { value: "Fighter", label: "Fighter", color: "border-orange-500/50 bg-orange-500/10 text-orange-400" },
   { value: "Tank", label: "Tank", color: "border-blue-500/50 bg-blue-500/10 text-blue-400" },
   { value: "Assassin", label: "Assassin", color: "border-red-500/50 bg-red-500/10 text-red-400" },
@@ -176,12 +176,12 @@ function HeroCard({
           </div>
         )}
       </div>
-      <p className="mt-1.5 truncate px-0.5 text-center text-[10px] font-medium leading-tight text-white/75">
+      <p className="mt-1.5 truncate px-0.5 text-center text-[10px] font-medium leading-tight text-ui-text">
         {hero.hero_name}
       </p>
       <div className="mt-0.5 flex justify-center gap-1">
         {hero.hero_class && (
-          <span className={cn("text-[7px] font-bold leading-none", CLASS_COLORS[hero.hero_class] ?? "text-white/40")}>
+          <span className={cn("text-[7px] font-bold leading-none", CLASS_COLORS[hero.hero_class] ?? "text-ui-text-muted")}>
             {hero.hero_class}
           </span>
         )}
@@ -298,7 +298,7 @@ function HeroPickerPanel({
     <div className={cn("mt-3 rounded-xl border bg-ui-bg p-4", style.border)}>
       {/* Search bar */}
       <div className="mb-3 flex items-center gap-2 rounded-lg border border-ui-border bg-ui-bg px-3 py-2">
-        <Search className="h-3.5 w-3.5 shrink-0 text-white/30" />
+        <Search className="h-3.5 w-3.5 shrink-0 text-ui-text-muted" />
         <input
           ref={searchRef}
           value={search}
@@ -307,7 +307,7 @@ function HeroPickerPanel({
           className="flex-1 bg-transparent text-sm text-ui-text placeholder-white/30 outline-none"
         />
         {search && (
-          <button type="button" onClick={() => setSearch("")} className="cursor-pointer text-white/30 hover:text-ui-text">
+          <button type="button" onClick={() => setSearch("")} className="cursor-pointer text-ui-text-muted hover:text-ui-text">
             <X className="h-3.5 w-3.5" />
           </button>
         )}
@@ -325,14 +325,14 @@ function HeroPickerPanel({
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={getHeroImageUrl(heroName)} alt={heroName} className="h-full w-full object-cover" />
                   </div>
-                  <span className="max-w-[72px] truncate text-[10px] text-white/80">{heroName}</span>
-                  <button type="button" onClick={() => toggleHero(heroName)} className="cursor-pointer text-white/30 hover:text-white/80">
+                  <span className="max-w-[72px] truncate text-[10px] text-ui-text">{heroName}</span>
+                  <button type="button" onClick={() => toggleHero(heroName)} className="cursor-pointer text-ui-text-muted hover:text-ui-text">
                     <X className="h-2.5 w-2.5" />
                   </button>
                 </div>
               ))}
             </div>
-            <button type="button" onClick={clearSelection} className="shrink-0 cursor-pointer text-white/30 hover:text-ui-text">
+            <button type="button" onClick={clearSelection} className="shrink-0 cursor-pointer text-ui-text-muted hover:text-ui-text">
               <X className="h-4 w-4" />
             </button>
           </div>
@@ -352,7 +352,7 @@ function HeroPickerPanel({
                   "cursor-pointer rounded-full border px-2.5 py-0.5 text-xs font-medium transition",
                   configRole === r.value
                     ? cn(ROLE_COLORS[r.value!], ROLE_BG[r.value!], "border-transparent")
-                    : "border-ui-border text-white/40 hover:border-white/20 hover:text-white/70",
+                    : "border-ui-border text-ui-text-muted hover:border-white/20 hover:text-ui-text",
                 )}
               >
                 {r.label}
@@ -369,7 +369,7 @@ function HeroPickerPanel({
                 "inline-flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition",
                 configBan
                   ? "border-red-500/50 bg-red-500/10 text-red-400"
-                  : "border-ui-border text-white/40 hover:border-white/20 hover:text-white/60",
+                  : "border-ui-border text-ui-text-muted hover:border-white/20 hover:text-ui-text-2",
               )}
             >
               <Shield className="h-3 w-3" />
@@ -382,7 +382,7 @@ function HeroPickerPanel({
                 "inline-flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition",
                 configLearn
                   ? "border-yellow-500/50 bg-yellow-500/10 text-yellow-400"
-                  : "border-ui-border text-white/40 hover:border-white/20 hover:text-white/60",
+                  : "border-ui-border text-ui-text-muted hover:border-white/20 hover:text-ui-text-2",
               )}
             >
               <Star className="h-3 w-3" />
@@ -408,7 +408,7 @@ function HeroPickerPanel({
       {/* Hero grid */}
       <div className="sidebar-scroll max-h-48 overflow-y-auto">
         {filtered.length === 0 ? (
-          <p className="py-4 text-center text-xs text-white/30">Hero tidak ditemukan</p>
+          <p className="py-4 text-center text-xs text-ui-text-muted">Hero tidak ditemukan</p>
         ) : (
           <div className="flex flex-wrap gap-2">
             {filtered.map((heroName) => {
@@ -436,7 +436,7 @@ function HeroPickerPanel({
                   </div>
                   <p className={cn(
                     "mt-0.5 truncate text-center text-[8px] transition",
-                    isSelected ? "text-white/90 font-semibold" : "text-white/50 group-hover:text-white/80",
+                    isSelected ? "text-ui-text font-semibold" : "text-ui-text-2 group-hover:text-ui-text",
                   )}>
                     {heroName}
                   </p>
@@ -447,7 +447,7 @@ function HeroPickerPanel({
         )}
       </div>
 
-      <p className="mt-3 text-[10px] text-white/25">
+      <p className="mt-3 text-[10px] text-ui-text-muted">
         {available.length} hero tersedia · Klik beberapa hero → atur lane & flag → Tambahkan
       </p>
     </div>
@@ -650,10 +650,10 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-ui-text sm:text-3xl">Meta MLBB</h1>
-          <p className="mt-1 text-sm text-white/50">
+          <p className="mt-1 text-sm text-ui-text-2">
             Tier list hero per patch — dikelola coach
             {activePatch?.updated_at && (
-              <span className="ml-2 text-white/30">
+              <span className="ml-2 text-ui-text-muted">
                 · Diperbarui {new Date(activePatch.updated_at).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
               </span>
             )}
@@ -663,7 +663,7 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
           <button
             type="button"
             onClick={() => window.print()}
-            className="inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-md border border-white/10 px-3 text-xs text-white/60 transition hover:bg-white/5 hover:text-ui-text"
+            className="inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-md border border-white/10 px-3 text-xs text-ui-text-2 transition hover:bg-white/5 hover:text-ui-text"
           >
             <Download className="h-3.5 w-3.5" />
             Export PDF
@@ -676,7 +676,7 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
                 "inline-flex h-9 cursor-pointer items-center gap-2 rounded-md border px-3 text-sm transition",
                 editMode
                   ? "border-yellow-500/50 bg-yellow-500/10 text-yellow-400"
-                  : "border-ui-border text-white/60 hover:bg-white/5",
+                  : "border-ui-border text-ui-text-2 hover:bg-white/5",
               )}
             >
               <Pencil className="h-3.5 w-3.5" />
@@ -688,7 +688,7 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
 
       {/* Patch selector */}
       <div className="print-hide flex flex-wrap items-center gap-3">
-        <span className="text-xs text-white/50">Patch:</span>
+        <span className="text-xs text-ui-text-2">Patch:</span>
         <div className="flex flex-wrap gap-1.5">
           {patchList.map((p) => (
             <button
@@ -703,21 +703,21 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
                 "cursor-pointer rounded-full border px-3 py-1 text-xs transition",
                 activePatch?.id === p.id
                   ? "border-yellow-500/50 bg-yellow-500/10 text-yellow-400"
-                  : "border-ui-border text-white/50 hover:border-white/20 hover:text-white/80",
+                  : "border-ui-border text-ui-text-2 hover:border-white/20 hover:text-ui-text",
               )}
             >
               {p.patch_version}
             </button>
           ))}
           {patchList.length === 0 && (
-            <span className="text-xs italic text-white/30">Belum ada patch</span>
+            <span className="text-xs italic text-ui-text-muted">Belum ada patch</span>
           )}
         </div>
         {canEdit && (
           <button
             type="button"
             onClick={() => setShowNewPatchForm((v) => !v)}
-            className="inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-full border border-dashed border-ui-border px-3 text-xs text-white/40 transition hover:border-white/20 hover:text-white/70"
+            className="inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-full border border-dashed border-ui-border px-3 text-xs text-ui-text-muted transition hover:border-white/20 hover:text-ui-text"
           >
             <Plus className="h-3 w-3" />
             Patch Baru
@@ -735,7 +735,7 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
               "inline-flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border transition",
               showPatchSettings
                 ? "border-yellow-500/50 bg-yellow-500/10 text-yellow-400"
-                : "border-ui-border text-white/40 hover:border-white/20 hover:text-white/70",
+                : "border-ui-border text-ui-text-muted hover:border-white/20 hover:text-ui-text",
             )}
           >
             <Settings className="h-3.5 w-3.5" />
@@ -746,7 +746,7 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
       {/* New patch form */}
       {showNewPatchForm && canEdit && (
         <div className="print-hide space-y-3 rounded-xl border border-ui-border bg-ui-surface p-4">
-          <p className="text-xs font-medium text-white/70">Tambah Patch Baru</p>
+          <p className="text-xs font-medium text-ui-text">Tambah Patch Baru</p>
           <div className="flex gap-2">
             <input
               value={newPatchVersion}
@@ -765,7 +765,7 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
             <button
               type="button"
               onClick={() => setShowNewPatchForm(false)}
-              className="cursor-pointer rounded-md border border-ui-border px-4 py-1.5 text-sm text-white/60 transition hover:bg-white/5"
+              className="cursor-pointer rounded-md border border-ui-border px-4 py-1.5 text-sm text-ui-text-2 transition hover:bg-white/5"
             >
               Batal
             </button>
@@ -784,10 +784,10 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
       {/* Patch settings form */}
       {showPatchSettings && activePatch && canEdit && (
         <div className="print-hide space-y-4 rounded-xl border border-ui-border bg-ui-surface p-4">
-          <p className="text-xs font-medium text-white/70">Pengaturan Patch {activePatch.patch_version}</p>
+          <p className="text-xs font-medium text-ui-text">Pengaturan Patch {activePatch.patch_version}</p>
 
           <div>
-            <label className="mb-1 block text-xs text-white/50">Catatan patch</label>
+            <label className="mb-1 block text-xs text-ui-text-2">Catatan patch</label>
             <input
               value={settingsNotes}
               onChange={(e) => setSettingsNotes(e.target.value)}
@@ -797,7 +797,7 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
           </div>
 
           <div>
-            <label className="mb-2 block text-xs text-white/50">Deskripsi tier</label>
+            <label className="mb-2 block text-xs text-ui-text-2">Deskripsi tier</label>
             <div className="space-y-2">
               {(["SS", "S", "A", "B", "C", "D"] as Tier[]).map((t) => (
                 <div key={t} className="flex items-center gap-3">
@@ -819,7 +819,7 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
             <button
               type="button"
               onClick={() => setShowPatchSettings(false)}
-              className="cursor-pointer rounded-md border border-ui-border px-4 py-1.5 text-sm text-white/60 transition hover:bg-white/5"
+              className="cursor-pointer rounded-md border border-ui-border px-4 py-1.5 text-sm text-ui-text-2 transition hover:bg-white/5"
             >
               Batal
             </button>
@@ -865,7 +865,7 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
 
       {!activePatch ? (
         <div className="rounded-xl border border-dashed border-white/10 bg-zinc-900/30 p-10 text-center">
-          <p className="text-sm text-white/50">
+          <p className="text-sm text-ui-text-2">
             Belum ada patch.
             {canEdit && " Klik \"Patch Baru\" untuk mulai tracking meta."}
           </p>
@@ -873,7 +873,7 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
       ) : (
         <>
           {activePatch.notes && (
-            <p className="text-xs italic text-white/50">{activePatch.notes}</p>
+            <p className="text-xs italic text-ui-text-2">{activePatch.notes}</p>
           )}
 
           {/* Tab navigation */}
@@ -893,7 +893,7 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
                     "-mb-px cursor-pointer border-b-2 px-4 py-2 text-sm transition",
                     activeTab === tab
                       ? "border-yellow-400 text-yellow-400"
-                      : "border-transparent text-white/50 hover:text-white/80",
+                      : "border-transparent text-ui-text-2 hover:text-ui-text",
                   )}
                 >
                   {tab === "tier" && "Tier List"}
@@ -911,7 +911,7 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
               {/* Filter bars */}
               <div className="print-hide space-y-2">
                 <div className="flex flex-wrap items-center gap-1.5">
-                  <span className="text-xs text-white/40">Lane:</span>
+                  <span className="text-xs text-ui-text-muted">Lane:</span>
                   {ROLE_FILTERS.map((rf) => (
                     <button
                       key={rf.value}
@@ -921,7 +921,7 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
                         "cursor-pointer rounded-full border px-3 py-1 text-xs font-medium transition",
                         roleFilter === rf.value
                           ? "border-yellow-500/50 bg-yellow-500/10 text-yellow-400"
-                          : "border-ui-border text-white/40 hover:border-white/20 hover:text-white/70",
+                          : "border-ui-border text-ui-text-muted hover:border-white/20 hover:text-ui-text",
                       )}
                     >
                       {rf.label}
@@ -929,7 +929,7 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
                   ))}
                 </div>
                 <div className="flex flex-wrap items-center gap-1.5">
-                  <span className="text-xs text-white/40">Role:</span>
+                  <span className="text-xs text-ui-text-muted">Role:</span>
                   {CLASS_FILTERS.map((cf) => (
                     <button
                       key={cf.value}
@@ -939,7 +939,7 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
                         "cursor-pointer rounded-full border px-3 py-1 text-xs font-medium transition",
                         classFilter === cf.value
                           ? cf.color
-                          : "border-ui-border text-white/40 hover:border-white/20 hover:text-white/70",
+                          : "border-ui-border text-ui-text-muted hover:border-white/20 hover:text-ui-text",
                       )}
                     >
                       {cf.label}
@@ -949,14 +949,14 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
                 {/* Active filter indicator */}
                 {(roleFilter !== "all" || classFilter !== "all") && (
                   <div className="flex items-center gap-2 pt-0.5">
-                    <span className="text-[10px] text-white/30">
+                    <span className="text-[10px] text-ui-text-muted">
                       {filteredHeroes.length} hero ditampilkan
                       {roleFilter !== "all" && classFilter !== "all" && " (2 filter aktif)"}
                     </span>
                     <button
                       type="button"
                       onClick={() => { setRoleFilter("all"); setClassFilter("all"); }}
-                      className="cursor-pointer text-[10px] text-white/30 underline hover:text-white/60"
+                      className="cursor-pointer text-[10px] text-ui-text-muted underline hover:text-ui-text-2"
                     >
                       Reset filter
                     </button>
@@ -988,10 +988,10 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
                           <div className={cn("flex h-10 w-10 items-center justify-center rounded-lg text-xl font-black", style.badge)}>
                             {tier}
                           </div>
-                          <span className="text-[9px] text-white/30">
+                          <span className="text-[9px] text-ui-text-muted">
                             {roleFilter === "all" ? totalInTier : `${tierHeroes.length}/${totalInTier}`}
                           </span>
-                          <span className="mt-0.5 hidden max-w-[80px] text-center text-[8px] italic leading-tight text-white/25 sm:block">
+                          <span className="mt-0.5 hidden max-w-[80px] text-center text-[8px] italic leading-tight text-ui-text-muted sm:block">
                             {(activePatch?.tier_descriptions as Record<string, string> | null)?.[tier] ?? TIER_DESCRIPTIONS_DEFAULT[tier]}
                           </span>
                         </div>
@@ -1010,7 +1010,7 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
                             />
                           ))}
                           {tierHeroes.length === 0 && !editMode && (
-                            <span className="self-center text-xs italic text-white/20">Belum ada hero</span>
+                            <span className="self-center text-xs italic text-ui-text-muted">Belum ada hero</span>
                           )}
                           {editMode && roleFilter === "all" && (
                             <button
@@ -1020,7 +1020,7 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
                                 "print-hide inline-flex h-[72px] w-[72px] shrink-0 cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border border-dashed transition",
                                 isOpen
                                   ? `${style.activeBorder} bg-white/5 ${style.label}`
-                                  : "border-white/10 text-white/30 hover:border-white/30 hover:text-white/60",
+                                  : "border-white/10 text-ui-text-muted hover:border-white/30 hover:text-ui-text-2",
                               )}
                             >
                               {isOpen ? <X className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
@@ -1074,7 +1074,7 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
           {activeTab === "ban" && (
             <div>
               {banHeroes.length === 0 ? (
-                <p className="py-8 text-center text-sm text-white/40">
+                <p className="py-8 text-center text-sm text-ui-text-muted">
                   Belum ada hero yang ditandai sebagai ban priority.
                   {canEdit && " Tandai hero di Tier List dengan flag Ban Priority."}
                 </p>
@@ -1094,7 +1094,7 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
                             {h.tier}
                           </div>
                         </div>
-                        <p className="mt-1.5 truncate px-0.5 text-center text-[10px] font-medium leading-tight text-white/75">{h.hero_name}</p>
+                        <p className="mt-1.5 truncate px-0.5 text-center text-[10px] font-medium leading-tight text-ui-text">{h.hero_name}</p>
                         {h.role_tag && (
                           <div className="mt-0.5 flex justify-center">
                             <span className={cn("rounded-sm px-1 py-0.5 text-[7px] font-bold leading-none", ROLE_COLORS[h.role_tag], ROLE_BG[h.role_tag])}>
@@ -1119,7 +1119,7 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
           {activeTab === "learn" && (
             <div className="space-y-5">
               {learnHeroes.length === 0 ? (
-                <p className="py-8 text-center text-sm text-white/40">
+                <p className="py-8 text-center text-sm text-ui-text-muted">
                   Belum ada hero yang ditandai sebagai priority to learn.
                   {canEdit && " Tandai hero di Tier List dengan flag Priority to Learn."}
                 </p>
@@ -1127,7 +1127,7 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
                 (Object.entries(learnByRole) as [RoleKey, MetaHeroRating[]][]).map(([role, roleHeroes]) => {
                   if (roleHeroes.length === 0) return null;
                   const label = role === "untagged" ? "Tanpa Lane" : (ROLE_DISPLAY[role] ?? role);
-                  const color = role === "untagged" ? "text-white/60" : (ROLE_COLORS[role] ?? "text-white/60");
+                  const color = role === "untagged" ? "text-ui-text-2" : (ROLE_COLORS[role] ?? "text-ui-text-2");
                   return (
                     <div key={role} className="space-y-3">
                       <p className={cn("text-xs font-semibold uppercase tracking-wide", color)}>{label}</p>
@@ -1146,7 +1146,7 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
                                   {h.tier}
                                 </div>
                               </div>
-                              <p className="mt-1.5 truncate px-0.5 text-center text-[10px] font-medium leading-tight text-white/75">{h.hero_name}</p>
+                              <p className="mt-1.5 truncate px-0.5 text-center text-[10px] font-medium leading-tight text-ui-text">{h.hero_name}</p>
                               {h.role_tag && (
                                 <div className="mt-0.5 flex justify-center">
                                   <span className={cn("rounded-sm px-1 py-0.5 text-[7px] font-bold leading-none", ROLE_COLORS[h.role_tag], ROLE_BG[h.role_tag])}>
@@ -1208,7 +1208,7 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
 
             if (noChanges) {
               return (
-                <p className="py-8 text-center text-sm text-white/40">
+                <p className="py-8 text-center text-sm text-ui-text-muted">
                   Tidak ada perubahan dibanding patch sebelumnya.
                 </p>
               );
@@ -1222,19 +1222,19 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={getHeroImageUrl(hero.hero_name)} alt={hero.hero_name} className="h-full w-full object-cover" />
                   </div>
-                  <span className="flex-1 text-xs font-medium text-white/80">{hero.hero_name}</span>
+                  <span className="flex-1 text-xs font-medium text-ui-text">{hero.hero_name}</span>
                   {type === "buff" && oldTier && (
                     <div className="flex items-center gap-1.5">
-                      <span className={cn("rounded px-1.5 py-0.5 text-[10px] font-black", TIER_STYLES[oldTier as Tier]?.badge ?? "bg-white/10 text-white/40")}>{oldTier}</span>
-                      <span className="text-[10px] text-white/30">→</span>
+                      <span className={cn("rounded px-1.5 py-0.5 text-[10px] font-black", TIER_STYLES[oldTier as Tier]?.badge ?? "bg-white/10 text-ui-text-muted")}>{oldTier}</span>
+                      <span className="text-[10px] text-ui-text-muted">→</span>
                       <span className={cn("rounded px-1.5 py-0.5 text-[10px] font-black", style.badge)}>{hero.tier}</span>
                       <span className="ml-1 rounded bg-emerald-500/15 px-1.5 py-0.5 text-[9px] font-semibold text-emerald-400">BUFF</span>
                     </div>
                   )}
                   {type === "nerf" && oldTier && (
                     <div className="flex items-center gap-1.5">
-                      <span className={cn("rounded px-1.5 py-0.5 text-[10px] font-black", TIER_STYLES[oldTier as Tier]?.badge ?? "bg-white/10 text-white/40")}>{oldTier}</span>
-                      <span className="text-[10px] text-white/30">→</span>
+                      <span className={cn("rounded px-1.5 py-0.5 text-[10px] font-black", TIER_STYLES[oldTier as Tier]?.badge ?? "bg-white/10 text-ui-text-muted")}>{oldTier}</span>
+                      <span className="text-[10px] text-ui-text-muted">→</span>
                       <span className={cn("rounded px-1.5 py-0.5 text-[10px] font-black", style.badge)}>{hero.tier}</span>
                       <span className="ml-1 rounded bg-rose-500/15 px-1.5 py-0.5 text-[9px] font-semibold text-rose-400">NERF</span>
                     </div>
@@ -1246,7 +1246,7 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
                     </div>
                   )}
                   {type === "removed" && (
-                    <span className="rounded bg-white/10 px-1.5 py-0.5 text-[9px] font-semibold text-white/40">REMOVED</span>
+                    <span className="rounded bg-white/10 px-1.5 py-0.5 text-[9px] font-semibold text-ui-text-muted">REMOVED</span>
                   )}
                   {type === "ban" && (
                     <span className="rounded bg-red-500/15 px-1.5 py-0.5 text-[9px] font-semibold text-red-400">BAN PRIORITY</span>
@@ -1305,7 +1305,7 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
                 )}
                 {removed.length > 0 && (
                   <div className="space-y-2">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-white/40">Dihapus ({removed.length})</p>
+                    <p className="text-xs font-semibold uppercase tracking-wide text-ui-text-muted">Dihapus ({removed.length})</p>
                     <div className="space-y-1.5">
                       {removed.map((hero) => <ChangeRow key={hero.id} hero={hero} type="removed" />)}
                     </div>

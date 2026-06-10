@@ -351,7 +351,7 @@ const WorkspaceSidebar = ({
           </div>
           {user.role && (
             <span
-              className={`shrink-0 text-[10px] font-bold uppercase tracking-widest ${ROLE_BADGE[user.role] ?? "text-white/50"}`}
+              className={`shrink-0 text-[10px] font-bold uppercase tracking-widest ${ROLE_BADGE[user.role] ?? "text-ui-text-2"}`}
             >
               {user.role}
             </span>

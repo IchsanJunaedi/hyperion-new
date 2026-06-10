@@ -64,7 +64,7 @@ const CalendarRsvpButtons = ({
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <span className="text-xs text-white/40 mr-1">Konfirmasi kehadiran:</span>
+      <span className="text-xs text-ui-text-muted mr-1">Konfirmasi kehadiran:</span>
       {OPTIONS.map(({ value, label, Icon, active, hover }) => {
         const isActive = currentStatus === value;
         return (
@@ -76,7 +76,7 @@ const CalendarRsvpButtons = ({
             className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition disabled:opacity-50 cursor-pointer ${
               isActive
                 ? active
-                : `border-white/10 text-white/50 ${hover} hover:bg-white/5`
+                : `border-white/10 text-ui-text-2 ${hover} hover:bg-white/5`
             }`}
           >
             {pending && isActive ? (

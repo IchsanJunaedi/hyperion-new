@@ -125,12 +125,12 @@ const ContextFiles = ({
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-white/60 uppercase tracking-wide">
+        <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-ui-text-2 uppercase tracking-wide">
           <Paperclip className="h-3.5 w-3.5" />
           File Terlampir
         </span>
         {canUpload && (
-          <label className="inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-md border border-white/10 px-2.5 text-xs text-white/60 transition hover:bg-white/5 hover:text-ui-text">
+          <label className="inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-md border border-white/10 px-2.5 text-xs text-ui-text-2 transition hover:bg-white/5 hover:text-ui-text">
             {uploading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Upload className="h-3 w-3" />}
             {uploading ? "Mengupload..." : "Upload"}
             <input
@@ -149,7 +149,7 @@ const ContextFiles = ({
       )}
 
       {files.length === 0 ? (
-        <p className="text-xs text-white/35">Belum ada file terlampir.</p>
+        <p className="text-xs text-ui-text-muted">Belum ada file terlampir.</p>
       ) : (
         <div className="divide-y divide-white/5 rounded-lg border border-white/5">
           {files.map((f) => (
@@ -157,21 +157,21 @@ const ContextFiles = ({
               key={f.id}
               className="flex items-center gap-2.5 px-3 py-2 transition hover:bg-white/[0.02]"
             >
-              <File className="h-3.5 w-3.5 shrink-0 text-white/35" />
+              <File className="h-3.5 w-3.5 shrink-0 text-ui-text-muted" />
               <button
                 type="button"
                 disabled={openingId === f.id}
                 onClick={() => handleOpen(f)}
-                className="min-w-0 flex-1 cursor-pointer truncate text-left text-xs text-white/75 hover:text-ui-text hover:underline underline-offset-2 disabled:opacity-50"
+                className="min-w-0 flex-1 cursor-pointer truncate text-left text-xs text-ui-text hover:text-ui-text hover:underline underline-offset-2 disabled:opacity-50"
               >
                 {stripTimestampPrefix(f.file_name)}
               </button>
               {openingId === f.id ? (
-                <Loader2 className="h-3 w-3 animate-spin text-white/40 shrink-0" />
+                <Loader2 className="h-3 w-3 animate-spin text-ui-text-muted shrink-0" />
               ) : (
-                <ExternalLink className="h-3 w-3 text-white/30 shrink-0" />
+                <ExternalLink className="h-3 w-3 text-ui-text-muted shrink-0" />
               )}
-              <span className="shrink-0 text-[10px] text-white/30">
+              <span className="shrink-0 text-[10px] text-ui-text-muted">
                 {formatSize(f.file_size)}
               </span>
             </div>

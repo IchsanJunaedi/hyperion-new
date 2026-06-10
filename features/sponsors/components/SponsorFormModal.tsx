@@ -136,7 +136,7 @@ const SponsorFormModal = ({ open, onClose, orgId, editing, onSaved, organization
   }
 
   const inputCls = "w-full rounded-md border border-ui-border bg-ui-bg px-3 py-2 text-sm text-ui-text placeholder-white/30 outline-none focus:border-white/30";
-  const labelCls = "mb-1 block text-xs font-medium text-white/60";
+  const labelCls = "mb-1 block text-xs font-medium text-ui-text-2";
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/60 p-4 pt-12">
@@ -145,7 +145,7 @@ const SponsorFormModal = ({ open, onClose, orgId, editing, onSaved, organization
           <h2 className="text-sm font-semibold text-ui-text">
             {editing ? "Edit Sponsor" : "Tambah Sponsor"}
           </h2>
-          <button type="button" onClick={onClose} className="cursor-pointer text-white/40 hover:text-ui-text">
+          <button type="button" onClick={onClose} className="cursor-pointer text-ui-text-muted hover:text-ui-text">
             <X className="h-4 w-4" />
           </button>
         </div>
@@ -188,7 +188,7 @@ const SponsorFormModal = ({ open, onClose, orgId, editing, onSaved, organization
                     "cursor-pointer rounded-full border px-3 py-1 text-xs transition",
                     form.status === s.value
                       ? "border-yellow-500/50 bg-yellow-500/10 text-yellow-400"
-                      : "border-ui-border text-white/40 hover:border-white/20 hover:text-white/60",
+                      : "border-ui-border text-ui-text-muted hover:border-white/20 hover:text-ui-text-2",
                   )}
                 >
                   {s.label}
@@ -204,7 +204,7 @@ const SponsorFormModal = ({ open, onClose, orgId, editing, onSaved, organization
               {form.logo_url ? (
                 <img src={form.logo_url} alt="Logo" className="h-12 w-12 rounded-md object-contain bg-ui-bg border border-ui-border" />
               ) : (
-                <div className="flex h-12 w-12 items-center justify-center rounded-md border border-dashed border-ui-border bg-ui-bg text-white/30">
+                <div className="flex h-12 w-12 items-center justify-center rounded-md border border-dashed border-ui-border bg-ui-bg text-ui-text-muted">
                   <ImagePlus className="h-5 w-5" />
                 </div>
               )}
@@ -213,14 +213,14 @@ const SponsorFormModal = ({ open, onClose, orgId, editing, onSaved, organization
                   type="button"
                   disabled={logoUploading}
                   onClick={() => logoInputRef.current?.click()}
-                  className="inline-flex h-8 items-center gap-1.5 rounded-md border border-ui-border px-3 text-xs text-white/60 transition hover:bg-white/5 hover:text-ui-text disabled:opacity-50 cursor-pointer"
+                  className="inline-flex h-8 items-center gap-1.5 rounded-md border border-ui-border px-3 text-xs text-ui-text-2 transition hover:bg-white/5 hover:text-ui-text disabled:opacity-50 cursor-pointer"
                 >
                   {logoUploading ? <Loader2 className="h-3 w-3 animate-spin" /> : <ImagePlus className="h-3 w-3" />}
                   {logoUploading ? "Mengupload..." : "Upload logo"}
                 </button>
                 <input ref={logoInputRef} type="file" accept="image/png,image/jpeg,image/webp" className="hidden" onChange={handleLogoUpload} />
                 {form.logo_url && (
-                  <button type="button" onClick={() => set("logo_url", "")} className="block text-[10px] text-white/30 hover:text-red-400 cursor-pointer">
+                  <button type="button" onClick={() => set("logo_url", "")} className="block text-[10px] text-ui-text-muted hover:text-red-400 cursor-pointer">
                     Hapus logo
                   </button>
                 )}
@@ -230,7 +230,7 @@ const SponsorFormModal = ({ open, onClose, orgId, editing, onSaved, organization
 
           {/* Contact */}
           <div>
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-white/30">Kontak</p>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ui-text-muted">Kontak</p>
             <div className="grid grid-cols-2 gap-2">
               <div className="col-span-2">
                 <label className={labelCls}>Nama PIC</label>
@@ -249,7 +249,7 @@ const SponsorFormModal = ({ open, onClose, orgId, editing, onSaved, organization
 
           {/* Deal */}
           <div>
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-white/30">Deal</p>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ui-text-muted">Deal</p>
             <div className="grid grid-cols-3 gap-2">
               <div className="col-span-2">
                 <label className={labelCls}>Nilai Deal</label>
@@ -300,7 +300,7 @@ const SponsorFormModal = ({ open, onClose, orgId, editing, onSaved, organization
 
           {/* Actions */}
           <div className="flex gap-2 pt-1">
-            <button type="button" onClick={onClose} className="flex-1 cursor-pointer rounded-md border border-ui-border py-2 text-sm text-white/60 transition hover:bg-white/5">
+            <button type="button" onClick={onClose} className="flex-1 cursor-pointer rounded-md border border-ui-border py-2 text-sm text-ui-text-2 transition hover:bg-white/5">
               Batal
             </button>
             <button type="button" onClick={handleSave} disabled={pending}

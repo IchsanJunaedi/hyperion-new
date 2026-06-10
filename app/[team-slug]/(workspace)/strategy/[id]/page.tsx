@@ -61,24 +61,24 @@ export default async function StrategyNoteDetailPage({
       <header className="space-y-2">
         <Link
           href={`/${slug}/strategy`}
-          className="text-xs text-white/55 hover:text-ui-text"
+          className="text-xs text-ui-text-2 hover:text-ui-text"
         >
           ← Bank Strategi
         </Link>
         <div className="flex items-center gap-2">
-          <span className="inline-flex items-center gap-1 rounded-full bg-white/5 px-2 py-0.5 text-xs text-white/60">
+          <span className="inline-flex items-center gap-1 rounded-full bg-white/5 px-2 py-0.5 text-xs text-ui-text-2">
             <VisIcon className="h-3 w-3" />
             {vis.label}
           </span>
         </div>
         <h1 className="text-3xl font-bold text-ui-text">{note.title}</h1>
-        <p className="text-xs text-white/50">Diperbarui {date}</p>
+        <p className="text-xs text-ui-text-2">Diperbarui {date}</p>
         {note.tags.length > 0 && (
           <div className="flex flex-wrap gap-1.5">
             {note.tags.map((tag) => (
               <span
                 key={tag}
-                className="rounded-full bg-white/5 px-2.5 py-0.5 text-xs text-white/60"
+                className="rounded-full bg-white/5 px-2.5 py-0.5 text-xs text-ui-text-2"
               >
                 {tag}
               </span>
@@ -88,7 +88,7 @@ export default async function StrategyNoteDetailPage({
       </header>
 
       <article className="max-w-3xl rounded-2xl border border-white/10 bg-zinc-900/40 p-5 sm:p-6">
-        <div className="whitespace-pre-line font-mono text-sm leading-relaxed text-white/85">
+        <div className="whitespace-pre-line font-mono text-sm leading-relaxed text-ui-text">
           {note.content}
         </div>
       </article>

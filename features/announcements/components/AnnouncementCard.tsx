@@ -44,13 +44,13 @@ const AnnouncementCard = ({
           <Pin className="h-3.5 w-3.5 shrink-0 text-yellow-400" />
         )}
       </div>
-      <p className="mt-2 line-clamp-2 text-sm text-white/60">
+      <p className="mt-2 line-clamp-2 text-sm text-ui-text-2">
         {announcement.body}
       </p>
       <div className="mt-3 flex items-center justify-between gap-2">
-        <p className="text-xs text-white/40">{date}</p>
+        <p className="text-xs text-ui-text-muted">{date}</p>
         {readCount !== undefined && (
-          <span className="inline-flex items-center gap-1 text-[10px] text-white/35">
+          <span className="inline-flex items-center gap-1 text-[10px] text-ui-text-muted">
             <Eye className="h-3 w-3" />
             {readCount}{totalMembers !== undefined ? `/${totalMembers}` : ""} dibaca
           </span>

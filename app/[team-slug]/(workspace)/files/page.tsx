@@ -30,7 +30,7 @@ export default async function FilesPage({ params }: FilesPageProps) {
         <h1 className="text-2xl font-bold text-ui-text sm:text-3xl">
           File Tim
         </h1>
-        <p className="mt-1 text-sm text-white/60">
+        <p className="mt-1 text-sm text-ui-text-2">
           File tim: screenshot, replay, dokumen, strategi.
         </p>
       </header>

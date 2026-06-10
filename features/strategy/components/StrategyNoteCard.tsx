@@ -29,7 +29,7 @@ const StrategyNoteCard = ({ note, orgSlug }: StrategyNoteCardProps) => {
           {note.title}
         </h3>
       </div>
-      <p className="mt-2 line-clamp-3 text-sm text-white/60">
+      <p className="mt-2 line-clamp-3 text-sm text-ui-text-2">
         {note.content}
       </p>
       {note.tags.length > 0 && (
@@ -37,14 +37,14 @@ const StrategyNoteCard = ({ note, orgSlug }: StrategyNoteCardProps) => {
           {note.tags.slice(0, 5).map((tag) => (
             <span
               key={tag}
-              className="rounded-full bg-white/5 px-2 py-0.5 text-[10px] text-white/50"
+              className="rounded-full bg-white/5 px-2 py-0.5 text-[10px] text-ui-text-2"
             >
               {tag}
             </span>
           ))}
         </div>
       )}
-      <p className="mt-3 text-xs text-white/40">Diperbarui {date}</p>
+      <p className="mt-3 text-xs text-ui-text-muted">Diperbarui {date}</p>
     </Link>
   );
 };

@@ -54,7 +54,7 @@ const CoachNotesSection = ({
           <button
             type="button"
             onClick={() => { setDraft(existingNotes ?? ""); setEditing(true); }}
-            className="flex items-center gap-1 text-xs text-white/50 hover:text-ui-text"
+            className="flex items-center gap-1 text-xs text-ui-text-2 hover:text-ui-text"
           >
             <Pencil className="h-3 w-3" />
             {existingNotes ? "Edit" : "Tambah"}
@@ -64,7 +64,7 @@ const CoachNotesSection = ({
           <button
             type="button"
             onClick={() => setEditing(false)}
-            className="text-white/40 hover:text-ui-text"
+            className="text-ui-text-muted hover:text-ui-text"
           >
             <X className="h-4 w-4" />
           </button>
@@ -95,9 +95,9 @@ const CoachNotesSection = ({
           </button>
         </div>
       ) : existingNotes ? (
-        <p className="whitespace-pre-line text-sm text-white/80">{existingNotes}</p>
+        <p className="whitespace-pre-line text-sm text-ui-text">{existingNotes}</p>
       ) : (
-        <p className="text-sm text-white/40 italic">Belum ada catatan coach.</p>
+        <p className="text-sm text-ui-text-muted italic">Belum ada catatan coach.</p>
       )}
     </article>
   );

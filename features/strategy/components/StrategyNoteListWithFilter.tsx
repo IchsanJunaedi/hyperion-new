@@ -60,9 +60,9 @@ const StrategyNoteListWithFilter = ({
               <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-yellow-400/15 text-[10px] font-bold text-yellow-400">
                 {i + 1}
               </span>
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-white/70">{tag}</h3>
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-ui-text">{tag}</h3>
               <div className="h-px flex-1 bg-white/5" />
-              <span className="text-[10px] text-white/30">{chapterNotes.length} catatan</span>
+              <span className="text-[10px] text-ui-text-muted">{chapterNotes.length} catatan</span>
             </div>
             <div className="space-y-2 pl-9">
               {chapterNotes.map((note) => (
@@ -73,12 +73,12 @@ const StrategyNoteListWithFilter = ({
                 >
                   <Lightbulb className="mt-0.5 h-3.5 w-3.5 shrink-0 text-yellow-400/60 group-hover:text-yellow-400 transition" />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-white/85 group-hover:text-ui-text transition">{note.title}</p>
+                    <p className="truncate text-sm font-medium text-ui-text group-hover:text-ui-text transition">{note.title}</p>
                     {note.content && (
-                      <p className="mt-0.5 line-clamp-1 text-xs text-white/40">{note.content}</p>
+                      <p className="mt-0.5 line-clamp-1 text-xs text-ui-text-muted">{note.content}</p>
                     )}
                   </div>
-                  <span className="shrink-0 text-[10px] text-white/25 group-hover:text-white/40 transition">→</span>
+                  <span className="shrink-0 text-[10px] text-ui-text-muted group-hover:text-ui-text-muted transition">→</span>
                 </Link>
               ))}
             </div>
@@ -99,7 +99,7 @@ const StrategyNoteListWithFilter = ({
               className={`rounded-full px-3 py-1 text-xs font-medium transition ${
                 activeTag === null
                   ? "bg-yellow-400 text-black"
-                  : "bg-white/5 text-white/60 hover:bg-white/10 hover:text-ui-text"
+                  : "bg-white/5 text-ui-text-2 hover:bg-white/10 hover:text-ui-text"
               }`}
             >
               Semua
@@ -112,7 +112,7 @@ const StrategyNoteListWithFilter = ({
                 className={`rounded-full px-3 py-1 text-xs font-medium transition ${
                   activeTag === tag
                     ? "bg-yellow-400 text-black"
-                    : "bg-white/5 text-white/60 hover:bg-white/10 hover:text-ui-text"
+                    : "bg-white/5 text-ui-text-2 hover:bg-white/10 hover:text-ui-text"
                 }`}
               >
                 {tag}
@@ -126,7 +126,7 @@ const StrategyNoteListWithFilter = ({
       </div>
 
       {filtered.length === 0 ? (
-        <p className="py-6 text-center text-sm text-white/40">
+        <p className="py-6 text-center text-sm text-ui-text-muted">
           Tidak ada catatan dengan tag ini.
         </p>
       ) : (
@@ -156,7 +156,7 @@ function ViewToggle({
         title="Tampilan Grid"
         className={cn(
           "flex h-7 w-7 cursor-pointer items-center justify-center rounded transition",
-          viewMode === "grid" ? "bg-white/10 text-ui-text" : "text-white/40 hover:text-white/70",
+          viewMode === "grid" ? "bg-white/10 text-ui-text" : "text-ui-text-muted hover:text-ui-text",
         )}
       >
         <LayoutGrid className="h-3.5 w-3.5" />
@@ -167,7 +167,7 @@ function ViewToggle({
         title="Playbook"
         className={cn(
           "flex h-7 w-7 cursor-pointer items-center justify-center rounded transition",
-          viewMode === "playbook" ? "bg-white/10 text-ui-text" : "text-white/40 hover:text-white/70",
+          viewMode === "playbook" ? "bg-white/10 text-ui-text" : "text-ui-text-muted hover:text-ui-text",
         )}
       >
         <BookOpen className="h-3.5 w-3.5" />

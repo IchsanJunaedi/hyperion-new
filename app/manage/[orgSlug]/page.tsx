@@ -82,7 +82,7 @@ const ManageTeamPage = async ({ params }: Props) => {
     <div className="space-y-8">
       <header>
         <h1 className="text-2xl font-bold text-ui-text">Manager Panel</h1>
-        <p className="mt-1 text-sm text-white/60">
+        <p className="mt-1 text-sm text-ui-text-2">
           Kelola roster tim, assign Captain dan Member, lihat statistik.
         </p>
       </header>
@@ -163,7 +163,7 @@ export default ManageTeamPage;
 function StatCard({ label, value }: { label: string; value: number }) {
   return (
     <div className="rounded-lg border border-white/5 bg-white/[0.02] p-4">
-      <p className="text-xs text-white/50">{label}</p>
+      <p className="text-xs text-ui-text-2">{label}</p>
       <p className="mt-1 text-2xl font-bold text-ui-text">{value}</p>
     </div>
   );

@@ -63,7 +63,7 @@ function StatsRow({ sponsors }: StatsRowProps) {
         <div key={label} className="rounded-xl border border-ui-border bg-ui-surface p-4">
           <div className="mb-2 flex items-center gap-2">
             <Icon className={cn("h-4 w-4", color)} />
-            <span className="text-xs text-white/50">{label}</span>
+            <span className="text-xs text-ui-text-2">{label}</span>
           </div>
           <p className="text-lg font-semibold text-ui-text">{value}</p>
         </div>
@@ -234,14 +234,14 @@ const SponsorListClient = ({ sponsors, orgId, orgName, detailBasePath, isAllOrgs
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-lg font-semibold text-ui-text">Sponsor &amp; Partner</h1>
-          <p className="text-sm text-white/40">Kelola sponsor, deal, dan deliverable tim</p>
+          <p className="text-sm text-ui-text-muted">Kelola sponsor, deal, dan deliverable tim</p>
         </div>
         <div className="flex items-center gap-2">
           {sponsors.length > 0 && (
             <button
               type="button"
               onClick={() => setPrintMode(true)}
-              className="flex cursor-pointer items-center gap-1.5 rounded-md border border-ui-border px-3 py-2 text-sm text-white/60 transition hover:bg-white/5 hover:text-ui-text"
+              className="flex cursor-pointer items-center gap-1.5 rounded-md border border-ui-border px-3 py-2 text-sm text-ui-text-2 transition hover:bg-white/5 hover:text-ui-text"
             >
               <FileDown className="h-4 w-4" />
               Media Kit
@@ -264,12 +264,12 @@ const SponsorListClient = ({ sponsors, orgId, orgName, detailBasePath, isAllOrgs
 
       {sponsors.length === 0 ? (
         <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-ui-border py-16">
-          <Users className="h-10 w-10 text-white/20" />
-          <p className="text-sm text-white/40">Belum ada sponsor. Tambah sponsor pertama!</p>
+          <Users className="h-10 w-10 text-ui-text-muted" />
+          <p className="text-sm text-ui-text-muted">Belum ada sponsor. Tambah sponsor pertama!</p>
           <button
             type="button"
             onClick={() => setModalOpen(true)}
-            className="flex cursor-pointer items-center gap-1.5 rounded-md border border-ui-border px-4 py-2 text-sm text-white/60 transition hover:bg-white/5"
+            className="flex cursor-pointer items-center gap-1.5 rounded-md border border-ui-border px-4 py-2 text-sm text-ui-text-2 transition hover:bg-white/5"
           >
             <Plus className="h-3.5 w-3.5" />
             Tambah Sponsor

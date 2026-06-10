@@ -98,7 +98,7 @@ const ScrimReviewSection = ({
       {reviewRequest?.status === "reviewed" && reviewRequest.review_notes && (
         <div className="rounded-xl border border-green-500/20 bg-green-500/5 p-4">
           <p className="text-xs text-green-400/70 mb-1">Catatan Coach:</p>
-          <p className="text-sm text-white/85 whitespace-pre-wrap">
+          <p className="text-sm text-ui-text whitespace-pre-wrap">
             {reviewRequest.review_notes}
           </p>
         </div>
@@ -108,7 +108,7 @@ const ScrimReviewSection = ({
       {reviewRequest?.status === "pending" && reviewRequest.notes && (
         <div className="rounded-xl border border-yellow-500/20 bg-yellow-500/5 p-3">
           <p className="text-xs text-yellow-400/70 mb-1">Catatan permintaan:</p>
-          <p className="text-sm text-white/70">{reviewRequest.notes}</p>
+          <p className="text-sm text-ui-text">{reviewRequest.notes}</p>
         </div>
       )}
 
@@ -137,7 +137,7 @@ const ScrimReviewSection = ({
                 <button
                   type="button"
                   onClick={() => setShowForm(false)}
-                  className="h-8 rounded-lg border border-white/10 px-3 text-xs text-white/60 hover:bg-white/5 cursor-pointer"
+                  className="h-8 rounded-lg border border-white/10 px-3 text-xs text-ui-text-2 hover:bg-white/5 cursor-pointer"
                 >
                   Batal
                 </button>
@@ -147,7 +147,7 @@ const ScrimReviewSection = ({
             <button
               type="button"
               onClick={() => setShowForm(true)}
-              className="inline-flex items-center gap-2 rounded-lg border border-white/10 px-3 py-2 text-xs text-white/60 hover:bg-white/5 hover:text-ui-text transition cursor-pointer"
+              className="inline-flex items-center gap-2 rounded-lg border border-white/10 px-3 py-2 text-xs text-ui-text-2 hover:bg-white/5 hover:text-ui-text transition cursor-pointer"
             >
               <MessageSquarePlus className="h-3.5 w-3.5" />
               Minta review dari coach
@@ -182,7 +182,7 @@ const ScrimReviewSection = ({
                 <button
                   type="button"
                   onClick={() => setShowReviewForm(false)}
-                  className="h-8 rounded-lg border border-white/10 px-3 text-xs text-white/60 hover:bg-white/5 cursor-pointer"
+                  className="h-8 rounded-lg border border-white/10 px-3 text-xs text-ui-text-2 hover:bg-white/5 cursor-pointer"
                 >
                   Batal
                 </button>
@@ -202,7 +202,7 @@ const ScrimReviewSection = ({
       )}
 
       {!reviewRequest && !isCaptainOrMember && !isCoach && (
-        <p className="text-xs text-white/40">Belum ada request review.</p>
+        <p className="text-xs text-ui-text-muted">Belum ada request review.</p>
       )}
     </article>
   );

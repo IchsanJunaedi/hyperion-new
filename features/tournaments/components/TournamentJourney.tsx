@@ -34,7 +34,7 @@ const TournamentJourney = ({ stages, tournamentName }: TournamentJourneyProps) =
       {/* Summary pill row */}
       <div className="flex flex-wrap items-center gap-2 text-xs">
         {completedStages > 0 && (
-          <span className="rounded-full bg-white/5 px-2.5 py-1 text-white/50">
+          <span className="rounded-full bg-white/5 px-2.5 py-1 text-ui-text-2">
             {completedStages}/{stages.length} tahap selesai
           </span>
         )}
@@ -73,7 +73,7 @@ const TournamentJourney = ({ stages, tournamentName }: TournamentJourneyProps) =
                 )}
               >
                 {/* Stage label */}
-                <p className="max-w-[90px] truncate text-[10px] font-medium text-white/60">
+                <p className="max-w-[90px] truncate text-[10px] font-medium text-ui-text-2">
                   {stage.stage_name}
                 </p>
 
@@ -88,7 +88,7 @@ const TournamentJourney = ({ stages, tournamentName }: TournamentJourneyProps) =
                     )}
                   </div>
                 ) : (
-                  <span className="text-[10px] text-white/25">—</span>
+                  <span className="text-[10px] text-ui-text-muted">—</span>
                 )}
 
                 {/* Result dot */}
@@ -103,7 +103,7 @@ const TournamentJourney = ({ stages, tournamentName }: TournamentJourneyProps) =
 
               {/* Arrow connector */}
               {i < stages.length - 1 && (
-                <span className="text-[10px] text-white/15">→</span>
+                <span className="text-[10px] text-ui-text-muted">→</span>
               )}
             </div>
           );
@@ -116,7 +116,7 @@ const TournamentJourney = ({ stages, tournamentName }: TournamentJourneyProps) =
           "rounded-xl border px-4 py-2.5 text-center text-xs font-semibold",
           totalWins >= totalLosses
             ? "border-green-500/20 bg-green-500/5 text-green-400"
-            : "border-white/10 bg-white/[0.02] text-white/50",
+            : "border-white/10 bg-white/[0.02] text-ui-text-2",
         )}>
           {totalWins >= totalLosses
             ? `🏆 Selesai — ${totalWins}W ${totalLosses}L`

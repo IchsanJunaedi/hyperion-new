@@ -19,7 +19,7 @@ const WinLossRecordBadge = ({ record }: WinLossRecordProps) => {
       {record.draws > 0 && (
         <span className="flex items-center gap-1">
           <span className="h-1.5 w-1.5 rounded-full bg-white/40" />
-          <span className="text-white/50 font-medium">{record.draws}D</span>
+          <span className="text-ui-text-2 font-medium">{record.draws}D</span>
         </span>
       )}
     </div>

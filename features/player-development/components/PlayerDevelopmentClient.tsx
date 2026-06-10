@@ -42,7 +42,7 @@ const PlayerDevelopmentClient = ({
 
       {targets.length === 0 ? (
         <div className="rounded-xl border border-dashed border-white/10 bg-zinc-900/30 p-10 text-center">
-          <p className="text-sm text-white/65">Belum ada target skill yang di-set.</p>
+          <p className="text-sm text-ui-text-2">Belum ada target skill yang di-set.</p>
         </div>
       ) : (
         <div className="space-y-6">

@@ -45,7 +45,7 @@ const PlayersAdminClient = ({ members: initial }: Props) => {
       <div className="mb-6">
         <h1 className="text-xl font-black uppercase tracking-tight text-ui-text">Players Publik</h1>
         <p className="mt-1 text-xs text-ui-text-muted">
-          Kontrol siapa yang tampil di halaman publik <span className="text-white/50">/divisions</span>.
+          Kontrol siapa yang tampil di halaman publik <span className="text-ui-text-2">/divisions</span>.
           Bio dan social links dikelola sendiri oleh player di workspace.
         </p>
         {publicCount > 0 && <p className="mt-1.5 text-xs font-semibold text-[#F5C400]">{publicCount} tampil publik</p>}
@@ -61,7 +61,7 @@ const PlayersAdminClient = ({ members: initial }: Props) => {
       <div className="space-y-8">
         {Object.entries(grouped).map(([division, divMembers]) => (
           <div key={division}>
-            <h2 className="mb-2 text-[11px] font-bold uppercase tracking-[0.3em] text-white/40">{division}</h2>
+            <h2 className="mb-2 text-[11px] font-bold uppercase tracking-[0.3em] text-ui-text-muted">{division}</h2>
             <div className="space-y-1.5">
               {divMembers.map((m) => (
                 <div key={m.id} className={`flex items-center gap-4 rounded border px-4 py-3 transition ${m.is_public ? "border-[#F5C400]/30 bg-[#F5C400]/5" : "border-ui-border bg-ui-bg"}`}>

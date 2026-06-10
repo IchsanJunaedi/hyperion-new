@@ -43,7 +43,7 @@ function PlacementBanner({ placement, prizeEarned }: { placement: number; prizeE
   const style = PLACEMENT_STYLE[placement] ?? {
     gradient: "from-white/10 to-transparent",
     ring: "border-white/20",
-    textColor: "text-white/70",
+    textColor: "text-ui-text",
     label: `JUARA ${placement}`,
   };
 
@@ -58,10 +58,10 @@ function PlacementBanner({ placement, prizeEarned }: { placement: number; prizeE
           )}
         </div>
         <div>
-          <p className="text-xs font-bold uppercase tracking-[0.3em] text-white/40">Hasil Turnamen</p>
+          <p className="text-xs font-bold uppercase tracking-[0.3em] text-ui-text-muted">Hasil Turnamen</p>
           <p className={`text-3xl font-black tracking-tight ${style.textColor}`}>{style.label}</p>
           {prizeEarned && (
-            <p className="mt-0.5 text-sm font-semibold text-white/60">
+            <p className="mt-0.5 text-sm font-semibold text-ui-text-2">
               Prize: Rp {Number(prizeEarned).toLocaleString("id-ID")}
             </p>
           )}
@@ -130,14 +130,14 @@ export default async function TournamentDetailPage({ params }: TournamentDetailP
             {badge.label}
           </span>
           {detail.division_name && (
-            <span className="text-xs uppercase tracking-wide text-white/55">
+            <span className="text-xs uppercase tracking-wide text-ui-text-2">
               {detail.division_name}
             </span>
           )}
         </div>
         <h1 className="text-3xl font-bold text-ui-text">{detail.name}</h1>
         {detail.organizer && (
-          <p className="text-sm text-white/65">oleh {detail.organizer}</p>
+          <p className="text-sm text-ui-text-2">oleh {detail.organizer}</p>
         )}
 
         {/* Countdown or Expired Banner */}
@@ -151,11 +151,11 @@ export default async function TournamentDetailPage({ params }: TournamentDetailP
               {detail.name}
             </h3>
             {detail.organizer && (
-              <p className="mt-1 text-xs uppercase tracking-wide text-white/55">
+              <p className="mt-1 text-xs uppercase tracking-wide text-ui-text-2">
                 oleh {detail.organizer}
               </p>
             )}
-            <p className="mt-4 text-sm text-white/70">
+            <p className="mt-4 text-sm text-ui-text">
               Turnamen ini sudah dimulai atau batas waktu pendaftaran telah lewat, dan tim Anda belum terdaftar.
             </p>
           </div>
@@ -175,9 +175,9 @@ export default async function TournamentDetailPage({ params }: TournamentDetailP
           )
         )}
 
-        <dl className="grid gap-1 text-sm text-white/70 sm:grid-cols-2">
+        <dl className="grid gap-1 text-sm text-ui-text sm:grid-cols-2">
           <div className="inline-flex items-center gap-2">
-            <Calendar className="h-3.5 w-3.5 text-white/55" />
+            <Calendar className="h-3.5 w-3.5 text-ui-text-2" />
             {scheduled}
             {detail.end_date && ` — ${new Date(detail.end_date).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}`}
           </div>
@@ -238,7 +238,7 @@ export default async function TournamentDetailPage({ params }: TournamentDetailP
               )}
 
               {detail.notes && (
-                <p className="mt-3 whitespace-pre-line text-sm text-white/80">
+                <p className="mt-3 whitespace-pre-line text-sm text-ui-text">
                   {detail.notes}
                 </p>
               )}

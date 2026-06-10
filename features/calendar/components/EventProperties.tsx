@@ -42,7 +42,7 @@ const EventProperties = ({
 
   return (
     <div className="space-y-0.5 rounded-xl border border-white/10 bg-zinc-900/40 p-4 sm:p-6">
-      <h3 className="mb-4 text-sm font-semibold text-white/80">Properties</h3>
+      <h3 className="mb-4 text-sm font-semibold text-ui-text">Properties</h3>
 
       <PropertyField
         label="Tanggal & Waktu"

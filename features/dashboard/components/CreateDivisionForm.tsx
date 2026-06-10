@@ -33,7 +33,7 @@ const CreateDivisionForm = () => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-3">
-      <p className="text-xs text-white/50">
+      <p className="text-xs text-ui-text-2">
         Buat divisi baru yang bisa dipakai di semua tim. Contoh: Mobile Legends, Valorant, Free Fire.
       </p>
       <div className="flex gap-2">

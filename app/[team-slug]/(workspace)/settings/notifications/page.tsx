@@ -32,7 +32,7 @@ export default async function NotificationsSettingsPage({
       <h1 className="text-xl font-semibold text-ui-text">
         Status Pengiriman WhatsApp
       </h1>
-      <p className="mt-1 text-sm text-white/60">
+      <p className="mt-1 text-sm text-ui-text-2">
         Pantau status pengiriman notifikasi WhatsApp ke anggota tim.
       </p>
       <div className="mt-6">

@@ -103,8 +103,8 @@ export default async function TournamentsPage({ params, searchParams }: Tourname
 
       {filtered.length === 0 ? (
         <div className="rounded-xl border border-dashed border-white/10 bg-zinc-900/30 p-10 text-center">
-          <Trophy className="mx-auto h-8 w-8 text-white/35" />
-          <p className="mt-3 text-sm text-white/65">
+          <Trophy className="mx-auto h-8 w-8 text-ui-text-muted" />
+          <p className="mt-3 text-sm text-ui-text-2">
             {tab === "ongoing"
               ? "Tidak ada turnamen yang sedang berlangsung."
               : tab === "upcoming"

@@ -26,7 +26,7 @@ interface TrialDetailClientProps {
 }
 
 const PIPELINE_COLS = [
-  { status: "pending",    label: "Pending",  color: "border-white/10 text-white/60",  dot: "bg-white/30" },
+  { status: "pending",    label: "Pending",  color: "border-white/10 text-ui-text-2",  dot: "bg-white/30" },
   { status: "waitlisted", label: "Waitlist", color: "border-yellow-500/30 text-yellow-400", dot: "bg-yellow-400" },
   { status: "accepted",   label: "Diterima", color: "border-green-500/30 text-green-400",   dot: "bg-green-400" },
   { status: "rejected",   label: "Ditolak",  color: "border-red-500/30 text-red-400",       dot: "bg-red-400" },
@@ -265,7 +265,7 @@ const TrialDetailClient = ({ trial, applicants, canManage, appUrl, revalidatePat
               title="Tampilan Tabel"
               className={cn(
                 "flex h-7 w-7 cursor-pointer items-center justify-center rounded transition",
-                viewMode === "table" ? "bg-white/10 text-ui-text" : "text-white/40 hover:text-white/70",
+                viewMode === "table" ? "bg-white/10 text-ui-text" : "text-ui-text-muted hover:text-ui-text",
               )}
             >
               <List className="h-3.5 w-3.5" />
@@ -276,7 +276,7 @@ const TrialDetailClient = ({ trial, applicants, canManage, appUrl, revalidatePat
               title="Tampilan Pipeline"
               className={cn(
                 "flex h-7 w-7 cursor-pointer items-center justify-center rounded transition",
-                viewMode === "pipeline" ? "bg-white/10 text-ui-text" : "text-white/40 hover:text-white/70",
+                viewMode === "pipeline" ? "bg-white/10 text-ui-text" : "text-ui-text-muted hover:text-ui-text",
               )}
             >
               <LayoutGrid className="h-3.5 w-3.5" />

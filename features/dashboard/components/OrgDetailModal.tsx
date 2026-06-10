@@ -41,11 +41,11 @@ const OrgDetailModal = ({ org, onClose }: OrgDetailModalProps) => {
         <div className="mb-4 flex items-start justify-between">
           <div>
             <h3 className="text-lg font-bold text-ui-text">{org.name}</h3>
-            <p className="text-xs text-white/50">/{org.slug}</p>
+            <p className="text-xs text-ui-text-2">/{org.slug}</p>
           </div>
           <button
             onClick={onClose}
-            className="rounded-md p-1 text-white/40 hover:bg-white/10 hover:text-ui-text"
+            className="rounded-md p-1 text-ui-text-muted hover:bg-white/10 hover:text-ui-text"
           >
             <X className="h-4 w-4" />
           </button>
@@ -56,12 +56,12 @@ const OrgDetailModal = ({ org, onClose }: OrgDetailModalProps) => {
           <Row label="Jumlah Member Aktif" value={org.memberCount.toString()} />
           {org.divisions.length > 0 && (
             <div>
-              <p className="text-xs text-white/50">Divisi</p>
+              <p className="text-xs text-ui-text-2">Divisi</p>
               <div className="mt-1 flex flex-wrap gap-1.5">
                 {org.divisions.map((d) => (
                   <span
                     key={d.id}
-                    className="inline-flex rounded-full bg-white/5 px-2.5 py-1 text-xs text-white/70"
+                    className="inline-flex rounded-full bg-white/5 px-2.5 py-1 text-xs text-ui-text"
                   >
                     {d.name}
                   </span>
@@ -82,8 +82,8 @@ export { OrgDetailModal };
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <p className="text-xs text-white/50">{label}</p>
-      <p className="mt-0.5 text-white/80">{value}</p>
+      <p className="text-xs text-ui-text-2">{label}</p>
+      <p className="mt-0.5 text-ui-text">{value}</p>
     </div>
   );
 }

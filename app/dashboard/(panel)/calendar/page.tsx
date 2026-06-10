@@ -209,7 +209,7 @@ const DashboardCalendarPage = async ({
             className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
               isAllOrgs
                 ? "bg-yellow-400 text-black"
-                : "bg-white/5 text-white/50 hover:bg-white/10 hover:text-ui-text"
+                : "bg-white/5 text-ui-text-2 hover:bg-white/10 hover:text-ui-text"
             }`}
           >
             Semua Tim
@@ -223,7 +223,7 @@ const DashboardCalendarPage = async ({
                 className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
                   isActive
                     ? "bg-yellow-400 text-black"
-                    : "bg-white/5 text-white/50 hover:bg-white/10 hover:text-ui-text"
+                    : "bg-white/5 text-ui-text-2 hover:bg-white/10 hover:text-ui-text"
                 }`}
               >
                 {org.name}
@@ -235,7 +235,7 @@ const DashboardCalendarPage = async ({
         {/* ── "Semua Tim" view ─────────────────────────────────────────────── */}
         {isAllOrgs && (
           <>
-            <div className="mb-4 flex flex-wrap items-center gap-2 text-[11px] text-white/40">
+            <div className="mb-4 flex flex-wrap items-center gap-2 text-[11px] text-ui-text-muted">
               <span className="font-semibold uppercase tracking-wider">Tim:</span>
               {allOrgs.map((org, i) => {
                 const color = ORG_COLORS[i % ORG_COLORS.length]!;
@@ -308,7 +308,7 @@ const DashboardCalendarPage = async ({
         {/* ── Single org view ──────────────────────────────────────────────── */}
         {!isAllOrgs && (
           <>
-            <div className="mb-4 flex flex-wrap items-center gap-3 text-[11px] text-white/40">
+            <div className="mb-4 flex flex-wrap items-center gap-3 text-[11px] text-ui-text-muted">
               <span className="font-semibold uppercase tracking-wider">Legenda:</span>
               {[
                 { color: "bg-yellow-400", label: "Turnamen" },

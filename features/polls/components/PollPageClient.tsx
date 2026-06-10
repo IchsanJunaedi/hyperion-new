@@ -43,14 +43,14 @@ const PollPageClient = ({ polls, orgSlug, canManage, userId }: PollPageClientPro
 
       {polls.length === 0 ? (
         <div className="rounded-xl border border-dashed border-white/10 bg-zinc-900/30 p-10 text-center">
-          <BarChart3 className="mx-auto h-8 w-8 text-white/35" />
-          <p className="mt-3 text-sm text-white/65">Belum ada polling.</p>
+          <BarChart3 className="mx-auto h-8 w-8 text-ui-text-muted" />
+          <p className="mt-3 text-sm text-ui-text-2">Belum ada polling.</p>
         </div>
       ) : (
         <>
           {activePolls.length > 0 && (
             <div className="space-y-3">
-              <p className="text-xs font-semibold uppercase tracking-wider text-white/40">Poll Aktif</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-ui-text-muted">Poll Aktif</p>
               {activePolls.map((poll) =>
                 poll.type === "availability" ? (
                   <AvailabilityPollCard key={poll.id} poll={poll} orgSlug={orgSlug} canManage={canManage} userId={userId} />
@@ -62,7 +62,7 @@ const PollPageClient = ({ polls, orgSlug, canManage, userId }: PollPageClientPro
           )}
           {closedPolls.length > 0 && (
             <div className="space-y-3">
-              <p className="text-xs font-semibold uppercase tracking-wider text-white/40">Poll Selesai</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-ui-text-muted">Poll Selesai</p>
               {closedPolls.map((poll) =>
                 poll.type === "availability" ? (
                   <AvailabilityPollCard key={poll.id} poll={poll} orgSlug={orgSlug} canManage={canManage} userId={userId} />

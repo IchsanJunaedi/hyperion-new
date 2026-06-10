@@ -44,7 +44,7 @@ const TournamentsAdminClient = ({ tournaments: initial }: Props) => {
         </h1>
         <p className="mt-1 max-w-lg text-xs leading-relaxed text-ui-text-muted">
           Tandai tournament sebagai <span className="font-semibold text-[#F5C400]/80">Publik</span> untuk
-          menampilkannya di halaman <span className="text-white/50">/schedule</span> dan upcoming matches di homepage.
+          menampilkannya di halaman <span className="text-ui-text-2">/schedule</span> dan upcoming matches di homepage.
           Tournament publik yang paling dekat otomatis tampil sebagai countdown di hero section.
         </p>
         {publicTournaments.length > 0 && (
@@ -53,9 +53,9 @@ const TournamentsAdminClient = ({ tournaments: initial }: Props) => {
               {publicTournaments.length} publik
             </span>
             {nearestPublic && (
-              <span className="flex items-center gap-1 text-xs text-white/40">
+              <span className="flex items-center gap-1 text-xs text-ui-text-muted">
                 <Zap className="h-3 w-3 text-[#F5C400]" />
-                Hero countdown: <span className="text-white/60">{nearestPublic.name}</span>
+                Hero countdown: <span className="text-ui-text-2">{nearestPublic.name}</span>
               </span>
             )}
           </div>

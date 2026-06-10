@@ -52,7 +52,7 @@ export default async function DashboardFilesPage() {
           <h1 className="text-2xl font-bold text-ui-text sm:text-3xl tracking-tight">
             File Tim
           </h1>
-          <p className="mt-1 text-sm text-white/50">
+          <p className="mt-1 text-sm text-ui-text-2">
             Kelola dan unduh seluruh file yang diunggah oleh setiap divisi tim di platform Hyperion.
           </p>
         </div>

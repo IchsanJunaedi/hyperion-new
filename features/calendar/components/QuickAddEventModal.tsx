@@ -18,7 +18,7 @@ interface QuickAddEventModalProps {
 const EVENT_TYPES = [
   { value: "practice", label: "Latihan", color: "text-green-400" },
   { value: "meeting", label: "Meeting", color: "text-purple-400" },
-  { value: "other", label: "Lainnya", color: "text-white/60" },
+  { value: "other", label: "Lainnya", color: "text-ui-text-2" },
 ] as const;
 
 function toLocalDatetimeValue(date: Date): string {
@@ -172,7 +172,7 @@ const QuickAddEventModal = ({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-1.5 text-white/40 transition hover:bg-white/5 hover:text-ui-text"
+            className="rounded-lg p-1.5 text-ui-text-muted transition hover:bg-white/5 hover:text-ui-text"
           >
             <X className="h-4 w-4" />
           </button>
@@ -187,7 +187,7 @@ const QuickAddEventModal = ({
 
           {/* Title */}
           <div className="space-y-1">
-            <label className="block text-[10px] font-semibold text-white/40">
+            <label className="block text-[10px] font-semibold text-ui-text-muted">
               Nama Event
             </label>
             <input
@@ -202,7 +202,7 @@ const QuickAddEventModal = ({
 
           {/* Event type */}
           <div className="space-y-2">
-            <label className="block text-[10px] font-semibold text-white/40">
+            <label className="block text-[10px] font-semibold text-ui-text-muted">
               Kategori Event
             </label>
             <div className="flex flex-wrap gap-2">
@@ -214,7 +214,7 @@ const QuickAddEventModal = ({
                   className={`rounded-full px-3 py-1 text-xs font-semibold tracking-wide transition-all duration-300 ${
                     eventType === t.value
                       ? "bg-yellow-400 text-black shadow-lg shadow-yellow-400/20 scale-105"
-                      : "bg-white/5 text-white/50 hover:bg-white/10 hover:text-ui-text hover:scale-102"
+                      : "bg-white/5 text-ui-text-2 hover:bg-white/10 hover:text-ui-text hover:scale-102"
                   }`}
                 >
                   {t.label}
@@ -228,8 +228,8 @@ const QuickAddEventModal = ({
           {/* Time fields */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-1">
-              <label className="flex items-center gap-1.5 text-[10px] font-semibold text-white/40">
-                <Clock className="h-3 w-3 text-white/30" /> Waktu Mulai
+              <label className="flex items-center gap-1.5 text-[10px] font-semibold text-ui-text-muted">
+                <Clock className="h-3 w-3 text-ui-text-muted" /> Waktu Mulai
               </label>
               <input
                 type="datetime-local"
@@ -241,8 +241,8 @@ const QuickAddEventModal = ({
               />
             </div>
             <div className="space-y-1">
-              <label className="flex items-center gap-1.5 text-[10px] font-semibold text-white/40">
-                <Clock className="h-3 w-3 text-white/30" /> Waktu Selesai (Opsional)
+              <label className="flex items-center gap-1.5 text-[10px] font-semibold text-ui-text-muted">
+                <Clock className="h-3 w-3 text-ui-text-muted" /> Waktu Selesai (Opsional)
               </label>
               <input
                 type="datetime-local"
@@ -257,8 +257,8 @@ const QuickAddEventModal = ({
           {/* All day toggle */}
           <div className="flex items-center justify-between rounded-xl bg-zinc-900/40 border border-white/5 px-4 py-3">
             <div className="space-y-0.5">
-              <span className="block text-xs font-semibold text-white/80">Event Seharian</span>
-              <span className="block text-[10px] text-white/40">Setel event berlangsung sepanjang hari</span>
+              <span className="block text-xs font-semibold text-ui-text">Event Seharian</span>
+              <span className="block text-[10px] text-ui-text-muted">Setel event berlangsung sepanjang hari</span>
             </div>
             <label className="relative inline-flex cursor-pointer items-center">
               <input
@@ -273,7 +273,7 @@ const QuickAddEventModal = ({
           {/* Division (if multiple exist) */}
           {divisions.length > 0 && (
             <div className="space-y-1">
-              <label className="block text-[10px] font-semibold text-white/40">
+              <label className="block text-[10px] font-semibold text-ui-text-muted">
                 Pilih Divisi
               </label>
               <select
@@ -294,7 +294,7 @@ const QuickAddEventModal = ({
           {/* Visibility selection */}
           {visibilityOptions.length > 1 && (
             <div className="space-y-1">
-              <label className="block text-[10px] font-semibold text-white/40">
+              <label className="block text-[10px] font-semibold text-ui-text-muted">
                 Siapa yang bisa melihat event ini?
               </label>
               <select
@@ -313,7 +313,7 @@ const QuickAddEventModal = ({
 
           {/* Description */}
           <div className="space-y-1">
-            <label className="block text-[10px] font-semibold text-white/40">
+            <label className="block text-[10px] font-semibold text-ui-text-muted">
               Catatan Tambahan (Opsional)
             </label>
             <textarea
@@ -337,7 +337,7 @@ const QuickAddEventModal = ({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-lg px-4 py-2 text-sm font-semibold text-white/60 transition-all duration-300 hover:bg-white/5 hover:text-ui-text active:scale-95"
+              className="rounded-lg px-4 py-2 text-sm font-semibold text-ui-text-2 transition-all duration-300 hover:bg-white/5 hover:text-ui-text active:scale-95"
             >
               Batal
             </button>

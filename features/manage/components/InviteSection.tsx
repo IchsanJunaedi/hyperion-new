@@ -86,14 +86,14 @@ const InviteSection = ({ orgId, orgSlug, divisions, pendingInvites }: InviteSect
       {showForm && (
         <div className="rounded-lg border border-white/10 bg-white/[0.02] p-4 space-y-3">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-medium text-white/70">Buat link undangan baru</p>
-            <button onClick={() => setShowForm(false)} className="text-white/40 hover:text-ui-text">
+            <p className="text-xs font-medium text-ui-text">Buat link undangan baru</p>
+            <button onClick={() => setShowForm(false)} className="text-ui-text-muted hover:text-ui-text">
               <X className="h-4 w-4" />
             </button>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
-              <label className="block text-xs text-white/50 mb-1">Role</label>
+              <label className="block text-xs text-ui-text-2 mb-1">Role</label>
               <select
                 value={role}
                 onChange={(e) => setRole(e.target.value as MemberRole)}
@@ -104,7 +104,7 @@ const InviteSection = ({ orgId, orgSlug, divisions, pendingInvites }: InviteSect
             </div>
             {divisions.length > 0 && (
               <div>
-                <label className="block text-xs text-white/50 mb-1">Divisi (opsional)</label>
+                <label className="block text-xs text-ui-text-2 mb-1">Divisi (opsional)</label>
                 <select
                   value={divisionId}
                   onChange={(e) => setDivisionId(e.target.value)}
@@ -138,7 +138,7 @@ const InviteSection = ({ orgId, orgSlug, divisions, pendingInvites }: InviteSect
             <button
               type="button"
               onClick={() => { navigator.clipboard.writeText(generatedUrl); success("Link disalin!"); }}
-              className="flex-none rounded-md border border-white/10 px-3 py-1 text-xs text-white/70 hover:bg-white/5 inline-flex items-center gap-1"
+              className="flex-none rounded-md border border-white/10 px-3 py-1 text-xs text-ui-text hover:bg-white/5 inline-flex items-center gap-1"
             >
               <Copy className="h-3 w-3" /> Salin
             </button>
@@ -151,25 +151,25 @@ const InviteSection = ({ orgId, orgSlug, divisions, pendingInvites }: InviteSect
           <table className="w-full text-xs">
             <thead>
               <tr className="border-b border-white/5 bg-white/[0.02]">
-                <th className="px-4 py-2 text-left font-medium text-white/40">Role</th>
-                <th className="px-4 py-2 text-left font-medium text-white/40">Divisi</th>
-                <th className="px-4 py-2 text-left font-medium text-white/40">Berlaku sampai</th>
-                <th className="px-4 py-2 text-right font-medium text-white/40">Aksi</th>
+                <th className="px-4 py-2 text-left font-medium text-ui-text-muted">Role</th>
+                <th className="px-4 py-2 text-left font-medium text-ui-text-muted">Divisi</th>
+                <th className="px-4 py-2 text-left font-medium text-ui-text-muted">Berlaku sampai</th>
+                <th className="px-4 py-2 text-right font-medium text-ui-text-muted">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
               {pendingInvites.map((inv) => (
                 <tr key={inv.id} className="hover:bg-white/[0.02]">
-                  <td className="px-4 py-2 text-white/70">{inv.role}</td>
-                  <td className="px-4 py-2 text-white/50">{inv.division ?? "—"}</td>
-                  <td className="px-4 py-2 text-white/50">
+                  <td className="px-4 py-2 text-ui-text">{inv.role}</td>
+                  <td className="px-4 py-2 text-ui-text-2">{inv.division ?? "—"}</td>
+                  <td className="px-4 py-2 text-ui-text-2">
                     {new Date(inv.expiresAt).toLocaleDateString("id-ID")}
                   </td>
                   <td className="px-4 py-2 text-right">
                     <button
                       type="button"
                       onClick={() => setRevokeTarget(inv.id)}
-                      className="rounded p-1 text-white/30 hover:bg-white/10 hover:text-red-400"
+                      className="rounded p-1 text-ui-text-muted hover:bg-white/10 hover:text-red-400"
                       title="Cabut undangan"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
@@ -182,7 +182,7 @@ const InviteSection = ({ orgId, orgSlug, divisions, pendingInvites }: InviteSect
         </div>
       )}
       {pendingInvites.length === 0 && (
-        <p className="text-xs text-white/30">Tidak ada undangan aktif.</p>
+        <p className="text-xs text-ui-text-muted">Tidak ada undangan aktif.</p>
       )}
 
       <ConfirmDeleteDialog

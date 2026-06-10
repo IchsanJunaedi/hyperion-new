@@ -50,14 +50,14 @@ const ConfirmDeleteDialog = ({
       >
         <div className="flex items-start justify-between mb-3">
           <h3 className="text-base font-bold text-ui-text">{title}</h3>
-          <button onClick={onCancel} className="rounded p-1 text-white/40 hover:bg-white/10 hover:text-ui-text">
+          <button onClick={onCancel} className="rounded p-1 text-ui-text-muted hover:bg-white/10 hover:text-ui-text">
             <X className="h-4 w-4" />
           </button>
         </div>
-        <p className="mb-4 text-sm text-white/70">{message}</p>
+        <p className="mb-4 text-sm text-ui-text">{message}</p>
         {confirmPhrase && (
           <div className="mb-4 space-y-1">
-            <p className="text-xs text-white/50">
+            <p className="text-xs text-ui-text-2">
               Ketik <span className="font-mono text-ui-text">{confirmPhrase}</span> untuk konfirmasi:
             </p>
             <input
@@ -72,7 +72,7 @@ const ConfirmDeleteDialog = ({
           <button
             type="button"
             onClick={onCancel}
-            className="h-9 rounded-md border border-white/10 px-3 text-xs font-medium text-white/70 hover:bg-white/5"
+            className="h-9 rounded-md border border-white/10 px-3 text-xs font-medium text-ui-text hover:bg-white/5"
           >
             Batal
           </button>

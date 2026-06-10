@@ -74,7 +74,7 @@ export default async function ScrimDetailPage({
       </div>
         <div className="flex items-center gap-2">
           <ScrimStatusBadge status={scrim.status} />
-          <span className="text-xs uppercase tracking-wide text-white/55">
+          <span className="text-xs uppercase tracking-wide text-ui-text-2">
             {scrim.format.toUpperCase()}
             {divisionName ? ` · ${divisionName}` : ""}
           </span>
@@ -85,20 +85,20 @@ export default async function ScrimDetailPage({
             <ScrimCountdown scrim={scrim} orgSlug={slug} myAttendanceStatus={myAttendance?.status} />
           </div>
         )}
-        <dl className="grid gap-1 text-sm text-white/70 sm:grid-cols-2">
+        <dl className="grid gap-1 text-sm text-ui-text sm:grid-cols-2">
           <div className="inline-flex items-center gap-2">
-            <Calendar className="h-3.5 w-3.5 text-white/55" />
+            <Calendar className="h-3.5 w-3.5 text-ui-text-2" />
             {scheduled}
           </div>
           {scrim.server_region ? (
             <div className="inline-flex items-center gap-2">
-              <MapPin className="h-3.5 w-3.5 text-white/55" />
+              <MapPin className="h-3.5 w-3.5 text-ui-text-2" />
               {scrim.server_region}
             </div>
           ) : null}
           {scrim.opponent_contact ? (
             <div className="inline-flex items-center gap-2">
-              <MessageCircle className="h-3.5 w-3.5 text-white/55" />
+              <MessageCircle className="h-3.5 w-3.5 text-ui-text-2" />
               {scrim.opponent_contact}
             </div>
           ) : null}
@@ -110,7 +110,7 @@ export default async function ScrimDetailPage({
           {!locked && (
             <Link
               href={`/${slug}/scrim/${scrim.id}/edit`}
-              className="inline-flex h-9 items-center rounded-md border border-white/10 px-4 text-sm font-medium text-white/80 transition hover:bg-white/5"
+              className="inline-flex h-9 items-center rounded-md border border-white/10 px-4 text-sm font-medium text-ui-text transition hover:bg-white/5"
             >
               Edit scrim
             </Link>
@@ -129,7 +129,7 @@ export default async function ScrimDetailPage({
             <h2 className="text-sm font-semibold text-ui-text">
               Konfirmasi kehadiran kamu
             </h2>
-            <p className="mt-1 text-xs text-white/55">
+            <p className="mt-1 text-xs text-ui-text-2">
               Pilih satu — bisa diubah selama scrim belum selesai.
             </p>
             <div className="mt-4">
@@ -148,7 +148,7 @@ export default async function ScrimDetailPage({
               <h2 className="text-sm font-semibold text-ui-text">
                 Anggota divisi
               </h2>
-              <p className="text-xs text-white/55">
+              <p className="text-xs text-ui-text-2">
                 {counts.confirmed} hadir · {counts.declined} tidak ·{" "}
                 {counts.pending} pending
               </p>
@@ -164,12 +164,12 @@ export default async function ScrimDetailPage({
                 Detail tambahan
               </h2>
               {scrim.room_info ? (
-                <p className="mt-3 text-sm text-white/85">
-                  <span className="text-white/55">Room:</span> {scrim.room_info}
+                <p className="mt-3 text-sm text-ui-text">
+                  <span className="text-ui-text-2">Room:</span> {scrim.room_info}
                 </p>
               ) : null}
               {scrim.notes ? (
-                <p className="mt-2 whitespace-pre-line text-sm text-white/80">
+                <p className="mt-2 whitespace-pre-line text-sm text-ui-text">
                   {scrim.notes}
                 </p>
               ) : null}
@@ -238,7 +238,7 @@ export default async function ScrimDetailPage({
             <article className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
               <div className="mb-3 flex items-center justify-between">
                 <h2 className="text-sm font-semibold text-ui-text">Riwayat vs {scrim.opponent_name}</h2>
-                <span className="text-xs text-white/40">{opponentHistory.length} pertandingan</span>
+                <span className="text-xs text-ui-text-muted">{opponentHistory.length} pertandingan</span>
               </div>
               <div className="space-y-2">
                 {opponentHistory.map((h) => {
@@ -250,9 +250,9 @@ export default async function ScrimDetailPage({
                     : "–";
                   return (
                     <div key={h.scrim_id} className="flex items-center justify-between text-xs">
-                      <span className="text-white/50">{date} · {h.format.toUpperCase()}</span>
+                      <span className="text-ui-text-2">{date} · {h.format.toUpperCase()}</span>
                       <div className="flex items-center gap-2">
-                        <span className="font-mono text-white/70">{scoreText}</span>
+                        <span className="font-mono text-ui-text">{scoreText}</span>
                         {h.is_win !== null && (
                           <span className={h.is_win ? "font-semibold text-green-400" : "font-semibold text-red-400"}>
                             {h.is_win ? "W" : "L"}
@@ -268,8 +268,8 @@ export default async function ScrimDetailPage({
                 const total = opponentHistory.filter(h => h.is_win !== null).length;
                 if (total === 0) return null;
                 return (
-                  <div className="mt-3 border-t border-white/5 pt-3 text-xs text-white/40">
-                    W/L: <span className="font-semibold text-white/70">{wins}/{total - wins}</span>
+                  <div className="mt-3 border-t border-white/5 pt-3 text-xs text-ui-text-muted">
+                    W/L: <span className="font-semibold text-ui-text">{wins}/{total - wins}</span>
                   </div>
                 );
               })()}

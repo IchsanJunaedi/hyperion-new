@@ -50,7 +50,7 @@ export default async function EditScrimPage({ params }: EditScrimPageProps) {
           <h1 className="text-2xl font-bold text-ui-text sm:text-3xl tracking-tight text-left">
             Edit Scrim
           </h1>
-          <p className="text-sm text-white/50">
+          <p className="text-sm text-ui-text-2">
             vs {detail.scrim.opponent_name}
           </p>
         </div>

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { Loader2 } from "lucide-react";
 import { useTransition } from "react";
@@ -54,7 +54,7 @@ const RoleSelector = ({
           </option>
         ))}
       </select>
-      {pending && <Loader2 className="h-3 w-3 animate-spin text-white/40" />}
+      {pending && <Loader2 className="h-3 w-3 animate-spin text-ui-text-muted" />}
     </div>
   );
 };

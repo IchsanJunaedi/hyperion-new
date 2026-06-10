@@ -52,9 +52,9 @@ const UserDetailModal = ({ user, onClose }: UserDetailModalProps) => {
             <h3 className="text-lg font-bold text-ui-text">
               {user.fullName ?? user.username ?? "—"}
             </h3>
-            {user.username && <p className="text-xs text-white/50">@{user.username}</p>}
+            {user.username && <p className="text-xs text-ui-text-2">@{user.username}</p>}
           </div>
-          <button onClick={onClose} className="rounded-md p-1 text-white/40 hover:bg-white/10 hover:text-ui-text">
+          <button onClick={onClose} className="rounded-md p-1 text-ui-text-muted hover:bg-white/10 hover:text-ui-text">
             <X className="h-4 w-4" />
           </button>
         </div>
@@ -69,19 +69,19 @@ const UserDetailModal = ({ user, onClose }: UserDetailModalProps) => {
 
           {user.bio && (
             <div>
-              <p className="text-xs text-white/50">Bio</p>
-              <p className="mt-0.5 text-white/80 whitespace-pre-line">{user.bio}</p>
+              <p className="text-xs text-ui-text-2">Bio</p>
+              <p className="mt-0.5 text-ui-text whitespace-pre-line">{user.bio}</p>
             </div>
           )}
 
           {Object.keys(socials).length > 0 && (
             <div>
-              <p className="text-xs text-white/50 mb-1">Sosial Media</p>
+              <p className="text-xs text-ui-text-2 mb-1">Sosial Media</p>
               <div className="space-y-1">
                 {Object.entries(socials).map(([key, val]) => val && (
                   <div key={key} className="flex gap-2 text-xs">
-                    <span className="capitalize text-white/50 w-20">{key}:</span>
-                    <span className="text-white/80 truncate">{val}</span>
+                    <span className="capitalize text-ui-text-2 w-20">{key}:</span>
+                    <span className="text-ui-text truncate">{val}</span>
                   </div>
                 ))}
               </div>
@@ -90,12 +90,12 @@ const UserDetailModal = ({ user, onClose }: UserDetailModalProps) => {
 
           {Object.keys(games).length > 0 && (
             <div>
-              <p className="text-xs text-white/50 mb-1">Game ID</p>
+              <p className="text-xs text-ui-text-2 mb-1">Game ID</p>
               <div className="space-y-1">
                 {Object.entries(games).map(([key, val]) => val && (
                   <div key={key} className="flex gap-2 text-xs">
-                    <span className="uppercase text-white/50 w-20">{key}:</span>
-                    <span className="text-white/80">{val}</span>
+                    <span className="uppercase text-ui-text-2 w-20">{key}:</span>
+                    <span className="text-ui-text">{val}</span>
                   </div>
                 ))}
               </div>
@@ -111,8 +111,8 @@ export { UserDetailModal };
 function Row({ label, value }: { label: string; value: string | null }) {
   return (
     <div>
-      <p className="text-xs text-white/50">{label}</p>
-      <p className="mt-0.5 text-white/80">{value ?? "—"}</p>
+      <p className="text-xs text-ui-text-2">{label}</p>
+      <p className="mt-0.5 text-ui-text">{value ?? "—"}</p>
     </div>
   );
 }

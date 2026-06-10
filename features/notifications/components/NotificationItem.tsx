@@ -134,11 +134,11 @@ const NotificationItem = ({
           {notification.title}
         </p>
         {notification.body && (
-          <p className="line-clamp-2 text-xs text-white/60">
+          <p className="line-clamp-2 text-xs text-ui-text-2">
             {notification.body}
           </p>
         )}
-        <p className="mt-1 text-xs text-white/40">
+        <p className="mt-1 text-xs text-ui-text-muted">
           {formatRelative(notification.created_at)}
         </p>
       </div>

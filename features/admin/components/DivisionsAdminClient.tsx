@@ -74,7 +74,7 @@ const DivisionCard = ({ division }: { division: DivisionWithMembers }) => {
             // eslint-disable-next-line @next/next/no-img-element
             <img src={editState.logo_url} alt={division.name} className="h-full w-full object-contain" />
           ) : (
-            <span className="text-xs font-black text-white/30">{division.name.slice(0, 2).toUpperCase()}</span>
+            <span className="text-xs font-black text-ui-text-muted">{division.name.slice(0, 2).toUpperCase()}</span>
           )}
         </div>
 
@@ -180,7 +180,7 @@ const DivisionCard = ({ division }: { division: DivisionWithMembers }) => {
               <div className="space-y-1">
                 {players.map((m) => (
                   <div key={m.user_id} className="flex items-center gap-2">
-                    <div className="flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded-full bg-ui-hover text-[9px] font-bold text-white/40">
+                    <div className="flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded-full bg-ui-hover text-[9px] font-bold text-ui-text-muted">
                       {m.avatar_url ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={m.avatar_url} alt="" className="h-full w-full object-cover" />

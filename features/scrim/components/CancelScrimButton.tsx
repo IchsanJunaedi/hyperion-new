@@ -51,7 +51,7 @@ const CancelScrimButton = ({ scrimId, orgSlug }: CancelScrimButtonProps) => {
 
       {showDialog && (
         <div className="mt-3 rounded-lg border border-white/10 bg-zinc-900/60 p-4 space-y-3">
-          <p className="text-sm text-white/80">Yakin batalkan scrim ini?</p>
+          <p className="text-sm text-ui-text">Yakin batalkan scrim ini?</p>
 
           <textarea
             value={reason}
@@ -77,7 +77,7 @@ const CancelScrimButton = ({ scrimId, orgSlug }: CancelScrimButtonProps) => {
               type="button"
               onClick={handleCancel}
               disabled={pending}
-              className="text-sm text-white/50 hover:text-ui-text transition-colors disabled:opacity-60"
+              className="text-sm text-ui-text-2 hover:text-ui-text transition-colors disabled:opacity-60"
             >
               Batal
             </button>

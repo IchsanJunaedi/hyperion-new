@@ -62,7 +62,7 @@ const SponsorPublicAdminClient = ({ sponsors: initial }: Props) => {
       <div className="mb-6">
         <h1 className="text-xl font-black uppercase tracking-tight text-ui-text">Sponsors Publik</h1>
         <p className="mt-1 text-xs text-ui-text-muted">
-          Pilih sponsor dari workspace yang tampil di halaman publik <span className="text-white/50">/sponsors</span>.
+          Pilih sponsor dari workspace yang tampil di halaman publik <span className="text-ui-text-2">/sponsors</span>.
           Hanya sponsor dengan logo yang bisa dipublikasikan.
         </p>
         {publicCount > 0 && <p className="mt-1.5 text-xs font-semibold text-[#F5C400]">{publicCount} publik</p>}

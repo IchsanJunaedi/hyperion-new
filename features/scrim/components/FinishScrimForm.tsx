@@ -291,12 +291,12 @@ const FinishScrimForm = ({
           <Trophy className="h-5 w-5 shrink-0 text-yellow-400" />
           <div className="flex items-center gap-2 text-sm">
             <span className="font-bold text-emerald-400">{wins}W</span>
-            <span className="text-white/30">—</span>
+            <span className="text-ui-text-muted">—</span>
             <span className="font-bold text-red-400">{losses}L</span>
-            <span className="text-white/30">·</span>
-            <span className="font-medium text-white/60">{format.toUpperCase()}</span>
-            <span className="text-white/30">·</span>
-            <span className="text-xs text-white/40">{games.length} game</span>
+            <span className="text-ui-text-muted">·</span>
+            <span className="font-medium text-ui-text-2">{format.toUpperCase()}</span>
+            <span className="text-ui-text-muted">·</span>
+            <span className="text-xs text-ui-text-muted">{games.length} game</span>
           </div>
           {seriesOver && (
             <span className="ml-auto rounded-full border border-yellow-400/20 bg-yellow-400/10 px-2.5 py-1 text-xs font-semibold text-yellow-400">
@@ -317,7 +317,7 @@ const FinishScrimForm = ({
               "relative pb-2.5 px-3 text-xs font-medium transition-colors",
               activeGame === i
                 ? "text-white after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:rounded-full after:bg-yellow-400 after:content-['']"
-                : "text-white/40 hover:text-white/70",
+                : "text-ui-text-muted hover:text-ui-text",
             )}
           >
             Game {i + 1}
@@ -333,7 +333,7 @@ const FinishScrimForm = ({
           <button
             type="button"
             onClick={addGame}
-            className="ml-1 flex h-6 w-6 items-center justify-center rounded text-white/30 hover:bg-white/5 hover:text-white/70 transition-colors"
+            className="ml-1 flex h-6 w-6 items-center justify-center rounded text-ui-text-muted hover:bg-white/5 hover:text-ui-text transition-colors"
           >
             <Plus className="h-3.5 w-3.5" />
           </button>
@@ -342,7 +342,7 @@ const FinishScrimForm = ({
           <button
             type="button"
             onClick={removeLastGame}
-            className="ml-auto text-[10px] text-white/20 hover:text-rose-400 transition-colors"
+            className="ml-auto text-[10px] text-ui-text-muted hover:text-rose-400 transition-colors"
           >
             Hapus Game {games.length}
           </button>
@@ -360,7 +360,7 @@ const FinishScrimForm = ({
               "inline-flex h-9 items-center gap-2 rounded-lg px-4 text-sm font-medium transition-all",
               game.isWin === true
                 ? "bg-emerald-500 text-white shadow-md shadow-emerald-500/30"
-                : "border border-white/10 bg-white/5 text-white/60 hover:bg-white/10",
+                : "border border-white/10 bg-white/5 text-ui-text-2 hover:bg-white/10",
             )}
           >
             <CheckCircle className="h-4 w-4" />
@@ -373,7 +373,7 @@ const FinishScrimForm = ({
               "inline-flex h-9 items-center gap-2 rounded-lg px-4 text-sm font-medium transition-all",
               game.isWin === false
                 ? "bg-red-500 text-white shadow-md shadow-red-500/30"
-                : "border border-white/10 bg-white/5 text-white/60 hover:bg-white/10",
+                : "border border-white/10 bg-white/5 text-ui-text-2 hover:bg-white/10",
             )}
           >
             <XCircle className="h-4 w-4" />
@@ -405,7 +405,7 @@ const FinishScrimForm = ({
 
         {/* Screenshot */}
         <div className="flex items-center gap-3">
-          <label className="inline-flex h-8 cursor-pointer items-center gap-2 rounded-lg border border-white/10 px-3 text-xs text-white/60 transition-colors hover:bg-white/5">
+          <label className="inline-flex h-8 cursor-pointer items-center gap-2 rounded-lg border border-white/10 px-3 text-xs text-ui-text-2 transition-colors hover:bg-white/5">
             {game.uploading ? (
               <Loader2 className="h-3.5 w-3.5 animate-spin" />
             ) : (
@@ -435,7 +435,7 @@ const FinishScrimForm = ({
           <h3 className="flex items-center gap-2 text-sm font-semibold text-ui-text">
             <Star className="h-4 w-4 text-yellow-400" />
             Evaluasi Pemain
-            <span className="text-xs font-normal text-white/40">— per scrim</span>
+            <span className="text-xs font-normal text-ui-text-muted">— per scrim</span>
           </h3>
           <div className="space-y-3">
             {attendingPlayers.map((p) => {
@@ -499,7 +499,7 @@ const FinishScrimForm = ({
         <h3 className="flex items-center gap-2 text-sm font-semibold text-ui-text">
           <ClipboardList className="h-4 w-4 text-ui-text-2" />
           Catatan Coach
-          <span className="text-xs font-normal text-white/40">— keseluruhan scrim</span>
+          <span className="text-xs font-normal text-ui-text-muted">— keseluruhan scrim</span>
         </h3>
         <textarea
           value={coachNotes}

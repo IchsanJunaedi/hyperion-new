@@ -116,7 +116,7 @@ const CalendarToolbar = ({
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:gap-2">
         {/* Search input */}
         <div className="relative flex-1 md:max-w-xs">
-          <Search className="absolute left-3 top-2.5 h-4 w-4 text-white/40" />
+          <Search className="absolute left-3 top-2.5 h-4 w-4 text-ui-text-muted" />
           <input
             type="text"
             placeholder="Cari event..."
@@ -212,7 +212,7 @@ const CalendarToolbar = ({
             const newDate = new Date(year, month - 1, 1);
             onNavigate(newDate.getFullYear(), newDate.getMonth());
           }}
-          className="rounded-md p-2 text-white/60 transition hover:bg-white/10 hover:text-ui-text"
+          className="rounded-md p-2 text-ui-text-2 transition hover:bg-white/10 hover:text-ui-text"
           aria-label="Bulan sebelumnya"
         >
           <ChevronLeft className="h-5 w-5" />
@@ -226,7 +226,7 @@ const CalendarToolbar = ({
             const newDate = new Date(year, month + 1, 1);
             onNavigate(newDate.getFullYear(), newDate.getMonth());
           }}
-          className="rounded-md p-2 text-white/60 transition hover:bg-white/10 hover:text-ui-text"
+          className="rounded-md p-2 text-ui-text-2 transition hover:bg-white/10 hover:text-ui-text"
           aria-label="Bulan berikutnya"
         >
           <ChevronRight className="h-5 w-5" />
@@ -288,7 +288,7 @@ const CalendarToolbar = ({
             <button
               type="button"
               onClick={handleClearFilters}
-              className="text-xs text-white/50 transition hover:text-white/80"
+              className="text-xs text-ui-text-2 transition hover:text-ui-text"
             >
               Bersihkan semua
             </button>

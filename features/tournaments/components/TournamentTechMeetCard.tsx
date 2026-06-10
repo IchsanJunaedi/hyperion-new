@@ -163,16 +163,16 @@ const TournamentTechMeetCard = ({
                   href={initialLink.startsWith("http") ? initialLink : `https://${initialLink}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-1 flex items-center gap-2.5 rounded-lg border border-white/5 bg-white/[0.02] px-3.5 py-2.5 text-xs text-white/70 hover:bg-white/[0.05] hover:text-ui-text transition"
+                  className="mt-1 flex items-center gap-2.5 rounded-lg border border-white/5 bg-white/[0.02] px-3.5 py-2.5 text-xs text-ui-text hover:bg-white/[0.05] hover:text-ui-text transition"
                 >
                   <ExternalLink className="h-4 w-4 text-blue-400 shrink-0" />
                   <span className="flex-1 truncate font-medium">{getMeetLabel(initialLink)}</span>
-                  <span className="text-[10px] text-white/30 shrink-0">Join</span>
+                  <span className="text-[10px] text-ui-text-muted shrink-0">Join</span>
                 </a>
               )}
             </>
           ) : (
-            <p className="text-xs text-white/35 italic">Belum ada jadwal tech meeting.</p>
+            <p className="text-xs text-ui-text-muted italic">Belum ada jadwal tech meeting.</p>
           )}
         </div>
       )}

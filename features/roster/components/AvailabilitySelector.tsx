@@ -92,10 +92,10 @@ const AvailabilitySelector = ({
         </span>
         
         {pending ? (
-          <Loader2 className="h-3 w-3 animate-spin text-white/40" />
+          <Loader2 className="h-3 w-3 animate-spin text-ui-text-muted" />
         ) : (
           <svg
-            className={`h-3 w-3 text-white/55 transition-all duration-200 ${
+            className={`h-3 w-3 text-ui-text-2 transition-all duration-200 ${
               isInteractive ? "opacity-100 scale-100" : "opacity-0 scale-75 pointer-events-none"
             }`}
             style={{ transform: isOpen ? "rotate(180deg)" : "rotate(0deg)" }}
@@ -126,7 +126,7 @@ const AvailabilitySelector = ({
                 className={`flex w-full items-center gap-2 px-3 py-2 text-left text-xs transition duration-150 ${
                   active
                     ? "bg-ui-surface text-ui-text font-medium"
-                    : "text-white/70 hover:bg-ui-hover hover:text-ui-text"
+                    : "text-ui-text hover:bg-ui-hover hover:text-ui-text"
                 }`}
               >
                 <span className={`h-2 w-2 rounded-full ${opt.dotColor}`} />

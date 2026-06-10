@@ -74,7 +74,7 @@ export default async function CalendarEventDetailPage({
       <div className="mx-auto max-w-2xl w-full space-y-4">
         {/* Badges */}
         <div className="flex flex-wrap gap-2">
-          <span className="inline-flex items-center rounded-full bg-white/5 px-2.5 py-1 text-xs font-medium text-white/60 border border-white/10">
+          <span className="inline-flex items-center rounded-full bg-white/5 px-2.5 py-1 text-xs font-medium text-ui-text-2 border border-white/10">
             {EVENT_TYPE_LABELS[event.event_type] ?? event.event_type}
           </span>
           {event.visibility && VISIBILITY_LABELS[event.visibility] && (
@@ -87,14 +87,14 @@ export default async function CalendarEventDetailPage({
         <h1 className="text-2xl font-bold text-ui-text sm:text-3xl tracking-tight">{event.title}</h1>
 
         {/* Meta info */}
-        <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-white/60">
+        <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-ui-text-2">
           <div className="inline-flex items-center gap-2">
-            <Clock className="h-3.5 w-3.5 text-white/40" />
+            <Clock className="h-3.5 w-3.5 text-ui-text-muted" />
             {startsAt}{endsAt ? ` — ${endsAt}` : ""}
           </div>
           {event.location && (
             <div className="inline-flex items-center gap-2">
-              <MapPin className="h-3.5 w-3.5 text-white/40" />
+              <MapPin className="h-3.5 w-3.5 text-ui-text-muted" />
               {event.location}
             </div>
           )}
@@ -103,8 +103,8 @@ export default async function CalendarEventDetailPage({
         {/* Description card */}
         {event.description && (
           <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5 sm:p-6 w-full shadow-xl shadow-black/20">
-            <p className="text-xs font-semibold uppercase tracking-wider text-white/40 mb-3">Deskripsi</p>
-            <div className="whitespace-pre-line text-sm leading-relaxed text-white/85">
+            <p className="text-xs font-semibold uppercase tracking-wider text-ui-text-muted mb-3">Deskripsi</p>
+            <div className="whitespace-pre-line text-sm leading-relaxed text-ui-text">
               {event.description}
             </div>
           </div>
@@ -121,7 +121,7 @@ export default async function CalendarEventDetailPage({
         {/* RSVP attendee list */}
         {rsvpAttendees.length > 0 && (
           <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-4 space-y-3">
-            <p className="text-xs font-semibold uppercase tracking-wider text-white/40">Respons anggota</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-ui-text-muted">Respons anggota</p>
             {(["hadir", "tentative", "tidak_hadir"] as const).map((status) => {
               const group = rsvpAttendees.filter((a) => a.status === status);
               if (!group.length) return null;
@@ -137,7 +137,7 @@ export default async function CalendarEventDetailPage({
                   </span>
                   <div className="flex flex-wrap gap-1.5">
                     {group.map((a) => (
-                      <span key={a.user_id} className="rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-xs text-white/70">
+                      <span key={a.user_id} className="rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-xs text-ui-text">
                         {a.name}
                       </span>
                     ))}

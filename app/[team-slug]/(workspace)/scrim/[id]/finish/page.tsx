@@ -45,7 +45,7 @@ export default async function FinishScrimPage({ params }: FinishScrimPageProps) 
         <h1 className="text-2xl font-bold text-ui-text sm:text-3xl tracking-tight">
           Selesai Pertandingan
         </h1>
-        <p className="text-sm text-white/50">
+        <p className="text-sm text-ui-text-2">
           vs {scrim.opponent_name} · {scrim.format.toUpperCase()}
         </p>
       </div>

@@ -51,7 +51,7 @@ const KickMemberButton = ({
       <button
         type="button"
         onClick={() => setConfirming(true)}
-        className="inline-flex h-7 items-center gap-1.5 rounded-md border border-white/10 px-2.5 text-xs text-white/50 transition hover:border-red-500/30 hover:text-red-400"
+        className="inline-flex h-7 items-center gap-1.5 rounded-md border border-white/10 px-2.5 text-xs text-ui-text-2 transition hover:border-red-500/30 hover:text-red-400"
       >
         <UserMinus className="h-3.5 w-3.5" />
         {isSelf ? "Keluar" : "Kick"}

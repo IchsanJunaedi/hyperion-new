@@ -40,14 +40,14 @@ const SponsorCard = ({ sponsor, detailHref, showOrgName = false }: SponsorCardPr
           // eslint-disable-next-line @next/next/no-img-element
           <img src={sponsor.logo_url} alt={sponsor.name} className="h-10 w-10 shrink-0 rounded-lg object-cover" />
         ) : (
-          <div className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-ui-hover text-sm font-bold text-white/70">
+          <div className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-ui-hover text-sm font-bold text-ui-text">
             {initials}
           </div>
         )}
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-semibold text-ui-text">{sponsor.name}</p>
           {showOrgName && sponsor.organizationName && (
-            <p className="truncate text-[10px] text-white/35 mt-0.5">{sponsor.organizationName}</p>
+            <p className="truncate text-[10px] text-ui-text-muted mt-0.5">{sponsor.organizationName}</p>
           )}
           {formattedValue && (
             <p className="text-xs font-medium text-yellow-400">{formattedValue}</p>
@@ -57,19 +57,19 @@ const SponsorCard = ({ sponsor, detailHref, showOrgName = false }: SponsorCardPr
       </div>
 
       {sponsor.contact_name && (
-        <p className="truncate text-xs text-white/50">{sponsor.contact_name}</p>
+        <p className="truncate text-xs text-ui-text-2">{sponsor.contact_name}</p>
       )}
 
       {days !== null && days >= 0 && days <= 30 && (
         <p className="text-xs text-red-400">Berakhir dalam {days} hari</p>
       )}
       {days !== null && days < 0 && (
-        <p className="text-xs text-white/30">Sudah berakhir</p>
+        <p className="text-xs text-ui-text-muted">Sudah berakhir</p>
       )}
 
       {sponsor.deliverableTotal > 0 && (
         <div className="space-y-1">
-          <div className="flex justify-between text-xs text-white/40">
+          <div className="flex justify-between text-xs text-ui-text-muted">
             <span>Deliverable</span>
             <span>{sponsor.deliverableDone}/{sponsor.deliverableTotal}</span>
           </div>
@@ -84,7 +84,7 @@ const SponsorCard = ({ sponsor, detailHref, showOrgName = false }: SponsorCardPr
 
       <Link
         href={detailHref}
-        className="mt-auto inline-flex h-8 items-center justify-center rounded-md border border-ui-border text-xs text-white/60 transition hover:bg-white/5 hover:text-ui-text"
+        className="mt-auto inline-flex h-8 items-center justify-center rounded-md border border-ui-border text-xs text-ui-text-2 transition hover:bg-white/5 hover:text-ui-text"
       >
         Lihat Detail
       </Link>

@@ -76,8 +76,8 @@ const AnnouncementEditForm = ({
 
       <div className="flex items-center justify-between rounded-xl bg-zinc-900/40 border border-white/5 px-4 py-3">
         <div className="space-y-0.5">
-          <span className="block text-xs font-semibold text-white/80">Pin di Halaman Utama</span>
-          <span className="block text-[10px] text-white/40">Sematkan pengumuman di bagian atas</span>
+          <span className="block text-xs font-semibold text-ui-text">Pin di Halaman Utama</span>
+          <span className="block text-[10px] text-ui-text-muted">Sematkan pengumuman di bagian atas</span>
         </div>
         <label className="relative inline-flex cursor-pointer items-center">
           <input
@@ -124,7 +124,7 @@ function Field({
 }) {
   return (
     <div className="space-y-1">
-      <label htmlFor={name} className="text-xs font-medium text-white/70">
+      <label htmlFor={name} className="text-xs font-medium text-ui-text">
         {label}
       </label>
       {children}

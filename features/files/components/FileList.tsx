@@ -99,14 +99,14 @@ const FileList = ({ orgId, folder = "files" }: FileListProps) => {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-8">
-        <Loader2 className="h-5 w-5 animate-spin text-white/40" />
+        <Loader2 className="h-5 w-5 animate-spin text-ui-text-muted" />
       </div>
     );
   }
 
   if (files.length === 0) {
     return (
-      <p className="py-8 text-center text-sm text-white/40">
+      <p className="py-8 text-center text-sm text-ui-text-muted">
         Belum ada file yang diupload.
       </p>
     );
@@ -155,25 +155,25 @@ const FileList = ({ orgId, folder = "files" }: FileListProps) => {
               className="flex items-center gap-3 px-4 py-3 transition hover:bg-white/[0.02]"
             >
               {isLoadingThis ? (
-                <Loader2 className="h-4 w-4 shrink-0 animate-spin text-white/40" />
+                <Loader2 className="h-4 w-4 shrink-0 animate-spin text-ui-text-muted" />
               ) : (
-                <File className="h-4 w-4 shrink-0 text-white/40" />
+                <File className="h-4 w-4 shrink-0 text-ui-text-muted" />
               )}
               <button
                 type="button"
                 disabled={isLoadingThis}
                 onClick={() => handleOpenPreview(file)}
-                className="min-w-0 flex-1 cursor-pointer truncate text-left text-sm text-white/80 underline-offset-2 transition hover:text-ui-text hover:underline disabled:opacity-60"
+                className="min-w-0 flex-1 cursor-pointer truncate text-left text-sm text-ui-text underline-offset-2 transition hover:text-ui-text hover:underline disabled:opacity-60"
               >
                 {stripTimestampPrefix(file.name)}
               </button>
-              <span className="shrink-0 text-xs text-white/40">{size}</span>
-              <span className="shrink-0 text-xs text-white/40">{date}</span>
+              <span className="shrink-0 text-xs text-ui-text-muted">{size}</span>
+              <span className="shrink-0 text-xs text-ui-text-muted">{date}</span>
               <button
                 type="button"
                 disabled={deletingId === file.id}
                 onClick={() => handleDelete(file.name, file.id)}
-                className="shrink-0 cursor-pointer rounded-md p-1 text-white/40 transition hover:bg-white/10 hover:text-red-400 disabled:opacity-40"
+                className="shrink-0 cursor-pointer rounded-md p-1 text-ui-text-muted transition hover:bg-white/10 hover:text-red-400 disabled:opacity-40"
                 aria-label="Hapus file"
               >
                 {deletingId === file.id ? (

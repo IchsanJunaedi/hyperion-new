@@ -31,7 +31,7 @@ export default async function DashboardDivisionsPage() {
       <main className="mx-auto max-w-7xl px-4 py-6 space-y-6">
         <header>
           <h1 className="text-2xl font-bold text-ui-text">Divisi</h1>
-          <p className="mt-1 text-sm text-white/60">
+          <p className="mt-1 text-sm text-ui-text-2">
             Buat, edit, dan hapus divisi. Divisi yang dibuat di sini bisa dipilih saat membuat tim baru.
           </p>
         </header>
@@ -46,7 +46,7 @@ export default async function DashboardDivisionsPage() {
         <section>
           <h2 className="mb-3 text-sm font-semibold text-ui-text">Divisi yang Ada</h2>
           {(!divisions || divisions.length === 0) ? (
-            <p className="text-sm text-white/40">Belum ada divisi.</p>
+            <p className="text-sm text-ui-text-muted">Belum ada divisi.</p>
           ) : (
             <div className="space-y-2">
               {divisions.map((div) => (

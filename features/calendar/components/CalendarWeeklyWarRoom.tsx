@@ -14,7 +14,7 @@ const EVENT_TYPE_STYLES: Record<string, { bg: string; text: string; label: strin
   practice:   { bg: "bg-green-500/15 border-green-500/30",  text: "text-green-300",  label: "Latihan" },
   meeting:    { bg: "bg-blue-500/15 border-blue-500/30",    text: "text-blue-300",   label: "Meeting" },
   bootcamp:   { bg: "bg-orange-500/15 border-orange-500/30", text: "text-orange-300", label: "Bootcamp" },
-  other:      { bg: "bg-white/5 border-white/10",           text: "text-white/60",   label: "Event" },
+  other:      { bg: "bg-white/5 border-white/10",           text: "text-ui-text-2",   label: "Event" },
 };
 
 function getEventTypeIcon(type: string) {
@@ -125,7 +125,7 @@ const CalendarWeeklyWarRoom = ({ orgSlug, events }: CalendarWeeklyWarRoomProps) 
           <button
             type="button"
             onClick={() => setWeekOffset((v) => v - 1)}
-            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded border border-white/10 text-white/50 hover:bg-white/5 hover:text-ui-text transition"
+            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded border border-white/10 text-ui-text-2 hover:bg-white/5 hover:text-ui-text transition"
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
@@ -133,7 +133,7 @@ const CalendarWeeklyWarRoom = ({ orgSlug, events }: CalendarWeeklyWarRoomProps) 
           <button
             type="button"
             onClick={() => setWeekOffset((v) => v + 1)}
-            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded border border-white/10 text-white/50 hover:bg-white/5 hover:text-ui-text transition"
+            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded border border-white/10 text-ui-text-2 hover:bg-white/5 hover:text-ui-text transition"
           >
             <ChevronRight className="h-4 w-4" />
           </button>
@@ -141,7 +141,7 @@ const CalendarWeeklyWarRoom = ({ orgSlug, events }: CalendarWeeklyWarRoomProps) 
             <button
               type="button"
               onClick={() => setWeekOffset(0)}
-              className="text-xs text-white/40 hover:text-white/70 transition"
+              className="text-xs text-ui-text-muted hover:text-ui-text transition"
             >
               Hari ini
             </button>
@@ -179,10 +179,10 @@ const CalendarWeeklyWarRoom = ({ orgSlug, events }: CalendarWeeklyWarRoomProps) 
             >
               {/* Day header */}
               <div className="mb-2 text-center">
-                <p className={cn("text-[10px] font-semibold uppercase tracking-wide", isToday ? "text-yellow-400" : "text-white/40")}>
+                <p className={cn("text-[10px] font-semibold uppercase tracking-wide", isToday ? "text-yellow-400" : "text-ui-text-muted")}>
                   {DAYS_ID[i]}
                 </p>
-                <p className={cn("text-sm font-bold leading-tight", isToday ? "text-yellow-400" : "text-white/70")}>
+                <p className={cn("text-sm font-bold leading-tight", isToday ? "text-yellow-400" : "text-ui-text")}>
                   {day.getDate()}
                 </p>
               </div>
@@ -191,7 +191,7 @@ const CalendarWeeklyWarRoom = ({ orgSlug, events }: CalendarWeeklyWarRoomProps) 
               <div className="flex flex-col gap-1 flex-1">
                 {dayEvents.length === 0 ? (
                   <div className="flex flex-1 items-center justify-center">
-                    <span className="text-[9px] text-white/15">—</span>
+                    <span className="text-[9px] text-ui-text-muted">—</span>
                   </div>
                 ) : (
                   dayEvents.map((e) => {
@@ -212,7 +212,7 @@ const CalendarWeeklyWarRoom = ({ orgSlug, events }: CalendarWeeklyWarRoomProps) 
                           </span>
                         </div>
                         {!e.is_all_day && (
-                          <p className="mt-0.5 text-[8px] text-white/40">
+                          <p className="mt-0.5 text-[8px] text-ui-text-muted">
                             {toWibTime(e.starts_at)}
                           </p>
                         )}

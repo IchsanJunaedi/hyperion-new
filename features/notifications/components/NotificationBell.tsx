@@ -95,7 +95,7 @@ const NotificationBell = ({ userId, orgSlug }: NotificationBellProps) => {
         type="button"
         aria-label={ariaLabel}
         onClick={() => setOpen((v) => !v)}
-        className="relative cursor-pointer rounded-full p-2 text-white/70 transition hover:bg-white/10 hover:text-ui-text"
+        className="relative cursor-pointer rounded-full p-2 text-ui-text transition hover:bg-white/10 hover:text-ui-text"
       >
         <Bell className="h-4 w-4" />
         {badgeText && (
@@ -117,7 +117,7 @@ const NotificationBell = ({ userId, orgSlug }: NotificationBellProps) => {
               type="button"
               disabled={!count}
               onClick={handleMarkAllRead}
-              className="cursor-pointer text-xs text-white/60 transition hover:text-ui-text disabled:cursor-not-allowed disabled:opacity-40"
+              className="cursor-pointer text-xs text-ui-text-2 transition hover:text-ui-text disabled:cursor-not-allowed disabled:opacity-40"
             >
               Tandai semua dibaca
             </button>
@@ -137,7 +137,7 @@ const NotificationBell = ({ userId, orgSlug }: NotificationBellProps) => {
               <button
                 type="button"
                 onClick={() => setLimit(50)}
-                className="w-full cursor-pointer text-center text-xs text-white/40 transition hover:text-white/70"
+                className="w-full cursor-pointer text-center text-xs text-ui-text-muted transition hover:text-ui-text"
               >
                 Lihat semua notifikasi
               </button>

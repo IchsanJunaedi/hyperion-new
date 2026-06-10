@@ -38,7 +38,7 @@ function RoleBadge({ role }: { role: string }) {
     manager: "bg-green-500/10 text-green-400",
     coach: "bg-blue-500/10 text-blue-400",
     captain: "bg-purple-500/10 text-purple-400",
-    member: "bg-white/5 text-white/60",
+    member: "bg-white/5 text-ui-text-2",
   };
   return (
     <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${colors[role] ?? colors.member}`}>
@@ -56,21 +56,21 @@ const ManageMemberTable = ({ members, orgName }: ManageMemberTableProps) => {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-white/5 bg-white/[0.02]">
-              <th className="px-4 py-3 text-left text-xs font-medium text-white/50">Nama</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-white/50">Username</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-white/50">Divisi</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-white/50">Role</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-white/50">Role Ingame</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-white/50">WA</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-white/50">Status</th>
-              <th className="px-4 py-3 text-right text-xs font-medium text-white/50">Aksi</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-ui-text-2">Nama</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-ui-text-2">Username</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-ui-text-2">Divisi</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-ui-text-2">Role</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-ui-text-2">Role Ingame</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-ui-text-2">WA</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-ui-text-2">Status</th>
+              <th className="px-4 py-3 text-right text-xs font-medium text-ui-text-2">Aksi</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-white/5">
             {members.map((m, idx) => (
               <tr key={m.id} className="transition hover:bg-white/[0.04]">
                 <td
-                  className="px-4 py-3 text-white/80 cursor-pointer hover:text-yellow-400"
+                  className="px-4 py-3 text-ui-text cursor-pointer hover:text-yellow-400"
                   onClick={() =>
                     setSelected({
                       id: m.userId,
@@ -90,8 +90,8 @@ const ManageMemberTable = ({ members, orgName }: ManageMemberTableProps) => {
                 >
                   {m.fullName ?? "—"}
                 </td>
-                <td className="px-4 py-3 text-white/60">{m.username ?? "—"}</td>
-                <td className="px-4 py-3 text-white/60">{m.division ?? "—"}</td>
+                <td className="px-4 py-3 text-ui-text-2">{m.username ?? "—"}</td>
+                <td className="px-4 py-3 text-ui-text-2">{m.division ?? "—"}</td>
                 <td className="px-4 py-3">
                   <RoleBadge role={m.role} />
                 </td>
@@ -107,7 +107,7 @@ const ManageMemberTable = ({ members, orgName }: ManageMemberTableProps) => {
                     <MainRoleBadge mainRole={null} />
                   )}
                 </td>
-                <td className="px-4 py-3 text-white/60">{m.phoneWa ?? "—"}</td>
+                <td className="px-4 py-3 text-ui-text-2">{m.phoneWa ?? "—"}</td>
                 <td className="px-4 py-3"><AvailabilityBadge availability={m.availability} /></td>
                 <td className="px-4 py-3 text-right">
                   {m.role !== "owner" && m.role !== "manager" && (
@@ -118,7 +118,7 @@ const ManageMemberTable = ({ members, orgName }: ManageMemberTableProps) => {
             ))}
             {members.length === 0 && (
               <tr>
-                <td colSpan={8} className="px-4 py-6 text-center text-sm text-white/40">
+                <td colSpan={8} className="px-4 py-6 text-center text-sm text-ui-text-muted">
                   Belum ada member di tim ini.
                 </td>
               </tr>

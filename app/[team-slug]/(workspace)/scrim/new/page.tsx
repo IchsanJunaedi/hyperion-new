@@ -44,7 +44,7 @@ export default async function NewScrimPage({ params }: NewScrimPageProps) {
 
         <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5 sm:p-6 w-full shadow-xl shadow-black/20">
           {divisions.length === 0 ? (
-            <p className="text-sm text-white/65 text-center">
+            <p className="text-sm text-ui-text-2 text-center">
               Tim belum punya divisi aktif. Tambah divisi di pengaturan tim
               sebelum membuat scrim.
             </p>

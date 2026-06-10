@@ -75,7 +75,7 @@ const SponsorROIDashboard = ({ sponsors }: Props) => {
 
   // Completion colour
   const completionColor =
-    overallPct === null ? "text-white/40"
+    overallPct === null ? "text-ui-text-muted"
     : overallPct >= 80  ? "text-green-400"
     : overallPct >= 50  ? "text-yellow-400"
     : "text-red-400";
@@ -95,18 +95,18 @@ const SponsorROIDashboard = ({ sponsors }: Props) => {
           <BarChart3 className="h-4 w-4 text-yellow-400" />
           <h2 className="text-sm font-semibold text-ui-text">ROI Dashboard</h2>
         </div>
-        <span className="text-[10px] text-white/25 uppercase tracking-widest">Sponsor Analytics</span>
+        <span className="text-[10px] text-ui-text-muted uppercase tracking-widest">Sponsor Analytics</span>
       </div>
 
       {/* ── Top KPI strip ────────────────────────────────────── */}
       <div className="grid grid-cols-3 divide-x divide-ui-border border-b border-ui-border">
         {/* Completion Rate */}
         <div className="px-5 py-4">
-          <p className="text-[10px] uppercase tracking-wider text-white/35 mb-1">Completion Rate</p>
+          <p className="text-[10px] uppercase tracking-wider text-ui-text-muted mb-1">Completion Rate</p>
           {overallPct !== null ? (
             <>
               <p className={cn("text-2xl font-bold tabular-nums", completionColor)}>{overallPct}%</p>
-              <p className="text-[11px] text-white/30 mt-0.5">{totalDone}/{totalAll} deliverable</p>
+              <p className="text-[11px] text-ui-text-muted mt-0.5">{totalDone}/{totalAll} deliverable</p>
               <div className="mt-2 h-1 w-full rounded-full bg-white/10">
                 <div
                   className={cn("h-full rounded-full transition-all", completionBarColor)}
@@ -115,17 +115,17 @@ const SponsorROIDashboard = ({ sponsors }: Props) => {
               </div>
             </>
           ) : (
-            <p className="text-sm text-white/25 mt-1">Belum ada data</p>
+            <p className="text-sm text-ui-text-muted mt-1">Belum ada data</p>
           )}
         </div>
 
         {/* Total Deal Value */}
         <div className="px-5 py-4">
-          <p className="text-[10px] uppercase tracking-wider text-white/35 mb-1">Total Deal (IDR)</p>
+          <p className="text-[10px] uppercase tracking-wider text-ui-text-muted mb-1">Total Deal (IDR)</p>
           <p className="text-2xl font-bold tabular-nums text-ui-text">
             {totalIDR > 0 ? formatRupiah(totalIDR) : "—"}
           </p>
-          <p className="text-[11px] text-white/30 mt-0.5">{sponsors.length} sponsor total</p>
+          <p className="text-[11px] text-ui-text-muted mt-0.5">{sponsors.length} sponsor total</p>
           <div className="mt-2 flex gap-1">
             {sortedStatuses.slice(0, 4).map(([status, val]) => (
               <div
@@ -140,12 +140,12 @@ const SponsorROIDashboard = ({ sponsors }: Props) => {
 
         {/* Active Ratio */}
         <div className="px-5 py-4">
-          <p className="text-[10px] uppercase tracking-wider text-white/35 mb-1">Sponsor Aktif</p>
+          <p className="text-[10px] uppercase tracking-wider text-ui-text-muted mb-1">Sponsor Aktif</p>
           <p className="text-2xl font-bold tabular-nums text-ui-text">
             {activeSponsors.length}
-            <span className="text-sm font-normal text-white/30"> / {sponsors.length}</span>
+            <span className="text-sm font-normal text-ui-text-muted"> / {sponsors.length}</span>
           </p>
-          <p className="text-[11px] text-white/30 mt-0.5">
+          <p className="text-[11px] text-ui-text-muted mt-0.5">
             {sponsors.length > 0 ? Math.round((activeSponsors.length / sponsors.length) * 100) : 0}% activation rate
           </p>
           {expiring.length > 0 && (
@@ -164,11 +164,11 @@ const SponsorROIDashboard = ({ sponsors }: Props) => {
         <div className="px-5 py-4 space-y-3">
           <div className="flex items-center gap-1.5">
             <CheckCircle2 className="h-3.5 w-3.5 text-green-400" />
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-white/50">Deliverable per Sponsor</span>
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-ui-text-2">Deliverable per Sponsor</span>
           </div>
 
           {withDeliverables.length === 0 ? (
-            <p className="text-xs text-white/25 py-4 text-center">Belum ada deliverable aktif.</p>
+            <p className="text-xs text-ui-text-muted py-4 text-center">Belum ada deliverable aktif.</p>
           ) : (() => {
             const visible = showAllDl ? withDeliverables : withDeliverables.slice(0, MAX_VISIBLE);
             const hasMore = withDeliverables.length > MAX_VISIBLE;
@@ -183,7 +183,7 @@ const SponsorROIDashboard = ({ sponsors }: Props) => {
                     return (
                       <div key={s.id}>
                         <div className="flex items-center justify-between gap-2 mb-1.5">
-                          <span className={cn("truncate text-xs font-medium", done ? "text-white/40" : "text-white/80")}>
+                          <span className={cn("truncate text-xs font-medium", done ? "text-ui-text-muted" : "text-ui-text")}>
                             {s.name}
                           </span>
                           <span className={cn(
@@ -207,7 +207,7 @@ const SponsorROIDashboard = ({ sponsors }: Props) => {
                   <button
                     type="button"
                     onClick={() => setShowAllDl((v) => !v)}
-                    className="mt-2 text-[11px] text-white/30 hover:text-white/60 transition cursor-pointer"
+                    className="mt-2 text-[11px] text-ui-text-muted hover:text-ui-text-2 transition cursor-pointer"
                   >
                     {showAllDl
                       ? "Sembunyikan ↑"
@@ -223,7 +223,7 @@ const SponsorROIDashboard = ({ sponsors }: Props) => {
         <div className="px-5 py-4 space-y-3">
           <div className="flex items-center gap-1.5">
             <Clock className="h-3.5 w-3.5 text-orange-400" />
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-white/50">Segera Berakhir</span>
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-ui-text-2">Segera Berakhir</span>
             {expiring.length > 0 && (
               <span className="ml-auto rounded-full bg-orange-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-orange-400">
                 {expiring.length}
@@ -233,8 +233,8 @@ const SponsorROIDashboard = ({ sponsors }: Props) => {
 
           {expiring.length === 0 ? (
             <div className="flex flex-col items-center gap-2 py-4 text-center">
-              <Zap className="h-5 w-5 text-white/15" />
-              <p className="text-xs text-white/25">Tidak ada yang berakhir dalam 90 hari.</p>
+              <Zap className="h-5 w-5 text-ui-text-muted" />
+              <p className="text-xs text-ui-text-muted">Tidak ada yang berakhir dalam 90 hari.</p>
             </div>
           ) : (
             <div className="space-y-2">
@@ -253,19 +253,19 @@ const SponsorROIDashboard = ({ sponsors }: Props) => {
                     )}
                   >
                     <div className="min-w-0">
-                      <p className="truncate text-xs font-medium text-white/85">{s.name}</p>
+                      <p className="truncate text-xs font-medium text-ui-text">{s.name}</p>
                       {s.deal_value && s.currency === "IDR" && (
-                        <p className="text-[11px] text-white/40">{formatRupiah(s.deal_value)}</p>
+                        <p className="text-[11px] text-ui-text-muted">{formatRupiah(s.deal_value)}</p>
                       )}
                     </div>
                     <div className="shrink-0 text-right">
                       <p className={cn(
                         "text-xs font-bold tabular-nums",
-                        urgent ? "text-red-400" : warning ? "text-orange-400" : "text-white/50"
+                        urgent ? "text-red-400" : warning ? "text-orange-400" : "text-ui-text-2"
                       )}>
                         {d} hari
                       </p>
-                      <p className="text-[10px] text-white/25">tersisa</p>
+                      <p className="text-[10px] text-ui-text-muted">tersisa</p>
                     </div>
                   </div>
                 );
@@ -281,9 +281,9 @@ const SponsorROIDashboard = ({ sponsors }: Props) => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5">
               <TrendingUp className="h-3.5 w-3.5 text-blue-400" />
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-white/50">Distribusi Nilai per Status</span>
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-ui-text-2">Distribusi Nilai per Status</span>
             </div>
-            <span className="text-[11px] text-white/30">Total {formatRupiah(totalIDR)}</span>
+            <span className="text-[11px] text-ui-text-muted">Total {formatRupiah(totalIDR)}</span>
           </div>
 
           {/* Stacked bar */}
@@ -305,9 +305,9 @@ const SponsorROIDashboard = ({ sponsors }: Props) => {
               return (
                 <div key={status} className="flex items-center gap-1.5">
                   <span className={cn("h-2 w-2 shrink-0 rounded-full", STATUS_DOT[status] ?? "bg-zinc-400")} />
-                  <span className="text-[11px] text-white/50">{STATUS_LABEL[status] ?? status}</span>
-                  <span className="text-[11px] font-semibold text-white/70">{formatRupiah(val)}</span>
-                  <span className="text-[10px] text-white/25">({pct}%)</span>
+                  <span className="text-[11px] text-ui-text-2">{STATUS_LABEL[status] ?? status}</span>
+                  <span className="text-[11px] font-semibold text-ui-text">{formatRupiah(val)}</span>
+                  <span className="text-[10px] text-ui-text-muted">({pct}%)</span>
                 </div>
               );
             })}
@@ -325,7 +325,7 @@ const SponsorROIDashboard = ({ sponsors }: Props) => {
             ? <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-green-400" />
             : <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-yellow-400" />
           }
-          <p className="text-[11px] text-white/50">
+          <p className="text-[11px] text-ui-text-2">
             Completion rate keseluruhan:{" "}
             <span className={cn("font-semibold", completionColor)}>
               {overallPct}% ({totalDone}/{totalAll} deliverable selesai)

@@ -90,8 +90,8 @@ const AnnouncementForm = ({ orgSlug, divisions }: AnnouncementFormProps) => {
         {/* Toggle Pin */}
         <div className="flex items-center justify-between rounded-xl bg-zinc-900/40 border border-white/5 px-4 py-3">
           <div className="space-y-0.5">
-            <span className="block text-xs font-semibold text-white/80">Pin di Halaman Utama</span>
-            <span className="block text-[10px] text-white/40">Sematkan pengumuman di bagian atas</span>
+            <span className="block text-xs font-semibold text-ui-text">Pin di Halaman Utama</span>
+            <span className="block text-[10px] text-ui-text-muted">Sematkan pengumuman di bagian atas</span>
           </div>
           <label className="relative inline-flex cursor-pointer items-center">
             <input type="checkbox" name="is_pinned" className="peer sr-only" />
@@ -102,8 +102,8 @@ const AnnouncementForm = ({ orgSlug, divisions }: AnnouncementFormProps) => {
         {/* Toggle WA Blast */}
         <div className="flex items-center justify-between rounded-xl bg-zinc-900/40 border border-white/5 px-4 py-3">
           <div className="space-y-0.5">
-            <span className="block text-xs font-semibold text-white/80">Kirim WA Blast</span>
-            <span className="block text-[10px] text-white/40">Kirim notifikasi WhatsApp ke member</span>
+            <span className="block text-xs font-semibold text-ui-text">Kirim WA Blast</span>
+            <span className="block text-[10px] text-ui-text-muted">Kirim notifikasi WhatsApp ke member</span>
           </div>
           <label className="relative inline-flex cursor-pointer items-center">
             <input type="checkbox" name="send_wa_blast" className="peer sr-only" />
@@ -115,7 +115,7 @@ const AnnouncementForm = ({ orgSlug, divisions }: AnnouncementFormProps) => {
         <div className="flex items-center justify-between rounded-xl bg-zinc-900/40 border border-orange-500/10 px-4 py-3 sm:col-span-2">
           <div className="space-y-0.5">
             <span className="block text-xs font-semibold text-orange-400">Wajib Konfirmasi Baca</span>
-            <span className="block text-[10px] text-white/40">Member harus klik konfirmasi — kamu bisa lihat siapa yang belum</span>
+            <span className="block text-[10px] text-ui-text-muted">Member harus klik konfirmasi — kamu bisa lihat siapa yang belum</span>
           </div>
           <label className="relative inline-flex cursor-pointer items-center">
             <input type="checkbox" name="requires_ack" className="peer sr-only" />
@@ -158,7 +158,7 @@ function Field({
 }) {
   return (
     <div className="space-y-1">
-      <label htmlFor={name} className="text-xs font-medium text-white/70">
+      <label htmlFor={name} className="text-xs font-medium text-ui-text">
         {label}
       </label>
       {children}

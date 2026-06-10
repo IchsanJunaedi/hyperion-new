@@ -45,7 +45,7 @@ const NewsAdminClient = ({ posts: initial }: Props) => {
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-xl font-black uppercase tracking-tight text-ui-text">News</h1>
-          <p className="mt-1 text-xs text-ui-text-muted">Artikel berita yang tampil di halaman publik <span className="text-white/50">/news</span>.</p>
+          <p className="mt-1 text-xs text-ui-text-muted">Artikel berita yang tampil di halaman publik <span className="text-ui-text-2">/news</span>.</p>
         </div>
         <button onClick={() => { setEditing(null); setShowForm(true); }}
           className="flex cursor-pointer items-center gap-2 border border-[#F5C400] px-4 py-2 text-xs font-bold uppercase tracking-wider text-[#F5C400] transition hover:bg-[#F5C400] hover:text-black">

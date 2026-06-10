@@ -35,7 +35,7 @@ const DashboardLoginForm = () => {
       className="space-y-4 rounded-xl border border-white/10 bg-zinc-900/60 p-6"
     >
       <div className="space-y-1">
-        <label htmlFor="email" className="text-xs font-medium text-white/70">
+        <label htmlFor="email" className="text-xs font-medium text-ui-text">
           Email
         </label>
         <input
@@ -48,7 +48,7 @@ const DashboardLoginForm = () => {
       </div>
 
       <div className="space-y-1">
-        <label htmlFor="password" className="text-xs font-medium text-white/70">
+        <label htmlFor="password" className="text-xs font-medium text-ui-text">
           Password
         </label>
         <div className="relative">

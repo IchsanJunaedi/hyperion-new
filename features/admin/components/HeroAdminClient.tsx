@@ -57,7 +57,7 @@ const HeroAdminClient = ({ initialValues }: Props) => {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={bgUrl} alt="Hero background preview" className="h-full w-full object-cover" style={{ filter: "brightness(0.6)" }} />
               <div className="absolute inset-0 flex items-center justify-center">
-                <p className="text-xs font-bold uppercase tracking-widest text-white/40">Preview</p>
+                <p className="text-xs font-bold uppercase tracking-widest text-ui-text-muted">Preview</p>
               </div>
             </div>
             <div className="flex items-center gap-3">

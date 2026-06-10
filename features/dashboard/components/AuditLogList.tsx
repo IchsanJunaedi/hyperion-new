@@ -24,7 +24,7 @@ function getActionColor(action: string): string {
   if (action === "role_changed") return "text-purple-400";
   if (action.includes("accepted")) return "text-green-400";
   if (action.includes("declined")) return "text-red-400";
-  return "text-white/60";
+  return "text-ui-text-2";
 }
 
 function formatMetadata(action: string, meta: Record<string, unknown>): string {
@@ -120,7 +120,7 @@ const AuditLogList = ({ logs, showSearch = false }: AuditLogListProps) => {
       )}
 
       {filtered.length === 0 ? (
-        <div className="rounded-lg border border-white/5 bg-white/[0.02] px-4 py-8 text-center text-sm text-white/40">
+        <div className="rounded-lg border border-white/5 bg-white/[0.02] px-4 py-8 text-center text-sm text-ui-text-muted">
           {query ? "Tidak ada hasil yang cocok." : "Belum ada aktivitas tercatat."}
         </div>
       ) : (
@@ -144,18 +144,18 @@ const AuditLogList = ({ logs, showSearch = false }: AuditLogListProps) => {
                           <span className={`text-xs font-medium ${color}`}>
                             {log.actionLabel}
                           </span>
-                          <span className="text-xs text-white/30">oleh</span>
-                          <span className="text-xs font-medium text-white/70">
+                          <span className="text-xs text-ui-text-muted">oleh</span>
+                          <span className="text-xs font-medium text-ui-text">
                             {log.actorName}
                           </span>
                         </div>
                         {metaDisplay && (
-                          <p className="mt-0.5 text-xs text-white/40 truncate">
+                          <p className="mt-0.5 text-xs text-ui-text-muted truncate">
                             {metaDisplay}
                           </p>
                         )}
                       </div>
-                      <span className="shrink-0 text-xs text-white/30">{log.time}</span>
+                      <span className="shrink-0 text-xs text-ui-text-muted">{log.time}</span>
                     </div>
                   );
                 })}

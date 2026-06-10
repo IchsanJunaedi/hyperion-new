@@ -154,7 +154,7 @@ const ManagerAssignForm = ({
             ))}
           </select>
           {orgHasCaptain[selectedOrg] && (
-            <p className="mt-1 text-xs text-white/40">
+            <p className="mt-1 text-xs text-ui-text-muted">
               Tim ini sudah punya Captain. Hanya bisa tambah Member.
             </p>
           )}
@@ -191,7 +191,7 @@ function Field({
 }) {
   return (
     <div className="space-y-1">
-      <label htmlFor={name} className="text-xs font-medium text-white/70">
+      <label htmlFor={name} className="text-xs font-medium text-ui-text">
         {label}
       </label>
       {children}

@@ -98,11 +98,11 @@ const InviteForm = ({
     return (
       <div className="space-y-3">
         <p className="text-sm font-semibold text-ui-text">Link undangan siap!</p>
-        <p className="text-xs text-white/60">
+        <p className="text-xs text-ui-text-2">
           Bagikan link ini kepada calon member. Link berlaku 7 hari.
         </p>
         <div className="flex items-center gap-2 rounded-md border border-white/10 bg-black/20 px-3 py-2">
-          <span className="min-w-0 flex-1 truncate text-xs text-white/80">
+          <span className="min-w-0 flex-1 truncate text-xs text-ui-text">
             {inviteUrl}
           </span>
           <button
@@ -111,7 +111,7 @@ const InviteForm = ({
               navigator.clipboard.writeText(inviteUrl);
               notify.success("Link disalin ke clipboard");
             }}
-            className="shrink-0 rounded-md p-1 text-white/40 transition hover:bg-white/10 hover:text-ui-text"
+            className="shrink-0 rounded-md p-1 text-ui-text-muted transition hover:bg-white/10 hover:text-ui-text"
             title="Salin link"
           >
             <Copy className="h-4 w-4" />
@@ -123,7 +123,7 @@ const InviteForm = ({
             setInviteUrl(null);
             onClose();
           }}
-          className="text-xs text-white/50 underline-offset-2 hover:text-ui-text hover:underline"
+          className="text-xs text-ui-text-2 underline-offset-2 hover:text-ui-text hover:underline"
         >
           Tutup
         </button>
@@ -138,7 +138,7 @@ const InviteForm = ({
         <button
           type="button"
           onClick={onClose}
-          className="rounded-md p-1 text-white/40 transition hover:bg-white/10 hover:text-ui-text"
+          className="rounded-md p-1 text-ui-text-muted transition hover:bg-white/10 hover:text-ui-text"
         >
           <X className="h-4 w-4" />
         </button>
@@ -155,7 +155,7 @@ const InviteForm = ({
               <span>
                 {divisions.find((d) => d.id === selectedDivisionId)?.name ?? "Pilih divisi..."}
               </span>
-              <ChevronDown className={`h-4 w-4 text-white/50 transition-transform duration-200 ${divisionOpen ? 'rotate-180' : ''}`} />
+              <ChevronDown className={`h-4 w-4 text-ui-text-2 transition-transform duration-200 ${divisionOpen ? 'rotate-180' : ''}`} />
             </button>
 
             {divisionOpen && (
@@ -171,7 +171,7 @@ const InviteForm = ({
                     className={`flex w-full items-center rounded px-3 py-1.5 text-left text-sm transition ${
                       selectedDivisionId === d.id
                         ? "bg-yellow-400/10 text-yellow-400 font-semibold"
-                        : "text-white/80 hover:bg-white/5 hover:text-ui-text"
+                        : "text-ui-text hover:bg-white/5 hover:text-ui-text"
                     }`}
                   >
                     {d.name}
@@ -194,7 +194,7 @@ const InviteForm = ({
             <span>
               {ROLES.find((r) => r.value === selectedRole)?.label ?? "Pilih role..."}
             </span>
-            <ChevronDown className={`h-4 w-4 text-white/50 transition-transform duration-200 ${roleOpen ? 'rotate-180' : ''}`} />
+            <ChevronDown className={`h-4 w-4 text-ui-text-2 transition-transform duration-200 ${roleOpen ? 'rotate-180' : ''}`} />
           </button>
 
           {roleOpen && (
@@ -210,7 +210,7 @@ const InviteForm = ({
                   className={`flex w-full items-center rounded px-3 py-1.5 text-left text-sm transition ${
                     selectedRole === r.value
                       ? "bg-yellow-400/10 text-yellow-400 font-semibold"
-                      : "text-white/80 hover:bg-white/5 hover:text-ui-text"
+                      : "text-ui-text hover:bg-white/5 hover:text-ui-text"
                   }`}
                 >
                   {r.label}
@@ -241,7 +241,7 @@ const InviteForm = ({
         />
       </Field>
 
-      <p className="text-[10px] text-white/40">
+      <p className="text-[10px] text-ui-text-muted">
         Isi salah satu dari email atau nomor WA. Link berlaku 7 hari.
       </p>
 
@@ -273,7 +273,7 @@ function Field({
 }) {
   return (
     <div className="space-y-1">
-      <label className="text-xs font-medium text-white/70">{label}</label>
+      <label className="text-xs font-medium text-ui-text">{label}</label>
       {children}
     </div>
   );

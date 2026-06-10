@@ -109,7 +109,7 @@ const CalendarGrid = ({
         <button
           type="button"
           onClick={() => navigateMonth(-1)}
-          className="rounded-md p-2 text-white/60 transition hover:bg-white/10 hover:text-ui-text"
+          className="rounded-md p-2 text-ui-text-2 transition hover:bg-white/10 hover:text-ui-text"
           aria-label="Bulan sebelumnya"
         >
           <ChevronLeft className="h-4 w-4" />
@@ -120,7 +120,7 @@ const CalendarGrid = ({
         <button
           type="button"
           onClick={() => navigateMonth(1)}
-          className="rounded-md p-2 text-white/60 transition hover:bg-white/10 hover:text-ui-text"
+          className="rounded-md p-2 text-ui-text-2 transition hover:bg-white/10 hover:text-ui-text"
           aria-label="Bulan berikutnya"
         >
           <ChevronRight className="h-4 w-4" />
@@ -128,7 +128,7 @@ const CalendarGrid = ({
       </div>
 
       {/* Day headers */}
-      <div className="grid grid-cols-7 gap-px text-center text-xs font-medium text-white/50">
+      <div className="grid grid-cols-7 gap-px text-center text-xs font-medium text-ui-text-2">
         {DAY_NAMES.map((d) => (
           <div key={d} className="py-2">
             {d}
@@ -164,7 +164,7 @@ const CalendarGrid = ({
                   className={`inline-flex h-6 w-6 items-center justify-center rounded-full text-xs ${
                     isToday
                       ? "bg-yellow-400 font-bold text-black"
-                      : "text-white/70"
+                      : "text-ui-text"
                   }`}
                 >
                   {day}
@@ -178,7 +178,7 @@ const CalendarGrid = ({
                       e.stopPropagation();
                       handleDayClick(day);
                     }}
-                    className="opacity-0 group-hover:opacity-100 flex h-5 w-5 items-center justify-center rounded text-white/40 transition hover:bg-white/10 hover:text-ui-text"
+                    className="opacity-0 group-hover:opacity-100 flex h-5 w-5 items-center justify-center rounded text-ui-text-muted transition hover:bg-white/10 hover:text-ui-text"
                     aria-label={`Tambah event pada ${day}`}
                   >
                     <Plus className="h-3 w-3" />
@@ -216,7 +216,7 @@ const CalendarGrid = ({
                     return (
                       <div
                         key={ev.id}
-                        className="block rounded px-1 py-0.5 text-[10px] leading-tight text-white/80"
+                        className="block rounded px-1 py-0.5 text-[10px] leading-tight text-ui-text"
                       >
                         {eventContent}
                       </div>
@@ -239,7 +239,7 @@ const CalendarGrid = ({
                       key={ev.id}
                       href={eventHref}
                       onClick={(e) => e.stopPropagation()}
-                      className="block rounded px-1 py-0.5 text-[10px] leading-tight text-white/80 transition hover:bg-white/10"
+                      className="block rounded px-1 py-0.5 text-[10px] leading-tight text-ui-text transition hover:bg-white/10"
                     >
                       {eventContent}
                     </Link>
@@ -249,7 +249,7 @@ const CalendarGrid = ({
                   <button
                     type="button"
                     onClick={(e) => { e.stopPropagation(); setExpandedDay(day); }}
-                    className="block w-full cursor-pointer rounded px-1 text-left text-[10px] text-white/40 transition hover:bg-white/10 hover:text-white/70"
+                    className="block w-full cursor-pointer rounded px-1 text-left text-[10px] text-ui-text-muted transition hover:bg-white/10 hover:text-ui-text"
                   >
                     +{dayEvents.length - 3} lagi
                   </button>
@@ -280,7 +280,7 @@ const CalendarGrid = ({
                 <button
                   type="button"
                   onClick={() => setExpandedDay(null)}
-                  className="cursor-pointer text-white/40 transition hover:text-ui-text"
+                  className="cursor-pointer text-ui-text-muted transition hover:text-ui-text"
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -298,10 +298,10 @@ const CalendarGrid = ({
 
                   if (readOnly && !overrideHref) {
                     return (
-                      <div key={ev.id} className="flex items-center gap-2 px-4 py-2 text-sm text-white/80">
+                      <div key={ev.id} className="flex items-center gap-2 px-4 py-2 text-sm text-ui-text">
                         {dot}
                         <span className="flex-1 truncate">{ev.title}</span>
-                        <span className="shrink-0 text-xs text-white/40">{time}</span>
+                        <span className="shrink-0 text-xs text-ui-text-muted">{time}</span>
                       </div>
                     );
                   }
@@ -320,11 +320,11 @@ const CalendarGrid = ({
                       key={ev.id}
                       href={href}
                       onClick={() => setExpandedDay(null)}
-                      className="flex items-center gap-2 px-4 py-2 text-sm text-white/80 transition hover:bg-white/5"
+                      className="flex items-center gap-2 px-4 py-2 text-sm text-ui-text transition hover:bg-white/5"
                     >
                       {dot}
                       <span className="flex-1 truncate">{ev.title}</span>
-                      <span className="shrink-0 text-xs text-white/40">{time}</span>
+                      <span className="shrink-0 text-xs text-ui-text-muted">{time}</span>
                     </Link>
                   );
                 })}

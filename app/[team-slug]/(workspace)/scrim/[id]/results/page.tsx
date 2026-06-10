@@ -177,15 +177,15 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
         <h1 className="text-2xl font-bold text-ui-text sm:text-3xl tracking-tight">
           Hasil Pertandingan
         </h1>
-        <p className="text-sm text-white/50">
+        <p className="text-sm text-ui-text-2">
           vs {scrim.opponent_name} · {scrim.format.toUpperCase()}
         </p>
         <div className="flex items-center gap-3 pt-1">
           <span className="text-3xl font-bold text-ui-text">{wins}</span>
-          <span className="text-xl text-white/30">—</span>
+          <span className="text-xl text-ui-text-muted">—</span>
           <span className="text-3xl font-bold text-ui-text">{losses}</span>
           <span className={`ml-3 text-sm font-semibold uppercase tracking-wide ${
-            wins > losses ? "text-green-400" : wins < losses ? "text-red-400" : "text-white/40"
+            wins > losses ? "text-green-400" : wins < losses ? "text-red-400" : "text-ui-text-muted"
           }`}>
             {wins > losses ? "Menang" : wins < losses ? "Kalah" : "Imbang"}
           </span>
@@ -237,7 +237,7 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
                           : undefined;
                         return (
                           <div key={role} className="flex items-center gap-2 rounded-md bg-white/[0.04] px-2.5 py-1.5 min-w-0">
-                            <span className="text-[10px] font-bold uppercase tracking-wider text-white/30 w-9 shrink-0">
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-ui-text-muted w-9 shrink-0">
                               {ROLE_LABELS[role] ?? role}
                             </span>
                             {pick ? (
@@ -251,18 +251,18 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
                                   />
                                 </div>
                                 <div className="min-w-0">
-                                  <span className="text-xs font-medium text-white/90 truncate block">
+                                  <span className="text-xs font-medium text-ui-text truncate block">
                                     {pick.hero_name}
                                   </span>
                                   {displayName && (
-                                    <span className="text-[10px] text-white/40 truncate block">
+                                    <span className="text-[10px] text-ui-text-muted truncate block">
                                       {displayName}
                                     </span>
                                   )}
                                 </div>
                               </div>
                             ) : (
-                              <span className="text-xs font-medium text-white/20">—</span>
+                              <span className="text-xs font-medium text-ui-text-muted">—</span>
                             )}
                           </div>
                         );
@@ -281,7 +281,7 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
                         const pick = enemyPicks.find((p) => p.role === role);
                         return (
                           <div key={role} className="flex items-center gap-2 rounded-md bg-white/[0.04] px-2.5 py-1.5 min-w-0">
-                            <span className="text-[10px] font-bold uppercase tracking-wider text-white/30 w-9 shrink-0">
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-ui-text-muted w-9 shrink-0">
                               {ROLE_LABELS[role] ?? role}
                             </span>
                             {pick ? (
@@ -294,12 +294,12 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
                                     className="h-full w-full object-cover"
                                   />
                                 </div>
-                                <span className="text-xs font-medium text-white/90 truncate">
+                                <span className="text-xs font-medium text-ui-text truncate">
                                   {pick.hero_name}
                                 </span>
                               </div>
                             ) : (
-                              <span className="text-xs font-medium text-white/20">—</span>
+                              <span className="text-xs font-medium text-ui-text-muted">—</span>
                             )}
                           </div>
                         );
@@ -310,7 +310,7 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
 
                 {/* Notes */}
                 {game.notes && (
-                  <p className="text-sm text-white/70 whitespace-pre-line">{game.notes}</p>
+                  <p className="text-sm text-ui-text whitespace-pre-line">{game.notes}</p>
                 )}
 
                 {/* Screenshot */}
@@ -350,12 +350,12 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
       {result?.coach_notes && (
         <div className="mx-auto max-w-2xl w-full rounded-2xl border border-blue-400/20 bg-blue-400/5 p-5 shadow-xl shadow-black/20">
           <h3 className="text-sm font-semibold text-ui-text mb-2">Catatan Coach</h3>
-          <p className="text-sm text-white/80 whitespace-pre-line">{result.coach_notes}</p>
+          <p className="text-sm text-ui-text whitespace-pre-line">{result.coach_notes}</p>
         </div>
       )}
 
       {gamesWithUrls.length === 0 && (
-        <p className="text-sm text-white/40 mx-auto max-w-2xl">Belum ada detail per-game.</p>
+        <p className="text-sm text-ui-text-muted mx-auto max-w-2xl">Belum ada detail per-game.</p>
       )}
     </div>
   );

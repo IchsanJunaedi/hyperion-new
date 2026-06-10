@@ -27,12 +27,12 @@ const CollapsibleSection = ({
       >
         <div>
           <h2 className="text-sm font-semibold text-ui-text">{title}</h2>
-          {subtitle && <p className="mt-0.5 text-xs text-white/50">{subtitle}</p>}
+          {subtitle && <p className="mt-0.5 text-xs text-ui-text-2">{subtitle}</p>}
         </div>
         {open ? (
-          <ChevronUp className="h-4 w-4 text-white/50" />
+          <ChevronUp className="h-4 w-4 text-ui-text-2" />
         ) : (
-          <ChevronDown className="h-4 w-4 text-white/50" />
+          <ChevronDown className="h-4 w-4 text-ui-text-2" />
         )}
       </button>
       {open && children}

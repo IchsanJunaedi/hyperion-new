@@ -61,7 +61,7 @@ const WaDeliveryTable = ({ orgId, orgSlug }: WaDeliveryTableProps) => {
             className={`cursor-pointer rounded-md px-3 py-1.5 text-xs font-medium transition ${
               filter === f.value
                 ? "bg-white/10 text-ui-text"
-                : "text-white/50 hover:text-white/80"
+                : "text-ui-text-2 hover:text-ui-text"
             }`}
           >
             {f.label}
@@ -72,7 +72,7 @@ const WaDeliveryTable = ({ orgId, orgSlug }: WaDeliveryTableProps) => {
       {/* Grid table */}
       {isLoading ? (
         <div className="flex items-center justify-center py-12">
-          <Loader2 className="h-5 w-5 animate-spin text-white/40" />
+          <Loader2 className="h-5 w-5 animate-spin text-ui-text-muted" />
         </div>
       ) : isError ? (
         <div className="rounded-lg border border-red-500/20 bg-red-500/5 px-4 py-8 text-center text-sm text-red-400">

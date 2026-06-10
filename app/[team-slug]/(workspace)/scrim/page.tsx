@@ -102,8 +102,8 @@ export default async function ScrimListPage({
 
       {scrims.length === 0 ? (
         <div className="rounded-xl border border-dashed border-white/10 bg-zinc-900/30 p-10 text-center">
-          <Swords className="mx-auto h-8 w-8 text-white/35" />
-          <p className="mt-3 text-sm text-white/65">
+          <Swords className="mx-auto h-8 w-8 text-ui-text-muted" />
+          <p className="mt-3 text-sm text-ui-text-2">
             {filter === "upcoming"
               ? "Belum ada scrim terjadwal."
               : filter === "ongoing"

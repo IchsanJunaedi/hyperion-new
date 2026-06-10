@@ -42,28 +42,28 @@ function OverviewTab({ calendar }: TabContentProps) {
     <div className="space-y-4">
       {/* Calendar Info Card */}
       <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5 shadow-xl shadow-black/20">
-        <h3 className="text-sm font-semibold uppercase tracking-wider text-white/40 mb-4">
+        <h3 className="text-sm font-semibold uppercase tracking-wider text-ui-text-muted mb-4">
           Informasi Kalender
         </h3>
         <div className="space-y-4">
           <div>
-            <p className="text-xs font-medium text-white/40 mb-1">Judul</p>
-            <p className="text-sm text-white/90">{calendar.title}</p>
+            <p className="text-xs font-medium text-ui-text-muted mb-1">Judul</p>
+            <p className="text-sm text-ui-text">{calendar.title}</p>
           </div>
           {calendar.description && (
             <div>
-              <p className="text-xs font-medium text-white/40 mb-1">Deskripsi</p>
-              <p className="text-sm text-white/90">{calendar.description}</p>
+              <p className="text-xs font-medium text-ui-text-muted mb-1">Deskripsi</p>
+              <p className="text-sm text-ui-text">{calendar.description}</p>
             </div>
           )}
           <div>
-            <p className="text-xs font-medium text-white/40 mb-1">Visibilitas</p>
-            <span className="inline-flex items-center rounded-full bg-white/5 border border-white/10 px-2.5 py-1 text-xs font-medium text-white/70">
+            <p className="text-xs font-medium text-ui-text-muted mb-1">Visibilitas</p>
+            <span className="inline-flex items-center rounded-full bg-white/5 border border-white/10 px-2.5 py-1 text-xs font-medium text-ui-text">
               {calendar.visibility}
             </span>
           </div>
           <div>
-            <p className="text-xs font-medium text-white/40 mb-1">Status</p>
+            <p className="text-xs font-medium text-ui-text-muted mb-1">Status</p>
             <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium border ${calendar.is_active ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" : "bg-white/5 text-white/50 border-white/10"}`}>
               {calendar.is_active ? "Aktif" : "Nonaktif"}
             </span>
@@ -73,17 +73,17 @@ function OverviewTab({ calendar }: TabContentProps) {
 
       {/* Statistics */}
       <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5 shadow-xl shadow-black/20">
-        <h3 className="text-sm font-semibold uppercase tracking-wider text-white/40 mb-4">
+        <h3 className="text-sm font-semibold uppercase tracking-wider text-ui-text-muted mb-4">
           Statistik
         </h3>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <p className="text-xs text-white/40 mb-1">Total Event</p>
+            <p className="text-xs text-ui-text-muted mb-1">Total Event</p>
             <p className="text-3xl font-bold text-ui-text">{calendar.eventCount}</p>
           </div>
           <div>
-            <p className="text-xs text-white/40 mb-1">Dibuat</p>
-            <p className="text-sm text-white/70">
+            <p className="text-xs text-ui-text-muted mb-1">Dibuat</p>
+            <p className="text-sm text-ui-text">
               {new Date(calendar.created_at).toLocaleDateString("id-ID")}
             </p>
           </div>
@@ -93,7 +93,7 @@ function OverviewTab({ calendar }: TabContentProps) {
       {/* Danger Zone */}
       <div className="rounded-2xl border border-rose-500/20 bg-rose-500/5 p-5">
         <h3 className="text-sm font-semibold text-rose-400 mb-1">Zona Berbahaya</h3>
-        <p className="text-xs text-white/40 mb-4">Tindakan di bawah ini tidak dapat diubah.</p>
+        <p className="text-xs text-ui-text-muted mb-4">Tindakan di bawah ini tidak dapat diubah.</p>
         <button className="inline-flex items-center gap-2 rounded-lg bg-rose-600 hover:bg-rose-700 px-4 py-2 text-sm font-medium text-white transition-colors">
           <Trash2 className="h-4 w-4" />
           Hapus Kalender
@@ -106,10 +106,10 @@ function OverviewTab({ calendar }: TabContentProps) {
 function VisibilityTab({ calendar }: TabContentProps) {
   return (
     <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5 shadow-xl shadow-black/20">
-      <h3 className="text-sm font-semibold uppercase tracking-wider text-white/40 mb-4">
+      <h3 className="text-sm font-semibold uppercase tracking-wider text-ui-text-muted mb-4">
         Atur Visibilitas Kalender
       </h3>
-      <p className="text-sm text-white/50 mb-4">
+      <p className="text-sm text-ui-text-2 mb-4">
         Pilih siapa yang dapat melihat kalender ini dan event-eventnya.
       </p>
       <div className="space-y-2">
@@ -131,8 +131,8 @@ function VisibilityTab({ calendar }: TabContentProps) {
               className="h-4 w-4 accent-yellow-400"
             />
             <div className="ml-3 flex-1">
-              <p className="text-sm font-medium text-white/90">{option.label}</p>
-              <p className="text-xs text-white/40">{option.description}</p>
+              <p className="text-sm font-medium text-ui-text">{option.label}</p>
+              <p className="text-xs text-ui-text-muted">{option.description}</p>
             </div>
           </label>
         ))}
@@ -144,13 +144,13 @@ function VisibilityTab({ calendar }: TabContentProps) {
 function MembersTab({ }: TabContentProps) {
   return (
     <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5 shadow-xl shadow-black/20">
-      <h3 className="text-sm font-semibold uppercase tracking-wider text-white/40 mb-4">
+      <h3 className="text-sm font-semibold uppercase tracking-wider text-ui-text-muted mb-4">
         Izin Anggota
       </h3>
-      <p className="text-sm text-white/50 mb-4">
+      <p className="text-sm text-ui-text-2 mb-4">
         Kelola siapa yang dapat mengakses dan mengelola kalender ini.
       </p>
-      <div className="text-center py-8 text-white/30 text-sm">
+      <div className="text-center py-8 text-ui-text-muted text-sm">
         Member permissions feature akan segera hadir
       </div>
     </div>
@@ -160,13 +160,13 @@ function MembersTab({ }: TabContentProps) {
 function AuditTab({ }: TabContentProps) {
   return (
     <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5 shadow-xl shadow-black/20">
-      <h3 className="text-sm font-semibold uppercase tracking-wider text-white/40 mb-4">
+      <h3 className="text-sm font-semibold uppercase tracking-wider text-ui-text-muted mb-4">
         Riwayat Audit
       </h3>
-      <p className="text-sm text-white/50 mb-4">
+      <p className="text-sm text-ui-text-2 mb-4">
         Lihat semua perubahan yang dilakukan pada kalender ini.
       </p>
-      <div className="text-center py-8 text-white/30 text-sm">
+      <div className="text-center py-8 text-ui-text-muted text-sm">
         Audit logs akan segera hadir
       </div>
     </div>
@@ -199,7 +199,7 @@ export default function CalendarSettingsPage() {
         </div>
         <div className="mx-auto max-w-2xl w-full text-center py-16">
           <h1 className="text-xl font-bold text-ui-text mb-2">Akses Ditolak</h1>
-          <p className="text-sm text-white/50">Anda tidak memiliki izin untuk mengakses halaman ini.</p>
+          <p className="text-sm text-ui-text-2">Anda tidak memiliki izin untuk mengakses halaman ini.</p>
         </div>
       </div>
     );
@@ -240,7 +240,7 @@ export default function CalendarSettingsPage() {
         </div>
         <div className="mx-auto max-w-2xl w-full text-center py-16 space-y-4">
           <h1 className="text-xl font-bold text-ui-text">Tidak Ada Kalender</h1>
-          <p className="text-sm text-white/50">Anda belum membuat atau mengelola kalender apapun.</p>
+          <p className="text-sm text-ui-text-2">Anda belum membuat atau mengelola kalender apapun.</p>
           <Link
             href={`/${teamSlug}/calendar/new`}
             className="inline-flex items-center gap-2 rounded-lg bg-yellow-400 hover:bg-yellow-300 px-4 py-2 text-sm font-semibold text-black transition-colors"
@@ -274,7 +274,7 @@ export default function CalendarSettingsPage() {
         {/* Calendar selector (if multiple) */}
         {manageableCalendars.length > 1 && (
           <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-4 shadow-xl shadow-black/20">
-            <p className="text-xs font-semibold uppercase tracking-wider text-white/40 mb-3">Kalender Saya</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-ui-text-muted mb-3">Kalender Saya</p>
             <div className="space-y-1">
               {manageableCalendars.map((cal) => (
                 <button
@@ -282,11 +282,11 @@ export default function CalendarSettingsPage() {
                   className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
                     selectedCalendar?.id === cal.id
                       ? "bg-yellow-400/10 text-yellow-400"
-                      : "text-white/60 hover:bg-white/5 hover:text-ui-text"
+                      : "text-ui-text-2 hover:bg-white/5 hover:text-ui-text"
                   }`}
                 >
                   <p className="font-medium">{cal.title}</p>
-                  <p className="text-xs text-white/40 mt-0.5">{cal.eventCount} event</p>
+                  <p className="text-xs text-ui-text-muted mt-0.5">{cal.eventCount} event</p>
                 </button>
               ))}
             </div>
@@ -304,7 +304,7 @@ export default function CalendarSettingsPage() {
                 className={`flex items-center gap-2 px-3 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
                   activeTab === tab.id
                     ? "text-yellow-400 border-yellow-400"
-                    : "text-white/40 border-transparent hover:text-white/70"
+                    : "text-ui-text-muted border-transparent hover:text-ui-text"
                 }`}
               >
                 <Icon className="h-3.5 w-3.5" />
@@ -323,7 +323,7 @@ export default function CalendarSettingsPage() {
             {activeTab === "audit" && <AuditTab calendar={selectedCalendar} teamSlug={teamSlug} />}
           </>
         ) : (
-          <div className="text-center py-8 text-white/30 text-sm">
+          <div className="text-center py-8 text-ui-text-muted text-sm">
             Pilih kalender untuk melihat pengaturannya
           </div>
         )}

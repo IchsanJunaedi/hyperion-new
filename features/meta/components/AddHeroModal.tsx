@@ -61,19 +61,19 @@ function MultiHeroPicker({
 
   return (
     <div>
-      <label className="mb-1.5 block text-xs font-medium text-white/60">{label}</label>
+      <label className="mb-1.5 block text-xs font-medium text-ui-text-2">{label}</label>
       {selected.length > 0 && (
         <div className="mb-2 flex flex-wrap gap-1.5">
           {selected.map((name) => (
             <span
               key={name}
-              className="flex items-center gap-1 rounded-full border border-ui-border bg-ui-bg px-2 py-0.5 text-xs text-white/70"
+              className="flex items-center gap-1 rounded-full border border-ui-border bg-ui-bg px-2 py-0.5 text-xs text-ui-text"
             >
               {name}
               <button
                 type="button"
                 onClick={() => onToggle(name)}
-                className="cursor-pointer text-white/30 hover:text-ui-text"
+                className="cursor-pointer text-ui-text-muted hover:text-ui-text"
               >
                 <X className="h-2.5 w-2.5" />
               </button>
@@ -82,7 +82,7 @@ function MultiHeroPicker({
         </div>
       )}
       <div className="flex items-center gap-2 rounded-md border border-ui-border bg-ui-bg px-3 py-1.5">
-        <Search className="h-3 w-3 shrink-0 text-white/30" />
+        <Search className="h-3 w-3 shrink-0 text-ui-text-muted" />
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -101,7 +101,7 @@ function MultiHeroPicker({
                   "w-full cursor-pointer px-3 py-1 text-left text-xs transition",
                   selected.includes(h)
                     ? "text-yellow-400 hover:bg-yellow-500/10"
-                    : "text-white/60 hover:bg-ui-hover hover:text-ui-text",
+                    : "text-ui-text-2 hover:bg-ui-hover hover:text-ui-text",
                 )}
               >
                 {selected.includes(h) ? `✓ ${h}` : h}
@@ -109,7 +109,7 @@ function MultiHeroPicker({
             </li>
           ))}
           {filtered.length === 0 && (
-            <li className="px-3 py-2 text-center text-xs text-white/30">Tidak ditemukan</li>
+            <li className="px-3 py-2 text-center text-xs text-ui-text-muted">Tidak ditemukan</li>
           )}
         </ul>
       )}
@@ -196,7 +196,7 @@ const AddHeroModal = ({
           <h2 className="text-sm font-semibold text-ui-text">
             {editing ? `Edit — ${editing.hero_name}` : "Tambah Hero ke Meta"}
           </h2>
-          <button type="button" onClick={() => onClose()} className="cursor-pointer text-white/40 hover:text-ui-text">
+          <button type="button" onClick={() => onClose()} className="cursor-pointer text-ui-text-muted hover:text-ui-text">
             <X className="h-4 w-4" />
           </button>
         </div>
@@ -205,18 +205,18 @@ const AddHeroModal = ({
           {/* Hero picker — only shown when adding new */}
           {!editing && (
             <div>
-              <label className="mb-1.5 block text-xs font-medium text-white/60">Hero</label>
+              <label className="mb-1.5 block text-xs font-medium text-ui-text-2">Hero</label>
               {selectedHero ? (
                 <div className="flex items-center justify-between rounded-md border border-ui-border bg-ui-bg px-3 py-2">
                   <span className="text-sm font-medium text-ui-text">{selectedHero}</span>
-                  <button type="button" onClick={() => setSelectedHero("")} className="cursor-pointer text-white/40 hover:text-ui-text">
+                  <button type="button" onClick={() => setSelectedHero("")} className="cursor-pointer text-ui-text-muted hover:text-ui-text">
                     <X className="h-3.5 w-3.5" />
                   </button>
                 </div>
               ) : (
                 <div className="space-y-1.5">
                   <div className="flex items-center gap-2 rounded-md border border-ui-border bg-ui-bg px-3 py-2">
-                    <Search className="h-3.5 w-3.5 shrink-0 text-white/40" />
+                    <Search className="h-3.5 w-3.5 shrink-0 text-ui-text-muted" />
                     <input
                       ref={searchRef}
                       value={search}
@@ -231,14 +231,14 @@ const AddHeroModal = ({
                         <button
                           type="button"
                           onClick={() => setSelectedHero(h)}
-                          className="w-full cursor-pointer px-3 py-1.5 text-left text-sm text-white/70 hover:bg-ui-hover hover:text-ui-text"
+                          className="w-full cursor-pointer px-3 py-1.5 text-left text-sm text-ui-text hover:bg-ui-hover hover:text-ui-text"
                         >
                           {h}
                         </button>
                       </li>
                     ))}
                     {filtered.length === 0 && (
-                      <li className="px-3 py-3 text-center text-xs text-white/40">Hero tidak ditemukan</li>
+                      <li className="px-3 py-3 text-center text-xs text-ui-text-muted">Hero tidak ditemukan</li>
                     )}
                   </ul>
                 </div>
@@ -248,7 +248,7 @@ const AddHeroModal = ({
 
           {/* Tier */}
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-white/60">Tier</label>
+            <label className="mb-1.5 block text-xs font-medium text-ui-text-2">Tier</label>
             <div className="flex gap-2">
               {(["SS", "S", "A", "B", "C", "D"] as Tier[]).map((t) => (
                 <button
@@ -257,7 +257,7 @@ const AddHeroModal = ({
                   onClick={() => setTier(t)}
                   className={cn(
                     "h-9 w-12 cursor-pointer rounded-md border text-sm font-bold transition",
-                    tier === t ? TIER_COLORS[t] : "border-ui-border text-white/30 hover:border-white/20 hover:text-white/60",
+                    tier === t ? TIER_COLORS[t] : "border-ui-border text-ui-text-muted hover:border-white/20 hover:text-ui-text-2",
                   )}
                 >
                   {t}
@@ -268,7 +268,7 @@ const AddHeroModal = ({
 
           {/* Role tag */}
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-white/60">Role</label>
+            <label className="mb-1.5 block text-xs font-medium text-ui-text-2">Role</label>
             <div className="flex flex-wrap gap-2">
               {ROLE_OPTIONS.map((r) => (
                 <button
@@ -279,7 +279,7 @@ const AddHeroModal = ({
                     "cursor-pointer rounded-full border px-3 py-1 text-xs transition",
                     roleTag === r.value
                       ? "border-yellow-500/50 bg-yellow-500/10 text-yellow-400"
-                      : "border-ui-border text-white/40 hover:border-white/20 hover:text-white/60",
+                      : "border-ui-border text-ui-text-muted hover:border-white/20 hover:text-ui-text-2",
                   )}
                 >
                   {r.label}
@@ -297,7 +297,7 @@ const AddHeroModal = ({
                 onChange={(e) => setIsBan(e.target.checked)}
                 className="h-4 w-4 accent-red-500"
               />
-              <span className="text-xs text-white/70">Ban Priority</span>
+              <span className="text-xs text-ui-text">Ban Priority</span>
             </label>
             <label className="flex cursor-pointer items-center gap-2">
               <input
@@ -306,13 +306,13 @@ const AddHeroModal = ({
                 onChange={(e) => setIsPriority(e.target.checked)}
                 className="h-4 w-4 accent-yellow-400"
               />
-              <span className="text-xs text-white/70">Priority to Learn</span>
+              <span className="text-xs text-ui-text">Priority to Learn</span>
             </label>
           </div>
 
           {/* Notes */}
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-white/60">Notes coach (opsional)</label>
+            <label className="mb-1.5 block text-xs font-medium text-ui-text-2">Notes coach (opsional)</label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
@@ -324,7 +324,7 @@ const AddHeroModal = ({
 
           {/* Draft Notes */}
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-white/60">Draft Notes (opsional)</label>
+            <label className="mb-1.5 block text-xs font-medium text-ui-text-2">Draft Notes (opsional)</label>
             <textarea
               value={draftNotes}
               onChange={(e) => setDraftNotes(e.target.value)}
@@ -363,7 +363,7 @@ const AddHeroModal = ({
             <button
               type="button"
               onClick={() => onClose()}
-              className="flex-1 cursor-pointer rounded-md border border-ui-border py-2 text-sm text-white/60 transition hover:bg-white/5"
+              className="flex-1 cursor-pointer rounded-md border border-ui-border py-2 text-sm text-ui-text-2 transition hover:bg-white/5"
             >
               Batal
             </button>

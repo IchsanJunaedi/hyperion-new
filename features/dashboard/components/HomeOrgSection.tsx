@@ -164,7 +164,7 @@ const HomeOrgSection = ({ orgs }: HomeOrgSectionProps) => {
                     >
                       {/* Left: Avatar + Name (Flex-1 & Truncate) */}
                       <div className="flex min-w-0 flex-1 items-center gap-3">
-                        <div className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-white/10 text-[10px] font-bold text-white/80">
+                        <div className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-white/10 text-[10px] font-bold text-ui-text">
                           {initials}
                         </div>
                         <span className="truncate text-sm font-medium text-ui-text">

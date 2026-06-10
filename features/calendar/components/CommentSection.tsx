@@ -77,8 +77,8 @@ const CommentSection = ({
     <div className="space-y-4 rounded-xl border border-white/10 bg-zinc-900/40 p-4 sm:p-6">
       {/* Header */}
       <div className="flex items-center gap-2">
-        <MessageSquare className="h-5 w-5 text-white/70" />
-        <h3 className="text-sm font-semibold text-white/80">
+        <MessageSquare className="h-5 w-5 text-ui-text" />
+        <h3 className="text-sm font-semibold text-ui-text">
           Komentar ({comments.length})
         </h3>
       </div>
@@ -86,7 +86,7 @@ const CommentSection = ({
       {/* Comments list */}
       <div className="max-h-96 space-y-3 overflow-y-auto">
         {comments.length === 0 ? (
-          <p className="py-6 text-center text-sm text-white/40">
+          <p className="py-6 text-center text-sm text-ui-text-muted">
             Belum ada komentar. Jadilah yang pertama!
           </p>
         ) : (
@@ -100,7 +100,7 @@ const CommentSection = ({
                   <div className="flex h-6 w-6 items-center justify-center rounded-full bg-yellow-400/20 text-xs font-semibold text-yellow-300">
                     {comment.user_id.substring(0, 1).toUpperCase()}
                   </div>
-                  <span className="text-xs font-medium text-white/70">
+                  <span className="text-xs font-medium text-ui-text">
                     {comment.user_id}
                   </span>
                 </div>
@@ -113,15 +113,15 @@ const CommentSection = ({
                     title="Hapus komentar"
                   >
                     {deletingId === comment.id ? (
-                      <Loader2 className="h-4 w-4 animate-spin text-white/40" />
+                      <Loader2 className="h-4 w-4 animate-spin text-ui-text-muted" />
                     ) : (
-                      <Trash2 className="h-4 w-4 text-white/40 hover:text-rose-400" />
+                      <Trash2 className="h-4 w-4 text-ui-text-muted hover:text-rose-400" />
                     )}
                   </button>
                 )}
               </div>
-              <p className="mb-2 text-sm text-white/85">{comment.body}</p>
-              <p className="text-xs text-white/40">
+              <p className="mb-2 text-sm text-ui-text">{comment.body}</p>
+              <p className="text-xs text-ui-text-muted">
                 {formatRelativeTime(comment.created_at)}
               </p>
             </div>

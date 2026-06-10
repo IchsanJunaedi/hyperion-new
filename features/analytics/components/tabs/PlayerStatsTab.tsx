@@ -81,13 +81,13 @@ const PlayerStatsTab = ({ playerStats, orgId }: PlayerStatsTabProps) => {
         <div className="flex items-center gap-2 mb-3">
           <Zap className="h-4 w-4 text-yellow-400" />
           <h3 className="text-sm font-semibold text-ui-text">Player Impact Score</h3>
-          <span className="ml-auto text-[10px] text-white/30">Kehadiran 35% · Win Rate 35% · Rating 30%</span>
+          <span className="ml-auto text-[10px] text-ui-text-muted">Kehadiran 35% · Win Rate 35% · Rating 30%</span>
         </div>
         <div className="space-y-2">
           {ranked.map((p, i) => (
             <div key={p.user_id} className="flex items-center gap-3">
-              <span className="w-5 text-center text-[10px] font-bold text-white/30">{i + 1}</span>
-              <span className="flex-1 truncate text-xs text-white/70">{p.display_name ?? "Unknown"}</span>
+              <span className="w-5 text-center text-[10px] font-bold text-ui-text-muted">{i + 1}</span>
+              <span className="flex-1 truncate text-xs text-ui-text">{p.display_name ?? "Unknown"}</span>
               <div className="flex items-center gap-2">
                 <span className={cn("text-[10px] font-semibold", impactColor(p.impactScore))}>
                   {impactLabel(p.impactScore)}

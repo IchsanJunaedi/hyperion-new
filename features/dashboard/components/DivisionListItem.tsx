@@ -74,7 +74,7 @@ const DivisionListItem = ({ id, name, isActive }: DivisionListItemProps) => {
               <button type="button" disabled={pending} onClick={handleSave} className="rounded p-1 text-green-400 hover:bg-white/10">
                 {pending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Check className="h-3.5 w-3.5" />}
               </button>
-              <button type="button" onClick={() => { setEditing(false); setEditName(name); }} className="rounded p-1 text-white/40 hover:bg-white/10">
+              <button type="button" onClick={() => { setEditing(false); setEditName(name); }} className="rounded p-1 text-ui-text-muted hover:bg-white/10">
                 <X className="h-3.5 w-3.5" />
               </button>
             </div>
@@ -82,7 +82,7 @@ const DivisionListItem = ({ id, name, isActive }: DivisionListItemProps) => {
             <>
               <span className="text-sm font-medium text-ui-text">{name}</span>
               {!isActive && (
-                <span className="rounded-full bg-white/5 px-2 py-0.5 text-[10px] text-white/40">Arsip</span>
+                <span className="rounded-full bg-white/5 px-2 py-0.5 text-[10px] text-ui-text-muted">Arsip</span>
               )}
             </>
           )}
@@ -93,7 +93,7 @@ const DivisionListItem = ({ id, name, isActive }: DivisionListItemProps) => {
               type="button"
               disabled={pending}
               onClick={() => setEditing(true)}
-              className="rounded-md p-1.5 text-white/40 hover:bg-white/10 hover:text-ui-text disabled:opacity-40"
+              className="rounded-md p-1.5 text-ui-text-muted hover:bg-white/10 hover:text-ui-text disabled:opacity-40"
               title="Edit nama"
             >
               <Pencil className="h-3.5 w-3.5" />
@@ -102,7 +102,7 @@ const DivisionListItem = ({ id, name, isActive }: DivisionListItemProps) => {
               type="button"
               disabled={pending}
               onClick={() => setDeleteOpen(true)}
-              className="rounded-md p-1.5 text-white/40 hover:bg-white/10 hover:text-red-400 disabled:opacity-40"
+              className="rounded-md p-1.5 text-ui-text-muted hover:bg-white/10 hover:text-red-400 disabled:opacity-40"
               title="Hapus"
             >
               <Trash2 className="h-3.5 w-3.5" />

@@ -21,7 +21,7 @@ const ATTENDANCE_COLORS: Record<string, string> = {
   high: "text-emerald-400",
   mid: "text-yellow-400",
   low: "text-rose-400",
-  none: "text-white/30",
+  none: "text-ui-text-muted",
 };
 
 interface RosterTableProps {
@@ -82,7 +82,7 @@ const RosterTable = ({
             <button
               type="button"
               onClick={() => setShowInviteForm(true)}
-              className="inline-flex items-center gap-2 rounded-md border border-white/10 px-3 py-2 text-sm text-white/70 transition hover:bg-white/5 hover:text-ui-text"
+              className="inline-flex items-center gap-2 rounded-md border border-white/10 px-3 py-2 text-sm text-ui-text transition hover:bg-white/5 hover:text-ui-text"
             >
               <UserPlus className="h-4 w-4" />
               Undang Member
@@ -94,7 +94,7 @@ const RosterTable = ({
       {/* Member list */}
       <div className="divide-y divide-white/5 overflow-hidden rounded-xl border border-white/10 bg-zinc-900/40">
         {members.length === 0 && (
-          <p className="px-5 py-10 text-center text-sm text-white/50">
+          <p className="px-5 py-10 text-center text-sm text-ui-text-2">
             Belum ada member aktif.
           </p>
         )}
@@ -148,7 +148,7 @@ const RosterTable = ({
                       {m.display_name ?? m.username ?? "Unnamed"}
                     </span>
                     {isSelf && (
-                      <span className="text-xs font-normal text-white/40">
+                      <span className="text-xs font-normal text-ui-text-muted">
                         (Saya)
                       </span>
                     )}
@@ -159,23 +159,23 @@ const RosterTable = ({
                         rel="noopener noreferrer"
                         onClick={(e) => e.stopPropagation()}
                         title="Buka profil publik"
-                        className="shrink-0 text-white/30 transition hover:text-ui-text"
+                        className="shrink-0 text-ui-text-muted transition hover:text-ui-text"
                       >
                         <ExternalLink className="h-3.5 w-3.5" />
                       </a>
                     )}
                   </p>
-                  <p className="flex flex-wrap items-center gap-x-1.5 text-xs text-white/50">
+                  <p className="flex flex-wrap items-center gap-x-1.5 text-xs text-ui-text-2">
                     {m.division_name && <span>{m.division_name}</span>}
                     {m.position && (
                       <>
-                        {m.division_name && <span className="text-white/20">·</span>}
+                        {m.division_name && <span className="text-ui-text-muted">·</span>}
                         <span>{m.position}</span>
                       </>
                     )}
                     {m.jersey_number != null && (
                       <>
-                        {(m.division_name || m.position) && <span className="text-white/20">·</span>}
+                        {(m.division_name || m.position) && <span className="text-ui-text-muted">·</span>}
                         <span className="font-mono">#{m.jersey_number}</span>
                       </>
                     )}
@@ -187,7 +187,7 @@ const RosterTable = ({
               <div className="flex flex-wrap items-center gap-4 sm:flex-nowrap">
                 {/* Attendance rate */}
                 <div className="flex shrink-0 flex-col items-start justify-center sm:w-16">
-                  <span className="text-[10px] uppercase tracking-wide text-white/30">Hadir</span>
+                  <span className="text-[10px] uppercase tracking-wide text-ui-text-muted">Hadir</span>
                   <span
                     className={cn(
                       "text-sm font-semibold tabular-nums",

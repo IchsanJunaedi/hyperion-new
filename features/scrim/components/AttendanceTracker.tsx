@@ -128,7 +128,7 @@ const AttendanceTracker = ({
       </div>
       {error ? <p className="text-xs text-rose-400">{error}</p> : null}
       {locked ? (
-        <p className="text-xs text-white/45">
+        <p className="text-xs text-ui-text-2">
           Konfirmasi terkunci — scrim sudah selesai atau dibatalkan.
         </p>
       ) : null}

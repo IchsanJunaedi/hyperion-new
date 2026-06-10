@@ -48,7 +48,7 @@ const CoachSummarySection = ({
     <article className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5">
       <div className="mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <ClipboardList className="h-4 w-4 text-white/55" />
+          <ClipboardList className="h-4 w-4 text-ui-text-2" />
           <h2 className="text-sm font-semibold text-ui-text">Catatan Coach</h2>
         </div>
         {canEdit && !isEditing && (
@@ -58,7 +58,7 @@ const CoachSummarySection = ({
               setDraft(summary ?? "");
               setIsEditing(true);
             }}
-            className="cursor-pointer text-xs font-medium text-white/50 transition-colors hover:text-ui-text"
+            className="cursor-pointer text-xs font-medium text-ui-text-2 transition-colors hover:text-ui-text"
           >
             {summary ? "Edit" : "Tambah Catatan"}
           </button>
@@ -67,12 +67,12 @@ const CoachSummarySection = ({
 
       {!isEditing ? (
         summary ? (
-          <p className="whitespace-pre-line text-sm leading-relaxed text-white/80">
+          <p className="whitespace-pre-line text-sm leading-relaxed text-ui-text">
             {summary}
           </p>
         ) : (
           <div className="flex items-center justify-center rounded-lg border border-dashed border-white/10 py-4">
-            <p className="text-xs text-white/40">Belum ada ringkasan evaluasi coach.</p>
+            <p className="text-xs text-ui-text-muted">Belum ada ringkasan evaluasi coach.</p>
           </div>
         )
       ) : (
@@ -90,7 +90,7 @@ const CoachSummarySection = ({
               type="button"
               onClick={() => setIsEditing(false)}
               disabled={isSubmitting}
-              className="cursor-pointer rounded-md px-3 py-1.5 text-xs text-white/50 hover:text-ui-text"
+              className="cursor-pointer rounded-md px-3 py-1.5 text-xs text-ui-text-2 hover:text-ui-text"
             >
               Batal
             </button>

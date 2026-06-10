@@ -58,8 +58,8 @@ const FinishScrimSection = ({
     });
     return (
       <article className="rounded-2xl border border-white/5 bg-zinc-900/30 p-5">
-        <div className="flex items-center gap-2 text-sm text-white/50">
-          <Trophy className="h-4 w-4 text-white/30" />
+        <div className="flex items-center gap-2 text-sm text-ui-text-2">
+          <Trophy className="h-4 w-4 text-ui-text-muted" />
           <span>Tombol hasil akan muncul setelah scrim dimulai ({scheduledTime})</span>
         </div>
       </article>
@@ -73,7 +73,7 @@ const FinishScrimSection = ({
           <Trophy className="h-4 w-4 text-yellow-400" />
           Pertandingan selesai?
         </h2>
-        <p className="mt-1 text-xs text-white/55">
+        <p className="mt-1 text-xs text-ui-text-2">
           Catat hasil per game dan tandai scrim sebagai selesai.
         </p>
         <a
@@ -119,7 +119,7 @@ function ResultDisplay({
         {orgSlug && scrimId && (
           <a
             href={`/${orgSlug}/scrim/${scrimId}/results`}
-            className="text-xs text-white/50 hover:text-ui-text transition-colors"
+            className="text-xs text-ui-text-2 hover:text-ui-text transition-colors"
           >
             Lihat detail →
           </a>
@@ -129,13 +129,13 @@ function ResultDisplay({
         <div>
           <p className="text-3xl font-bold text-ui-text">
             {result.our_score}{" "}
-            <span className="text-white/45">—</span>{" "}
+            <span className="text-ui-text-2">—</span>{" "}
             {result.opponent_score}
           </p>
           <p
             className={`mt-1 text-xs font-semibold uppercase tracking-wide ${
               result.is_win === null
-                ? "text-white/55"
+                ? "text-ui-text-2"
                 : result.is_win
                   ? "text-emerald-400"
                   : "text-rose-400"
@@ -152,14 +152,14 @@ function ResultDisplay({
                 className={`h-4 w-4 ${
                   n <= (result.performance_rating ?? 0)
                     ? "fill-yellow-400 text-yellow-400"
-                    : "text-white/20"
+                    : "text-ui-text-muted"
                 }`}
               />
             ))}
           </div>
         )}
         {result.notes ? (
-          <p className="whitespace-pre-line text-sm text-white/80">{result.notes}</p>
+          <p className="whitespace-pre-line text-sm text-ui-text">{result.notes}</p>
         ) : null}
         {imageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -285,7 +285,7 @@ function ResultForm({
         <button
           type="button"
           onClick={onCancel}
-          className="text-white/45 transition hover:text-white/80"
+          className="text-ui-text-2 transition hover:text-ui-text"
           aria-label="Tutup form"
         >
           <X className="h-4 w-4" />
@@ -294,7 +294,7 @@ function ResultForm({
 
       <form onSubmit={handleSubmit} className="mt-4 space-y-4">
         <div className="grid grid-cols-2 gap-3">
-          <label className="block text-xs font-medium text-white/70">
+          <label className="block text-xs font-medium text-ui-text">
             Skor kami
             <NumberInput
               name="our_score"
@@ -305,7 +305,7 @@ function ResultForm({
               className="mt-1 h-12 text-2xl font-bold text-white bg-zinc-900 border-white/10 focus:border-yellow-400 focus:outline-none"
             />
           </label>
-          <label className="block text-xs font-medium text-white/70">
+          <label className="block text-xs font-medium text-ui-text">
             Skor lawan
             <NumberInput
               name="opponent_score"
@@ -319,7 +319,7 @@ function ResultForm({
         </div>
 
         <div>
-          <p className="mb-2 text-xs font-medium text-white/70">Hasil</p>
+          <p className="mb-2 text-xs font-medium text-ui-text">Hasil</p>
           <div className="flex flex-wrap gap-2">
             {WIN_CHOICES.map(({ value, label, activeClass }) => {
               const selected = isWin !== "unset" && isWin === value;
@@ -346,7 +346,7 @@ function ResultForm({
         </div>
 
         <div>
-          <p className="mb-1 text-xs font-medium text-white/70">Rating performa</p>
+          <p className="mb-1 text-xs font-medium text-ui-text">Rating performa</p>
           <div className="flex gap-1">
             {[1, 2, 3, 4, 5].map((n) => (
               <button
@@ -369,7 +369,7 @@ function ResultForm({
           </div>
         </div>
 
-        <label className="block text-xs font-medium text-white/70">
+        <label className="block text-xs font-medium text-ui-text">
           Catatan (opsional)
           <textarea
             name="notes"
@@ -381,7 +381,7 @@ function ResultForm({
         </label>
 
         <div>
-          <p className="mb-1 text-xs font-medium text-white/70">
+          <p className="mb-1 text-xs font-medium text-ui-text">
             Upload hasil (gambar, maks 2MB)
           </p>
           <label className="flex cursor-pointer items-center gap-2 rounded-md border border-dashed border-white/20 bg-zinc-900/50 px-4 py-3 text-sm text-white/55 transition hover:border-white/35 hover:text-white/80">

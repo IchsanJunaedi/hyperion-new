@@ -171,14 +171,14 @@ const TournamentBracketCard = ({
             <label className="text-xs text-ui-text-muted font-medium">File Bracket (Opsional)</label>
             {filePath || selectedFile ? (
               <div className="flex items-center gap-2.5 rounded-lg border border-white/5 bg-ui-bg px-3 py-2">
-                <File className="h-4 w-4 shrink-0 text-white/35" />
-                <span className="min-w-0 flex-1 truncate text-xs text-white/75">
+                <File className="h-4 w-4 shrink-0 text-ui-text-muted" />
+                <span className="min-w-0 flex-1 truncate text-xs text-ui-text">
                   {selectedFile ? selectedFile.name : getFileName(filePath)}
                 </span>
                 <button
                   type="button"
                   onClick={handleRemoveFile}
-                  className="text-white/40 hover:text-red-400 transition-colors cursor-pointer"
+                  className="text-ui-text-muted hover:text-red-400 transition-colors cursor-pointer"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                 </button>
@@ -186,8 +186,8 @@ const TournamentBracketCard = ({
             ) : (
               <label className="flex h-16 cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-white/10 hover:bg-white/[0.02] transition">
                 <div className="flex flex-col items-center justify-center py-2 text-center">
-                  <Upload className="h-4 w-4 text-white/35 mb-1" />
-                  <p className="text-[10px] text-white/35 font-medium">
+                  <Upload className="h-4 w-4 text-ui-text-muted mb-1" />
+                  <p className="text-[10px] text-ui-text-muted font-medium">
                     Pilih file (.pdf, .png, .jpg, .xlsx, dll)
                   </p>
                 </div>
@@ -227,11 +227,11 @@ const TournamentBracketCard = ({
               href={initialBracketLink.startsWith("http") ? initialBracketLink : `https://${initialBracketLink}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2.5 rounded-lg border border-white/5 bg-white/[0.02] px-3.5 py-2.5 text-xs text-white/70 hover:bg-white/[0.05] hover:text-ui-text transition"
+              className="flex items-center gap-2.5 rounded-lg border border-white/5 bg-white/[0.02] px-3.5 py-2.5 text-xs text-ui-text hover:bg-white/[0.05] hover:text-ui-text transition"
             >
               <ExternalLink className="h-4 w-4 text-yellow-400 shrink-0" />
               <span className="flex-1 truncate font-medium">Buka Link Bracket</span>
-              <span className="text-[10px] text-white/30 shrink-0">External Link</span>
+              <span className="text-[10px] text-ui-text-muted shrink-0">External Link</span>
             </a>
           )}
 
@@ -240,7 +240,7 @@ const TournamentBracketCard = ({
               type="button"
               disabled={opening}
               onClick={handleOpen}
-              className="w-full flex items-center gap-2.5 rounded-lg border border-white/5 bg-white/[0.02] px-3.5 py-2.5 text-xs text-white/70 hover:bg-white/[0.05] hover:text-ui-text transition cursor-pointer text-left"
+              className="w-full flex items-center gap-2.5 rounded-lg border border-white/5 bg-white/[0.02] px-3.5 py-2.5 text-xs text-ui-text hover:bg-white/[0.05] hover:text-ui-text transition cursor-pointer text-left"
             >
               {opening ? (
                 <Loader2 className="h-4 w-4 text-blue-400 animate-spin shrink-0" />
@@ -248,12 +248,12 @@ const TournamentBracketCard = ({
                 <File className="h-4 w-4 text-blue-400 shrink-0" />
               )}
               <span className="flex-1 truncate font-medium">{getFileName(filePath)}</span>
-              <span className="text-[10px] text-white/30 shrink-0">Download File</span>
+              <span className="text-[10px] text-ui-text-muted shrink-0">Download File</span>
             </button>
           )}
 
           {!hasBracket && (
-            <p className="text-xs text-white/35 italic">Belum ada link atau file bracket yang dilampirkan.</p>
+            <p className="text-xs text-ui-text-muted italic">Belum ada link atau file bracket yang dilampirkan.</p>
           )}
         </div>
       )}

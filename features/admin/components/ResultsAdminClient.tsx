@@ -45,7 +45,7 @@ const ResultsAdminClient = ({ results: initial }: Props) => {
       <div className="mb-6">
         <h1 className="text-xl font-black uppercase tracking-tight text-ui-text">Results</h1>
         <p className="mt-1 text-xs text-ui-text-muted">
-          Upload foto podium/poster dan toggle mana hasil turnamen yang tampil di <span className="text-white/50">/results</span>.
+          Upload foto podium/poster dan toggle mana hasil turnamen yang tampil di <span className="text-ui-text-2">/results</span>.
           Hasil dicatat otomatis oleh manager saat menyelesaikan turnamen di workspace.
         </p>
         {publicCount > 0 && <p className="mt-1.5 text-xs font-semibold text-[#F5C400]">{publicCount} publik</p>}
@@ -87,7 +87,7 @@ const ResultsAdminClient = ({ results: initial }: Props) => {
                 <p className="font-bold text-ui-text-dim truncate">{r.tournament_name}</p>
                 <div className="mt-0.5 flex flex-wrap items-center gap-2 text-xs">
                   {r.placement ? (
-                    <span className={`font-bold ${PLACEMENT_COLOR[r.placement] ?? "text-white/60"}`}>
+                    <span className={`font-bold ${PLACEMENT_COLOR[r.placement] ?? "text-ui-text-2"}`}>
                       Juara {r.placement}
                     </span>
                   ) : (

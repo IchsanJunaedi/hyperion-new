@@ -61,7 +61,7 @@ const AnalyticsDashboard = ({
                 "relative mr-5 cursor-pointer pb-3 px-1 text-sm font-medium transition-colors",
                 activeTab === tab.key
                   ? "text-white after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:rounded-full after:bg-yellow-400 after:content-['']"
-                  : "text-white/40 hover:text-white/70",
+                  : "text-ui-text-muted hover:text-ui-text",
               )}
             >
               {tab.label}
@@ -71,7 +71,7 @@ const AnalyticsDashboard = ({
         <button
           type="button"
           onClick={() => window.print()}
-          className="mb-2 inline-flex items-center gap-1.5 rounded-md border border-white/10 px-3 py-1.5 text-xs text-white/60 transition hover:bg-white/5 hover:text-ui-text cursor-pointer"
+          className="mb-2 inline-flex items-center gap-1.5 rounded-md border border-white/10 px-3 py-1.5 text-xs text-ui-text-2 transition hover:bg-white/5 hover:text-ui-text cursor-pointer"
         >
           <Download className="h-3.5 w-3.5" />
           Export PDF

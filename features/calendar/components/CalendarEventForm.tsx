@@ -63,7 +63,7 @@ function PremiumSelect({ id, name, options, defaultValue = "" }: PremiumSelectPr
       >
         <span className="truncate">{selectedOption?.label}</span>
         <svg
-          className={`h-4 w-4 text-white/60 transition-transform duration-200 shrink-0 ml-2 ${
+          className={`h-4 w-4 text-ui-text-2 transition-transform duration-200 shrink-0 ml-2 ${
             isOpen ? "rotate-180 text-yellow-400" : ""
           }`}
           viewBox="0 0 20 20"
@@ -92,7 +92,7 @@ function PremiumSelect({ id, name, options, defaultValue = "" }: PremiumSelectPr
                 className={`flex w-full items-center rounded px-3 py-2 text-left text-sm transition-all duration-150 ${
                   isSelected
                     ? "bg-yellow-400 text-black font-semibold shadow-md"
-                    : "text-white/80 hover:bg-white/5 hover:text-ui-text"
+                    : "text-ui-text hover:bg-white/5 hover:text-ui-text"
                 }`}
               >
                 <span className="truncate">{opt.label}</span>
@@ -231,8 +231,8 @@ const CalendarEventForm = ({ orgSlug, divisions }: CalendarEventFormProps) => {
 
       <div className="flex items-center justify-between rounded-xl bg-zinc-900/40 border border-white/5 px-4 py-3">
         <div className="space-y-0.5">
-          <span className="block text-xs font-semibold text-white/80">Event Seharian</span>
-          <span className="block text-[10px] text-white/40">Setel event berlangsung sepanjang hari</span>
+          <span className="block text-xs font-semibold text-ui-text">Event Seharian</span>
+          <span className="block text-[10px] text-ui-text-muted">Setel event berlangsung sepanjang hari</span>
         </div>
         <label className="relative inline-flex cursor-pointer items-center">
           <input
@@ -276,7 +276,7 @@ function Field({
 }) {
   return (
     <div className="space-y-1">
-      <label htmlFor={name} className="text-xs font-medium text-white/70">
+      <label htmlFor={name} className="text-xs font-medium text-ui-text">
         {label}
       </label>
       {children}

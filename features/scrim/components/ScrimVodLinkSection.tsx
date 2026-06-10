@@ -68,7 +68,7 @@ const ScrimVodLinkSection = ({ scrimId, initialLink, canEdit }: ScrimVodLinkSect
               setInputUrl(vodLink ?? "");
               setIsEditing(true);
             }}
-            className="text-xs font-medium text-white/50 hover:text-ui-text transition-colors"
+            className="text-xs font-medium text-ui-text-2 hover:text-ui-text transition-colors"
           >
             {vodLink ? "Edit" : "Tambah"}
           </button>
@@ -89,14 +89,14 @@ const ScrimVodLinkSection = ({ scrimId, initialLink, canEdit }: ScrimVodLinkSect
               </div>
               <div className="min-w-0">
                 <p className="text-sm font-medium text-ui-text">{platform?.name} VOD</p>
-                <p className="truncate text-xs text-white/40">{vodLink}</p>
+                <p className="truncate text-xs text-ui-text-muted">{vodLink}</p>
               </div>
             </div>
-            <ExternalLink className="h-4 w-4 shrink-0 text-white/30 transition-colors group-hover:text-white/60 ml-2" />
+            <ExternalLink className="h-4 w-4 shrink-0 text-ui-text-muted transition-colors group-hover:text-ui-text-2 ml-2" />
           </a>
         ) : (
           <div className="flex items-center justify-center rounded-lg border border-dashed border-white/10 py-4">
-            <p className="text-xs text-white/40">Belum ada link VOD/Livestream</p>
+            <p className="text-xs text-ui-text-muted">Belum ada link VOD/Livestream</p>
           </div>
         )
       ) : (
@@ -113,7 +113,7 @@ const ScrimVodLinkSection = ({ scrimId, initialLink, canEdit }: ScrimVodLinkSect
             <button
               onClick={() => setIsEditing(false)}
               disabled={isSubmitting}
-              className="rounded-md px-3 py-1.5 text-xs text-white/50 hover:text-ui-text"
+              className="rounded-md px-3 py-1.5 text-xs text-ui-text-2 hover:text-ui-text"
             >
               Batal
             </button>

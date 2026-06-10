@@ -50,7 +50,7 @@ const CalendarAgendaView = ({ orgSlug, events, readOnly = false }: CalendarAgend
 
   if (groups.size === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 text-white/30">
+      <div className="flex flex-col items-center justify-center py-16 text-ui-text-muted">
         <Calendar className="h-10 w-10 mb-3" />
         <p className="text-sm">Tidak ada event bulan ini</p>
       </div>
@@ -63,7 +63,7 @@ const CalendarAgendaView = ({ orgSlug, events, readOnly = false }: CalendarAgend
         const isToday = dateKey === new Date().toISOString().slice(0, 10);
         return (
           <div key={dateKey}>
-            <div className={`mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider ${isToday ? "text-yellow-400" : "text-white/40"}`}>
+            <div className={`mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider ${isToday ? "text-yellow-400" : "text-ui-text-muted"}`}>
               {isToday && <span className="inline-flex h-1.5 w-1.5 rounded-full bg-yellow-400" />}
               {group.label}
               {isToday && <span className="text-[10px] font-normal normal-case text-yellow-400/70">(Hari ini)</span>}
@@ -92,8 +92,8 @@ const CalendarAgendaView = ({ orgSlug, events, readOnly = false }: CalendarAgend
                   <div className="flex items-start gap-3 rounded-xl border border-white/5 bg-zinc-900/40 px-4 py-3 transition hover:bg-zinc-900/70">
                     <span className={`mt-1 h-2 w-2 shrink-0 rounded-full ${EVENT_TYPE_COLORS[ev.event_type] ?? "bg-white/40"}`} />
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium text-white/90">{ev.title}</p>
-                      <div className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-white/40">
+                      <p className="truncate text-sm font-medium text-ui-text">{ev.title}</p>
+                      <div className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-ui-text-muted">
                         <span className="inline-flex items-center gap-1">
                           <Clock className="h-3 w-3" />
                           {ev.is_all_day ? "Seharian" : `${timeStr}${endStr ? ` — ${endStr}` : ""}`}
@@ -104,7 +104,7 @@ const CalendarAgendaView = ({ orgSlug, events, readOnly = false }: CalendarAgend
                             {ev.location}
                           </span>
                         )}
-                        <span className="shrink-0 text-white/30">{EVENT_TYPE_LABELS[ev.event_type] ?? ev.event_type}</span>
+                        <span className="shrink-0 text-ui-text-muted">{EVENT_TYPE_LABELS[ev.event_type] ?? ev.event_type}</span>
                       </div>
                     </div>
                   </div>

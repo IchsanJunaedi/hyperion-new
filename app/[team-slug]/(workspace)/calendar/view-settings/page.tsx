@@ -41,7 +41,7 @@ const VISIBILITY_LABELS: Record<CalendarVisibility, string> = {
 };
 
 const VISIBILITY_COLORS: Record<CalendarVisibility, string> = {
-  private: "text-white/40",
+  private: "text-ui-text-muted",
   "management-only": "text-purple-400",
   "captain-only": "text-indigo-400",
   "team-only": "text-blue-400",
@@ -56,14 +56,14 @@ function CalendarItem({
   isDefault,
   onSetDefault,
 }: CalendarItemProps) {
-  const visColor = VISIBILITY_COLORS[calendar.visibility] ?? "text-white/40";
+  const visColor = VISIBILITY_COLORS[calendar.visibility] ?? "text-ui-text-muted";
   const visLabel = VISIBILITY_LABELS[calendar.visibility] ?? calendar.visibility;
 
   return (
     <div className="flex items-center justify-between p-4 rounded-2xl border border-white/10 bg-zinc-900/40 shadow-xl shadow-black/20 hover:bg-zinc-800/40 transition-colors">
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1 flex-wrap">
-          <h3 className="text-sm font-medium text-white/90">{calendar.title}</h3>
+          <h3 className="text-sm font-medium text-ui-text">{calendar.title}</h3>
           <span className={`text-xs font-medium px-2 py-0.5 rounded-full bg-white/5 border border-white/10 ${visColor}`}>
             {visLabel}
           </span>
@@ -74,9 +74,9 @@ function CalendarItem({
           )}
         </div>
         {calendar.description && (
-          <p className="text-xs text-white/40 truncate">{calendar.description}</p>
+          <p className="text-xs text-ui-text-muted truncate">{calendar.description}</p>
         )}
-        <p className="text-xs text-white/30 mt-0.5">{calendar.eventCount} event</p>
+        <p className="text-xs text-ui-text-muted mt-0.5">{calendar.eventCount} event</p>
       </div>
 
       {/* Actions */}
@@ -84,7 +84,7 @@ function CalendarItem({
         <button
           onClick={() => onToggleVisibility(calendar.id)}
           title={calendar.isVisible ? "Sembunyikan kalender" : "Tampilkan kalender"}
-          className="p-2 rounded-lg text-white/40 hover:bg-white/5 hover:text-white/80 transition-colors"
+          className="p-2 rounded-lg text-ui-text-muted hover:bg-white/5 hover:text-ui-text transition-colors"
         >
           {calendar.isVisible ? (
             <Eye className="h-4 w-4" />
@@ -101,7 +101,7 @@ function CalendarItem({
           {calendar.isPinned ? (
             <Pin className="h-4 w-4 text-yellow-400" />
           ) : (
-            <PinOff className="h-4 w-4 text-white/40 hover:text-white/80" />
+            <PinOff className="h-4 w-4 text-ui-text-muted hover:text-ui-text" />
           )}
         </button>
 
@@ -111,7 +111,7 @@ function CalendarItem({
           className={`p-2 rounded-lg transition-colors ${
             isDefault
               ? "bg-yellow-400/10 text-yellow-400"
-              : "text-white/40 hover:bg-white/5 hover:text-white/80"
+              : "text-ui-text-muted hover:bg-white/5 hover:text-ui-text"
           }`}
         >
           <Star className="h-4 w-4" />
@@ -150,7 +150,7 @@ function FilterSection({ visibilityFilter, onFilterChange }: FilterSectionProps)
           className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors border ${
             visibilityFilter === filter.value
               ? "bg-yellow-400/10 text-yellow-400 border-yellow-400/30"
-              : "bg-white/5 text-white/50 border-white/10 hover:bg-white/10 hover:text-ui-text"
+              : "bg-white/5 text-ui-text-2 border-white/10 hover:bg-white/10 hover:text-ui-text"
           }`}
         >
           {filter.label}
@@ -229,7 +229,7 @@ export default function CalendarViewSettingsPage() {
           <h1 className="text-2xl font-bold text-ui-text sm:text-3xl tracking-tight">
             Pengaturan Tampilan
           </h1>
-          <p className="text-sm text-white/50 mt-1">
+          <p className="text-sm text-ui-text-2 mt-1">
             Kelola kalender mana yang ingin Anda lihat dan dari mana memulai.
           </p>
         </div>
@@ -242,7 +242,7 @@ export default function CalendarViewSettingsPage() {
             { label: "Pinned", value: pinnedCount },
           ].map((stat) => (
             <div key={stat.label} className="rounded-2xl border border-white/10 bg-zinc-900/40 p-4 shadow-xl shadow-black/20">
-              <p className="text-xs text-white/40">{stat.label}</p>
+              <p className="text-xs text-ui-text-muted">{stat.label}</p>
               <p className="text-2xl font-bold text-ui-text mt-2">{stat.value}</p>
             </div>
           ))}
@@ -253,7 +253,7 @@ export default function CalendarViewSettingsPage() {
 
         {/* Calendar List */}
         {calendarsWithPreferences.length === 0 ? (
-          <div className="text-center py-12 text-white/30 text-sm">
+          <div className="text-center py-12 text-ui-text-muted text-sm">
             {visibilityFilter === "all"
               ? "Anda tidak memiliki akses ke kalender apapun"
               : `Tidak ada kalender dengan visibilitas "${visibilityFilter}"`}
@@ -275,8 +275,8 @@ export default function CalendarViewSettingsPage() {
 
         {/* Info Box */}
         <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-5 shadow-xl shadow-black/20">
-          <h4 className="text-sm font-semibold text-white/70 mb-3">Tips</h4>
-          <ul className="space-y-1.5 text-xs text-white/40">
+          <h4 className="text-sm font-semibold text-ui-text mb-3">Tips</h4>
+          <ul className="space-y-1.5 text-xs text-ui-text-muted">
             <li>• Sembunyikan kalender yang tidak ingin Anda lihat di tampilan utama</li>
             <li>• Pin kalender favorit Anda untuk akses cepat</li>
             <li>• Tetapkan kalender default untuk membuat event baru</li>

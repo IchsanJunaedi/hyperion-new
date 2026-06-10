@@ -95,7 +95,7 @@ const TournamentCard = ({ tournament, orgSlug, placement }: TournamentCardProps)
               {PLACEMENT_BADGE[placement].label}
             </span>
           ) : (
-            <span className="inline-flex items-center gap-1 rounded-full border border-white/15 px-2 py-0.5 text-[10px] font-medium text-white/50">
+            <span className="inline-flex items-center gap-1 rounded-full border border-white/15 px-2 py-0.5 text-[10px] font-medium text-ui-text-2">
               <Trophy className="h-2.5 w-2.5" />
               Juara {placement}
             </span>
