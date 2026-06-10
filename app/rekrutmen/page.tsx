@@ -156,7 +156,7 @@ async function RekrutmenPage() {
                             return (
                               <span
                                 key={pos}
-                                className="flex items-center gap-1.5 rounded-lg bg-[#F5C400]/8 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[#F5C400] transition-all duration-300 group-hover:scale-105 group-hover:bg-[#F5C400]/5 group-hover:shadow-[0_0_10px_rgba(245,196,0,0.25)] group-hover:[text-shadow:0_0_8px_rgba(245,196,0,0.6)]"
+                                className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-[#F5C400] transition-all duration-200 group-hover:[text-shadow:0_0_8px_rgba(245,196,0,0.6)]"
                               >
                                 <Icon className="h-3 w-3" />
                                 {pos}

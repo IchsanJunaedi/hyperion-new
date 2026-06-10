@@ -62,13 +62,16 @@ const GalleryAdminClient = ({ entries: initialEntries }: Props) => {
               <GalleryForm entry={entry} onDone={handleDone} />
             ) : (
               <div className="flex items-center gap-4 border border-[#2D2D2D] bg-[#141414] p-4">
-                {entry.preview_images[0] && (
+                {entry.preview_images?.[0] && (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={entry.preview_images[0]} alt="" className="h-12 w-20 shrink-0 object-cover" />
+                  <img src={entry.preview_images?.[0]} alt="" className="h-12 w-20 shrink-0 object-cover" />
                 )}
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-bold text-[#E5E2E1]">{entry.title}</p>
-                  <p className="text-xs text-[#9B9A97]">{entry.position} · {entry.tournament_date} · order: {entry.sort_order}</p>
+                  <p className="text-xs text-[#9B9A97]">
+                    {entry.position} · {entry.tournament_date} · order: {entry.sort_order}
+                    {entry.metric_value && ` · metric: [${entry.metric_value}] ${entry.metric_label ?? ""}`}
+                  </p>
                 </div>
                 <div className="flex gap-2">
                   <button onClick={() => setEditing(entry)} className="cursor-pointer rounded p-2 text-[#9B9A97] transition hover:bg-[#2C2C2C] hover:text-[#D4D4D4]">

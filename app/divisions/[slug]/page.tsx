@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Instagram } from "lucide-react";
 
 import { Footer } from "@/components/landing/Footer";
 import { Header } from "@/components/landing/Header";
@@ -141,40 +141,44 @@ export default async function DivisionDetailPage({ params }: Props) {
             >
               <ArrowLeft className="h-3 w-3" /> All Divisions
             </Link>
-            <div className="flex items-end gap-6">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
               <div>
                 <div className="mb-3 flex items-center gap-3">
-                  <div className="h-px w-8" style={{ background: meta.color }} />
                   <span className="text-[11px] font-bold uppercase tracking-[0.3em]" style={{ color: meta.color }}>
                     Division
                   </span>
                 </div>
-                <p
-                  className="text-7xl font-black uppercase leading-none tracking-tighter sm:text-8xl"
-                  style={{ color: meta.color, textShadow: `0 0 60px ${meta.color}30` }}
+                <h1
+                  className="font-bebas text-8xl sm:text-9xl font-black uppercase leading-none tracking-wide text-white"
+                  style={{ color: meta.color, textShadow: `0 0 60px ${meta.color}25` }}
                 >
                   {meta.abbr}
-                </p>
+                </h1>
                 <p className="mt-2 text-sm font-semibold uppercase tracking-wider text-white/55">
                   {division.name}
                 </p>
-                {division.description && (
-                  <p className="mt-4 max-w-lg text-sm leading-relaxed text-white/65">
-                    {division.description}
-                  </p>
-                )}
+                <p className="mt-4 max-w-lg text-sm sm:text-base leading-relaxed text-[#9B9A97] font-light">
+                  {division.description ?? "Divisi utama yang mewakili tim di kancah profesional esports nasional."}
+                </p>
+              </div>
+
+              {/* Faded Watermark on the right */}
+              <div
+                className="hidden md:block font-bebas text-[9rem] lg:text-[11rem] font-black leading-none select-none pointer-events-none opacity-[0.02] text-transparent shrink-0"
+                style={{ WebkitTextStroke: `2px ${meta.color}` }}
+              >
+                {meta.abbr}
               </div>
             </div>
           </div>
         </section>
 
         {/* Roster Cards (Image 3 layout) */}
-        <section className="px-6 py-20 sm:px-10 lg:px-16 border-t border-white/5 bg-[#030914]">
+        <section className="px-6 py-20 sm:px-10 lg:px-16 border-t border-white/5 bg-[#040D1C]">
           <div className="mx-auto max-w-7xl">
             <div className="mb-12">
               <div className="mb-2 flex items-center gap-3">
-                <div className="h-4 w-0.5" style={{ background: meta.color }} />
-                <h2 className="font-orbitron text-[9px] font-bold uppercase tracking-[0.3em] text-white/55">
+                <h2 className="font-orbitron text-[9px] font-bold uppercase tracking-[0.3em] text-[#9B9A97]">
                   Active Roster
                 </h2>
               </div>
@@ -187,7 +191,8 @@ export default async function DivisionDetailPage({ params }: Props) {
               {rosterList.map((player) => (
                 <div
                   key={player.id}
-                  className="group relative aspect-[3/4] overflow-hidden border border-white/5 bg-[#030813] transition-all duration-300 hover:border-[#F5C400]/40 clip-cyber-btn"
+                  className="group relative aspect-[3/4] overflow-hidden bg-[#030813] transition-all duration-300 clip-cyber-btn border-none"
+                  style={{ border: 'none' }}
                 >
                   {/* Portrait photo */}
                   {player.avatar_url ? (
@@ -214,7 +219,7 @@ export default async function DivisionDetailPage({ params }: Props) {
                     <h4 className="font-bebas text-2xl sm:text-3xl font-black uppercase tracking-wide text-white group-hover:text-[#F5C400] transition-colors duration-200">
                       {player.display_name}
                     </h4>
-                    <p className="font-orbitron text-[8px] font-bold uppercase tracking-widest text-white/45 mb-3">
+                    <p className="font-orbitron text-[8px] font-bold uppercase tracking-widest text-white/45 mb-2">
                       {player.role.toUpperCase()}
                     </p>
 
@@ -224,12 +229,10 @@ export default async function DivisionDetailPage({ params }: Props) {
                         href={`https://instagram.com/${player.instagram.replace(/^@/, "")}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-white/40 hover:text-[#E1306C] transition-colors duration-200"
+                        className="text-gray-400 hover:text-white transition-colors duration-300"
                         aria-label="Instagram"
                       >
-                        <svg className="h-3.5 w-3.5 fill-current" viewBox="0 0 24 24">
-                          <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.051.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z" />
-                        </svg>
+                        <Instagram className="h-5 w-5" />
                       </a>
                     )}
                   </div>

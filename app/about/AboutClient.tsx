@@ -302,24 +302,27 @@ const AboutClient = ({ settings, alumni }: AboutClientProps) => {
                   </span>
                   <div className="mwg037-images relative w-56 h-80 sm:w-64 sm:h-[380px] rounded-2xl overflow-hidden border border-white/10 bg-[#0C1E3C] shadow-2xl">
                     <div className="mwg037-hidden absolute inset-0 w-full h-full">
-                      <img
-                        src="/brand/landing-hero.jpeg"
-                        alt="Esports Moment 1"
-                        className="mwg037-image w-full h-full object-cover scale-105"
+                      <div
+                        className="mwg037-image absolute top-0 left-0 w-full h-[calc(100%+40px)]"
+                        style={{
+                          background: "linear-gradient(135deg, #0d1b2e 0%, #1a2a40 60%, #0a1520 100%)",
+                        }}
                       />
                     </div>
                     <div className="mwg037-hidden absolute inset-0 w-full h-full opacity-0">
-                      <img
-                        src="/brand/ref-hero.jpeg"
-                        alt="Esports Moment 2"
-                        className="mwg037-image w-full h-full object-cover scale-105"
+                      <div
+                        className="mwg037-image absolute top-0 left-0 w-full h-[calc(100%+40px)]"
+                        style={{
+                          background: "linear-gradient(135deg, #1a0b2e 0%, #2a1540 60%, #150a20 100%)",
+                        }}
                       />
                     </div>
                     <div className="mwg037-hidden absolute inset-0 w-full h-full opacity-0">
-                      <img
-                        src="/brand/ref-games.jpeg"
-                        alt="Esports Moment 3"
-                        className="mwg037-image w-full h-full object-cover scale-105"
+                      <div
+                        className="mwg037-image absolute top-0 left-0 w-full h-[calc(100%+40px)]"
+                        style={{
+                          background: "linear-gradient(135deg, #0b222e 0%, #153540 60%, #0a1b20 100%)",
+                        }}
                       />
                     </div>
                   </div>

@@ -24,6 +24,8 @@ const GalleryForm = ({ entry, onDone }: Props) => {
   const [sortOrder, setSortOrder] = useState<number>(entry?.sort_order ?? 0);
   const [logoUrl, setLogoUrl] = useState<string | null>(entry?.logo_url ?? null);
   const [previewImages, setPreviewImages] = useState<string[]>(entry?.preview_images ?? []);
+  const [metricValue, setMetricValue] = useState(entry?.metric_value ?? "");
+  const [metricLabel, setMetricLabel] = useState(entry?.metric_label ?? "");
   const [saving, setSaving] = useState(false);
 
   const autoSlug = (val: string) =>
@@ -45,6 +47,8 @@ const GalleryForm = ({ entry, onDone }: Props) => {
       slug, title, division, tournament_date: tournamentDate,
       position, status, logo_url: logoUrl,
       preview_images: previewImages, description, sort_order: sortOrder,
+      metric_value: metricValue || null,
+      metric_label: metricLabel || null,
     };
     const result = entry
       ? await updateGalleryEntry(entry.id, data)
@@ -103,6 +107,16 @@ const GalleryForm = ({ entry, onDone }: Props) => {
             min={0}
             onChange={e => setSortOrder(Number(e.target.value))}
           />
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className={labelClass}>Metric Highlight / Value (e.g. #1, 3-1)</label>
+          <input className={inputClass} value={metricValue} onChange={e => setMetricValue(e.target.value)} placeholder="e.g. #1, 3-1, IESF 2023" />
+        </div>
+        <div>
+          <label className={labelClass}>Metric Description / Label</label>
+          <input className={inputClass} value={metricLabel} onChange={e => setMetricLabel(e.target.value)} placeholder="e.g. National Student Esports League" />
         </div>
       </div>
       <div>

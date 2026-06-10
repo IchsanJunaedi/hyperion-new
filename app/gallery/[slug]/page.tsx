@@ -56,11 +56,11 @@ export default async function GalleryShowPage({ params }: Props) {
           </h1>
 
           {/* Main image */}
-          {gallery.preview_images[0] && (
+          {gallery.preview_images?.[0] && (
             <div className="mb-8 overflow-hidden rounded-lg border border-white/5">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={gallery.preview_images[0]}
+                src={gallery.preview_images?.[0]}
                 alt={gallery.title}
                 className="w-full object-cover"
               />
@@ -85,6 +85,20 @@ export default async function GalleryShowPage({ params }: Props) {
               <span className="text-white">{gallery.status}</span>
             </p>
           </div>
+
+          {/* Metric block (if set) */}
+          {gallery.metric_value && (
+            <div className="px-5 py-4 bg-white/[0.02] backdrop-blur-md rounded-lg my-6 shadow-lg">
+              <div className="font-bebas text-3xl sm:text-4xl font-black text-[#F5C400] tracking-tight">
+                {gallery.metric_value}
+              </div>
+              {gallery.metric_label && (
+                <div className="text-xs sm:text-sm text-[#E5E2E1] font-semibold mt-0.5">
+                  {gallery.metric_label}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Description */}
           <p className="text-justify text-sm leading-relaxed text-white/55 indent-8 sm:text-base">

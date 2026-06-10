@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState, useCallback } from "react";
+import { gsap, useGSAP } from "@/lib/gsap";
 
 interface GalleryCardProps {
   index: number;
@@ -13,6 +14,9 @@ interface GalleryCardProps {
   logoUrl: string | null;
   previewImages: string[];
   total: number;
+  metricValue?: string | null;
+  metricLabel?: string | null;
+  description: string;
 }
 
 const GalleryCard = ({
@@ -25,11 +29,33 @@ const GalleryCard = ({
   logoUrl,
   previewImages,
   total,
+  metricValue,
+  metricLabel,
+  description,
 }: GalleryCardProps) => {
   const ref = useRef<HTMLDivElement>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
   const [visible, setVisible] = useState(false);
   const [imgError, setImgError] = useState(false);
   const handleImgError = useCallback(() => setImgError(true), []);
+
+  useGSAP(() => {
+    if (!imgRef.current || !ref.current) return;
+    gsap.fromTo(imgRef.current,
+      { yPercent: -10, scale: 1.2 },
+      {
+        yPercent: 10,
+        scale: 1.0,
+        ease: "none",
+        scrollTrigger: {
+          trigger: ref.current,
+          start: "top bottom",
+          end: "bottom top",
+          scrub: true,
+        }
+      }
+    );
+  }, { scope: ref });
 
   useEffect(() => {
     const el = ref.current;
@@ -55,82 +81,94 @@ const GalleryCard = ({
   return (
     <div
       ref={ref}
-      className="group relative overflow-hidden"
+      className="group relative border-b border-[#2D2D2D]/60 py-16 first:pt-0 last:border-b-0"
       style={{
         opacity: visible ? 1 : 0,
         transform: visible ? "translateY(0)" : "translateY(48px)",
-        transition: `opacity 0.65s ease ${index * 0.12}s, transform 0.65s ease ${index * 0.12}s`,
+        transition: `opacity 0.75s ease ${index * 0.12}s, transform 0.75s ease ${index * 0.12}s`,
       }}
     >
-      {/* Background image */}
-      <div className="relative aspect-[3/4] w-full overflow-hidden bg-[#030914]">
-        {bgImage && !imgError ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={bgImage}
-            alt=""
-            onError={handleImgError}
-            className="h-full w-full object-cover grayscale transition-all duration-700 ease-out group-hover:grayscale-0 group-hover:scale-105 scale-100"
-          />
-        ) : (
-          <div
-            className="h-full w-full"
-            style={{
-              background:
-                "linear-gradient(135deg, #0d1b2e 0%, #1a2a40 60%, #0a1520 100%)",
-            }}
-          />
-        )}
+      <div className="flex flex-col md:flex-row items-start gap-10 md:gap-16 lg:gap-20">
+        {/* Left Column: Image with premium hover effects & parallax */}
+        <div className="relative w-full md:w-[66%] aspect-[16/11] overflow-hidden rounded bg-[#141414] border border-white/5 shrink-0">
+          {bgImage && !imgError ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              ref={imgRef}
+              src={bgImage}
+              alt={title}
+              onError={handleImgError}
+              className="absolute top-[-10%] left-0 w-full h-[120%] object-cover grayscale-[20%] transition-grayscale duration-700 ease-out group-hover:grayscale-0"
+            />
+          ) : (
+            <div
+              className="absolute inset-0 w-full h-full"
+              style={{
+                background:
+                  "linear-gradient(135deg, #0d1b2e 0%, #1a2a40 60%, #0a1520 100%)",
+              }}
+            />
+          )}
 
-        {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#030914] via-[#030914]/50 to-[#030914]/10" />
+          {/* Logo overlay on image (top-right) if present */}
+          {logoUrl && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={logoUrl}
+              alt=""
+              className="absolute right-4 top-4 h-10 w-10 object-contain opacity-70 bg-[#070707]/60 p-1 rounded-full backdrop-blur-sm"
+            />
+          )}
 
-        {/* Border glow on hover */}
-        <div className="absolute inset-0 border border-white/8 transition-colors duration-300 group-hover:border-[#F5C400]/40" />
-
-        {/* Counter top-left */}
-        <div className="absolute left-5 top-5 flex items-baseline gap-1">
-          <span className="font-mono text-[11px] font-bold tracking-widest text-[#F5C400]">
-            {counter}
-          </span>
-          <span className="font-mono text-[9px] text-white/30">/ {totalStr}</span>
+          {/* Status Badge overlay (top-left) */}
+          <div className="absolute left-4 top-4 bg-[#F5C400] text-black font-mono text-[9px] font-bold px-2 py-0.5 uppercase tracking-wider rounded-sm z-10">
+            {position}
+          </div>
         </div>
 
-        {/* Logo top-right */}
-        {logoUrl && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={logoUrl}
-            alt=""
-            className="absolute right-4 top-4 h-10 w-10 object-contain opacity-80"
-          />
-        )}
-
-        {/* Content bottom */}
-        <div className="absolute bottom-0 inset-x-0 p-5 flex flex-col gap-2">
-          {/* Position badge */}
-          <span className="inline-block w-fit font-mono text-[10px] font-black uppercase tracking-[0.25em] text-[#F5C400]">
-            {position}
-          </span>
+        {/* Right Column: Text & Metric details */}
+        <div className="w-full md:w-[34%] flex flex-col justify-start">
+          {/* Top category & index */}
+          <div className="font-mono text-xs uppercase tracking-widest text-[#9B9A97] mb-3 flex items-center gap-2">
+            <span>{division}</span>
+            <span className="text-white/20">•</span>
+            <span className="text-[#9B9A97]">{tournamentDate}</span>
+            <span className="text-white/20">•</span>
+            <span className="font-bold text-white/50">{counter}/{totalStr}</span>
+          </div>
 
           {/* Title */}
-          <h3 className="font-bebas text-2xl sm:text-3xl font-black uppercase leading-tight tracking-wide text-white group-hover:text-[#F5C400] transition-colors duration-200">
+          <h3 className="font-bebas text-3xl sm:text-4xl lg:text-5xl font-black uppercase leading-[1.1] tracking-wide text-white group-hover:text-[#F5C400] transition-colors duration-300 mb-4">
             {title}
           </h3>
 
-          {/* Meta */}
-          <p className="font-orbitron text-[9px] font-semibold uppercase tracking-widest text-white/40">
-            {division} · {tournamentDate}
+          {/* Description */}
+          <p className="text-sm sm:text-base leading-relaxed text-[#9B9A97] mb-6">
+            {description}
           </p>
 
-          {/* CTA */}
+          {/* Metric block (if set) */}
+          {metricValue && (
+            <div className="px-5 py-4 bg-white/[0.02] backdrop-blur-md rounded-lg my-6 shadow-lg">
+              <div className="font-bebas text-3xl sm:text-4xl font-black text-[#F5C400] tracking-tight">
+                {metricValue}
+              </div>
+              {metricLabel && (
+                <div className="text-xs sm:text-sm text-[#E5E2E1] font-semibold mt-0.5">
+                  {metricLabel}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* CTA Link Button */}
           <div className="mt-2">
             <Link
               href={`/gallery/${slug}`}
-              className="inline-flex items-center gap-2 border border-white/20 px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-white/60 transition-all duration-200 hover:border-[#F5C400]/50 hover:text-[#F5C400] hover:gap-3"
+              className="inline-flex items-center gap-2 bg-white/5 px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-white/80 transition-all duration-300 hover:bg-[#F5C400]/10 hover:text-[#F5C400] hover:gap-3 rounded"
             >
-              View More
-              <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
+              View Details
+              <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
             </Link>
           </div>
         </div>

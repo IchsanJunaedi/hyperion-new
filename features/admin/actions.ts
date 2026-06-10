@@ -31,6 +31,8 @@ export async function createGalleryEntry(data: {
   preview_images: string[];
   description: string;
   sort_order: number;
+  metric_value?: string | null;
+  metric_label?: string | null;
 }): Promise<ActionResult> {
   const auth = await verifyAdminAccess();
   if (!auth.ok) return auth;
@@ -54,6 +56,8 @@ export async function updateGalleryEntry(id: string, data: {
   preview_images?: string[];
   description?: string;
   sort_order?: number;
+  metric_value?: string | null;
+  metric_label?: string | null;
 }): Promise<ActionResult> {
   const auth = await verifyAdminAccess();
   if (!auth.ok) return auth;

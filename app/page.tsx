@@ -120,7 +120,7 @@ export default async function HomePage() {
     ]);
 
   const heroSlides: HeroSlide[] = galleryEntries.slice(0, 3).map((e) => ({
-    image: e.preview_images[0] ?? "",
+    image: e.preview_images?.[0] ?? "",
     achievement: e.title,
     rank: e.position,
     year: e.tournament_date,
@@ -140,7 +140,7 @@ export default async function HomePage() {
     description: e.description ?? null,
     placement: parsePlacement(e.position ?? ""),
     achieved_at: e.tournament_date ?? "",
-    image_url: e.preview_images[0] ?? e.logo_url ?? null,
+    image_url: e.preview_images?.[0] ?? e.logo_url ?? null,
     organization_id: null,
     division_id: null,
     tournament_id: null,

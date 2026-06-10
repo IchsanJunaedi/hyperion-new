@@ -16,28 +16,28 @@ export type Database = {
     Tables: {
       about_alumni: {
         Row: {
+          created_at: string
           id: string
+          image_url: string | null
           name: string
           role: string
-          image_url: string | null
           sort_order: number
-          created_at: string
         }
         Insert: {
+          created_at?: string
           id?: string
+          image_url?: string | null
           name: string
           role?: string
-          image_url?: string | null
           sort_order?: number
-          created_at?: string
         }
         Update: {
+          created_at?: string
           id?: string
+          image_url?: string | null
           name?: string
           role?: string
-          image_url?: string | null
           sort_order?: number
-          created_at?: string
         }
         Relationships: []
       }
@@ -848,49 +848,55 @@ export type Database = {
       }
       gallery_entries: {
         Row: {
-          created_at: string
+          created_at: string | null
           description: string
           division: string
           id: string
           logo_url: string | null
+          metric_label: string | null
+          metric_value: string | null
           position: string
-          preview_images: string[]
+          preview_images: string[] | null
           slug: string
           sort_order: number
           status: string
           title: string
           tournament_date: string
-          updated_at: string
+          updated_at: string | null
         }
         Insert: {
-          created_at?: string
+          created_at?: string | null
           description: string
           division: string
           id?: string
           logo_url?: string | null
+          metric_label?: string | null
+          metric_value?: string | null
           position: string
-          preview_images?: string[]
+          preview_images?: string[] | null
           slug: string
           sort_order?: number
           status?: string
           title: string
           tournament_date: string
-          updated_at?: string
+          updated_at?: string | null
         }
         Update: {
-          created_at?: string
+          created_at?: string | null
           description?: string
           division?: string
           id?: string
           logo_url?: string | null
+          metric_label?: string | null
+          metric_value?: string | null
           position?: string
-          preview_images?: string[]
+          preview_images?: string[] | null
           slug?: string
           sort_order?: number
           status?: string
           title?: string
           tournament_date?: string
-          updated_at?: string
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -1062,6 +1068,54 @@ export type Database = {
           },
         ]
       }
+      news_posts: {
+        Row: {
+          category: string | null
+          content: string | null
+          cover_image_url: string | null
+          created_at: string
+          created_by: string | null
+          excerpt: string | null
+          id: string
+          published_at: string | null
+          read_time: number | null
+          slug: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          content?: string | null
+          cover_image_url?: string | null
+          created_at?: string
+          created_by?: string | null
+          excerpt?: string | null
+          id?: string
+          published_at?: string | null
+          read_time?: number | null
+          slug: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          content?: string | null
+          cover_image_url?: string | null
+          created_at?: string
+          created_by?: string | null
+          excerpt?: string | null
+          id?: string
+          published_at?: string | null
+          read_time?: number | null
+          slug?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       notification_preferences: {
         Row: {
           event_type: string
@@ -1156,54 +1210,6 @@ export type Database = {
           },
         ]
       }
-      news_posts: {
-        Row: {
-          id: string
-          title: string
-          slug: string
-          excerpt: string | null
-          content: string | null
-          cover_image_url: string | null
-          status: 'draft' | 'published'
-          published_at: string | null
-          updated_at: string
-          created_at: string
-          created_by: string | null
-          category: string | null
-          read_time: number | null
-        }
-        Insert: {
-          id?: string
-          title: string
-          slug: string
-          excerpt?: string | null
-          content?: string | null
-          cover_image_url?: string | null
-          status?: 'draft' | 'published'
-          published_at?: string | null
-          updated_at?: string
-          created_at?: string
-          created_by?: string | null
-          category?: string | null
-          read_time?: number | null
-        }
-        Update: {
-          id?: string
-          title?: string
-          slug?: string
-          excerpt?: string | null
-          content?: string | null
-          cover_image_url?: string | null
-          status?: 'draft' | 'published'
-          published_at?: string | null
-          updated_at?: string
-          created_at?: string
-          created_by?: string | null
-          category?: string | null
-          read_time?: number | null
-        }
-        Relationships: []
-      }
       open_trials: {
         Row: {
           created_at: string
@@ -1260,33 +1266,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
-      }
-      partners: {
-        Row: {
-          id: string
-          is_active: boolean
-          logo_url: string | null
-          name: string
-          sort_order: number
-          website_url: string | null
-        }
-        Insert: {
-          id?: string
-          is_active?: boolean
-          logo_url?: string | null
-          name: string
-          sort_order?: number
-          website_url?: string | null
-        }
-        Update: {
-          id?: string
-          is_active?: boolean
-          logo_url?: string | null
-          name?: string
-          sort_order?: number
-          website_url?: string | null
-        }
-        Relationships: []
       }
       opponent_profiles: {
         Row: {
@@ -1431,6 +1410,33 @@ export type Database = {
           social_links?: Json
           tier?: Database["public"]["Enums"]["org_tier"]
           updated_at?: string
+        }
+        Relationships: []
+      }
+      partners: {
+        Row: {
+          id: string
+          is_active: boolean
+          logo_url: string | null
+          name: string
+          sort_order: number
+          website_url: string | null
+        }
+        Insert: {
+          id?: string
+          is_active?: boolean
+          logo_url?: string | null
+          name: string
+          sort_order?: number
+          website_url?: string | null
+        }
+        Update: {
+          id?: string
+          is_active?: boolean
+          logo_url?: string | null
+          name?: string
+          sort_order?: number
+          website_url?: string | null
         }
         Relationships: []
       }
@@ -2226,17 +2232,17 @@ export type Database = {
       site_settings: {
         Row: {
           key: string
-          updated_at: string
+          updated_at: string | null
           value: string
         }
         Insert: {
           key: string
-          updated_at?: string
+          updated_at?: string | null
           value?: string
         }
         Update: {
           key?: string
-          updated_at?: string
+          updated_at?: string | null
           value?: string
         }
         Relationships: []
@@ -2331,15 +2337,15 @@ export type Database = {
           deal_value: number | null
           end_date: string | null
           id: string
+          is_public: boolean
           logo_url: string | null
           name: string
           notes: string | null
           organization_id: string
+          public_sort_order: number
           start_date: string | null
           status: string
           updated_at: string
-          is_public: boolean
-          public_sort_order: number
         }
         Insert: {
           contact_email?: string | null
@@ -2351,15 +2357,15 @@ export type Database = {
           deal_value?: number | null
           end_date?: string | null
           id?: string
+          is_public?: boolean
           logo_url?: string | null
           name: string
           notes?: string | null
           organization_id: string
+          public_sort_order?: number
           start_date?: string | null
           status?: string
           updated_at?: string
-          is_public?: boolean | null
-          public_sort_order?: number | null
         }
         Update: {
           contact_email?: string | null
@@ -2371,15 +2377,15 @@ export type Database = {
           deal_value?: number | null
           end_date?: string | null
           id?: string
+          is_public?: boolean
           logo_url?: string | null
           name?: string
           notes?: string | null
           organization_id?: string
+          public_sort_order?: number
           start_date?: string | null
           status?: string
           updated_at?: string
-          is_public?: boolean | null
-          public_sort_order?: number | null
         }
         Relationships: [
           {
@@ -2486,6 +2492,7 @@ export type Database = {
           division_id: string | null
           id: string
           is_active: boolean
+          is_public: boolean
           jersey_number: number | null
           joined_at: string
           main_role: string | null
@@ -2493,13 +2500,13 @@ export type Database = {
           position: string | null
           role: Database["public"]["Enums"]["member_role"]
           user_id: string
-          is_public: boolean
         }
         Insert: {
           availability?: Database["public"]["Enums"]["member_availability"]
           division_id?: string | null
           id?: string
           is_active?: boolean
+          is_public?: boolean
           jersey_number?: number | null
           joined_at?: string
           main_role?: string | null
@@ -2507,13 +2514,13 @@ export type Database = {
           position?: string | null
           role?: Database["public"]["Enums"]["member_role"]
           user_id: string
-          is_public?: boolean | null
         }
         Update: {
           availability?: Database["public"]["Enums"]["member_availability"]
           division_id?: string | null
           id?: string
           is_active?: boolean
+          is_public?: boolean
           jersey_number?: number | null
           joined_at?: string
           main_role?: string | null
@@ -2521,7 +2528,6 @@ export type Database = {
           position?: string | null
           role?: Database["public"]["Enums"]["member_role"]
           user_id?: string
-          is_public?: boolean | null
         }
         Relationships: [
           {
@@ -2534,41 +2540,6 @@ export type Database = {
           {
             foreignKeyName: "team_members_organization_id_fkey"
             columns: ["organization_id"]
-            isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      todo_dismissals: {
-        Row: {
-          dismissed_at: string
-          entity_id: string
-          id: string
-          org_id: string
-          smart_type: string
-          user_id: string
-        }
-        Insert: {
-          dismissed_at?: string
-          entity_id: string
-          id?: string
-          org_id: string
-          smart_type: string
-          user_id: string
-        }
-        Update: {
-          dismissed_at?: string
-          entity_id?: string
-          id?: string
-          org_id?: string
-          smart_type?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "todo_dismissals_org_id_fkey"
-            columns: ["org_id"]
             isOneToOne: false
             referencedRelation: "organizations"
             referencedColumns: ["id"]
@@ -2607,6 +2578,41 @@ export type Database = {
           tagline?: string | null
         }
         Relationships: []
+      }
+      todo_dismissals: {
+        Row: {
+          dismissed_at: string
+          entity_id: string
+          id: string
+          org_id: string
+          smart_type: string
+          user_id: string
+        }
+        Insert: {
+          dismissed_at?: string
+          entity_id: string
+          id?: string
+          org_id: string
+          smart_type: string
+          user_id: string
+        }
+        Update: {
+          dismissed_at?: string
+          entity_id?: string
+          id?: string
+          org_id?: string
+          smart_type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "todo_dismissals_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       tournament_bonus_distributions: {
         Row: {
@@ -2719,35 +2725,35 @@ export type Database = {
       tournament_results: {
         Row: {
           id: string
+          is_public: boolean
           notes: string | null
           placement: number | null
           prize_earned: string | null
-          is_public: boolean
-          result_image_url: string | null
           recorded_at: string
           recorded_by: string | null
+          result_image_url: string | null
           tournament_id: string
         }
         Insert: {
           id?: string
+          is_public?: boolean
           notes?: string | null
           placement?: number | null
           prize_earned?: string | null
-          is_public?: boolean | null
-          result_image_url?: string | null
           recorded_at?: string
           recorded_by?: string | null
+          result_image_url?: string | null
           tournament_id: string
         }
         Update: {
           id?: string
+          is_public?: boolean
           notes?: string | null
           placement?: number | null
           prize_earned?: string | null
-          is_public?: boolean | null
-          result_image_url?: string | null
           recorded_at?: string
           recorded_by?: string | null
+          result_image_url?: string | null
           tournament_id?: string
         }
         Relationships: [
@@ -2820,7 +2826,7 @@ export type Database = {
           registration_deadline: string | null
           registration_fee: string | null
           registration_url: string | null
-          show_in_hero: boolean
+          show_in_hero: boolean | null
           show_on_schedule: boolean
           start_date: string
           start_time: string | null
@@ -2851,7 +2857,7 @@ export type Database = {
           registration_fee?: string | null
           registration_url?: string | null
           show_in_hero?: boolean | null
-          show_on_schedule?: boolean | null
+          show_on_schedule?: boolean
           start_date: string
           start_time?: string | null
           status?: string
@@ -2881,7 +2887,7 @@ export type Database = {
           registration_fee?: string | null
           registration_url?: string | null
           show_in_hero?: boolean | null
-          show_on_schedule?: boolean | null
+          show_on_schedule?: boolean
           start_date?: string
           start_time?: string | null
           status?: string
@@ -3003,11 +3009,20 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_calendar_visibility: {
+        Args: { p_calendar_id: string; p_org_id: string; p_user_id: string }
+        Returns: boolean
+      }
+      check_event_visibility: {
+        Args: { p_event_id: string; p_org_id: string; p_user_id: string }
+        Returns: boolean
+      }
       custom_access_token_hook: { Args: { event: Json }; Returns: Json }
       enqueue_daily_digest_reminders: { Args: never; Returns: number }
       enqueue_h1_tournament_reminders: { Args: never; Returns: number }
       enqueue_h30_scrim_reminders: { Args: never; Returns: number }
       enqueue_h30_tournament_reminders: { Args: never; Returns: number }
+      enqueue_h60_scrim_reminders: { Args: never; Returns: number }
       enqueue_scrim_h24_reminders: { Args: never; Returns: number }
       enqueue_scrim_reminders: { Args: never; Returns: number }
       get_audit_activity_by_day: {
@@ -3055,8 +3070,20 @@ export type Database = {
           wins: number
         }[]
       }
+      get_user_org_role: {
+        Args: { p_org_id: string; p_user_id: string }
+        Returns: string
+      }
       is_captain_or_above: { Args: { org_id: string }; Returns: boolean }
       is_member_of: { Args: { org_id: string }; Returns: boolean }
+      is_user_in_team_with_role: {
+        Args: {
+          p_org_id: string
+          p_required_roles: string[]
+          p_user_id: string
+        }
+        Returns: boolean
+      }
       mark_all_notifications_read: { Args: never; Returns: number }
       mark_notification_read: {
         Args: { notification_id: string }
