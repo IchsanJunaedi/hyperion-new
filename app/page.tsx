@@ -200,7 +200,7 @@ export default async function HomePage() {
           nearestScrim={nearestScrim}
           upcomingMatches={displayUpcoming}
         />
-        <DivisionsSection />
+        <DivisionsSection description={settings.divisions_description} />
         <AchievementsSection entries={mergedAchievements} />
         <LatestNewsSection posts={latestNews.slice(0, 7)} />
         <TestimonialsSection testimonials={testimonials} />

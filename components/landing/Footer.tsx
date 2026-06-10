@@ -20,6 +20,7 @@ interface FooterSettings {
   footer_instagram_handle: string;
   footer_instagram_url: string;
   footer_hashtag: string;
+  about_org_name?: string;
 }
 
 const DEFAULT_FOOTER_SETTINGS: FooterSettings = {
@@ -95,7 +96,7 @@ const Footer = ({ settings = DEFAULT_FOOTER_SETTINGS }: FooterProps) => {
         {/* Bottom bar */}
         <div className="mt-14 flex flex-col gap-2 border-t border-[#F5C400]/8 pt-6 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-[10px] uppercase tracking-widest text-white/38">
-            © {new Date().getFullYear()} Hyperion Team. All rights reserved.
+            © {new Date().getFullYear()} {settings.about_org_name || "Hyperion Team"}. All rights reserved.
           </p>
           <p
             className="text-[10px] font-bold uppercase tracking-widest text-[#F5C400]/70"

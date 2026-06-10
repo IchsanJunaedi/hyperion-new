@@ -6,6 +6,7 @@ import { ArrowRight, ArrowUpRight, Instagram } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import { AboutImageMarquee } from "@/components/landing/AboutImageMarquee";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -195,7 +196,18 @@ const AboutClient = ({ settings, alumni }: AboutClientProps) => {
     }
   }, { scope: containerRef });
 
-  // Fallback copy content if database settings are empty
+  // Settings with fallbacks
+  const orgName = settings.about_org_name || "Hyperion Team";
+  const taglineTop = settings.about_tagline_top || "Est. 2020 · Palembang, Indonesia";
+  const shortDesc = settings.about_short_desc || `${orgName} adalah wadah pembinaan talenta muda esports di Indonesia. Kami mendedikasikan diri untuk melahirkan generasi pemain profesional baru yang siap mendominasi kancah kompetitif.`;
+  const longDesc1 = settings.about_long_desc1 || "Sejak berdiri, kami telah berkomitmen penuh untuk mengarahkan hasrat bermain game para remaja ke arah yang produktif dan berprestasi. Melalui ekosistem terpadu kami yang mengintegrasikan latihan disiplin, bimbingan mental, dan manajemen kompetisi, kami memandu para pemain muda melewati transisi dari pemain amatir menjadi profesional.";
+  const longDesc2 = settings.about_long_desc2 || "Bagi kami, esports bukan sekadar kompetisi di dalam game. Ini tentang dedikasi, kepemimpinan, kerja keras bersama, dan pencapaian target hidup yang konsisten. Kami percaya setiap talenta muda memiliki potensi terpendam yang menanti untuk dipoles dengan metodologi pembinaan yang tepat.";
+  const ownerName = settings.about_owner_name || "Ichsan Junaedi";
+  const ownerRole = settings.about_owner_role || "Owner & GM";
+  const instagramUrl = settings.contact_instagram_url || "https://www.instagram.com/hyperionteam.id/";
+  const timelineImages: string[] = (() => {
+    try { return JSON.parse(settings.about_timeline_images || "[]") as string[]; } catch { return []; }
+  })();
   const visionTitle = settings.about_vision_title || "Our Vision";
   const visionBody = settings.about_vision_body || "Menjadi organisasi esports terdepan yang melahirkan generasi pemain profesional, membuktikan bahwa talenta muda Indonesia mampu bersaing di panggung nasional dan internasional.";
   const missionBody = settings.about_mission_body || "Mengembangkan bakat muda melalui program pelatihan komprehensif, kompetisi rutin, dan mentoring dari para profesional — membangun fondasi karir esports yang kuat sejak dini.";
@@ -209,11 +221,11 @@ const AboutClient = ({ settings, alumni }: AboutClientProps) => {
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-end">
           <div className="space-y-4">
             <span className="text-[11px] font-mono tracking-[0.4em] uppercase text-[#F5C400] font-bold block animate-fadeinup">
-              Est. 2020 · Palembang, Indonesia
+              {taglineTop}
             </span>
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black uppercase tracking-tight text-white leading-none animate-fadeinup">
-              Hyperion <br />
-              <span className="text-[#F5C400]">Team</span>
+              {orgName.split(" ").slice(0, -1).join(" ") || orgName} <br />
+              <span className="text-[#F5C400]">{orgName.split(" ").slice(-1)[0]}</span>
             </h1>
           </div>
           <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl border border-white/10 bg-[#0C1E3C]">
@@ -260,16 +272,17 @@ const AboutClient = ({ settings, alumni }: AboutClientProps) => {
 
         <div className="max-w-4xl mx-auto px-6 py-20 md:py-32 animate-text-section space-y-8">
           <h2 className="animate-up text-2xl sm:text-4xl font-light tracking-tight text-white leading-snug">
-            Hyperion Team adalah wadah pembinaan talenta muda esports di Indonesia. Kami mendedikasikan diri untuk melahirkan generasi pemain profesional baru yang siap mendominasi kancah kompetitif.
+            {shortDesc}
           </h2>
-          <p className="animate-up text-sm sm:text-base leading-relaxed text-[#9B9A97] font-light space-y-4">
-            Sejak berdiri pada tahun 2020 di Palembang, Indonesia, kami telah berkomitmen penuh untuk mengarahkan hasrat bermain game para remaja ke arah yang produktif dan berprestasi. Melalui ekosistem terpadu kami yang mengintegrasikan latihan disiplin, bimbingan mental, dan manajemen kompetisi, kami memandu para pemain muda melewati transisi dari pemain amatir menjadi profesional.
-            <br />
-            <br />
-            Bagi kami, esports bukan sekadar kompetisi di dalam game. Ini tentang dedikasi, kepemimpinan, kerja keras bersama, dan pencapaian target hidup yang konsisten. Kami percaya setiap talenta muda memiliki potensi terpendam yang menanti untuk dipoles dengan metodologi pembinaan yang tepat.
+          <p className="animate-up text-sm sm:text-base leading-relaxed text-[#9B9A97] font-light">
+            {longDesc1}
+            {longDesc2 && <><br /><br />{longDesc2}</>}
           </p>
         </div>
       </section>
+
+      {/* Timeline image marquee — only shown when images are set in CMS */}
+      {timelineImages.length > 0 && <AboutImageMarquee images={timelineImages} />}
 
       {/* 3. Pinned Scrolling Gallery */}
       <section className="relative">
@@ -479,13 +492,13 @@ const AboutClient = ({ settings, alumni }: AboutClientProps) => {
 
             <div className="text-left md:text-right">
               <span className="font-mono text-xs text-[#9B9A97] block uppercase tracking-widest">
-                Owner & GM
+                {ownerRole}
               </span>
               <span className="text-lg font-bold text-white block mt-1">
-                Ichsan Junaedi
+                {ownerName}
               </span>
               <span className="text-xs text-[#9B9A97] block">
-                Hyperion Team
+                {orgName}
               </span>
             </div>
           </div>
@@ -529,7 +542,7 @@ const AboutClient = ({ settings, alumni }: AboutClientProps) => {
             {/* Link 2 */}
             <div className="flex flex-col space-y-2">
               <span className="font-mono text-[10px] text-[#9B9A97] tracking-widest uppercase mb-1">Socials</span>
-              <a href="https://www.instagram.com/hyperionteam.id/" target="_blank" rel="noreferrer" className="text-xs text-[#9B9A97] hover:text-white transition inline-flex items-center gap-1.5">
+              <a href={instagramUrl} target="_blank" rel="noreferrer" className="text-xs text-[#9B9A97] hover:text-white transition inline-flex items-center gap-1.5">
                 Instagram <ArrowUpRight className="h-3 w-3" />
               </a>
               <Link href="/news" className="text-xs text-[#9B9A97] hover:text-white transition">News</Link>
@@ -545,7 +558,7 @@ const AboutClient = ({ settings, alumni }: AboutClientProps) => {
           </div>
 
           <div className="flex flex-col sm:flex-row justify-between items-center pt-12 mt-12 border-t border-[#2D2D2D]/20 text-[10px] font-mono text-[#9B9A97] tracking-widest uppercase space-y-4 sm:space-y-0">
-            <span>©{new Date().getFullYear()} Hyperion Team</span>
+            <span>©{new Date().getFullYear()} {orgName}</span>
             <div className="flex items-center gap-2">
               <span>DESIGN STUDY BY HIGHFULMINDS</span>
             </div>

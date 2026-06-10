@@ -58,7 +58,7 @@ function getGameBackground(_game: string | null) {
   return "/brand/logo.jpg";
 }
 
-export async function DivisionsSection() {
+export async function DivisionsSection({ description }: { description?: string } = {}) {
   const admin = createAdminClient();
 
   const { data: divisions, error } = await admin
@@ -93,7 +93,7 @@ export async function DivisionsSection() {
           </div>
           <div className="md:max-w-md flex flex-col items-start md:items-end">
             <p className="text-xs sm:text-sm text-white/50 leading-relaxed md:text-right mb-3">
-              Hyperion Team bersaing di berbagai turnamen regional utama, menaungi divisi esports mobile dengan jajaran roster berbakat yang terus mengejar keunggulan.
+              {description || "Hyperion Team bersaing di berbagai turnamen regional utama, menaungi divisi esports mobile dengan jajaran roster berbakat yang terus mengejar keunggulan."}
             </p>
             <Link
               href="/divisions"

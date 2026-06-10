@@ -76,9 +76,71 @@ const AboutAdminClient = ({ initialSettings, initialAlumni }: Props) => {
     setDeleting(null);
   };
 
+  const handleSaveOrg = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSavingCards(true);
+    const result = await upsertSiteSettings(settings);
+    setSavingCards(false);
+    if (!result.ok) { toast.error(result.message); return; }
+    toast.success("Info organisasi disimpan");
+  };
+
   return (
     <div className="space-y-10">
       <h1 className="text-xl font-black uppercase tracking-tight text-white">About Page</h1>
+
+      {/* Org Info */}
+      <form onSubmit={handleSaveOrg}>
+        <p className="mb-4 text-xs font-semibold uppercase tracking-wide text-[#9B9A97]">Info Organisasi</p>
+        <div className="space-y-4 rounded border border-[#2D2D2D] bg-[#141414] p-5">
+          {[
+            { key: "about_org_name", label: "Nama Organisasi", placeholder: "Hyperion Team" },
+            { key: "about_tagline_top", label: "Tagline (atas hero)", placeholder: "Est. 2020 · Palembang, Indonesia" },
+            { key: "about_owner_name", label: "Nama Owner", placeholder: "Ichsan Junaedi" },
+            { key: "about_owner_role", label: "Role Owner", placeholder: "Owner & GM" },
+          ].map((f) => (
+            <div key={f.key}>
+              <label className={labelClass}>{f.label}</label>
+              <input
+                className={inputClass}
+                value={settings[f.key] ?? ""}
+                placeholder={f.placeholder}
+                onChange={(e) => setSettings((p) => ({ ...p, [f.key]: e.target.value }))}
+              />
+            </div>
+          ))}
+          {[
+            { key: "about_short_desc", label: "Deskripsi Singkat (intro besar)", rows: 3 },
+            { key: "about_long_desc1", label: "Paragraf 1", rows: 4 },
+            { key: "about_long_desc2", label: "Paragraf 2", rows: 4 },
+          ].map((f) => (
+            <div key={f.key}>
+              <label className={labelClass}>{f.label}</label>
+              <textarea
+                className={inputClass + " resize-y"}
+                rows={f.rows}
+                value={settings[f.key] ?? ""}
+                placeholder="Tulis teks..."
+                onChange={(e) => setSettings((p) => ({ ...p, [f.key]: e.target.value }))}
+              />
+            </div>
+          ))}
+          <div>
+            <label className={labelClass}>Timeline Images (JSON array URL, pisahkan dengan koma)</label>
+            <textarea
+              className={inputClass + " resize-y font-mono text-xs"}
+              rows={3}
+              value={settings.about_timeline_images ?? ""}
+              placeholder={`["https://...", "https://..."]`}
+              onChange={(e) => setSettings((p) => ({ ...p, about_timeline_images: e.target.value }))}
+            />
+            <p className="mt-1 text-[10px] text-[#6B6A68]">Format: array JSON. Kosongkan untuk sembunyikan marquee.</p>
+          </div>
+        </div>
+        <button type="submit" disabled={savingCards} className="mt-4 cursor-pointer border border-[#F5C400] px-6 py-2.5 text-xs font-black uppercase tracking-widest text-[#F5C400] transition hover:bg-[#F5C400] hover:text-black disabled:opacity-50">
+          {savingCards ? "Menyimpan..." : "Simpan Info Organisasi"}
+        </button>
+      </form>
 
       {/* Vision / Mission / Values */}
       <form onSubmit={handleSaveCards}>
