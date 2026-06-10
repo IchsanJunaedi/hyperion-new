@@ -146,40 +146,40 @@ const ScrimCountdown = ({ scrim, orgSlug, myAttendanceStatus }: ScrimCountdownPr
         Scrim berikutnya
       </div>
 
-      <h3 className="mt-3 text-xl font-bold text-white sm:text-2xl">
+      <h3 className="mt-3 text-xl font-bold text-ui-text sm:text-2xl">
         vs {scrim.opponent_name}
       </h3>
-      <p className="mt-1 text-xs uppercase tracking-wide text-white/55">
+      <p className="mt-1 text-xs uppercase tracking-wide text-ui-text-2">
         {scrim.format} · {scrim.status}
       </p>
 
-      <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-white/75">
+      <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-ui-text">
         <span className="inline-flex items-center gap-1.5">
-          <Calendar className="h-3.5 w-3.5 text-white/55" />
+          <Calendar className="h-3.5 w-3.5 text-ui-text-2" />
           {formatted}
         </span>
         {scrim.server_region ? (
           <span className="inline-flex items-center gap-1.5">
-            <MapPin className="h-3.5 w-3.5 text-white/55" />
+            <MapPin className="h-3.5 w-3.5 text-ui-text-2" />
             {scrim.server_region}
           </span>
         ) : null}
       </div>
 
       <div className="mt-5 flex items-center gap-2">
-        <Clock className="h-4 w-4 text-white/55" />
+        <Clock className="h-4 w-4 text-ui-text-2" />
         {parts === null ? (
           <div className="flex gap-2 text-sm tabular-nums">
             <CountdownCell value={0} label="hari" />
-            <span className="text-white/35">:</span>
+            <span className="text-ui-text-muted">:</span>
             <CountdownCell value={0} label="jam" />
-            <span className="text-white/35">:</span>
+            <span className="text-ui-text-muted">:</span>
             <CountdownCell value={0} label="menit" />
-            <span className="text-white/35">:</span>
+            <span className="text-ui-text-muted">:</span>
             <CountdownCell value={0} label="detik" />
           </div>
         ) : parts.pastDue ? (
-          <span className="text-sm text-white/70">
+          <span className="text-sm text-ui-text">
             Sedang berlangsung — telat
             {parts.days > 0 ? ` ${parts.days}h` : ""} {parts.hours}j{" "}
             {parts.minutes}m
@@ -187,11 +187,11 @@ const ScrimCountdown = ({ scrim, orgSlug, myAttendanceStatus }: ScrimCountdownPr
         ) : (
           <div className="flex gap-2 text-sm tabular-nums">
             <CountdownCell value={parts.days} label="hari" />
-            <span className="text-white/35">:</span>
+            <span className="text-ui-text-muted">:</span>
             <CountdownCell value={parts.hours} label="jam" />
-            <span className="text-white/35">:</span>
+            <span className="text-ui-text-muted">:</span>
             <CountdownCell value={parts.minutes} label="menit" />
-            <span className="text-white/35">:</span>
+            <span className="text-ui-text-muted">:</span>
             <CountdownCell value={parts.seconds} label="detik" />
           </div>
         )}
@@ -205,10 +205,10 @@ const ScrimCountdown = ({ scrim, orgSlug, myAttendanceStatus }: ScrimCountdownPr
 function CountdownCell({ value, label }: { value: number; label: string }) {
   return (
     <span className="flex flex-col items-center">
-      <span className="text-lg font-bold text-white">
+      <span className="text-lg font-bold text-ui-text">
         {value.toString().padStart(2, "0")}
       </span>
-      <span className="text-[10px] uppercase tracking-wide text-white/45">
+      <span className="text-[10px] uppercase tracking-wide text-ui-text-2">
         {label}
       </span>
     </span>

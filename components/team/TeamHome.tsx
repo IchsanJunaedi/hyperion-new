@@ -36,15 +36,15 @@ const TeamHome = ({
   return (
     <div className="space-y-8 px-4 py-6 sm:px-8">
       {/* Hero */}
-      <section className="rounded-2xl border border-[#2D2D2D] bg-[#141414] p-6 sm:p-8">
-        <p className="text-xs uppercase tracking-wide text-white/55">
+      <section className="rounded-2xl border border-ui-border bg-ui-surface p-6 sm:p-8">
+        <p className="text-xs uppercase tracking-wide text-ui-text-2">
           Team Home
         </p>
-        <h1 className="mt-1 text-2xl font-bold text-white sm:text-3xl">
+        <h1 className="mt-1 text-2xl font-bold text-ui-text sm:text-3xl">
           {data.organization.name}
         </h1>
         {data.organization.description ? (
-          <p className="mt-2 max-w-2xl text-sm text-white/70 sm:text-base">
+          <p className="mt-2 max-w-2xl text-sm text-ui-text sm:text-base">
             {data.organization.description}
           </p>
         ) : null}
@@ -52,16 +52,16 @@ const TeamHome = ({
 
       {/* Personal stats — only shown to captain/member */}
       {personalStats && (
-        <section className="rounded-2xl border border-[#2D2D2D] bg-[#141414] p-5">
+        <section className="rounded-2xl border border-ui-border bg-ui-surface p-5">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-white">Statistik Kamu</h2>
+            <h2 className="text-sm font-semibold text-ui-text">Statistik Kamu</h2>
             {personalStats.avgRating !== null && (
               <div className="flex items-center gap-1.5">
                 <Star className="h-3.5 w-3.5 text-yellow-400" />
                 <span className={cn("text-sm font-bold tabular-nums", ratingColor(personalStats.avgRating))}>
                   {personalStats.avgRating.toFixed(1)}
                 </span>
-                <span className="text-xs text-white/40">avg rating</span>
+                <span className="text-xs text-ui-text-muted">avg rating</span>
               </div>
             )}
           </div>
@@ -69,10 +69,10 @@ const TeamHome = ({
           {/* Attendance bar */}
           <div className="mb-4 space-y-1.5">
             <div className="flex justify-between text-xs">
-              <span className="text-white/55">Kehadiran</span>
-              <span className="font-semibold text-white">{personalStats.attendanceRate}%</span>
+              <span className="text-ui-text-2">Kehadiran</span>
+              <span className="font-semibold text-ui-text">{personalStats.attendanceRate}%</span>
             </div>
-            <div className="h-2 w-full overflow-hidden rounded-full bg-[#2D2D2D]">
+            <div className="h-2 w-full overflow-hidden rounded-full bg-ui-border">
               <div
                 style={{ width: `${personalStats.attendanceRate}%` }}
                 className={cn(
@@ -88,25 +88,25 @@ const TeamHome = ({
           </div>
 
           {/* Stats grid */}
-          <div className={cn("grid gap-2 rounded-xl bg-[#1C1C1C] p-3", personalStats.targets.length > 0 ? "mb-4" : "")}>
+          <div className={cn("grid gap-2 rounded-xl bg-ui-elevated p-3", personalStats.targets.length > 0 ? "mb-4" : "")}>
             <div className="grid grid-cols-3">
               <div className="text-center">
-                <p className="text-[10px] text-white/40">Hadir</p>
-                <p className="text-sm font-bold text-white">
+                <p className="text-[10px] text-ui-text-muted">Hadir</p>
+                <p className="text-sm font-bold text-ui-text">
                   {personalStats.totalPresent}/{personalStats.totalScrims}
                 </p>
               </div>
-              <div className="border-x border-[#2D2D2D] text-center">
-                <p className="text-[10px] text-white/40">WR Hadir</p>
+              <div className="border-x border-ui-border text-center">
+                <p className="text-[10px] text-ui-text-muted">WR Hadir</p>
                 <p className={cn("text-sm font-bold", personalStats.winRateWhenPresent >= 50 ? "text-emerald-400" : "text-rose-400")}>
                   {personalStats.scrimsWhenPresent === 0 ? "—" : `${personalStats.winRateWhenPresent}%`}
                 </p>
               </div>
               <div className="text-center">
-                <p className="text-[10px] text-white/40">Streak</p>
+                <p className="text-[10px] text-ui-text-muted">Streak</p>
                 <p className={cn(
                   "text-sm font-bold",
-                  personalStats.streak > 0 ? "text-emerald-400" : personalStats.streak < 0 ? "text-rose-400" : "text-white/40",
+                  personalStats.streak > 0 ? "text-emerald-400" : personalStats.streak < 0 ? "text-rose-400" : "text-ui-text-muted",
                 )}>
                   {personalStats.streak === 0 ? "—" : Math.abs(personalStats.streak)}
                 </p>
@@ -117,15 +117,15 @@ const TeamHome = ({
           {/* Improvement targets */}
           {personalStats.targets.length > 0 && (
             <div>
-              <p className="mb-2.5 text-xs font-medium text-white/55">Target Peningkatan</p>
+              <p className="mb-2.5 text-xs font-medium text-ui-text-2">Target Peningkatan</p>
               <div className="space-y-2.5">
                 {personalStats.targets.map((t) => (
                   <div key={t.id}>
                     <div className="mb-1 flex justify-between text-[11px]">
-                      <span className="text-white/70">{t.skill_name}</span>
-                      <span className="tabular-nums text-white/40">{t.current_level}/{t.target_level}</span>
+                      <span className="text-ui-text">{t.skill_name}</span>
+                      <span className="tabular-nums text-ui-text-muted">{t.current_level}/{t.target_level}</span>
                     </div>
-                    <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#2D2D2D]">
+                    <div className="h-1.5 w-full overflow-hidden rounded-full bg-ui-border">
                       <div
                         style={{ width: `${Math.min(100, Math.round((t.current_level / Math.max(t.target_level, 1)) * 100))}%` }}
                         className="h-full rounded-full bg-blue-400/60"
@@ -144,8 +144,8 @@ const TeamHome = ({
         {data.nextScrim ? (
           <ScrimCountdown scrim={data.nextScrim} orgSlug={slug} myAttendanceStatus={myNextScrimAttendanceStatus} />
         ) : (
-          <article className="rounded-xl border border-dashed border-[#2D2D2D] bg-[#141414] p-6 text-sm text-white/60">
-            <div className="mb-2 flex items-center gap-2 text-xs uppercase tracking-wide text-white/45">
+          <article className="rounded-xl border border-dashed border-ui-border bg-ui-surface p-6 text-sm text-ui-text-2">
+            <div className="mb-2 flex items-center gap-2 text-xs uppercase tracking-wide text-ui-text-2">
               <Swords className="h-3.5 w-3.5" />
               Scrim berikutnya
             </div>
@@ -153,7 +153,7 @@ const TeamHome = ({
             {canManageScrims && (
               <Link
                 href={`/${slug}/scrim/new`}
-                className="mt-3 inline-flex h-9 items-center rounded-md border border-[#2D2D2D] px-3 text-sm font-medium text-white transition hover:bg-white/5"
+                className="mt-3 inline-flex h-9 items-center rounded-md border border-ui-border px-3 text-sm font-medium text-ui-text transition hover:bg-ui-hover"
               >
                 Buat scrim
               </Link>
@@ -192,7 +192,7 @@ const TeamHome = ({
       {/* Pinned announcements */}
       {data.pinnedAnnouncements.length > 0 ? (
         <section>
-          <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-white">
+          <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-ui-text">
             <Pin className="h-4 w-4 text-yellow-400" />
             Pengumuman penting
           </h2>
@@ -203,10 +203,10 @@ const TeamHome = ({
                   href={`/${slug}/announcements/${a.id}`}
                   className="block rounded-xl border border-yellow-500/15 bg-yellow-500/5 p-4 transition-all duration-300 hover:bg-yellow-500/10 hover:border-yellow-500/30 hover:-translate-y-[1px] active:scale-[0.99]"
                 >
-                  <h3 className="text-base font-semibold text-white">
+                  <h3 className="text-base font-semibold text-ui-text">
                     {a.title}
                   </h3>
-                  <p className="mt-1 line-clamp-3 text-sm text-white/75">
+                  <p className="mt-1 line-clamp-3 text-sm text-ui-text">
                     {a.body}
                   </p>
                 </Link>
@@ -218,12 +218,12 @@ const TeamHome = ({
 
       {/* Activity feed (recent announcements + completed scrims) */}
       <section>
-        <h2 className="mb-3 text-sm font-semibold text-white">
+        <h2 className="mb-3 text-sm font-semibold text-ui-text">
           Aktivitas terbaru
         </h2>
         {data.recentAnnouncements.length === 0 &&
         data.recentCompletedScrims.length === 0 ? (
-          <p className="rounded-xl border border-dashed border-[#2D2D2D] bg-[#141414] p-6 text-center text-sm text-white/55">
+          <p className="rounded-xl border border-dashed border-ui-border bg-ui-surface p-6 text-center text-sm text-ui-text-2">
             Belum ada aktivitas. Mulai scrim atau buat pengumuman pertama.
           </p>
         ) : (
@@ -232,20 +232,20 @@ const TeamHome = ({
               <li key={`a-${a.id}`}>
                 <Link
                   href={`/${slug}/announcements/${a.id}`}
-                  className="flex items-start gap-3 rounded-lg border border-[#2D2D2D] bg-[#141414] p-3 transition-all duration-300 hover:bg-zinc-800/40 hover:border-zinc-700/60 hover:-translate-y-[1px] active:scale-[0.99] cursor-pointer"
+                  className="flex items-start gap-3 rounded-lg border border-ui-border bg-ui-surface p-3 transition-all duration-300 hover:bg-ui-elevated/40 hover:border-ui-border hover:-translate-y-[1px] active:scale-[0.99] cursor-pointer"
                 >
                   <span className="mt-0.5 grid h-7 w-7 flex-none place-items-center rounded-full bg-yellow-500/15 text-yellow-400">
                     <Megaphone className="h-3.5 w-3.5" />
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-white">
+                    <p className="truncate text-sm font-medium text-ui-text">
                       {a.title}
                     </p>
-                    <p className="mt-0.5 line-clamp-2 text-xs text-white/60">
+                    <p className="mt-0.5 line-clamp-2 text-xs text-ui-text-2">
                       {a.body}
                     </p>
                   </div>
-                  <time className="flex-none text-[10px] uppercase tracking-wide text-white/40">
+                  <time className="flex-none text-[10px] uppercase tracking-wide text-ui-text-muted">
                     {formatRelative(a.created_at)}
                   </time>
                 </Link>
@@ -255,20 +255,20 @@ const TeamHome = ({
               <li key={`s-${s.id}`}>
                 <Link
                   href={`/${slug}/scrim/${s.id}`}
-                  className="flex items-start gap-3 rounded-lg border border-[#2D2D2D] bg-[#141414] p-3 transition-all duration-300 hover:bg-zinc-800/40 hover:border-zinc-700/60 hover:-translate-y-[1px] active:scale-[0.99] cursor-pointer"
+                  className="flex items-start gap-3 rounded-lg border border-ui-border bg-ui-surface p-3 transition-all duration-300 hover:bg-ui-elevated/40 hover:border-ui-border hover:-translate-y-[1px] active:scale-[0.99] cursor-pointer"
                 >
                   <span className="mt-0.5 grid h-7 w-7 flex-none place-items-center rounded-full bg-emerald-500/15 text-emerald-400">
                     <Swords className="h-3.5 w-3.5" />
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-white">
+                    <p className="truncate text-sm font-medium text-ui-text">
                       Scrim vs {s.opponent_name}
                     </p>
-                    <p className="mt-0.5 text-xs text-white/60">
+                    <p className="mt-0.5 text-xs text-ui-text-2">
                       {s.format} · selesai
                     </p>
                   </div>
-                  <time className="flex-none text-[10px] uppercase tracking-wide text-white/40">
+                  <time className="flex-none text-[10px] uppercase tracking-wide text-ui-text-muted">
                     {formatRelative(s.scheduled_at)}
                   </time>
                 </Link>
@@ -291,12 +291,12 @@ function StatCard({
   value: string;
 }) {
   return (
-    <div className="rounded-xl border border-[#2D2D2D] bg-[#141414] p-4">
-      <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-white/55">
+    <div className="rounded-xl border border-ui-border bg-ui-surface p-4">
+      <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-ui-text-2">
         {icon}
         {label}
       </div>
-      <p className="mt-2 text-2xl font-bold text-white">{value}</p>
+      <p className="mt-2 text-2xl font-bold text-ui-text">{value}</p>
     </div>
   );
 }
