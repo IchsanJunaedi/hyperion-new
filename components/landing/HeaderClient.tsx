@@ -32,6 +32,14 @@ const HeaderClient = ({
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
 
+  // Helper to determine if a route is active (matches current pathname or is a subpath)
+  const isActive = (href: string) => {
+    if (href === "/") {
+      return pathname === "/";
+    }
+    return pathname === href || pathname.startsWith(href + "/");
+  };
+
   useEffect(() => {
     setMobileOpen(false);
   }, [pathname]);
@@ -62,15 +70,17 @@ const HeaderClient = ({
             aria-label="Main"
             className="absolute left-1/2 hidden -translate-x-1/2 md:block"
           >
-            <ul className="flex items-center gap-8 font-orbitron text-[10px] font-bold uppercase tracking-[0.2em]">
+            <ul className="flex items-center gap-8 font-orbitron text-[10px] uppercase tracking-[0.2em]">
               {navLinks.map((link) => {
-                const active = pathname === link.href;
+                const active = isActive(link.href);
                 return (
                   <li key={link.href} className="relative py-1">
                     <Link
                       href={link.href}
-                      className={`transition-colors duration-200 hover:text-white ${
-                        active ? "text-white" : "text-white/40"
+                      className={`transition-colors duration-200 ${
+                        active
+                          ? "text-[#F5C400] font-semibold"
+                          : "text-gray-400 hover:text-white font-normal"
                       }`}
                     >
                       {link.label}
@@ -179,14 +189,16 @@ const HeaderClient = ({
             <nav className="flex-1 overflow-y-auto px-5 py-6">
               <ul className="space-y-0 font-orbitron">
                 {navLinks.map((link) => {
-                  const active = pathname === link.href;
+                  const active = isActive(link.href);
                   return (
                     <li key={link.href} className="border-b border-white/5">
                       <Link
                         href={link.href}
                         onClick={() => setMobileOpen(false)}
-                        className={`flex h-12 items-center text-xs font-semibold uppercase tracking-wider transition ${
-                          active ? "text-[#F5C400]" : "text-white/55 hover:text-white"
+                        className={`flex h-12 items-center text-xs uppercase tracking-wider transition ${
+                          active
+                            ? "text-[#F5C400] font-semibold"
+                            : "text-gray-400 hover:text-white font-normal"
                         }`}
                       >
                         {link.label}
