@@ -108,16 +108,18 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   // Find the nearest upcoming scrim for this user's active membership
   const now = new Date().toISOString();
 
-  const { data: scrim } = await admin
+  let scrimQuery = admin
     .from("scrims")
     .select("id, opponent_name, scheduled_at")
     .eq("organization_id", membership.organization_id)
-    .eq("division_id", membership.division_id ?? "")
     .eq("status", "scheduled")
     .gte("scheduled_at", now)
     .order("scheduled_at", { ascending: true })
-    .limit(1)
-    .maybeSingle();
+    .limit(1);
+  if (membership.division_id) {
+    scrimQuery = scrimQuery.eq("division_id", membership.division_id);
+  }
+  const { data: scrim } = await scrimQuery.maybeSingle();
 
   if (!scrim) {
     await sendWaMessage(

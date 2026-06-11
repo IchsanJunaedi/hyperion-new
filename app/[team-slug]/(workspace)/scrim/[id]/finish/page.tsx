@@ -55,7 +55,6 @@ export default async function FinishScrimPage({ params }: FinishScrimPageProps) 
         orgSlug={slug}
         orgId={scrim.organization_id}
         format={scrim.format}
-        scrimId_detail={id}
       />
     </div>
   );

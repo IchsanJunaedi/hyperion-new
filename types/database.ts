@@ -1823,6 +1823,39 @@ export type Database = {
           },
         ]
       }
+      scrim_ai_reviews: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          draft: Json | null
+          game_number: number
+          id: string
+          narrative: string
+          scoreboard: Json | null
+          scrim_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          draft?: Json | null
+          game_number: number
+          id?: string
+          narrative: string
+          scoreboard?: Json | null
+          scrim_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          draft?: Json | null
+          game_number?: number
+          id?: string
+          narrative?: string
+          scoreboard?: Json | null
+          scrim_id?: string
+        }
+        Relationships: []
+      }
       scrim_draft_bans: {
         Row: {
           ban_order: number

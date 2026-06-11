@@ -8,6 +8,8 @@ import { getHeroImageUrl } from "@/features/scrim/data/mlbb-heroes";
 import { getScrimDetail } from "@/features/scrim/queries";
 import { VodReviewSection } from "@/features/scrim/components/VodReviewSection";
 import type { VodTimestampRow } from "@/features/scrim/actions/vodTimestampsAction";
+import { getScrimAiReviews } from "@/features/scrim/queries/aiReviews";
+import { AiTacticalReviewCard } from "@/features/scrim/components/AiTacticalReviewCard";
 
 export const dynamic = "force-dynamic";
 
@@ -40,6 +42,7 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
   const [
     { data: gameResults },
     { data: draftPicks },
+    { data: draftBans },
     { data: vodTimestamps },
     { data: attendances },
     memberRes,
@@ -54,6 +57,12 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
       .select("*")
       .eq("scrim_id", id)
       .order("game_number", { ascending: true }),
+    admin
+      .from("scrim_draft_bans")
+      .select("*")
+      .eq("scrim_id", id)
+      .order("game_number", { ascending: true })
+      .order("ban_order", { ascending: true }),
     admin
       .from("scrim_vod_timestamps" as never)
       .select("*")
@@ -95,6 +104,9 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
     }),
   );
 
+  const aiReviews = await getScrimAiReviews(id);
+  const reviewByGame = new Map(aiReviews.map((r) => [r.game_number, r.narrative]));
+
   // Collect all user_ids we need profiles for: draft picks + attendances
   const draftPlayerIds = (draftPicks ?? [])
     .filter((p) => p.side === "our" && p.player_id)
@@ -132,6 +144,21 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
       gameDraft.our.push({ role: pick.role, hero_name: pick.hero_name, player_id: pick.player_id });
     } else {
       gameDraft.enemy.push({ role: pick.role, hero_name: pick.hero_name, player_id: pick.player_id });
+    }
+  }
+
+  // Group draft bans by game_number → side
+  const bansByGame: Record<number, { our: string[]; enemy: string[] }> = {};
+  for (const ban of draftBans ?? []) {
+    let gameBans = bansByGame[ban.game_number];
+    if (!gameBans) {
+      gameBans = { our: [], enemy: [] };
+      bansByGame[ban.game_number] = gameBans;
+    }
+    if (ban.side === "our") {
+      gameBans.our.push(ban.hero_name);
+    } else {
+      gameBans.enemy.push(ban.hero_name);
     }
   }
 
@@ -198,7 +225,10 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
           const draft = draftByGame[game.game_number];
           const ourPicks = draft?.our ?? [];
           const enemyPicks = draft?.enemy ?? [];
-          const hasDraft = ourPicks.length > 0 || enemyPicks.length > 0;
+          const gameBans = bansByGame[game.game_number];
+          const ourBans = gameBans?.our ?? [];
+          const enemyBans = gameBans?.enemy ?? [];
+          const hasDraft = ourPicks.length > 0 || enemyPicks.length > 0 || ourBans.length > 0 || enemyBans.length > 0;
           const gameTimestamps = vodByGame[game.game_number] ?? [];
 
           return (
@@ -230,6 +260,19 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
                           Tim Kita
                         </span>
                       </div>
+                      {/* Banned heroes */}
+                      {ourBans.length > 0 && (
+                        <div className="flex flex-wrap items-center gap-1 mb-2 bg-white/[0.02] p-1.5 rounded-lg border border-white/[0.04]">
+                          <span className="text-[8px] font-bold text-red-400 uppercase tracking-wider mr-1">BAN:</span>
+                          {ourBans.map((ban, idx) => (
+                            <div key={idx} className="relative h-6 w-6 overflow-hidden rounded-full border border-red-500/30 bg-zinc-800" title={ban}>
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img src={getHeroImageUrl(ban)} alt={ban} className="h-full w-full object-cover grayscale opacity-85" />
+                              <div className="absolute inset-x-0 top-1/2 h-0.5 bg-red-500/60 -rotate-45 transform origin-center" />
+                            </div>
+                          ))}
+                        </div>
+                      )}
                       {ROLE_ORDER.map((role) => {
                         const pick = ourPicks.find((p) => p.role === role);
                         const displayName = pick?.player_id
@@ -277,6 +320,19 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
                           Lawan
                         </span>
                       </div>
+                      {/* Banned heroes */}
+                      {enemyBans.length > 0 && (
+                        <div className="flex flex-wrap items-center gap-1 mb-2 bg-white/[0.02] p-1.5 rounded-lg border border-white/[0.04]">
+                          <span className="text-[8px] font-bold text-red-400 uppercase tracking-wider mr-1">BAN:</span>
+                          {enemyBans.map((ban, idx) => (
+                            <div key={idx} className="relative h-6 w-6 overflow-hidden rounded-full border border-red-500/30 bg-zinc-800" title={ban}>
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img src={getHeroImageUrl(ban)} alt={ban} className="h-full w-full object-cover grayscale opacity-85" />
+                              <div className="absolute inset-x-0 top-1/2 h-0.5 bg-red-500/60 -rotate-45 transform origin-center" />
+                            </div>
+                          ))}
+                        </div>
+                      )}
                       {ROLE_ORDER.map((role) => {
                         const pick = enemyPicks.find((p) => p.role === role);
                         return (
@@ -329,6 +385,12 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
                     />
                   </a>
                 )}
+
+                {/* AI Tactical Review */}
+                {(() => {
+                  const narrative = reviewByGame.get(game.game_number);
+                  return narrative ? <AiTacticalReviewCard narrative={narrative} /> : null;
+                })()}
               </div>
 
               {/* VOD Review accordion */}

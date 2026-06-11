@@ -48,11 +48,16 @@ const ROLE_ICONS: Record<string, LucideIcon> = {
   member: Activity,
 };
 
-function getRoleIcon(pos: string): LucideIcon {
-  const key = pos.toLowerCase();
-  for (const [k, icon] of Object.entries(ROLE_ICONS)) {
-    if (key.includes(k)) return icon;
-  }
+function getPositionIcon(pos: string) {
+  const p = pos.toLowerCase();
+  if (p.includes("jungler") || p.includes("jungle")) return Zap;
+  if (p.includes("mid") || p.includes("midlane") || p.includes("mid lane")) return Flame;
+  if (p.includes("roamer") || p.includes("roam") || p.includes("support")) return Compass;
+  if (p.includes("gold") || p.includes("goldlane") || p.includes("gold lane") || p.includes("adc")) return Coins;
+  if (p.includes("exp") || p.includes("explane") || p.includes("exp lane") || p.includes("offlane")) return Shield;
+  if (p.includes("coach") || p.includes("analyst")) return Trophy;
+  if (p.includes("captain")) return Swords;
+  if (p.includes("member")) return Activity;
   return Target;
 }
 
@@ -64,55 +69,46 @@ async function RekrutmenPage() {
 
   const eyebrow = settings.rekrutmen_eyebrow || "Open Recruitment";
   const title = settings.rekrutmen_title || "REKRUTMEN";
-  const description =
-    settings.rekrutmen_description ||
-    "Posisi yang sedang dibuka oleh Hyperion Team. Daftar sekarang dan tunjukkan kemampuanmu.";
+  const description = settings.rekrutmen_description || "Posisi yang sedang dibuka oleh Hyperion Team. Daftar sekarang dan tunjukkan kemampuanmu.";
 
   return (
     <>
       <Header />
-      <main className="relative flex-1 bg-[#040D1C] overflow-hidden">
-        <InteractiveBackground />
-
+      <main className="flex-1 bg-[#040D1C] overflow-hidden relative">
         {/* Hero */}
-        <section className="relative z-10 overflow-hidden border-b border-white/12 px-6 py-20 sm:px-10 lg:px-16">
+        <section className="relative overflow-hidden border-b border-white/12 px-6 py-20 sm:px-10 lg:px-16 flex flex-col items-center justify-center">
           <div
-            className="pointer-events-none absolute inset-0 opacity-10"
+            className="pointer-events-none absolute inset-0 opacity-15"
             style={{
-              backgroundImage:
-                "radial-gradient(circle, rgba(245,196,0,0.2) 1px, transparent 1px)",
+              backgroundImage: "radial-gradient(circle, rgba(245,196,0,0.2) 1px, transparent 1px)",
               backgroundSize: "28px 28px",
             }}
           />
           <div className="relative mx-auto max-w-7xl flex flex-col items-center text-center">
             <div className="mb-4 flex items-center justify-center gap-3">
-              <div className="h-px w-8 bg-[#F5C400]" />
-              <span
-                className="text-[11px] font-extrabold uppercase tracking-[0.3em] bg-gradient-to-r from-[#FFF099] via-[#F5C400] to-[#C79600] bg-clip-text text-transparent"
-              >
+              <span className="text-[11px] font-extrabold uppercase tracking-[0.3em] bg-gradient-to-r from-[#FFF099] via-[#F5C400] to-[#C79600] bg-clip-text text-transparent drop-shadow-[0_0_10px_rgba(245,196,0,0.2)]">
                 {eyebrow}
               </span>
-              <div className="h-px w-8 bg-[#F5C400]" />
             </div>
             <h1 className="font-bebas text-6xl sm:text-7xl lg:text-8xl font-black uppercase tracking-wide text-white leading-none">
               {title}
             </h1>
-            <p className="mt-4 max-w-lg text-sm leading-relaxed text-white/55 sm:text-base">
+            <p className="mt-4 max-w-xl text-sm leading-relaxed text-white/55 sm:text-base">
               {description}
             </p>
           </div>
         </section>
 
         {/* Trial cards */}
-        <section className="relative z-10 px-6 py-16 sm:px-10 lg:px-16">
+        <section className="px-6 py-16 sm:px-10 lg:px-16">
           <div className="mx-auto max-w-7xl">
             {trials.length > 0 ? (
-              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {trials.map((trial) => (
                   <div
                     key={trial.id}
-                    className="group flex flex-col gap-5 rounded-2xl bg-slate-900/60 p-6 shadow-xl shadow-black/40 backdrop-blur-xl transition-all duration-300 hover:scale-[1.02] hover:bg-slate-900/75 hover:backdrop-blur-2xl hover:shadow-2xl hover:shadow-black/60"
-                    style={{ border: "none" }}
+                    className="group flex flex-col gap-6 bg-slate-900/60 backdrop-blur-xl rounded-2xl p-6 shadow-xl shadow-black/40 transition-all duration-500 hover:bg-slate-900/75 hover:backdrop-blur-2xl hover:scale-[1.02] hover:shadow-2xl hover:shadow-black/60"
+                    style={{ border: 'none' }}
                   >
                     {/* Org header */}
                     <div className="flex items-center gap-3">
@@ -122,10 +118,10 @@ async function RekrutmenPage() {
                           alt={trial.org_name}
                           width={36}
                           height={36}
-                          className="h-9 w-9 shrink-0 rounded-lg object-cover"
+                          className="h-9 w-9 shrink-0 rounded object-cover"
                         />
                       ) : (
-                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/5 text-xs font-black text-white/50">
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded bg-[#0C1E3C]/60 text-xs font-black text-white/50 border border-white/5">
                           {trial.org_name.slice(0, 2).toUpperCase()}
                         </div>
                       )}
@@ -136,30 +132,30 @@ async function RekrutmenPage() {
 
                     {/* Trial info */}
                     <div className="flex-1">
-                      <h2 className="text-base font-black uppercase tracking-tight text-white">
+                      <h2 className="text-lg font-black uppercase tracking-tight text-white font-bebas group-hover:text-[#F5C400] transition-colors duration-300">
                         {trial.title}
                       </h2>
 
                       {/* Game */}
                       <div className="mt-2 flex items-center gap-1.5">
-                        <Gamepad2 className="h-3 w-3 text-white/45" />
-                        <span className="text-[11px] text-white/55">
-                          {trial.game}
-                        </span>
+                        <Gamepad2 className="h-3.5 w-3.5 text-white/45" />
+                        <span className="text-[11px] text-white/55 font-medium">{trial.game}</span>
                       </div>
 
                       {/* Positions */}
                       {trial.positions.length > 0 && (
-                        <div className="mt-3 flex flex-wrap gap-2">
+                        <div className="mt-4 flex flex-wrap gap-2">
                           {trial.positions.map((pos) => {
-                            const Icon = getRoleIcon(pos);
+                            const IconComponent = getPositionIcon(pos);
                             return (
                               <span
                                 key={pos}
-                                className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-[#F5C400] transition-all duration-200 group-hover:[text-shadow:0_0_8px_rgba(245,196,0,0.6)]"
+                                className="inline-flex items-center gap-1.5 bg-[#0C1E3C]/60 border border-[#F5C400]/15 rounded-lg px-2.5 py-1.5 text-[10px] font-extrabold uppercase tracking-wider text-[#F5C400] transition-all duration-300 group-hover:scale-105 group-hover:border-[#F5C400]/40 group-hover:bg-[#F5C400]/5 group-hover:shadow-[0_0_10px_rgba(245,196,0,0.25)]"
                               >
-                                <Icon className="h-3 w-3" />
-                                {pos}
+                                <IconComponent className="h-3.5 w-3.5 text-[#F5C400] shrink-0" />
+                                <span className="transition-all duration-300 group-hover:text-white group-hover:drop-shadow-[0_0_4px_rgba(255,255,255,0.8)]">
+                                  {pos}
+                                </span>
                               </span>
                             );
                           })}
@@ -170,7 +166,7 @@ async function RekrutmenPage() {
                     {/* CTA */}
                     <Link
                       href={`/trial/${trial.public_token}`}
-                      className="flex items-center justify-center bg-[#F5C400] py-2.5 text-xs font-black uppercase tracking-widest text-black transition-all duration-200 hover:bg-white clip-cyber-btn"
+                      className="flex h-10 items-center justify-center bg-[#F5C400] hover:bg-white text-black font-bebas text-xs font-bold uppercase tracking-[0.1em] px-4 transition-colors duration-200 clip-cyber-btn"
                     >
                       Daftar Sekarang →
                     </Link>
@@ -181,18 +177,15 @@ async function RekrutmenPage() {
               <div
                 className="rounded-2xl py-20 text-center shadow-[0_0_30px_rgba(0,0,0,0.4)]"
                 style={{
-                  background:
-                    "linear-gradient(135deg, #0d1b2e 0%, #1a2a40 60%, #0a1520 100%)",
-                  border: "none",
+                  background: 'linear-gradient(135deg, #0d1b2e 0%, #1a2a40 60%, #0a1520 100%)',
+                  border: 'none',
                 }}
               >
                 <Gamepad2 className="mx-auto mb-4 h-8 w-8 text-white/20" />
-                <p className="text-sm font-semibold text-white/50">
+                <p className="text-sm font-semibold text-white/55">
                   Tidak ada rekrutmen terbuka saat ini.
                 </p>
-                <p className="mt-2 text-xs text-white/38">
-                  Pantau terus — posisi baru akan diumumkan di sini.
-                </p>
+                <p className="mt-2 text-xs text-white/35">Pantau terus — posisi baru akan diumumkan di sini.</p>
               </div>
             )}
           </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Ban, ChevronDown, Plus, Search, User, X } from "lucide-react";
+import { Ban, Plus, Search, X, GripVertical } from "lucide-react";
 import { HeroPicker } from "./HeroPicker";
 import { MLBB_HEROES, ROLES, ROLE_LABELS, getHeroImageUrl, type RoleName } from "@/features/scrim/data/mlbb-heroes";
 import { cn } from "@/lib/utils/cn";
@@ -180,83 +180,7 @@ function BanSlotPicker({
   );
 }
 
-// ─── Player Dropdown (custom, no native <select>) ─────────────────────────────
 
-function PlayerDropdown({
-  playerId,
-  players,
-  roleHint,
-  onChange,
-}: {
-  playerId: string | null;
-  players: AttendingPlayer[];
-  roleHint: RoleName;
-  onChange: (id: string | null) => void;
-}) {
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    function handle(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    }
-    if (open) document.addEventListener("mousedown", handle);
-    return () => document.removeEventListener("mousedown", handle);
-  }, [open]);
-
-  const selected = players.find((p) => p.userId === playerId);
-
-  return (
-    <div ref={ref} className="relative mt-0.5">
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        className={cn(
-          "flex h-6 w-full cursor-pointer items-center gap-1.5 rounded px-1.5 text-[10px] transition-colors",
-          selected
-            ? "bg-emerald-500/10 text-emerald-300 border border-emerald-500/20"
-            : "bg-ui-hover border border-ui-border text-ui-text-muted hover:border-[#3D3D3D]",
-        )}
-      >
-        <User className="h-2.5 w-2.5 shrink-0" />
-        <span className="flex-1 truncate text-left">
-          {selected ? (selected.displayName ?? "Unknown") : "— Pilih pemain —"}
-        </span>
-        <ChevronDown className="h-2.5 w-2.5 shrink-0 opacity-50" />
-      </button>
-
-      {open && (
-        <div className="absolute left-0 right-0 top-full z-50 mt-0.5 overflow-hidden rounded-lg border border-ui-border bg-ui-surface shadow-xl shadow-black/60">
-          <button
-            type="button"
-            onClick={() => { onChange(null); setOpen(false); }}
-            className="flex w-full px-2 py-1.5 text-[10px] text-ui-text-muted hover:bg-ui-elevated transition-colors"
-          >
-            — Tidak ada —
-          </button>
-          {players.map((p) => (
-            <button
-              key={p.userId}
-              type="button"
-              onClick={() => { onChange(p.userId); setOpen(false); }}
-              className={cn(
-                "flex w-full items-center justify-between gap-2 px-2 py-1.5 text-[10px] transition-colors hover:bg-ui-elevated",
-                p.userId === playerId ? "bg-emerald-500/10 text-emerald-300" : "text-ui-text",
-              )}
-            >
-              <span className="truncate">{p.displayName ?? "Unknown"}</span>
-              {p.mainRole === roleHint && (
-                <span className="shrink-0 rounded bg-emerald-500/20 px-1 py-0.5 text-[9px] text-emerald-400">
-                  Main
-                </span>
-              )}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
 
 // ─── DraftSection ─────────────────────────────────────────────────────────────
 
@@ -269,6 +193,9 @@ interface DraftSectionProps {
 }
 
 const DraftSection = ({ draft, attendingPlayers, onOurChange, onEnemyChange, onBanChange }: DraftSectionProps) => {
+  const [draggedSlot, setDraggedSlot] = useState<{ side: "our" | "enemy"; role: RoleName } | null>(null);
+  const [dragOverSlot, setDragOverSlot] = useState<{ side: "our" | "enemy"; role: RoleName } | null>(null);
+
   const allPicked = new Set<string>();
   for (const slot of Object.values(draft.our)) if (slot.hero) allPicked.add(slot.hero);
   for (const hero of Object.values(draft.enemy)) if (hero) allPicked.add(hero);
@@ -298,6 +225,55 @@ const DraftSection = ({ draft, attendingPlayers, onOurChange, onEnemyChange, onB
   const playerById = new Map(attendingPlayers.map((p) => [p.userId, p]));
   const bansOur = draft.bans?.our ?? Array(BAN_COUNT).fill("");
   const bansEnemy = draft.bans?.enemy ?? Array(BAN_COUNT).fill("");
+
+  // ── Drag and Drop handlers ──────────────────────────────────────────────────
+
+  function handleDragStart(side: "our" | "enemy", role: RoleName) {
+    setDraggedSlot({ side, role });
+  }
+
+  function handleDragOver(e: React.DragEvent, side: "our" | "enemy", role: RoleName) {
+    e.preventDefault();
+    if (draggedSlot && draggedSlot.side === side) {
+      setDragOverSlot({ side, role });
+    }
+  }
+
+  function handleDragLeave() {
+    setDragOverSlot(null);
+  }
+
+  function handleDrop(side: "our" | "enemy", targetRole: RoleName) {
+    if (!draggedSlot || draggedSlot.side !== side || draggedSlot.role === targetRole) {
+      setDraggedSlot(null);
+      setDragOverSlot(null);
+      return;
+    }
+
+    const sourceRole = draggedSlot.role;
+
+    if (side === "our") {
+      const sourceSlot = draft.our[sourceRole];
+      const targetSlot = draft.our[targetRole];
+      // Swap hero and player selections between slots
+      onOurChange(sourceRole, targetSlot.hero, targetSlot.playerId);
+      onOurChange(targetRole, sourceSlot.hero, sourceSlot.playerId);
+    } else {
+      const sourceHero = draft.enemy[sourceRole];
+      const targetHero = draft.enemy[targetRole];
+      // Swap hero picks
+      onEnemyChange(sourceRole, targetHero);
+      onEnemyChange(targetRole, sourceHero);
+    }
+
+    setDraggedSlot(null);
+    setDragOverSlot(null);
+  }
+
+  function handleDragEnd() {
+    setDraggedSlot(null);
+    setDragOverSlot(null);
+  }
 
   return (
     <div className="space-y-2">
@@ -332,24 +308,44 @@ const DraftSection = ({ draft, attendingPlayers, onOurChange, onEnemyChange, onB
             const slotLabel = assignedPlayer?.displayName
               ? `${assignedPlayer.displayName} - ${ROLE_LABELS[role]}`
               : ROLE_LABELS[role];
+            const isDragging = draggedSlot?.side === "our" && draggedSlot?.role === role;
+            const isDragOver = dragOverSlot?.side === "our" && dragOverSlot?.role === role;
+
             return (
-              <div key={role}>
-                <p className="mb-0.5 truncate text-[10px] text-ui-text-muted" title={slotLabel}>
+              <div
+                key={role}
+                draggable
+                onDragStart={() => handleDragStart("our", role)}
+                onDragOver={(e) => handleDragOver(e, "our", role)}
+                onDragLeave={handleDragLeave}
+                onDrop={() => handleDrop("our", role)}
+                onDragEnd={handleDragEnd}
+                className={cn(
+                  "group/row relative rounded-lg border border-transparent p-1 transition-all duration-200",
+                  isDragging && "opacity-40 scale-[0.98] border-dashed border-ui-border",
+                  isDragOver && "border-emerald-500/40 bg-emerald-500/5 shadow-md shadow-emerald-500/5",
+                )}
+              >
+                {/* 1. Slot label indented */}
+                <p className="mb-0.5 truncate text-[10px] text-ui-text-muted pl-5" title={slotLabel}>
                   {slotLabel}
                 </p>
-                <HeroPicker
-                  value={slot.hero}
-                  onChange={(hero) => handleOurHero(role, hero)}
-                  excludedHeroes={getExcluded(slot.hero)}
-                />
-                {attendingPlayers.length > 0 && (
-                  <PlayerDropdown
-                    playerId={slot.playerId}
-                    players={attendingPlayers}
-                    roleHint={role}
-                    onChange={(id) => onOurChange(role, slot.hero, id)}
-                  />
-                )}
+
+                {/* 2. Grip + HeroPicker (vertically centered with each other) */}
+                <div className="flex items-center gap-1">
+                  <div className="cursor-grab active:cursor-grabbing text-ui-text-muted opacity-30 group-hover/row:opacity-100 transition-opacity p-0.5">
+                    <GripVertical className="h-3.5 w-3.5" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <HeroPicker
+                      value={slot.hero}
+                      onChange={(hero) => handleOurHero(role, hero)}
+                      excludedHeroes={getExcluded(slot.hero)}
+                    />
+                  </div>
+                </div>
+
+
               </div>
             );
           })}
@@ -371,16 +367,44 @@ const DraftSection = ({ draft, attendingPlayers, onOurChange, onEnemyChange, onB
             ))}
           </div>
           {/* Pick rows */}
-          {ROLES.map((role) => (
-            <div key={role}>
-              <p className="mb-0.5 text-[10px] text-ui-text-muted">{ROLE_LABELS[role]}</p>
-              <HeroPicker
-                value={draft.enemy[role]}
-                onChange={(hero) => onEnemyChange(role, hero)}
-                excludedHeroes={getExcluded(draft.enemy[role])}
-              />
-            </div>
-          ))}
+          {ROLES.map((role) => {
+            const isDragging = draggedSlot?.side === "enemy" && draggedSlot?.role === role;
+            const isDragOver = dragOverSlot?.side === "enemy" && dragOverSlot?.role === role;
+
+            return (
+              <div
+                key={role}
+                draggable
+                onDragStart={() => handleDragStart("enemy", role)}
+                onDragOver={(e) => handleDragOver(e, "enemy", role)}
+                onDragLeave={handleDragLeave}
+                onDrop={() => handleDrop("enemy", role)}
+                onDragEnd={handleDragEnd}
+                className={cn(
+                  "group/row relative rounded-lg border border-transparent p-1 transition-all duration-200",
+                  isDragging && "opacity-40 scale-[0.98] border-dashed border-ui-border",
+                  isDragOver && "border-rose-500/40 bg-rose-500/5 shadow-md shadow-rose-500/5",
+                )}
+              >
+                {/* 1. Role label indented */}
+                <p className="mb-0.5 text-[10px] text-ui-text-muted pl-5">{ROLE_LABELS[role]}</p>
+
+                {/* 2. Grip + HeroPicker (vertically centered with each other) */}
+                <div className="flex items-center gap-1">
+                  <div className="cursor-grab active:cursor-grabbing text-ui-text-muted opacity-30 group-hover/row:opacity-100 transition-opacity p-0.5">
+                    <GripVertical className="h-3.5 w-3.5" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <HeroPicker
+                      value={draft.enemy[role]}
+                      onChange={(hero) => onEnemyChange(role, hero)}
+                      excludedHeroes={getExcluded(draft.enemy[role])}
+                    />
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
 
       </div>

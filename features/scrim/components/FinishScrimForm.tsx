@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import {
-  ArrowLeft, CheckCircle, ClipboardList, Loader2, Plus, Star,
+  CheckCircle, ChevronDown, ChevronUp, ClipboardList, Loader2, Plus,
   Trophy, Upload, XCircle,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -17,9 +17,13 @@ import {
   type AttendingPlayer,
   type DraftPicks,
 } from "./DraftSection";
-import { ROLE_LABELS } from "@/features/scrim/data/mlbb-heroes";
+import { getHeroImageUrl, ROLES } from "@/features/scrim/data/mlbb-heroes";
 import type { RoleName } from "@/features/scrim/data/mlbb-heroes";
 import { cn } from "@/lib/utils/cn";
+import { ScreenshotDropzone } from "./ScreenshotDropzone";
+import type { AnalyzedPayload } from "./ScreenshotDropzone";
+import type { DraftResult, ScoreboardResult, ScoreboardPlayer } from "@/features/scrim/ai/screenshot-schema";
+import { generateTacticalReviewAction } from "../actions/tacticalReviewAction";
 
 // ─── BO format logic ──────────────────────────────────────────────────────────
 
@@ -60,15 +64,27 @@ interface GameResult {
   imageUrl: string | null;
   uploading: boolean;
   draft: DraftPicks;
-}
-
-interface PlayerEval {
-  rating: string;   // string for controlled input
-  coachNotes: string;
+  scoreboard: ScoreboardResult | null; // AI-scanned, editable, persisted to scrim_ai_reviews
 }
 
 function makeBlankGame(): GameResult {
-  return { isWin: null, notes: "", imageUrl: null, uploading: false, draft: makeBlankDraft() };
+  return { isWin: null, notes: "", imageUrl: null, uploading: false, draft: makeBlankDraft(), scoreboard: null };
+}
+
+function extractDraftResult(draft: DraftPicks): DraftResult | null {
+  const our = {} as DraftResult["picks"]["our"];
+  const enemy = {} as DraftResult["picks"]["enemy"];
+  let hasAny = false;
+  for (const role of ROLES) {
+    our[role] = draft.our[role].hero;
+    enemy[role] = draft.enemy[role];
+    if (draft.our[role].hero || draft.enemy[role]) hasAny = true;
+  }
+  const bansOur = draft.bans?.our ?? [];
+  const bansEnemy = draft.bans?.enemy ?? [];
+  if (bansOur.some(Boolean) || bansEnemy.some(Boolean)) hasAny = true;
+  if (!hasAny) return null;
+  return { bans: { our: bansOur, enemy: bansEnemy }, picks: { our, enemy } };
 }
 
 // ─── Props ────────────────────────────────────────────────────────────────────
@@ -78,7 +94,6 @@ interface FinishScrimFormProps {
   orgSlug: string;
   orgId: string;
   format: string;
-  scrimId_detail: string;
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -88,7 +103,6 @@ const FinishScrimForm = ({
   orgSlug,
   orgId,
   format,
-  scrimId_detail,
 }: FinishScrimFormProps) => {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -100,38 +114,44 @@ const FinishScrimForm = ({
     Array.from({ length: config.minGames }, makeBlankGame),
   );
   const [activeGame, setActiveGame] = useState(0);
+  const [showScoreboardReview, setShowScoreboardReview] = useState(false);
 
   // Attending players (fetched on mount)
   const [attendingPlayers, setAttendingPlayers] = useState<AttendingPlayer[]>([]);
-  const [playerEvals, setPlayerEvals] = useState<Map<string, PlayerEval>>(new Map());
 
   useEffect(() => {
     async function load() {
       const supabase = createClient();
-      const { data: att } = await supabase
-        .from("scrim_attendances")
-        .select("user_id")
-        .eq("scrim_id", scrimId)
-        .eq("status", "confirmed");
+      const { data: members, error: memErr } = await supabase
+        .from("team_members")
+        .select("user_id, main_role")
+        .eq("organization_id", orgId)
+        .eq("is_active", true)
+        .in("role", ["captain", "member"]);
 
-      const userIds = (att ?? []).map((a) => a.user_id);
+      if (memErr) {
+        console.error("[loadRoster]", memErr);
+        return;
+      }
+
+      const userIds = (members ?? []).map((m) => m.user_id);
       if (userIds.length === 0) return;
 
-      const [profilesRes, membersRes] = await Promise.all([
-        supabase.from("profiles").select("id, display_name").in("id", userIds),
-        supabase
-          .from("team_members")
-          .select("user_id, main_role")
-          .eq("organization_id", orgId)
-          .in("user_id", userIds)
-          .in("role", ["captain", "member"]),
-      ]);
+      const { data: profiles, error: profErr } = await supabase
+        .from("profiles")
+        .select("id, display_name")
+        .in("id", userIds);
+
+      if (profErr) {
+        console.error("[loadProfiles]", profErr);
+        return;
+      }
 
       const profileMap = new Map(
-        (profilesRes.data ?? []).map((p) => [p.id, p.display_name]),
+        (profiles ?? []).map((p) => [p.id, p.display_name]),
       );
       const memberMap = new Map(
-        (membersRes.data ?? []).map((m) => [m.user_id, m.main_role]),
+        (members ?? []).map((m) => [m.user_id, m.main_role]),
       );
 
       const players: AttendingPlayer[] = userIds.map((uid) => ({
@@ -141,9 +161,6 @@ const FinishScrimForm = ({
       }));
 
       setAttendingPlayers(players);
-      setPlayerEvals(
-        new Map(players.map((p) => [p.userId, { rating: "", coachNotes: "" }])),
-      );
     }
     load();
   }, [scrimId, orgId]);
@@ -190,6 +207,104 @@ const FinishScrimForm = ({
         const newSideBans = [...g.draft.bans[side]];
         newSideBans[banIndex] = hero;
         return { ...g, draft: { ...g.draft, bans: { ...g.draft.bans, [side]: newSideBans } } };
+      }),
+    );
+  }
+
+  // ── AI autofill handlers ─────────────────────────────────────────────────
+
+  function applyDraftScan(i: number, d: DraftResult) {
+    setGames((prev) => prev.map((g, idx) => {
+      if (idx !== i) return g;
+      return {
+        ...g,
+        draft: {
+          ...g.draft,
+          bans: {
+            our: d.bans.our.length ? d.bans.our : g.draft.bans.our,
+            enemy: d.bans.enemy.length ? d.bans.enemy : g.draft.bans.enemy,
+          },
+        },
+      };
+    }));
+  }
+
+  function applyScoreboardScan(i: number, s: ScoreboardResult) {
+    const roleToPlayer = new Map(
+      attendingPlayers.filter((p) => p.mainRole).map((p) => [p.mainRole!, p]),
+    );
+
+    setGames((prev) => prev.map((g, idx) => {
+      if (idx !== i) return g;
+
+      const our = { ...g.draft.our };
+      const enemy = { ...g.draft.enemy };
+
+      // Fill our picks from scoreboard
+      (s.players ?? []).forEach((p) => {
+        const role = p.role;
+        if (role && ROLES.includes(role)) {
+          // Find matching attending player by display name (case-insensitive)
+          const matchedPlayer = attendingPlayers.find(
+            (ap) => ap.displayName?.toLowerCase().trim() === p.displayName?.toLowerCase().trim()
+          );
+          our[role] = {
+            hero: p.heroName,
+            playerId: matchedPlayer 
+              ? matchedPlayer.userId 
+              : (g.draft.our[role].playerId || roleToPlayer.get(role)?.userId || null),
+          };
+        }
+      });
+
+      // Fill enemy picks from scoreboard
+      (s.enemyPlayers ?? []).forEach((p) => {
+        const role = p.role;
+        if (role && ROLES.includes(role)) {
+          enemy[role] = p.heroName;
+        }
+      });
+
+      return {
+        ...g,
+        isWin: s.isWin,
+        scoreboard: s,
+        draft: {
+          ...g.draft,
+          our,
+          enemy,
+        },
+      };
+    }));
+  }
+
+  function handleAnalyzed(i: number, payload: AnalyzedPayload) {
+    if (payload.kind === "draft") applyDraftScan(i, payload.data);
+    else {
+      applyScoreboardScan(i, payload.data);
+      setShowScoreboardReview(true);
+    }
+  }
+
+  function updateScoreboardPlayer(
+    i: number,
+    side: "our" | "enemy",
+    pIdx: number,
+    patch: Partial<ScoreboardPlayer>,
+  ) {
+    setGames((prev) =>
+      prev.map((g, idx) => {
+        if (idx !== i || !g.scoreboard) return g;
+        const key = side === "our" ? "players" : "enemyPlayers";
+        const list = g.scoreboard[key] ?? [];
+        const updatedList = list.map((pl, j) => (j === pIdx ? { ...pl, ...patch } : pl));
+        return {
+          ...g,
+          scoreboard: {
+            ...g.scoreboard,
+            [key]: updatedList,
+          },
+        };
       }),
     );
   }
@@ -263,13 +378,22 @@ const FinishScrimForm = ({
           ],
         })),
         coachNotes: coachNotes || null,
-        playerEvals: Array.from(playerEvals.entries()).map(([userId, ev]) => ({
-          userId,
-          rating: ev.rating === "" ? null : parseFloat(ev.rating),
-          coachNotes: ev.coachNotes || null,
-        })),
+        playerEvals: [],
       });
       if (res.ok) {
+        // Best-effort AI tactical review (non-blocking on failure)
+        const reviewGames = games
+          .map((g, i) => ({
+            gameNumber: i + 1,
+            isWin: g.isWin === true,
+            draft: extractDraftResult(g.draft),
+            scoreboard: g.scoreboard,
+          }))
+          .filter((g) => g.draft || g.scoreboard);
+        if (reviewGames.length > 0) {
+          const aiRes = await generateTacticalReviewAction({ scrimId, orgId, orgSlug, games: reviewGames });
+          if (!aiRes.ok) toast.message(aiRes.message ?? "Review AI dilewati");
+        }
         toast.success("Hasil scrim disimpan!");
         router.push(`/${orgSlug}/analytics`);
       } else {
@@ -281,6 +405,44 @@ const FinishScrimForm = ({
   const wins = games.filter((g) => g.isWin === true).length;
   const losses = games.filter((g) => g.isWin === false).length;
   const game = games[activeGame]!;
+
+  const renderPlayerRow = (pl: ScoreboardPlayer, pIdx: number, side: "our" | "enemy") => (
+    <div key={pIdx} className="flex items-center gap-2">
+      {/* Hero Avatar */}
+      <div className="h-6 w-6 shrink-0 overflow-hidden rounded-full border border-ui-border bg-ui-bg">
+        {pl.heroName ? (
+          <img src={getHeroImageUrl(pl.heroName)} alt={pl.heroName} className="h-full w-full object-cover" />
+        ) : (
+          <div className="h-full w-full bg-ui-elevated" />
+        )}
+      </div>
+
+      {/* Hero Name input */}
+      <input
+        value={pl.heroName}
+        onChange={(e) => updateScoreboardPlayer(activeGame, side, pIdx, { heroName: e.target.value })}
+        className="h-7 flex-1 min-w-0 rounded border border-ui-border bg-ui-bg px-2 text-[11px] text-ui-text"
+        placeholder="Hero..."
+      />
+
+      {/* KDA inputs */}
+      {(["kills", "deaths", "assists"] as const).map((stat) => (
+        <div key={stat} className="flex items-center gap-1.5">
+          <span className="text-[9px] font-bold uppercase text-ui-text-muted w-3 text-center">
+            {stat === "kills" ? "K" : stat === "deaths" ? "D" : "A"}
+          </span>
+          <NumberInput
+            min={0}
+            hideSteppers
+            value={String(pl[stat])}
+            onChange={(e) => updateScoreboardPlayer(activeGame, side, pIdx, { [stat]: parseInt(e.target.value || "0", 10) })}
+            className="h-7 w-8 text-center text-xs text-ui-text bg-ui-bg border-ui-border pr-0.5 pl-0.5"
+            containerClassName="w-8 shrink-0"
+          />
+        </div>
+      ))}
+    </div>
+  );
 
   return (
     <div className="mx-auto w-full max-w-2xl space-y-5">
@@ -381,6 +543,30 @@ const FinishScrimForm = ({
           </button>
         </div>
 
+        {/* AI auto-fill */}
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+          <ScreenshotDropzone
+            key={`draft-${activeGame}`}
+            kind="draft"
+            label="Upload Screenshot Draft"
+            orgId={orgId}
+            scrimId={scrimId}
+            gameIndex={activeGame}
+            isDone={Object.values(game.draft.our).some(s => s.hero) || Object.values(game.draft.enemy).some(h => h) || (game.draft.bans?.our ?? []).some(Boolean) || (game.draft.bans?.enemy ?? []).some(Boolean)}
+            onAnalyzed={(p) => handleAnalyzed(activeGame, p)}
+          />
+          <ScreenshotDropzone
+            key={`scoreboard-${activeGame}`}
+            kind="scoreboard"
+            label="Upload Screenshot Scoreboard"
+            orgId={orgId}
+            scrimId={scrimId}
+            gameIndex={activeGame}
+            isDone={!!game.scoreboard}
+            onAnalyzed={(p) => handleAnalyzed(activeGame, p)}
+          />
+        </div>
+
         {/* Draft */}
         <DraftSection
           draft={game.draft}
@@ -389,6 +575,60 @@ const FinishScrimForm = ({
           onEnemyChange={(role, hero) => updateEnemyDraft(activeGame, role, hero)}
           onBanChange={(side, index, hero) => updateBan(activeGame, side, index, hero)}
         />
+
+        {/* Scoreboard scan review */}
+        {game.scoreboard && game.scoreboard.players.length > 0 && (
+          <div className="rounded-xl border border-ui-border bg-ui-surface p-3 space-y-2">
+            <div className="flex w-full items-center justify-between">
+              <button
+                type="button"
+                onClick={() => setShowScoreboardReview((v) => !v)}
+                className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-ui-text-muted hover:text-ui-text transition-colors cursor-pointer"
+              >
+                <span>Hasil Scan Scoreboard — periksa &amp; koreksi</span>
+                {showScoreboardReview ? (
+                  <ChevronUp className="h-3.5 w-3.5" />
+                ) : (
+                  <ChevronDown className="h-3.5 w-3.5" />
+                )}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  updateGame(activeGame, { 
+                    scoreboard: null,
+                    draft: makeBlankDraft()
+                  });
+                }}
+                className="text-[10px] font-medium text-rose-400 hover:text-rose-300 transition-colors cursor-pointer"
+              >
+                Reset Scan
+              </button>
+            </div>
+
+            {showScoreboardReview && (
+              <div className="space-y-4 pt-3 border-t border-ui-border">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* Our team column */}
+                  <div className="space-y-2">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">Tim Kita</p>
+                    <div className="space-y-2">
+                      {game.scoreboard.players.map((pl, pIdx) => renderPlayerRow(pl, pIdx, "our"))}
+                    </div>
+                  </div>
+
+                  {/* Enemy team column */}
+                  <div className="space-y-2">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-rose-400">Lawan</p>
+                    <div className="space-y-2">
+                      {(game.scoreboard.enemyPlayers ?? []).map((pl, pIdx) => renderPlayerRow(pl, pIdx, "enemy"))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Game notes */}
         <div>
@@ -424,75 +664,21 @@ const FinishScrimForm = ({
             />
           </label>
           {game.imageUrl && (
-            <span className="text-xs font-medium text-emerald-400">✓ Uploaded</span>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-medium text-emerald-400">✓ Uploaded</span>
+              <button
+                type="button"
+                onClick={() => updateGame(activeGame, { imageUrl: null })}
+                className="text-xs text-rose-400 hover:underline cursor-pointer"
+              >
+                Hapus
+              </button>
+            </div>
           )}
         </div>
       </div>
 
-      {/* ── Performance Evaluation ───────────────────────────────────────── */}
-      {attendingPlayers.length > 0 && (
-        <div className="rounded-2xl border border-blue-400/20 bg-blue-400/5 p-5 shadow-xl shadow-black/20 space-y-4">
-          <h3 className="flex items-center gap-2 text-sm font-semibold text-ui-text">
-            <Star className="h-4 w-4 text-yellow-400" />
-            Evaluasi Pemain
-            <span className="text-xs font-normal text-ui-text-muted">— per scrim</span>
-          </h3>
-          <div className="space-y-3">
-            {attendingPlayers.map((p) => {
-              const ev = playerEvals.get(p.userId) ?? { rating: "", coachNotes: "" };
-              return (
-                <div key={p.userId} className="rounded-xl border border-ui-border bg-ui-surface/60 p-3 space-y-2">
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="truncate text-xs font-semibold text-ui-text">
-                        {p.displayName ?? "Unknown"}
-                      </p>
-                      {p.mainRole && (
-                        <p className="text-[10px] text-ui-text-muted">
-                          {ROLE_LABELS[p.mainRole as RoleName] ?? p.mainRole}
-                        </p>
-                      )}
-                    </div>
-                    <div className="flex shrink-0 items-center gap-1.5">
-                      <span className="text-[10px] text-ui-text-muted">Rating</span>
-                      <NumberInput
-                        min={0}
-                        max={10}
-                        step={0.1}
-                        value={ev.rating}
-                        onChange={(e) =>
-                          setPlayerEvals((prev) => {
-                            const next = new Map(prev);
-                            next.set(p.userId, { ...ev, rating: e.target.value });
-                            return next;
-                          })
-                        }
-                        placeholder="0–10"
-                        className="h-7 text-center text-xs text-ui-text bg-ui-surface border-ui-border focus:border-yellow-400 focus:outline-none"
-                        containerClassName="w-20 shrink-0"
-                      />
-                    </div>
-                  </div>
-                  <input
-                    type="text"
-                    value={ev.coachNotes}
-                    onChange={(e) =>
-                      setPlayerEvals((prev) => {
-                        const next = new Map(prev);
-                        next.set(p.userId, { ...ev, coachNotes: e.target.value });
-                        return next;
-                      })
-                    }
-                    placeholder="Catatan untuk pemain ini…"
-                    maxLength={500}
-                    className="w-full rounded-lg border border-ui-border bg-ui-surface px-2.5 py-1.5 text-xs text-ui-text placeholder:text-ui-text-muted focus:border-blue-400 focus:outline-none"
-                  />
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
+
 
       {/* ── Overall coach notes ──────────────────────────────────────────── */}
       <div className="rounded-2xl border border-ui-border bg-ui-surface/40 p-5 shadow-xl shadow-black/20 space-y-3">

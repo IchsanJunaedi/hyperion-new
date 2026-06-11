@@ -190,8 +190,8 @@ test("Workspace Features E2E Flow", async ({ page }) => {
 
   // 8. Collaterals: Polls CRUD & Vote
   await page.goto(`/${uniqueTeamSlug}/polls`);
-  await page.waitForLoadState("networkidle");
-  await expect(page.locator("h1, h2").filter({ hasText: /polling tim/i }).first()).toBeVisible();
+  await page.waitForSelector("h1, h2", { timeout: 15000 });
+  await expect(page.locator("h1, h2").filter({ hasText: /polling tim/i }).first()).toBeVisible({ timeout: 15000 });
 
   await page.click("text=Buat Poll");
   await page.fill("input[placeholder='Pertanyaan poll...']", "Pilih Map Terbaik");
