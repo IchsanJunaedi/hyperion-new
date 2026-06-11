@@ -350,6 +350,7 @@ All `<input type="number">` must use `<NumberInput>` from `@/components/ui/numbe
 ---
 
 ## What's NOT Done (Future Work)
+- WA Vision Upload (finish scrim via WhatsApp foto draft+scoreboard) — **DEFERRED, butuh biaya VPS** untuk hosting vision server. Desain lengkap: `docs/superpowers/specs/2026-06-11-wa-vision-upload-deferred.md`
 - Reports page activation for managers (GH #32 — needs audit of manager-visible data)
 - Light/dark mode CSS variable refactor (GH #33 — DO NOT START before palette finalized)
 - *(all migrations applied — no pending migrations)*
