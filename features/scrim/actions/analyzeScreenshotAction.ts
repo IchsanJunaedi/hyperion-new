@@ -55,36 +55,52 @@ async function callVisionServer<T>(path: string, base64: string): Promise<T> {
   return (await res.json()) as T;
 }
 
-// Hero-class → lane preference. The local server only identifies heroes; lane
-// roles are derived here so the result still satisfies ScoreboardResult.
-const CLASS_ROLE_PRIORITY: Record<string, RoleName[]> = {
-  Marksman: ["gold_lane", "mid_lane", "jungler", "exp_lane", "roamer"],
-  Mage: ["mid_lane", "gold_lane", "roamer", "exp_lane", "jungler"],
-  Tank: ["roamer", "exp_lane", "jungler", "mid_lane", "gold_lane"],
-  Support: ["roamer", "mid_lane", "gold_lane", "exp_lane", "jungler"],
-  Assassin: ["jungler", "roamer", "mid_lane", "exp_lane", "gold_lane"],
-  Fighter: ["exp_lane", "jungler", "roamer", "gold_lane", "mid_lane"],
+const ROLE_WEIGHTS: Record<string, Record<RoleName, number>> = {
+  Marksman: { gold_lane: 10, mid_lane: 1, jungler: 1, exp_lane: 1, roamer: 1 },
+  Mage:     { mid_lane: 8, gold_lane: 3, roamer: 1, exp_lane: 1, jungler: 1 },
+  Tank:     { roamer: 8, exp_lane: 3, jungler: 1, mid_lane: 1, gold_lane: 1 },
+  Support:  { roamer: 8, mid_lane: 3, gold_lane: 1, exp_lane: 1, jungler: 1 },
+  Assassin: { jungler: 8, roamer: 1, mid_lane: 1, exp_lane: 1, gold_lane: 1 },
+  Fighter:  { exp_lane: 6, jungler: 5, roamer: 1, gold_lane: 1, mid_lane: 1 },
 };
 
+function getPermutations<T>(arr: T[]): T[][] {
+  if (arr.length === 0) return [[]];
+  const result: T[][] = [];
+  for (let i = 0; i < arr.length; i++) {
+    const copy = [...arr];
+    const elem = copy.splice(i, 1)[0];
+    if (elem === undefined) continue;
+    const sub = getPermutations(copy);
+    for (const s of sub) {
+      result.push([elem, ...s]);
+    }
+  }
+  return result;
+}
+
 function assignRoles(heroes: string[]): RoleName[] {
-  const taken = new Set<RoleName>();
-  const out: (RoleName | null)[] = heroes.map(() => null);
-  heroes.forEach((hero, i) => {
-    const prefs = CLASS_ROLE_PRIORITY[HERO_CLASSES[hero] ?? ""] ?? [...ROLES];
-    for (const role of prefs) {
-      if (!taken.has(role)) {
-        out[i] = role;
-        taken.add(role);
-        break;
+  const perms = getPermutations([...ROLES]);
+  let bestPerm: RoleName[] = [...ROLES];
+  let maxScore = -1;
+
+  for (const perm of perms) {
+    let score = 0;
+    for (let i = 0; i < heroes.length; i++) {
+      const hero = heroes[i];
+      const role = perm[i];
+      if (hero && role) {
+        const cls = HERO_CLASSES[hero] ?? "";
+        const weights = ROLE_WEIGHTS[cls] ?? { exp_lane: 1, jungler: 1, mid_lane: 1, gold_lane: 1, roamer: 1 };
+        score += weights[role] ?? 1;
       }
     }
-  });
-  return out.map((role) => {
-    if (role) return role;
-    const free = ROLES.find((r) => !taken.has(r)) ?? "exp_lane";
-    taken.add(free);
-    return free;
-  });
+    if (score > maxScore) {
+      maxScore = score;
+      bestPerm = perm;
+    }
+  }
+  return bestPerm;
 }
 
 function toScoreboardPlayers(serverPlayers: ScoreboardServerPlayer[]) {
