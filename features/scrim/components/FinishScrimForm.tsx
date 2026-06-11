@@ -17,9 +17,13 @@ import {
   type AttendingPlayer,
   type DraftPicks,
 } from "./DraftSection";
-import { ROLE_LABELS } from "@/features/scrim/data/mlbb-heroes";
+import { ROLE_LABELS, ROLES } from "@/features/scrim/data/mlbb-heroes";
 import type { RoleName } from "@/features/scrim/data/mlbb-heroes";
 import { cn } from "@/lib/utils/cn";
+import { ScreenshotDropzone } from "./ScreenshotDropzone";
+import type { AnalyzedPayload } from "./ScreenshotDropzone";
+import type { DraftResult, ScoreboardResult } from "@/features/scrim/ai/screenshot-schema";
+import { generateTacticalReviewAction } from "../actions/tacticalReviewAction";
 
 // ─── BO format logic ──────────────────────────────────────────────────────────
 
@@ -60,6 +64,7 @@ interface GameResult {
   imageUrl: string | null;
   uploading: boolean;
   draft: DraftPicks;
+  scoreboard: ScoreboardResult | null; // AI-scanned, editable, persisted to scrim_ai_reviews
 }
 
 interface PlayerEval {
@@ -68,7 +73,23 @@ interface PlayerEval {
 }
 
 function makeBlankGame(): GameResult {
-  return { isWin: null, notes: "", imageUrl: null, uploading: false, draft: makeBlankDraft() };
+  return { isWin: null, notes: "", imageUrl: null, uploading: false, draft: makeBlankDraft(), scoreboard: null };
+}
+
+function extractDraftResult(draft: DraftPicks): DraftResult | null {
+  const our = {} as DraftResult["picks"]["our"];
+  const enemy = {} as DraftResult["picks"]["enemy"];
+  let hasAny = false;
+  for (const role of ROLES) {
+    our[role] = draft.our[role].hero;
+    enemy[role] = draft.enemy[role];
+    if (draft.our[role].hero || draft.enemy[role]) hasAny = true;
+  }
+  const bansOur = draft.bans?.our ?? [];
+  const bansEnemy = draft.bans?.enemy ?? [];
+  if (bansOur.some(Boolean) || bansEnemy.some(Boolean)) hasAny = true;
+  if (!hasAny) return null;
+  return { bans: { our: bansOur, enemy: bansEnemy }, picks: { our, enemy } };
 }
 
 // ─── Props ────────────────────────────────────────────────────────────────────
@@ -194,6 +215,52 @@ const FinishScrimForm = ({
     );
   }
 
+  // ── AI autofill handlers ─────────────────────────────────────────────────
+
+  function applyDraftScan(i: number, d: DraftResult) {
+    setGames((prev) => prev.map((g, idx) => {
+      if (idx !== i) return g;
+      const our = { ...g.draft.our };
+      const enemy = { ...g.draft.enemy };
+      for (const role of ROLES) {
+        const aiOurHero = d.picks.our[role];
+        const aiEnemyHero = d.picks.enemy[role];
+        if (aiOurHero) our[role] = { hero: aiOurHero, playerId: g.draft.our[role].playerId };
+        if (aiEnemyHero) enemy[role] = aiEnemyHero;
+      }
+      return {
+        ...g,
+        draft: {
+          our,
+          enemy,
+          bans: {
+            our: d.bans.our.length ? d.bans.our : g.draft.bans.our,
+            enemy: d.bans.enemy.length ? d.bans.enemy : g.draft.bans.enemy,
+          },
+        },
+      };
+    }));
+  }
+
+  function applyScoreboardScan(i: number, s: ScoreboardResult) {
+    setGames((prev) => prev.map((g, idx) =>
+      idx === i ? { ...g, isWin: s.isWin, scoreboard: s } : g,
+    ));
+  }
+
+  function handleAnalyzed(i: number, payload: AnalyzedPayload) {
+    if (payload.kind === "draft") applyDraftScan(i, payload.data);
+    else applyScoreboardScan(i, payload.data);
+  }
+
+  function updateScoreboardPlayer(i: number, pIdx: number, patch: Partial<ScoreboardResult["players"][number]>) {
+    setGames((prev) => prev.map((g, idx) => {
+      if (idx !== i || !g.scoreboard) return g;
+      const players = g.scoreboard.players.map((pl, j) => (j === pIdx ? { ...pl, ...patch } : pl));
+      return { ...g, scoreboard: { ...g.scoreboard, players } };
+    }));
+  }
+
   function addGame() {
     if (!canAddMore) return;
     const next = games.length;
@@ -270,6 +337,19 @@ const FinishScrimForm = ({
         })),
       });
       if (res.ok) {
+        // Best-effort AI tactical review (non-blocking on failure)
+        const reviewGames = games
+          .map((g, i) => ({
+            gameNumber: i + 1,
+            isWin: g.isWin === true,
+            draft: extractDraftResult(g.draft),
+            scoreboard: g.scoreboard,
+          }))
+          .filter((g) => g.draft || g.scoreboard);
+        if (reviewGames.length > 0) {
+          const aiRes = await generateTacticalReviewAction({ scrimId, orgId, orgSlug, games: reviewGames });
+          if (!aiRes.ok) toast.message(aiRes.message ?? "Review AI dilewati");
+        }
         toast.success("Hasil scrim disimpan!");
         router.push(`/${orgSlug}/analytics`);
       } else {
@@ -381,6 +461,26 @@ const FinishScrimForm = ({
           </button>
         </div>
 
+        {/* AI auto-fill */}
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+          <ScreenshotDropzone
+            kind="draft"
+            label="Upload Screenshot Draft"
+            orgId={orgId}
+            scrimId={scrimId}
+            gameIndex={activeGame}
+            onAnalyzed={(p) => handleAnalyzed(activeGame, p)}
+          />
+          <ScreenshotDropzone
+            kind="scoreboard"
+            label="Upload Screenshot Scoreboard"
+            orgId={orgId}
+            scrimId={scrimId}
+            gameIndex={activeGame}
+            onAnalyzed={(p) => handleAnalyzed(activeGame, p)}
+          />
+        </div>
+
         {/* Draft */}
         <DraftSection
           draft={game.draft}
@@ -389,6 +489,34 @@ const FinishScrimForm = ({
           onEnemyChange={(role, hero) => updateEnemyDraft(activeGame, role, hero)}
           onBanChange={(side, index, hero) => updateBan(activeGame, side, index, hero)}
         />
+
+        {/* Scoreboard scan review */}
+        {game.scoreboard && game.scoreboard.players.length > 0 && (
+          <div className="rounded-xl border border-yellow-400/20 bg-yellow-400/5 p-3 space-y-2">
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-yellow-300">
+              Hasil Scan Scoreboard — periksa &amp; koreksi
+            </p>
+            {game.scoreboard.players.map((pl, pIdx) => (
+              <div key={pIdx} className="grid grid-cols-[1fr_auto_auto_auto] items-center gap-2">
+                <input
+                  value={pl.heroName}
+                  onChange={(e) => updateScoreboardPlayer(activeGame, pIdx, { heroName: e.target.value })}
+                  className="h-7 rounded border border-ui-border bg-ui-surface px-2 text-xs text-ui-text"
+                />
+                {(["kills", "deaths", "assists"] as const).map((stat) => (
+                  <NumberInput
+                    key={stat}
+                    min={0}
+                    value={String(pl[stat])}
+                    onChange={(e) => updateScoreboardPlayer(activeGame, pIdx, { [stat]: parseInt(e.target.value || "0", 10) })}
+                    className="h-7 w-14 text-center text-xs text-ui-text bg-ui-surface border-ui-border"
+                    containerClassName="w-14"
+                  />
+                ))}
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* Game notes */}
         <div>
