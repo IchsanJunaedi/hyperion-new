@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useTransition } from "react";
 import {
-  CheckCircle, ChevronDown, ChevronUp, ClipboardList, Loader2, Plus, Star,
+  CheckCircle, ChevronDown, ChevronUp, ClipboardList, Loader2, Plus,
   Trophy, Upload, XCircle,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -17,7 +17,7 @@ import {
   type AttendingPlayer,
   type DraftPicks,
 } from "./DraftSection";
-import { ROLE_LABELS, ROLES } from "@/features/scrim/data/mlbb-heroes";
+import { ROLES } from "@/features/scrim/data/mlbb-heroes";
 import type { RoleName } from "@/features/scrim/data/mlbb-heroes";
 import { cn } from "@/lib/utils/cn";
 import { ScreenshotDropzone } from "./ScreenshotDropzone";
@@ -65,11 +65,6 @@ interface GameResult {
   uploading: boolean;
   draft: DraftPicks;
   scoreboard: ScoreboardResult | null; // AI-scanned, editable, persisted to scrim_ai_reviews
-}
-
-interface PlayerEval {
-  rating: string;   // string for controlled input
-  coachNotes: string;
 }
 
 function makeBlankGame(): GameResult {
@@ -123,7 +118,6 @@ const FinishScrimForm = ({
 
   // Attending players (fetched on mount)
   const [attendingPlayers, setAttendingPlayers] = useState<AttendingPlayer[]>([]);
-  const [playerEvals, setPlayerEvals] = useState<Map<string, PlayerEval>>(new Map());
 
   useEffect(() => {
     async function load() {
@@ -161,9 +155,6 @@ const FinishScrimForm = ({
       }));
 
       setAttendingPlayers(players);
-      setPlayerEvals(
-        new Map(players.map((p) => [p.userId, { rating: "", coachNotes: "" }])),
-      );
     }
     load();
   }, [scrimId, orgId]);
@@ -360,11 +351,7 @@ const FinishScrimForm = ({
           ],
         })),
         coachNotes: coachNotes || null,
-        playerEvals: Array.from(playerEvals.entries()).map(([userId, ev]) => ({
-          userId,
-          rating: ev.rating === "" ? null : parseFloat(ev.rating),
-          coachNotes: ev.coachNotes || null,
-        })),
+        playerEvals: [],
       });
       if (res.ok) {
         // Best-effort AI tactical review (non-blocking on failure)
@@ -606,70 +593,7 @@ const FinishScrimForm = ({
         </div>
       </div>
 
-      {/* ── Performance Evaluation ───────────────────────────────────────── */}
-      {attendingPlayers.length > 0 && (
-        <div className="rounded-2xl border border-blue-400/20 bg-blue-400/5 p-5 shadow-xl shadow-black/20 space-y-4">
-          <h3 className="flex items-center gap-2 text-sm font-semibold text-ui-text">
-            <Star className="h-4 w-4 text-yellow-400" />
-            Evaluasi Pemain
-            <span className="text-xs font-normal text-ui-text-muted">— per scrim</span>
-          </h3>
-          <div className="space-y-3">
-            {attendingPlayers.map((p) => {
-              const ev = playerEvals.get(p.userId) ?? { rating: "", coachNotes: "" };
-              return (
-                <div key={p.userId} className="rounded-xl border border-ui-border bg-ui-surface/60 p-3 space-y-2">
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="truncate text-xs font-semibold text-ui-text">
-                        {p.displayName ?? "Unknown"}
-                      </p>
-                      {p.mainRole && (
-                        <p className="text-[10px] text-ui-text-muted">
-                          {ROLE_LABELS[p.mainRole as RoleName] ?? p.mainRole}
-                        </p>
-                      )}
-                    </div>
-                    <div className="flex shrink-0 items-center gap-1.5">
-                      <span className="text-[10px] text-ui-text-muted">Rating</span>
-                      <NumberInput
-                        min={0}
-                        max={10}
-                        step={0.1}
-                        value={ev.rating}
-                        onChange={(e) =>
-                          setPlayerEvals((prev) => {
-                            const next = new Map(prev);
-                            next.set(p.userId, { ...ev, rating: e.target.value });
-                            return next;
-                          })
-                        }
-                        placeholder="0–10"
-                        className="h-7 text-center text-xs text-ui-text bg-ui-surface border-ui-border focus:border-yellow-400 focus:outline-none"
-                        containerClassName="w-20 shrink-0"
-                      />
-                    </div>
-                  </div>
-                  <input
-                    type="text"
-                    value={ev.coachNotes}
-                    onChange={(e) =>
-                      setPlayerEvals((prev) => {
-                        const next = new Map(prev);
-                        next.set(p.userId, { ...ev, coachNotes: e.target.value });
-                        return next;
-                      })
-                    }
-                    placeholder="Catatan untuk pemain ini…"
-                    maxLength={500}
-                    className="w-full rounded-lg border border-ui-border bg-ui-surface px-2.5 py-1.5 text-xs text-ui-text placeholder:text-ui-text-muted focus:border-blue-400 focus:outline-none"
-                  />
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
+
 
       {/* ── Overall coach notes ──────────────────────────────────────────── */}
       <div className="rounded-2xl border border-ui-border bg-ui-surface/40 p-5 shadow-xl shadow-black/20 space-y-3">

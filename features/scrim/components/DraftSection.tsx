@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Ban, ChevronDown, Plus, Search, User, X, GripVertical } from "lucide-react";
+import { Ban, Plus, Search, X, GripVertical } from "lucide-react";
 import { HeroPicker } from "./HeroPicker";
 import { MLBB_HEROES, ROLES, ROLE_LABELS, getHeroImageUrl, type RoleName } from "@/features/scrim/data/mlbb-heroes";
 import { cn } from "@/lib/utils/cn";
@@ -180,83 +180,7 @@ function BanSlotPicker({
   );
 }
 
-// ─── Player Dropdown (custom, no native <select>) ─────────────────────────────
 
-function PlayerDropdown({
-  playerId,
-  players,
-  roleHint,
-  onChange,
-}: {
-  playerId: string | null;
-  players: AttendingPlayer[];
-  roleHint: RoleName;
-  onChange: (id: string | null) => void;
-}) {
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    function handle(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    }
-    if (open) document.addEventListener("mousedown", handle);
-    return () => document.removeEventListener("mousedown", handle);
-  }, [open]);
-
-  const selected = players.find((p) => p.userId === playerId);
-
-  return (
-    <div ref={ref} className="relative mt-0.5">
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        className={cn(
-          "flex h-6 w-full cursor-pointer items-center gap-1.5 rounded px-1.5 text-[10px] transition-colors",
-          selected
-            ? "bg-emerald-500/10 text-emerald-300 border border-emerald-500/20"
-            : "bg-ui-hover border border-ui-border text-ui-text-muted hover:border-[#3D3D3D]",
-        )}
-      >
-        <User className="h-2.5 w-2.5 shrink-0" />
-        <span className="flex-1 truncate text-left">
-          {selected ? (selected.displayName ?? "Unknown") : "— Pilih pemain —"}
-        </span>
-        <ChevronDown className="h-2.5 w-2.5 shrink-0 opacity-50" />
-      </button>
-
-      {open && (
-        <div className="absolute left-0 right-0 top-full z-50 mt-0.5 overflow-hidden rounded-lg border border-ui-border bg-ui-surface shadow-xl shadow-black/60">
-          <button
-            type="button"
-            onClick={() => { onChange(null); setOpen(false); }}
-            className="flex w-full px-2 py-1.5 text-[10px] text-ui-text-muted hover:bg-ui-elevated transition-colors"
-          >
-            — Tidak ada —
-          </button>
-          {players.map((p) => (
-            <button
-              key={p.userId}
-              type="button"
-              onClick={() => { onChange(p.userId); setOpen(false); }}
-              className={cn(
-                "flex w-full items-center justify-between gap-2 px-2 py-1.5 text-[10px] transition-colors hover:bg-ui-elevated",
-                p.userId === playerId ? "bg-emerald-500/10 text-emerald-300" : "text-ui-text",
-              )}
-            >
-              <span className="truncate">{p.displayName ?? "Unknown"}</span>
-              {p.mainRole === roleHint && (
-                <span className="shrink-0 rounded bg-emerald-500/20 px-1 py-0.5 text-[9px] text-emerald-400">
-                  Main
-                </span>
-              )}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
 
 // ─── DraftSection ─────────────────────────────────────────────────────────────
 
@@ -421,17 +345,7 @@ const DraftSection = ({ draft, attendingPlayers, onOurChange, onEnemyChange, onB
                   </div>
                 </div>
 
-                {/* 3. Player dropdown indented */}
-                {attendingPlayers.length > 0 && (
-                  <div className="pl-5">
-                    <PlayerDropdown
-                      playerId={slot.playerId}
-                      players={attendingPlayers}
-                      roleHint={role}
-                      onChange={(id) => onOurChange(role, slot.hero, id)}
-                    />
-                  </div>
-                )}
+
               </div>
             );
           })}
