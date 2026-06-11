@@ -540,19 +540,23 @@ const FinishScrimForm = ({
         {/* AI auto-fill */}
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
           <ScreenshotDropzone
+            key={`draft-${activeGame}`}
             kind="draft"
             label="Upload Screenshot Draft"
             orgId={orgId}
             scrimId={scrimId}
             gameIndex={activeGame}
+            isDone={Object.values(game.draft.our).some(s => s.hero) || Object.values(game.draft.enemy).some(h => h) || (game.draft.bans?.our ?? []).some(Boolean) || (game.draft.bans?.enemy ?? []).some(Boolean)}
             onAnalyzed={(p) => handleAnalyzed(activeGame, p)}
           />
           <ScreenshotDropzone
+            key={`scoreboard-${activeGame}`}
             kind="scoreboard"
             label="Upload Screenshot Scoreboard"
             orgId={orgId}
             scrimId={scrimId}
             gameIndex={activeGame}
+            isDone={!!game.scoreboard}
             onAnalyzed={(p) => handleAnalyzed(activeGame, p)}
           />
         </div>
@@ -569,18 +573,32 @@ const FinishScrimForm = ({
         {/* Scoreboard scan review */}
         {game.scoreboard && game.scoreboard.players.length > 0 && (
           <div className="rounded-xl border border-ui-border bg-ui-surface p-3 space-y-2">
-            <button
-              type="button"
-              onClick={() => setShowScoreboardReview((v) => !v)}
-              className="flex w-full items-center justify-between text-[10px] font-semibold uppercase tracking-wider text-ui-text-muted hover:text-ui-text transition-colors cursor-pointer"
-            >
-              <span>Hasil Scan Scoreboard — periksa &amp; koreksi</span>
-              {showScoreboardReview ? (
-                <ChevronUp className="h-3.5 w-3.5" />
-              ) : (
-                <ChevronDown className="h-3.5 w-3.5" />
-              )}
-            </button>
+            <div className="flex w-full items-center justify-between">
+              <button
+                type="button"
+                onClick={() => setShowScoreboardReview((v) => !v)}
+                className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-ui-text-muted hover:text-ui-text transition-colors cursor-pointer"
+              >
+                <span>Hasil Scan Scoreboard — periksa &amp; koreksi</span>
+                {showScoreboardReview ? (
+                  <ChevronUp className="h-3.5 w-3.5" />
+                ) : (
+                  <ChevronDown className="h-3.5 w-3.5" />
+                )}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  updateGame(activeGame, { 
+                    scoreboard: null,
+                    draft: makeBlankDraft()
+                  });
+                }}
+                className="text-[10px] font-medium text-rose-400 hover:text-rose-300 transition-colors cursor-pointer"
+              >
+                Reset Scan
+              </button>
+            </div>
 
             {showScoreboardReview && (
               <div className="space-y-4 pt-3 border-t border-ui-border">
@@ -640,7 +658,16 @@ const FinishScrimForm = ({
             />
           </label>
           {game.imageUrl && (
-            <span className="text-xs font-medium text-emerald-400">✓ Uploaded</span>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-medium text-emerald-400">✓ Uploaded</span>
+              <button
+                type="button"
+                onClick={() => updateGame(activeGame, { imageUrl: null })}
+                className="text-xs text-rose-400 hover:underline cursor-pointer"
+              >
+                Hapus
+              </button>
+            </div>
           )}
         </div>
       </div>

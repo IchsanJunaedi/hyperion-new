@@ -19,18 +19,21 @@ interface ScreenshotDropzoneProps {
   scrimId: string;
   gameIndex: number;
   onAnalyzed: (payload: AnalyzedPayload) => void;
+  isDone?: boolean;
 }
 
 const ScreenshotDropzone = ({
-  kind, label, orgId, scrimId, gameIndex, onAnalyzed,
+  kind, label, orgId, scrimId, gameIndex, onAnalyzed, isDone = false,
 }: ScreenshotDropzoneProps) => {
   const [busy, setBusy] = useState(false);
-  const [done, setDone] = useState(false);
+  const [localDone, setLocalDone] = useState<boolean | null>(null);
+
+  const done = localDone !== null ? localDone : isDone;
 
   async function handleFile(file: File) {
     if (file.size > 10 * 1024 * 1024) { toast.error("Gambar maksimal 10MB"); return; }
     setBusy(true);
-    setDone(false);
+    setLocalDone(false);
     try {
       const supabase = createClient();
       const ext = file.name.split(".").pop() ?? "jpg";
@@ -45,7 +48,7 @@ const ScreenshotDropzone = ({
 
       if (res.kind === "draft") onAnalyzed({ kind: "draft", data: res.data });
       else onAnalyzed({ kind: "scoreboard", data: res.data });
-      setDone(true);
+      setLocalDone(true);
       toast.success("AI selesai membaca — periksa & koreksi bila perlu");
     } catch {
       toast.error("Gagal memproses gambar");
