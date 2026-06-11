@@ -77,6 +77,7 @@ const ManageSalariesPage = async ({ params }: Props) => {
         revalidatePaths={[
           `/manage/${orgSlug}/salaries`,
           "/dashboard/salaries",
+          "/dashboard",
         ]}
       />
     </div>

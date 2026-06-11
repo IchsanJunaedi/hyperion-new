@@ -65,7 +65,7 @@ export default async function DashboardSalariesPage() {
           contracts={contracts}
           summary={summary}
           members={members}
-          revalidatePaths={["/dashboard/salaries", "/manage/salaries"]}
+          revalidatePaths={["/dashboard/salaries", "/manage/salaries", "/dashboard"]}
         />
       </main>
     </>

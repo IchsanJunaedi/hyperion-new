@@ -164,5 +164,6 @@ export async function finishScrimAction(
   revalidatePath(`/${input.orgSlug}/scrim`);
   revalidatePath(`/${input.orgSlug}/analytics`);
   revalidatePath(`/${input.orgSlug}`);
+  revalidatePath("/dashboard");
   return { ok: true };
 }

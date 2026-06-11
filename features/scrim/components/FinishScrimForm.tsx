@@ -478,8 +478,8 @@ const FinishScrimForm = ({
             className={cn(
               "relative pb-2.5 px-3 text-xs font-medium transition-colors",
               activeGame === i
-                ? "text-white after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:rounded-full after:bg-yellow-400 after:content-['']"
-                : "text-ui-text-muted hover:text-ui-text",
+                ? "text-ui-text dark:text-white after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:rounded-full after:bg-yellow-400 after:content-['']"
+                : "text-ui-text-2 hover:text-ui-text dark:text-ui-text-muted dark:hover:text-ui-text",
             )}
           >
             Game {i + 1}

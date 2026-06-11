@@ -41,6 +41,7 @@ const ManageFinancesPage = async ({ params, searchParams }: Props) => {
         revalidatePaths={[
           `/manage/${orgSlug}/finances`,
           "/dashboard/finances",
+          "/dashboard",
         ]}
       />
     </div>

@@ -21,15 +21,21 @@ interface MetricCardProps {
 
 function MetricCard({ icon, label, value, sub, accent }: MetricCardProps) {
   return (
-    <div className="rounded-xl border border-ui-border bg-ui-surface p-4 space-y-2">
-      <div className="flex items-center gap-2 text-xs text-ui-text-muted font-medium uppercase tracking-wider">
-        {icon}
-        {label}
+    <div className="rounded-xl border border-ui-border bg-ui-surface p-4 flex flex-col justify-between min-h-[108px]">
+      <div className="flex items-start justify-between gap-2">
+        <span className="text-[10px] text-ui-text-muted font-semibold uppercase tracking-wider leading-tight">
+          {label}
+        </span>
+        <span className="text-ui-text-muted shrink-0 -mt-0.5">
+          {icon}
+        </span>
       </div>
-      <p className={`text-2xl font-bold tracking-tight ${accent ?? "text-ui-text"}`}>
-        {value}
-      </p>
-      {sub && <p className="text-xs text-ui-text-muted">{sub}</p>}
+      <div className="mt-2 space-y-0.5">
+        <p className={`text-2xl font-bold tracking-tight ${accent ?? "text-ui-text"}`}>
+          {value}
+        </p>
+        {sub && <p className="text-[11px] text-ui-text-muted leading-tight">{sub}</p>}
+      </div>
     </div>
   );
 }

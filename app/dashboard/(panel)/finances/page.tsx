@@ -1,4 +1,4 @@
-﻿import { redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import Link from "next/link";
 
 import { createClient } from "@/lib/supabase/server";
@@ -56,7 +56,7 @@ export default async function DashboardFinancesPage({ searchParams }: FinancesPa
           year={year}
           month={month}
           canDelete={true}
-          revalidatePaths={["/dashboard/finances"]}
+          revalidatePaths={["/dashboard/finances", "/dashboard"]}
         />
       </main>
     </>

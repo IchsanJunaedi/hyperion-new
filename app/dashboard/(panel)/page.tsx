@@ -12,10 +12,16 @@ import { getTeamHealthScore } from "@/features/dashboard/queries/healthScore";
 import { ExecutiveSummary } from "@/features/dashboard/components/ExecutiveSummary";
 import { getExecutiveSummary } from "@/features/dashboard/queries/executiveSummary";
 import type { UserDetail } from "@/features/dashboard/components/UserDetailModal";
+import { OrgSwitcher } from "@/features/finances/components/OrgSwitcher";
 
 export const dynamic = "force-dynamic";
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ org?: string }>;
+}) {
+  const { org: selectedOrgId } = await searchParams;
   const supabase = await createClient();
   const {
     data: { user },
@@ -68,8 +74,9 @@ export default async function DashboardPage() {
   for (const [uid, email] of emailMap.entries()) { if (email === ownerEmail) roleMap.set(uid, "owner"); }
 
   // Team health score + executive summary — sequential after Promise.all
-  const healthOrgId = orgs?.[0]?.id ?? null;
-  const healthOrgName = orgs?.[0]?.name ?? "";
+  const currentOrg = orgs?.find((o) => o.id === selectedOrgId) || orgs?.[0];
+  const healthOrgId = currentOrg?.id ?? null;
+  const healthOrgName = currentOrg?.name ?? "";
   let healthScore = null;
   let executiveSummary = null;
   if (healthOrgId) {
@@ -104,7 +111,16 @@ export default async function DashboardPage() {
 
         {/* Executive Summary */}
         {executiveSummary && (
-          <ExecutiveSummary summary={executiveSummary} orgName={healthOrgName} />
+          <div className="space-y-4">
+            {orgs && orgs.length > 1 && (
+              <OrgSwitcher
+                orgs={orgs}
+                currentOrgId={healthOrgId ?? ""}
+                basePath="/dashboard"
+              />
+            )}
+            <ExecutiveSummary summary={executiveSummary} orgName={healthOrgName} />
+          </div>
         )}
 
         {/* Action buttons */}
