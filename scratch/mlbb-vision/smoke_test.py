@@ -61,9 +61,11 @@ def main():
         paste(canvas, st["templates"][name], hero_box)
         k, d, a = random.randint(0, 19), random.randint(0, 12), random.randint(0, 25)
         kx, ky, kw, kh = kda_box
-        cv2.putText(canvas, f"{k}/{d}/{a}",
-                    (int((kx + 0.005) * server.CANVAS_W), int((ky + kh * 0.65) * server.CANVAS_H)),
-                    cv2.FONT_HERSHEY_SIMPLEX, 1.0, (235, 235, 235), 2)
+        # mimic the real scoreboard: K D A as space-separated columns in the
+        # top half of the row (kda_box is already the digit band)
+        cv2.putText(canvas, f"{k} {d} {a}",
+                    (int((kx + 0.003) * server.CANVAS_W), int((ky + kh * 0.75) * server.CANVAS_H)),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (235, 235, 235), 2)
         truth.append({"side": side, "hero": name, "kda": (k, d, a)})
     r = client.post("/analyze-scoreboard", json={"image": b64(canvas)})
     assert r.status_code == 200, r.text

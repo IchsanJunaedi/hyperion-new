@@ -81,22 +81,25 @@ def hero_to_slug(name: str) -> str:
 # ── Crop coordinate config (normalized x, y, w, h on 1920x1080) ──────────────
 # Calibrate in pipeline.ipynb against real screenshots, then mirror values here.
 
+# Calibrated 2026-06-11 against real 1024x472 (~21:9) device screenshots using
+# calibrate.py / calibrate2.py (HoughCircles on aspect-preserved canvas).
 DRAFT_CFG = {
-    "our_bans":   [(0.118 + i * 0.0455, 0.030, 0.038, 0.067) for i in range(5)],
-    "enemy_bans": [(1.0 - (0.118 + (4 - i) * 0.0455) - 0.038, 0.030, 0.038, 0.067) for i in range(5)],
+    "our_bans":   [(0.0547 + i * 0.0470, 0.0079, 0.0313, 0.0678) for i in range(5)],
+    "enemy_bans": [(0.7245 + i * 0.0471, 0.0079, 0.0313, 0.0678) for i in range(5)],
 }
 
 SCORE_CFG = {
     "banner": (0.330, 0.010, 0.340, 0.150),
     "rows": {
-        "y0": 0.250,
-        "h": 0.122,
-        "hero_w": 0.046,
-        "hero_h": 0.082,
-        "our_hero_x": 0.060,
-        "enemy_hero_x": 0.530,
-        "our_kda": (0.215, 0.115),
-        "enemy_kda": (0.685, 0.115),
+        "y0": 0.2294,
+        "h": 0.1281,
+        "hero_w": 0.0417,
+        "hero_h": 0.0904,
+        "our_hero_x": 0.1354,
+        "enemy_hero_x": 0.8213,
+        # KDA shown as separate columns: our side "K D A Gold", enemy side "Gold K D A"
+        "our_kda": (0.303, 0.063),
+        "enemy_kda": (0.632, 0.066),
     },
 }
 
@@ -135,7 +138,9 @@ def scoreboard_boxes():
         for side in ("our", "enemy"):
             hero_box = (r[f"{side}_hero_x"], y, r["hero_w"], r["hero_h"])
             kx, kw = r[f"{side}_kda"]
-            yield side, i, hero_box, (kx, y, kw, r["hero_h"])
+            # KDA digits sit in the top half of the row; the bottom half holds
+            # item icons that OCR misreads as digits — exclude them.
+            yield side, i, hero_box, (kx, y, kw, r["hero_h"] * 0.5)
 
 
 # ── Models & template DB (loaded lazily on first request) ────────────────────
@@ -186,9 +191,9 @@ def get_state() -> dict:
 
 # ── Matchers ─────────────────────────────────────────────────────────────────
 
-def match_hero_template(crop: np.ndarray, min_score=0.35) -> str:
+def match_hero_template_scored(crop: np.ndarray):
     if crop is None or crop.size == 0:
-        return ""
+        return "", 0.0
     st = get_state()
     p = prep_tile(crop)
     ph = cv2.calcHist([cv2.cvtColor(p, cv2.COLOR_BGR2HSV)], [0, 1], MASK, [24, 16], [0, 180, 0, 256])
@@ -200,7 +205,23 @@ def match_hero_template(crop: np.ndarray, min_score=0.35) -> str:
         s = 0.7 * tm + 0.3 * hs
         if s > best_score:
             best_name, best_score = name, s
-    return best_name if best_score >= min_score else ""
+    return best_name, best_score
+
+
+def match_hero_template(crop: np.ndarray, min_score=0.35) -> str:
+    name, score = match_hero_template_scored(crop)
+    return name if score >= min_score else ""
+
+
+def match_hero(crop: np.ndarray, tmpl_min=0.62, clip_min=0.55) -> str:
+    """Scoreboard hero matcher. Portraits proved to be default avatars on the
+    post-match screen, so template matching is primary (validated 10/10 on real
+    screenshots); CLIP only kicks in when the template score is weak (e.g. an
+    unusual capture where the portrait differs from the default avatar)."""
+    name, score = match_hero_template_scored(crop)
+    if score >= tmpl_min:
+        return name
+    return match_hero_clip(crop, min_score=clip_min)
 
 
 def match_hero_clip(crop: np.ndarray, min_score=0.55) -> str:
@@ -225,6 +246,35 @@ def ocr_text(crop: np.ndarray, allowlist=None) -> str:
     return " ".join(get_state()["reader"].readtext(crop, detail=0, allowlist=allowlist))
 
 
+def read_kda(crop: np.ndarray, side: str = "our"):
+    """Parse K/D/A from a stat-strip crop.
+
+    The post-match scoreboard shows stats as separate columns:
+    our side "K D A [Gold]", enemy side "[Gold] K D A". Tokens are OCR'd with
+    positions, sorted left-to-right, and the 3 KDA ints are selected per side.
+    Falls back to the "K/D/A" slash format if present.
+    """
+    if crop is None or crop.size == 0:
+        return 0, 0, 0
+    big = cv2.resize(crop, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
+    tokens = get_state()["reader"].readtext(big, detail=1, allowlist="0123456789/ ")
+    joined = " ".join(t[1] for t in tokens)
+    m = KDA_RE.search(joined)
+    if m:
+        return tuple(int(g) for g in m.groups())
+    nums = []
+    for box, txt, _conf in sorted(tokens, key=lambda t: t[0][0][0]):
+        for piece in txt.replace("/", " ").split():
+            if piece.isdigit():
+                nums.append(int(piece))
+    if len(nums) < 3:
+        return 0, 0, 0
+    # The window is positioned so gold stays outside it on both sides; leaks come
+    # from the left edge (player-name tail on our side, gold tail on enemy side),
+    # so the rightmost 3 numbers are always K/D/A.
+    return tuple(min(p, 99) for p in nums[-3:])
+
+
 def detect_result(canvas: np.ndarray) -> str:
     banner = crop_norm(canvas, SCORE_CFG["banner"])
     txt = ocr_text(banner).upper()
@@ -236,14 +286,6 @@ def detect_result(canvas: np.ndarray) -> str:
     h, s, v = hsv[..., 0], hsv[..., 1], hsv[..., 2]
     gold_ratio = float(((h > 15) & (h < 40) & (s > 80) & (v > 120)).mean())
     return "win" if gold_ratio > 0.05 else "loss"
-
-
-def read_kda(crop: np.ndarray):
-    if crop is None or crop.size == 0:
-        return 0, 0, 0
-    big = cv2.resize(crop, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
-    m = KDA_RE.search(ocr_text(big, allowlist="0123456789/ "))
-    return tuple(int(g) for g in m.groups()) if m else (0, 0, 0)
 
 
 # ── FastAPI ──────────────────────────────────────────────────────────────────
@@ -284,8 +326,8 @@ def analyze_scoreboard(payload: ImagePayload):
     players = [None] * 5
     enemy = [None] * 5
     for side, i, hero_box, kda_box in scoreboard_boxes():
-        hero = match_hero_clip(crop_norm(canvas, hero_box))
-        k, d, a = read_kda(crop_norm(canvas, kda_box))
+        hero = match_hero(crop_norm(canvas, hero_box))
+        k, d, a = read_kda(crop_norm(canvas, kda_box), side)
         entry = {"hero": hero, "kills": k, "deaths": d, "assists": a}
         (players if side == "our" else enemy)[i] = entry
     return {"result": detect_result(canvas), "players": players, "enemyPlayers": enemy}
