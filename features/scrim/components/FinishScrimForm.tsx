@@ -218,19 +218,10 @@ const FinishScrimForm = ({
   function applyDraftScan(i: number, d: DraftResult) {
     setGames((prev) => prev.map((g, idx) => {
       if (idx !== i) return g;
-      const our = { ...g.draft.our };
-      const enemy = { ...g.draft.enemy };
-      for (const role of ROLES) {
-        const aiOurHero = d.picks.our[role];
-        const aiEnemyHero = d.picks.enemy[role];
-        if (aiOurHero) our[role] = { hero: aiOurHero, playerId: g.draft.our[role].playerId };
-        if (aiEnemyHero) enemy[role] = aiEnemyHero;
-      }
       return {
         ...g,
         draft: {
-          our,
-          enemy,
+          ...g.draft,
           bans: {
             our: d.bans.our.length ? d.bans.our : g.draft.bans.our,
             enemy: d.bans.enemy.length ? d.bans.enemy : g.draft.bans.enemy,

@@ -1,5 +1,5 @@
 import { matchHero } from "@/features/scrim/data/hero-fuzzy";
-import { ROLES, type RoleName } from "@/features/scrim/data/mlbb-heroes";
+import { MLBB_HEROES, ROLES, type RoleName } from "@/features/scrim/data/mlbb-heroes";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -53,7 +53,13 @@ export const DRAFT_PROMPT = `You are analyzing a Mobile Legends: Bang Bang (MLBB
 Identify the 5 banned heroes and 5 picked heroes for BOTH teams.
 The team on the (typically) blue/left side is "our", the red/right side is "enemy".
 Map each pick to its lane role: exp_lane, jungler, mid_lane, gold_lane, roamer.
-Return ONLY hero names exactly as printed. If a slot is unreadable, return an empty string.`;
+Return ONLY hero names exactly as printed. If a slot is unreadable, return an empty string.
+
+Skin Recognition Guidance:
+MLBB heroes frequently use skins that change their color palette or details. Focus on core visual motifs of heroes.
+
+Valid MLBB Hero Names:
+${MLBB_HEROES.join(", ")}`;
 
 export const SCOREBOARD_PROMPT = `You are analyzing a Mobile Legends: Bang Bang (MLBB) post-match scoreboard screenshot.
 Identify all 10 players in the scoreboard:
@@ -62,7 +68,7 @@ Identify all 10 players in the scoreboard:
 
 For each player on both teams, extract:
 - displayName (their in-game name/ID)
-- heroName (the hero they played)
+- heroName (the hero they played. Must be one of the valid MLBB heroes listed below)
 - role: Map each player to their lane role (exp_lane, jungler, mid_lane, gold_lane, roamer) based on the hero they played and standard MLBB meta. Ensure each of the 5 roles is assigned to exactly one player per team.
 - kills, deaths, assists, and gold.
 
@@ -71,6 +77,22 @@ Also determine:
 - ourScore: total kills of our team.
 - opponentScore: total kills of the enemy team.
 - durationSeconds: match duration in seconds (convert MM:SS to seconds).
+
+Skin Recognition Guidance:
+MLBB heroes frequently use skins that change their color palette or details. Focus on core visual motifs:
+- Grock: Rock giant, stone textures, green/grey stone armor.
+- Yin: Young martial artist, golden rings/fists, energetic pose.
+- Pharsa: Mage with blindfold/crown, bird feathers, long robes.
+- Alice: Demoness, purple bat wings, horns, dark magical theme.
+- Roger: Hunter with a rifle/gun or wolf-man hybrid form.
+- Minsitthar: Spear and shield, golden king/warrior armor.
+- Gusion: Daggers, slender assassin, glowing daggers.
+- Gloo: Purple gelatinous slime monster.
+- Karrie: Mechanical/alien agility wings, lightwheel weapons.
+- Edith: Winged giant white/gold robot mech or the female pilot inside.
+
+Valid MLBB Hero Names:
+${MLBB_HEROES.join(", ")}
 
 Return ONLY values visible in the image. Use 0 for any number you cannot read.`;
 

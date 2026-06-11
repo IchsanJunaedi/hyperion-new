@@ -94,9 +94,9 @@ test("AI-Assisted Finish Scrim via Dual Screenshot Upload E2E", async ({ page })
   await expect(page.locator("text=AI selesai membaca").first()).toBeVisible({ timeout: 45000 });
   console.log("✓ Draft scan complete.");
 
-  // Verify picks populated (e.g. Lancelot should be in the draft list)
-  const lancelotText = page.locator("button:has-text('Lancelot')").first();
-  await expect(lancelotText).toBeVisible();
+  // Verify bans populated (e.g. Chou should be in the draft ban list)
+  const chouBan = page.locator("button[title='Chou']").first();
+  await expect(chouBan).toBeVisible();
 
   // 5. Upload Scoreboard Screenshot
   console.log("📷 Uploading Scoreboard Screenshot...");
