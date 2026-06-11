@@ -425,3 +425,8 @@ All `<input type="number">` must use `<NumberInput>` from `@/components/ui/numbe
 - ✅ **L6** — fixed: `.limit(50)` added to `listTrials` (2026-05-28)
 - ✅ **L7** — fixed: no-op startTransition removed from AttendanceTracker realtime handler (2026-05-28)
 - ✅ **L8** — fixed: mounted flag added to StatisticsTab useEffect .then() (2026-05-28)
+
+---
+
+## Dev Notes
+- Cara standar untuk menjalankan lingkungan development lengkap (Next.js + MLBB Vision Server): `npm run dev:all`
