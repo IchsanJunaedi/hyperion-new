@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import {
-  ArrowLeft, CheckCircle, ClipboardList, Loader2, Plus, Star,
+  CheckCircle, ClipboardList, Loader2, Plus, Star,
   Trophy, Upload, XCircle,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -99,7 +99,6 @@ interface FinishScrimFormProps {
   orgSlug: string;
   orgId: string;
   format: string;
-  scrimId_detail: string;
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -109,7 +108,6 @@ const FinishScrimForm = ({
   orgSlug,
   orgId,
   format,
-  scrimId_detail,
 }: FinishScrimFormProps) => {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -220,19 +218,10 @@ const FinishScrimForm = ({
   function applyDraftScan(i: number, d: DraftResult) {
     setGames((prev) => prev.map((g, idx) => {
       if (idx !== i) return g;
-      const our = { ...g.draft.our };
-      const enemy = { ...g.draft.enemy };
-      for (const role of ROLES) {
-        const aiOurHero = d.picks.our[role];
-        const aiEnemyHero = d.picks.enemy[role];
-        if (aiOurHero) our[role] = { hero: aiOurHero, playerId: g.draft.our[role].playerId };
-        if (aiEnemyHero) enemy[role] = aiEnemyHero;
-      }
       return {
         ...g,
         draft: {
-          our,
-          enemy,
+          ...g.draft,
           bans: {
             our: d.bans.our.length ? d.bans.our : g.draft.bans.our,
             enemy: d.bans.enemy.length ? d.bans.enemy : g.draft.bans.enemy,
@@ -243,9 +232,46 @@ const FinishScrimForm = ({
   }
 
   function applyScoreboardScan(i: number, s: ScoreboardResult) {
-    setGames((prev) => prev.map((g, idx) =>
-      idx === i ? { ...g, isWin: s.isWin, scoreboard: s } : g,
-    ));
+    setGames((prev) => prev.map((g, idx) => {
+      if (idx !== i) return g;
+
+      const our = { ...g.draft.our };
+      const enemy = { ...g.draft.enemy };
+
+      // Fill our picks from scoreboard
+      (s.players ?? []).forEach((p) => {
+        const role = p.role;
+        if (role && ROLES.includes(role)) {
+          // Find matching attending player by display name (case-insensitive)
+          const matchedPlayer = attendingPlayers.find(
+            (ap) => ap.displayName?.toLowerCase().trim() === p.displayName?.toLowerCase().trim()
+          );
+          our[role] = {
+            hero: p.heroName,
+            playerId: matchedPlayer ? matchedPlayer.userId : (g.draft.our[role].playerId || null),
+          };
+        }
+      });
+
+      // Fill enemy picks from scoreboard
+      (s.enemyPlayers ?? []).forEach((p) => {
+        const role = p.role;
+        if (role && ROLES.includes(role)) {
+          enemy[role] = p.heroName;
+        }
+      });
+
+      return {
+        ...g,
+        isWin: s.isWin,
+        scoreboard: s,
+        draft: {
+          ...g.draft,
+          our,
+          enemy,
+        },
+      };
+    }));
   }
 
   function handleAnalyzed(i: number, payload: AnalyzedPayload) {

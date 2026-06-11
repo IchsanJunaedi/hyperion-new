@@ -23,7 +23,8 @@ function buildPrompt(g: TacticalReviewGame): string {
     `Hasil game ${g.gameNumber}: ${g.isWin ? "MENANG" : "KALAH"}.`,
     `Draft kami: ${JSON.stringify(g.draft?.picks.our ?? {})}.`,
     `Draft lawan: ${JSON.stringify(g.draft?.picks.enemy ?? {})}.`,
-    `Performa pemain (KDA): ${JSON.stringify(g.scoreboard?.players ?? [])}.`,
+    `Performa pemain kami (KDA): ${JSON.stringify(g.scoreboard?.players ?? [])}.`,
+    `Performa pemain lawan (KDA): ${JSON.stringify(g.scoreboard?.enemyPlayers ?? [])}.`,
     "Fokus: apakah win condition draft tercapai, siapa yang over/underperform, dan 1 saran konkret.",
   ].join("\n");
 }

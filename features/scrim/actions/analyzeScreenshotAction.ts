@@ -2,18 +2,14 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { generateStructured, GeminiNotConfiguredError } from "@/lib/ai/gemini";
 import {
-  DRAFT_PROMPT,
-  DRAFT_SCHEMA,
-  SCOREBOARD_PROMPT,
-  SCOREBOARD_SCHEMA,
   normalizeDraftResult,
   normalizeScoreboardResult,
   validateScrimStoragePath,
   type DraftResult,
   type ScoreboardResult,
 } from "@/features/scrim/ai/screenshot-schema";
+import { HERO_CLASSES, ROLES, type RoleName } from "@/features/scrim/data/mlbb-heroes";
 import { detectMimeType } from "@/lib/utils/file";
 
 type AnalyzeResult =
@@ -23,6 +19,87 @@ type AnalyzeResult =
 
 const ALLOWED_MIME = ["image/png", "image/jpeg", "image/webp"];
 const EDIT_ROLES = ["manager", "coach", "captain"];
+
+// Local vision server (scratch/mlbb-vision/server.py) — replaces Gemini Vision
+const VISION_SERVER_URL = process.env.MLBB_VISION_URL ?? "http://127.0.0.1:8000";
+const VISION_TIMEOUT_MS = 120_000;
+
+interface DraftServerResponse {
+  bans: string[];
+  enemyBans: string[];
+}
+
+interface ScoreboardServerPlayer {
+  hero: string;
+  kills: number;
+  deaths: number;
+  assists: number;
+}
+
+interface ScoreboardServerResponse {
+  result: "win" | "loss";
+  players: ScoreboardServerPlayer[];
+  enemyPlayers: ScoreboardServerPlayer[];
+}
+
+async function callVisionServer<T>(path: string, base64: string): Promise<T> {
+  const res = await fetch(`${VISION_SERVER_URL}${path}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ image: base64 }),
+    signal: AbortSignal.timeout(VISION_TIMEOUT_MS),
+  });
+  if (!res.ok) {
+    throw new Error(`vision server ${path} responded ${res.status}`);
+  }
+  return (await res.json()) as T;
+}
+
+// Hero-class → lane preference. The local server only identifies heroes; lane
+// roles are derived here so the result still satisfies ScoreboardResult.
+const CLASS_ROLE_PRIORITY: Record<string, RoleName[]> = {
+  Marksman: ["gold_lane", "mid_lane", "jungler", "exp_lane", "roamer"],
+  Mage: ["mid_lane", "gold_lane", "roamer", "exp_lane", "jungler"],
+  Tank: ["roamer", "exp_lane", "jungler", "mid_lane", "gold_lane"],
+  Support: ["roamer", "mid_lane", "gold_lane", "exp_lane", "jungler"],
+  Assassin: ["jungler", "roamer", "mid_lane", "exp_lane", "gold_lane"],
+  Fighter: ["exp_lane", "jungler", "roamer", "gold_lane", "mid_lane"],
+};
+
+function assignRoles(heroes: string[]): RoleName[] {
+  const taken = new Set<RoleName>();
+  const out: (RoleName | null)[] = heroes.map(() => null);
+  heroes.forEach((hero, i) => {
+    const prefs = CLASS_ROLE_PRIORITY[HERO_CLASSES[hero] ?? ""] ?? [...ROLES];
+    for (const role of prefs) {
+      if (!taken.has(role)) {
+        out[i] = role;
+        taken.add(role);
+        break;
+      }
+    }
+  });
+  return out.map((role) => {
+    if (role) return role;
+    const free = ROLES.find((r) => !taken.has(r)) ?? "exp_lane";
+    taken.add(free);
+    return free;
+  });
+}
+
+function toScoreboardPlayers(serverPlayers: ScoreboardServerPlayer[]) {
+  const list = Array.isArray(serverPlayers) ? serverPlayers.slice(0, 5) : [];
+  const roles = assignRoles(list.map((p) => p?.hero ?? ""));
+  return list.map((p, i) => ({
+    displayName: "",
+    heroName: p?.hero ?? "",
+    role: roles[i] ?? "exp_lane",
+    kills: p?.kills ?? 0,
+    deaths: p?.deaths ?? 0,
+    assists: p?.assists ?? 0,
+    gold: 0,
+  }));
+}
 
 export async function analyzeScreenshotAction(input: {
   kind: "draft" | "scoreboard";
@@ -83,26 +160,37 @@ export async function analyzeScreenshotAction(input: {
 
   try {
     if (input.kind === "draft") {
-      const raw = await generateStructured<Partial<DraftResult>>({
-        prompt: DRAFT_PROMPT,
-        image: { mimeType: mime, data: base64 },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        responseSchema: DRAFT_SCHEMA as Record<string, any>,
-      });
-      return { ok: true, kind: "draft", data: normalizeDraftResult(raw) };
+      const raw = await callVisionServer<DraftServerResponse>("/analyze-draft", base64);
+      return {
+        ok: true,
+        kind: "draft",
+        data: normalizeDraftResult({
+          bans: { our: raw.bans ?? [], enemy: raw.enemyBans ?? [] },
+        }),
+      };
     }
-    const raw = await generateStructured<Partial<ScoreboardResult>>({
-      prompt: SCOREBOARD_PROMPT,
-      image: { mimeType: mime, data: base64 },
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      responseSchema: SCOREBOARD_SCHEMA as Record<string, any>,
-    });
-    return { ok: true, kind: "scoreboard", data: normalizeScoreboardResult(raw) };
+
+    const raw = await callVisionServer<ScoreboardServerResponse>("/analyze-scoreboard", base64);
+    const players = toScoreboardPlayers(raw.players);
+    const enemyPlayers = toScoreboardPlayers(raw.enemyPlayers);
+    return {
+      ok: true,
+      kind: "scoreboard",
+      data: normalizeScoreboardResult({
+        isWin: raw.result === "win",
+        ourScore: players.reduce((sum, p) => sum + p.kills, 0),
+        opponentScore: enemyPlayers.reduce((sum, p) => sum + p.kills, 0),
+        durationSeconds: 0,
+        players,
+        enemyPlayers,
+      }),
+    };
   } catch (err) {
-    if (err instanceof GeminiNotConfiguredError) {
-      return { ok: false, message: "Fitur AI belum aktif (GEMINI_API_KEY belum diset)" };
-    }
-    console.error("[analyzeScreenshot] gemini error:", err);
-    return { ok: false, message: "AI gagal membaca gambar. Coba lagi atau isi manual." };
+    console.error("[analyzeScreenshot] vision server error:", err);
+    return {
+      ok: false,
+      message:
+        "Vision server lokal tidak berjalan. Jalankan: python scratch/mlbb-vision/server.py lalu coba lagi.",
+    };
   }
 }
