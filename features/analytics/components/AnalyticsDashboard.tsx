@@ -60,7 +60,7 @@ const AnalyticsDashboard = ({
               className={cn(
                 "relative mr-5 cursor-pointer pb-3 px-1 text-sm font-medium transition-colors",
                 activeTab === tab.key
-                  ? "text-white after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:rounded-full after:bg-yellow-400 after:content-['']"
+                  ? "text-ui-text after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:rounded-full after:bg-yellow-400 after:content-['']"
                   : "text-ui-text-muted hover:text-ui-text",
               )}
             >
