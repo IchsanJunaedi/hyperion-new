@@ -8,6 +8,8 @@ import { getHeroImageUrl } from "@/features/scrim/data/mlbb-heroes";
 import { getScrimDetail } from "@/features/scrim/queries";
 import { VodReviewSection } from "@/features/scrim/components/VodReviewSection";
 import type { VodTimestampRow } from "@/features/scrim/actions/vodTimestampsAction";
+import { getScrimAiReviews } from "@/features/scrim/queries/aiReviews";
+import { AiTacticalReviewCard } from "@/features/scrim/components/AiTacticalReviewCard";
 
 export const dynamic = "force-dynamic";
 
@@ -94,6 +96,9 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
       return { ...g, signedUrl };
     }),
   );
+
+  const aiReviews = await getScrimAiReviews(id);
+  const reviewByGame = new Map(aiReviews.map((r) => [r.game_number, r.narrative]));
 
   // Collect all user_ids we need profiles for: draft picks + attendances
   const draftPlayerIds = (draftPicks ?? [])
@@ -329,6 +334,12 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
                     />
                   </a>
                 )}
+
+                {/* AI Tactical Review */}
+                {(() => {
+                  const narrative = reviewByGame.get(game.game_number);
+                  return narrative ? <AiTacticalReviewCard narrative={narrative} /> : null;
+                })()}
               </div>
 
               {/* VOD Review accordion */}
