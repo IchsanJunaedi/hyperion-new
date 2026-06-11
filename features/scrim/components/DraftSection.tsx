@@ -402,8 +402,8 @@ const DraftSection = ({ draft, attendingPlayers, onOurChange, onEnemyChange, onB
                   isDragOver && "border-emerald-500/40 bg-emerald-500/5 shadow-md shadow-emerald-500/5",
                 )}
               >
-                <div className="flex items-start gap-1">
-                  <div className="cursor-grab active:cursor-grabbing text-ui-text-muted opacity-30 group-hover/row:opacity-100 transition-opacity p-0.5 mt-2">
+                <div className="flex items-center gap-1">
+                  <div className="cursor-grab active:cursor-grabbing text-ui-text-muted opacity-30 group-hover/row:opacity-100 transition-opacity p-0.5">
                     <GripVertical className="h-3.5 w-3.5" />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -465,8 +465,8 @@ const DraftSection = ({ draft, attendingPlayers, onOurChange, onEnemyChange, onB
                   isDragOver && "border-rose-500/40 bg-rose-500/5 shadow-md shadow-rose-500/5",
                 )}
               >
-                <div className="flex items-start gap-1">
-                  <div className="cursor-grab active:cursor-grabbing text-ui-text-muted opacity-30 group-hover/row:opacity-100 transition-opacity p-0.5 mt-2">
+                <div className="flex items-center gap-1">
+                  <div className="cursor-grab active:cursor-grabbing text-ui-text-muted opacity-30 group-hover/row:opacity-100 transition-opacity p-0.5">
                     <GripVertical className="h-3.5 w-3.5" />
                   </div>
                   <div className="flex-1 min-w-0">
