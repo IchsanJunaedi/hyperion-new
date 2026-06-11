@@ -28,21 +28,13 @@ def main():
 
     draft = server.load_canvas((HERE / "samples" / "draft.png").read_bytes())
     print("=== DRAFT (real) ===")
-    print(json.dumps(server.app and {
-        "bans": [server.match_hero_template(server.crop_norm(draft, b)) for b in server.DRAFT_CFG["our_bans"]],
-        "enemyBans": [server.match_hero_template(server.crop_norm(draft, b)) for b in server.DRAFT_CFG["enemy_bans"]],
-    }, indent=2))
+    print(json.dumps(server.analyze_draft_canvas(draft), indent=2))
 
     score = server.load_canvas((HERE / "samples" / "scoreboard.png").read_bytes())
     print("\n=== SCOREBOARD (real) ===")
-    players = [None] * 5
-    enemy = [None] * 5
-    for side, i, hero_box, kda_box in server.scoreboard_boxes():
-        hero = server.match_hero(server.crop_norm(score, hero_box))
-        k, d, a = server.read_kda(server.crop_norm(score, kda_box), side)
-        (players if side == "our" else enemy)[i] = {"hero": hero, "kills": k, "deaths": d, "assists": a}
-    result = server.detect_result(score)
-    print(json.dumps({"result": result, "players": players, "enemyPlayers": enemy}, indent=2))
+    out = server.analyze_scoreboard_canvas(score)
+    players, enemy, result = out["players"], out["enemyPlayers"], out["result"]
+    print(json.dumps(out, indent=2))
 
     kda_ok = 0
     for p, t in zip(players, TRUTH_OUR_KDA):

@@ -21,7 +21,7 @@ const ALLOWED_MIME = ["image/png", "image/jpeg", "image/webp"];
 const EDIT_ROLES = ["manager", "coach", "captain"];
 
 // Local vision server (scratch/mlbb-vision/server.py) — replaces Gemini Vision
-const VISION_SERVER_URL = process.env.MLBB_VISION_URL ?? "http://localhost:8000";
+const VISION_SERVER_URL = process.env.MLBB_VISION_URL ?? "http://127.0.0.1:8000";
 const VISION_TIMEOUT_MS = 120_000;
 
 interface DraftServerResponse {
