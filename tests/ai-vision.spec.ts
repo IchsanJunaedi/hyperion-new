@@ -10,12 +10,23 @@ test("AI-Assisted Finish Scrim via Dual Screenshot Upload E2E", async ({ page })
   const password = process.env.E2E_OWNER_PASSWORD || "password123";
   const slug = process.env.E2E_TEAM_SLUG || "hyperion-dom";
 
-  const draftPath = path.resolve(process.cwd(), "scratch/draft.png");
-  const scoreboardPath = path.resolve(process.cwd(), "scratch/scoreboard.png");
+  const draftPath = path.resolve(process.cwd(), "scratch/mlbb-vision/samples/draft.png");
+  const scoreboardPath = path.resolve(process.cwd(), "scratch/mlbb-vision/samples/scoreboard.png");
 
-  // Verify test images exist
+  // Requires real screenshots + local vision server — skip in CI when absent
   if (!fs.existsSync(draftPath) || !fs.existsSync(scoreboardPath)) {
-    throw new Error("Missing test images in scratch/ directory!");
+    test.skip(true, "Missing test images in scratch/mlbb-vision/samples/ — skipping vision E2E");
+    return;
+  }
+
+  // Skip if vision server is not reachable
+  const visionUrl = process.env.MLBB_VISION_URL ?? "http://127.0.0.1:8000";
+  try {
+    const probe = await fetch(`${visionUrl}/`, { signal: AbortSignal.timeout(3000) });
+    if (!probe.ok) throw new Error("not ok");
+  } catch {
+    test.skip(true, "Vision server not running — skipping vision E2E");
+    return;
   }
 
   // Helper: set datetime-local input via JS (more reliable than fill)
