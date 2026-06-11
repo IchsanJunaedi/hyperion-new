@@ -224,6 +224,10 @@ const FinishScrimForm = ({
   }
 
   function applyScoreboardScan(i: number, s: ScoreboardResult) {
+    const roleToPlayer = new Map(
+      attendingPlayers.filter((p) => p.mainRole).map((p) => [p.mainRole!, p]),
+    );
+
     setGames((prev) => prev.map((g, idx) => {
       if (idx !== i) return g;
 
@@ -240,7 +244,9 @@ const FinishScrimForm = ({
           );
           our[role] = {
             hero: p.heroName,
-            playerId: matchedPlayer ? matchedPlayer.userId : (g.draft.our[role].playerId || null),
+            playerId: matchedPlayer 
+              ? matchedPlayer.userId 
+              : (g.draft.our[role].playerId || roleToPlayer.get(role)?.userId || null),
           };
         }
       });
