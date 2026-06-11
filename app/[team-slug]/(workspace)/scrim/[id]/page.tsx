@@ -240,7 +240,7 @@ export default async function ScrimDetailPage({
                 <h2 className="text-sm font-semibold text-ui-text">Riwayat vs {scrim.opponent_name}</h2>
                 <span className="text-xs text-ui-text-muted">{opponentHistory.length} pertandingan</span>
               </div>
-              <div className="space-y-2">
+              <div className="space-y-1">
                 {opponentHistory.map((h) => {
                   const date = new Date(h.scheduled_at).toLocaleDateString("id-ID", {
                     day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Jakarta",
@@ -249,17 +249,23 @@ export default async function ScrimDetailPage({
                     ? `${h.our_score}–${h.opponent_score}`
                     : "–";
                   return (
-                    <div key={h.scrim_id} className="flex items-center justify-between text-xs">
-                      <span className="text-ui-text-2">{date} · {h.format.toUpperCase()}</span>
+                    <Link
+                      key={h.scrim_id}
+                      href={`/${slug}/scrim/${h.scrim_id}`}
+                      className="flex items-center justify-between text-xs hover:bg-ui-elevated px-2 py-1.5 -mx-2 rounded-lg transition-colors cursor-pointer group"
+                    >
+                      <span className="text-ui-text-2 group-hover:text-white group-hover:underline">
+                        {date} · {h.format.toUpperCase()}
+                      </span>
                       <div className="flex items-center gap-2">
-                        <span className="font-mono text-ui-text">{scoreText}</span>
+                        <span className="font-mono text-ui-text group-hover:text-white">{scoreText}</span>
                         {h.is_win !== null && (
                           <span className={h.is_win ? "font-semibold text-green-400" : "font-semibold text-red-400"}>
                             {h.is_win ? "W" : "L"}
                           </span>
                         )}
                       </div>
-                    </div>
+                    </Link>
                   );
                 })}
               </div>
