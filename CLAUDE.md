@@ -188,6 +188,7 @@ SUPABASE_SERVICE_ROLE_KEY=
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 NEXT_PUBLIC_MAIN_DOMAIN=hyperionteam.id
 OWNER_EMAIL=                    # Determines who is the owner
+GEMINI_API_KEY=                 # Google AI Studio key for scrim screenshot Vision (free tier: gemini-2.0-flash)
 
 # WhatsApp (Fonnte)
 FONNTE_API_TOKEN=

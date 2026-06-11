@@ -11,8 +11,14 @@ import type { EnterprisePlayerStat, PlayerHeroStat } from "@/features/analytics/
 function computeImpactScore(p: EnterprisePlayerStat): number {
   const attendance = p.attendanceRate;
   const winRate = p.scrimsWhenPresent > 0 ? p.winRateWhenPresent : 50;
-  const rating = p.avgRating !== null ? (p.avgRating / 10) * 100 : 50;
-  return Math.round(attendance * 0.35 + winRate * 0.35 + rating * 0.30);
+  
+  if (p.avgRating !== null) {
+    const rating = (p.avgRating / 10) * 100;
+    return Math.round(attendance * 0.35 + winRate * 0.35 + rating * 0.30);
+  } else {
+    // Jika rating kosong, distribusikan bobot 30% secara proporsional ke attendance dan winRate (masing-masing 50%).
+    return Math.round(attendance * 0.50 + winRate * 0.50);
+  }
 }
 
 function impactColor(score: number): string {
