@@ -122,30 +122,36 @@ const FinishScrimForm = ({
   useEffect(() => {
     async function load() {
       const supabase = createClient();
-      const { data: att } = await supabase
-        .from("scrim_attendances")
-        .select("user_id")
-        .eq("scrim_id", scrimId)
-        .eq("status", "confirmed");
+      const { data: members, error: memErr } = await supabase
+        .from("team_members")
+        .select("user_id, main_role")
+        .eq("organization_id", orgId)
+        .eq("is_active", true)
+        .in("role", ["captain", "member"]);
 
-      const userIds = (att ?? []).map((a) => a.user_id);
+      if (memErr) {
+        console.error("[loadRoster]", memErr);
+        return;
+      }
+
+      const userIds = (members ?? []).map((m) => m.user_id);
       if (userIds.length === 0) return;
 
-      const [profilesRes, membersRes] = await Promise.all([
-        supabase.from("profiles").select("id, display_name").in("id", userIds),
-        supabase
-          .from("team_members")
-          .select("user_id, main_role")
-          .eq("organization_id", orgId)
-          .in("user_id", userIds)
-          .in("role", ["captain", "member"]),
-      ]);
+      const { data: profiles, error: profErr } = await supabase
+        .from("profiles")
+        .select("id, display_name")
+        .in("id", userIds);
+
+      if (profErr) {
+        console.error("[loadProfiles]", profErr);
+        return;
+      }
 
       const profileMap = new Map(
-        (profilesRes.data ?? []).map((p) => [p.id, p.display_name]),
+        (profiles ?? []).map((p) => [p.id, p.display_name]),
       );
       const memberMap = new Map(
-        (membersRes.data ?? []).map((m) => [m.user_id, m.main_role]),
+        (members ?? []).map((m) => [m.user_id, m.main_role]),
       );
 
       const players: AttendingPlayer[] = userIds.map((uid) => ({
