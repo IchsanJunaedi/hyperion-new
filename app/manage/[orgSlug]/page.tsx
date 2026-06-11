@@ -107,12 +107,6 @@ const ManageTeamPage = async ({ params }: Props) => {
         >
           Edit Divisi
         </Link>
-        <Link
-          href={`/manage/${orgSlug}/captains`}
-          className="inline-flex h-10 items-center gap-2 rounded-md bg-ui-elevated px-4 text-sm font-medium text-ui-text transition hover:bg-ui-hover"
-        >
-          Edit Captain
-        </Link>
       </div>
 
       <InviteSection

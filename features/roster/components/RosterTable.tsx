@@ -42,8 +42,6 @@ const RosterTable = ({
   divisions,
 }: RosterTableProps) => {
   const [showInviteForm, setShowInviteForm] = useState(false);
-  const isCaptainOrAbove =
-    currentUserRole === "owner" || currentUserRole === "captain";
   const isManagerOrAbove =
     currentUserRole === "owner" || currentUserRole === "manager";
   const canAssignMainRole =
@@ -101,9 +99,11 @@ const RosterTable = ({
 
         {sortedMembers.map((m, idx) => {
           const isSelf = m.user_id === currentUserId;
-          // RLS: captain+ can update any non-owner member; cannot reassign owner role
           const canEditRole =
-            isCaptainOrAbove && m.role !== "owner" && !isSelf;
+            !isSelf &&
+            m.role !== "owner" &&
+            (currentUserRole === "owner" ||
+              (currentUserRole === "manager" && m.role !== "manager"));
           // Self can change availability; Owner can change anyone; Manager can change anyone except Owner; Captain can change anyone except Owner/Manager
           const canChangeAvailability =
             isSelf ||
@@ -205,6 +205,7 @@ const RosterTable = ({
                       orgSlug={orgSlug}
                       memberId={m.id}
                       currentRole={m.role}
+                      direction={idx >= sortedMembers.length - 2 && idx > 0 ? "up" : "down"}
                     />
                   ) : (
                     <RoleBadge role={m.role} />

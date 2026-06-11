@@ -19,7 +19,6 @@ import {
   Megaphone,
   Radar,
   Settings,
-  Shield,
   Swords,
   TrendingUp,
   Trophy,
@@ -108,13 +107,6 @@ const getManagerNavGroup = (orgSlug: string): NavGroup => ({
       absoluteHref: `/manage/${orgSlug}/assign`,
       label: "Tambah Member",
       Icon: UserPlus,
-    },
-    {
-      key: "manage-captains",
-      href: "",
-      absoluteHref: `/manage/${orgSlug}/captains`,
-      label: "Edit Captain",
-      Icon: Shield,
     },
     {
       key: "manage-finances",
