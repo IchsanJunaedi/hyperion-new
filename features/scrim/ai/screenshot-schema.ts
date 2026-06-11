@@ -14,6 +14,7 @@ export interface DraftResult {
 export interface ScoreboardPlayer {
   displayName: string;
   heroName: string;
+  role: RoleName;
   kills: number;
   deaths: number;
   assists: number;
@@ -25,7 +26,8 @@ export interface ScoreboardResult {
   ourScore: number;
   opponentScore: number;
   durationSeconds: number;
-  players: ScoreboardPlayer[];
+  players: ScoreboardPlayer[];      // our players (left side)
+  enemyPlayers: ScoreboardPlayer[];  // enemy players (right side)
 }
 
 // ── Storage path validation ─────────────────────────────────────────────────
@@ -54,8 +56,22 @@ Map each pick to its lane role: exp_lane, jungler, mid_lane, gold_lane, roamer.
 Return ONLY hero names exactly as printed. If a slot is unreadable, return an empty string.`;
 
 export const SCOREBOARD_PROMPT = `You are analyzing a Mobile Legends: Bang Bang (MLBB) post-match scoreboard screenshot.
-Determine whether our team (top block / the side marked VICTORY for us) won, the series/game score,
-the match duration in seconds, and each player's display name, hero, kills, deaths, assists, and gold.
+Identify all 10 players in the scoreboard:
+- The 5 players on the left column belong to our team ("players").
+- The 5 players on the right column belong to the enemy team ("enemyPlayers").
+
+For each player on both teams, extract:
+- displayName (their in-game name/ID)
+- heroName (the hero they played)
+- role: Map each player to their lane role (exp_lane, jungler, mid_lane, gold_lane, roamer) based on the hero they played and standard MLBB meta. Ensure each of the 5 roles is assigned to exactly one player per team.
+- kills, deaths, assists, and gold.
+
+Also determine:
+- isWin: whether our team (left column) won (VICTORY).
+- ourScore: total kills of our team.
+- opponentScore: total kills of the enemy team.
+- durationSeconds: match duration in seconds (convert MM:SS to seconds).
+
 Return ONLY values visible in the image. Use 0 for any number you cannot read.`;
 
 export const DRAFT_SCHEMA = {
@@ -92,6 +108,22 @@ export const SCOREBOARD_SCHEMA = {
         properties: {
           displayName: { type: "string" },
           heroName: { type: "string" },
+          role: { type: "string" },
+          kills: { type: "integer" },
+          deaths: { type: "integer" },
+          assists: { type: "integer" },
+          gold: { type: "integer" },
+        },
+      },
+    },
+    enemyPlayers: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          displayName: { type: "string" },
+          heroName: { type: "string" },
+          role: { type: "string" },
           kills: { type: "integer" },
           deaths: { type: "integer" },
           assists: { type: "integer" },
@@ -115,7 +147,7 @@ function roleObjectSchema() {
   };
 }
 
-// ── Normalizers ───────────────────────────────────────────────────────────────
+// ─── Normalizers ───────────────────────────────────────────────────────────────
 
 function pad5(arr: unknown): string[] {
   const list = Array.isArray(arr) ? arr.map((x) => matchHero(String(x ?? ""))) : [];
@@ -146,6 +178,7 @@ function toInt(v: unknown): number {
 
 export function normalizeScoreboardResult(raw: Partial<ScoreboardResult>): ScoreboardResult {
   const players = Array.isArray(raw?.players) ? raw.players : [];
+  const enemyPlayers = Array.isArray(raw?.enemyPlayers) ? raw.enemyPlayers : [];
   return {
     isWin: raw?.isWin === true,
     ourScore: toInt(raw?.ourScore),
@@ -154,6 +187,16 @@ export function normalizeScoreboardResult(raw: Partial<ScoreboardResult>): Score
     players: players.map((p) => ({
       displayName: String(p?.displayName ?? "").trim(),
       heroName: matchHero(String(p?.heroName ?? "")),
+      role: (p?.role && ROLES.includes(p.role as RoleName) ? p.role as RoleName : "exp_lane"),
+      kills: toInt(p?.kills),
+      deaths: toInt(p?.deaths),
+      assists: toInt(p?.assists),
+      gold: toInt(p?.gold),
+    })),
+    enemyPlayers: enemyPlayers.map((p) => ({
+      displayName: String(p?.displayName ?? "").trim(),
+      heroName: matchHero(String(p?.heroName ?? "")),
+      role: (p?.role && ROLES.includes(p.role as RoleName) ? p.role as RoleName : "exp_lane"),
       kills: toInt(p?.kills),
       deaths: toInt(p?.deaths),
       assists: toInt(p?.assists),

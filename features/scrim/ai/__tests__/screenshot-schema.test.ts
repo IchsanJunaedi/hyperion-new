@@ -45,26 +45,39 @@ describe("normalizeDraftResult", () => {
 });
 
 describe("normalizeScoreboardResult", () => {
-  it("clamps and coerces numeric fields", () => {
+  it("clamps and coerces numeric fields, roles, and enemyPlayers", () => {
     const out = normalizeScoreboardResult({
       isWin: true,
       ourScore: 2,
       opponentScore: 1,
       durationSeconds: 900,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      players: [{ displayName: "A", heroName: "Guslon", kills: 5, deaths: 2, assists: 7, gold: 12000 } as any],
+      players: [
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        { displayName: "A", heroName: "Guslon", role: "jungler", kills: 5, deaths: 2, assists: 7, gold: 12000 } as any
+      ],
+      enemyPlayers: [
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        { displayName: "B", heroName: "Martis", role: "exp_lane", kills: 1, deaths: 5, assists: 2, gold: 8000 } as any
+      ],
     });
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const p0 = out.players[0]!;
+    const ep0 = out.enemyPlayers[0]!;
+    
     expect(out.isWin).toBe(true);
     expect(p0.heroName).toBe("Gusion");
+    expect(p0.role).toBe("jungler");
     expect(p0.kills).toBe(5);
+    
+    expect(ep0.heroName).toBe("Martis");
+    expect(ep0.role).toBe("exp_lane");
+    expect(ep0.kills).toBe(1);
   });
 
-  it("defaults malformed players array to empty", () => {
+  it("defaults malformed players and enemyPlayers arrays to empty", () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const out = normalizeScoreboardResult({ isWin: false } as any);
     expect(out.players).toEqual([]);
+    expect(out.enemyPlayers).toEqual([]);
     expect(out.ourScore).toBe(0);
   });
 });
