@@ -19,26 +19,37 @@ export async function getExecutiveSummary(orgId: string): Promise<ExecutiveSumma
       .from("scrims")
       .select("id, scrim_results(is_win)")
       .eq("organization_id", orgId)
-      .eq("status", "completed"),
+      .eq("status", "completed")
+      .limit(200),
     admin
       .from("team_members")
       .select("id")
       .eq("organization_id", orgId)
-      .eq("is_active", true),
+      .eq("is_active", true)
+      .limit(50),
     admin
       .from("sponsors")
       .select("deal_value, status")
       .eq("organization_id", orgId)
-      .eq("status", "active"),
+      .eq("status", "active")
+      .limit(50),
     admin
       .from("finances")
       .select("type, amount")
-      .eq("organization_id", orgId),
+      .eq("organization_id", orgId)
+      .limit(500),
     admin
       .from("scrims")
       .select("id")
-      .eq("organization_id", orgId),
+      .eq("organization_id", orgId)
+      .limit(200),
   ]);
+
+  if (scrimsRes.error) console.error("[getExecutiveSummary] scrims:", scrimsRes.error);
+  if (membersRes.error) console.error("[getExecutiveSummary] members:", membersRes.error);
+  if (sponsorsRes.error) console.error("[getExecutiveSummary] sponsors:", sponsorsRes.error);
+  if (financesRes.error) console.error("[getExecutiveSummary] finances:", financesRes.error);
+  if (allScrimsRes.error) console.error("[getExecutiveSummary] allScrims:", allScrimsRes.error);
 
   // Win rate
   const scrims = scrimsRes.data ?? [];
@@ -53,10 +64,12 @@ export async function getExecutiveSummary(orgId: string): Promise<ExecutiveSumma
   let attendanceRate = 0;
   const allScrimIds = (allScrimsRes.data ?? []).map((s) => s.id);
   if (allScrimIds.length > 0) {
-    const { data: attendances } = await admin
+    const { data: attendances, error: attErr } = await admin
       .from("scrim_attendances")
       .select("status")
-      .in("scrim_id", allScrimIds);
+      .in("scrim_id", allScrimIds)
+      .limit(1000);
+    if (attErr) console.error("[getExecutiveSummary] attendances:", attErr);
     const all = attendances ?? [];
     const confirmed = all.filter((a) => a.status === "confirmed").length;
     attendanceRate = all.length > 0 ? Math.round((confirmed / all.length) * 100) : 0;

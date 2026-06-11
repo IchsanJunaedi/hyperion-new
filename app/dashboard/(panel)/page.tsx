@@ -74,7 +74,7 @@ export default async function DashboardPage({
   for (const [uid, email] of emailMap.entries()) { if (email === ownerEmail) roleMap.set(uid, "owner"); }
 
   // Team health score + executive summary — sequential after Promise.all
-  const currentOrg = orgs?.find((o) => o.id === selectedOrgId) || orgs?.[0];
+  const currentOrg = orgs?.find((o) => o.id === selectedOrgId) || orgs?.[orgs.length - 1];
   const healthOrgId = currentOrg?.id ?? null;
   const healthOrgName = currentOrg?.name ?? "";
   let healthScore = null;
@@ -105,7 +105,7 @@ export default async function DashboardPage({
             <Stat label="Total User" value={totalUsers ?? 0} />
             <Stat label="Total Tim" value={orgs?.length ?? 0} />
             <Stat label="Member Aktif" value={members?.length ?? 0} />
-            <Stat label="Divisi" value={allDivisions?.length ?? 0} />
+            <Stat label="Divisi" value={(allDivisions ?? []).filter(d => !d.organization_id).length} />
           </div>
         </div>
 
