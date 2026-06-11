@@ -45,6 +45,7 @@ const DashboardCalendarPage = async ({
     const { data } = await admin
       .from("organizations")
       .select("id, slug, name")
+      .eq("owner_id", user.id)
       .order("created_at", { ascending: false });
     allOrgs = (data ?? []) as OrgRow[];
   } else {

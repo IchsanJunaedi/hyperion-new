@@ -23,6 +23,7 @@ export default async function DashboardTeamsPage() {
   const { data: orgs } = await admin
     .from("organizations")
     .select("*")
+    .eq("owner_id", user.id)
     .order("created_at", { ascending: false });
 
   const { data: divisions } = await admin

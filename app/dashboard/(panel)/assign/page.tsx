@@ -1,12 +1,21 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
+import { redirect } from "next/navigation";
 
+import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { AssignRoleForm } from "@/features/dashboard/components/AssignRoleForm";
 
 export const dynamic = "force-dynamic";
 
 export default async function AssignRolePage() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect("/dashboard/login");
+
+  const ownerEmail = process.env.OWNER_EMAIL || process.env.E2E_OWNER_EMAIL;
+  if (!ownerEmail || user.email !== ownerEmail) redirect("/");
+
   const admin = createAdminClient();
 
   const { data: profiles } = await admin
@@ -19,7 +28,6 @@ export default async function AssignRolePage() {
     .select("user_id, organization_id, role")
     .eq("is_active", true);
 
-  const ownerEmail = process.env.OWNER_EMAIL;
   // Exclude only the owner — everyone else can be assigned to any org they're not yet in
   const filteredProfiles = (profiles ?? []).filter(
     (p) => p.email !== ownerEmail,
@@ -36,6 +44,7 @@ export default async function AssignRolePage() {
   const { data: orgs } = await admin
     .from("organizations")
     .select("id, name, slug")
+    .eq("owner_id", user.id)
     .order("name", { ascending: true });
 
   const { data: divisions } = await admin

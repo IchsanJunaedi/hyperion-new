@@ -52,7 +52,7 @@ export default async function DashboardPage({
     { data: profiles },
   ] = await Promise.all([
     admin.from("profiles").select("id", { count: "exact", head: true }),
-    admin.from("organizations").select("id, name, slug").order("created_at", { ascending: false }),
+    admin.from("organizations").select("id, name, slug").eq("owner_id", user.id).order("created_at", { ascending: false }),
     admin.from("team_members").select("id, user_id, organization_id, division_id, role, is_active").eq("is_active", true),
     admin.from("divisions").select("id, name, organization_id"),
     admin.from("profiles").select("id, full_name, username, display_name, phone_wa, avatar_url, date_of_birth, bio, social_links, game_ids, email").order("created_at", { ascending: false }),

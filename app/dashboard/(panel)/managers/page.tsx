@@ -31,7 +31,7 @@ export default async function DashboardManagersPage() {
     ? await admin.from("profiles").select("id, full_name, username, display_name, phone_wa").in("id", userIds)
     : { data: [] };
 
-  const { data: orgs } = await admin.from("organizations").select("id, name, slug");
+  const { data: orgs } = await admin.from("organizations").select("id, name, slug").eq("owner_id", user.id);
   const { data: divisions } = await admin.from("divisions").select("id, name, organization_id").eq("is_active", true);
 
   const profileMap = new Map((profiles ?? []).map((p) => [p.id, p]));

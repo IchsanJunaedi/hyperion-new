@@ -20,7 +20,7 @@ export default async function DashboardSalariesPage() {
 
   const admin = createAdminClient();
 
-  const { data: orgs } = await admin.from("organizations").select("id, name").order("created_at");
+  const { data: orgs } = await admin.from("organizations").select("id, name").eq("owner_id", user.id).order("created_at");
   if (!orgs || orgs.length === 0) redirect("/dashboard");
   const orgIds = orgs.map((o) => o.id);
 

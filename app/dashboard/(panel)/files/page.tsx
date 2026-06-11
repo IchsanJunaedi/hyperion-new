@@ -21,7 +21,7 @@ export default async function DashboardFilesPage() {
   const { data: profiles } = await admin.from("profiles").select("id, full_name, display_name");
   const workspaceName = profiles?.find((p) => p.id === user.id)?.full_name ?? "Hyperion Team";
 
-  const { data: orgs } = await admin.from("organizations").select("id, name").order("created_at");
+  const { data: orgs } = await admin.from("organizations").select("id, name").eq("owner_id", user.id).order("created_at");
   const { data: dbFiles } = await admin
     .from("files")
     .select("id, file_name, file_type, file_size, storage_path, created_at, organization_id, uploaded_by")

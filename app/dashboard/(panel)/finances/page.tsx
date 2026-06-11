@@ -30,7 +30,7 @@ export default async function DashboardFinancesPage({ searchParams }: FinancesPa
   const { data: profiles } = await admin.from("profiles").select("id, full_name");
   const workspaceName = profiles?.find(p => p.id === user.id)?.full_name ?? "Hyperion Team";
 
-  const { data: orgs } = await admin.from("organizations").select("id, name").order("created_at");
+  const { data: orgs } = await admin.from("organizations").select("id, name").eq("owner_id", user.id).order("created_at");
   const orgId = sp.org ?? orgs?.[0]?.id ?? null;
   if (!orgId) redirect("/dashboard");
 
