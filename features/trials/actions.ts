@@ -5,8 +5,14 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { sendWaMessage } from "@/lib/utils/fonnte";
 
+// Accept any object URL under this project's storage endpoint. The upload API
+// routes return signed URLs (/storage/v1/object/sign/...) for the public
+// trial-screenshots bucket, while other flows may use public URLs
+// (/storage/v1/object/public/...). Both live under /storage/v1/object/, so we
+// validate against that base to reject arbitrary external URLs without
+// rejecting our own signed uploads.
 const STORAGE_PREFIX = process.env.NEXT_PUBLIC_SUPABASE_URL
-  ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/`
+  ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/`
   : null;
 
 function isValidStorageUrl(url: string | null): boolean {

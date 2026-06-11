@@ -33,9 +33,11 @@ export async function GET(): Promise<NextResponse> {
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
   // Verify secret from query param: /api/wa/webhook?secret=...
+  // Fail closed: if the secret is not configured, reject all requests rather
+  // than accepting unauthenticated webhook calls (which could spoof attendance).
   const secret = req.nextUrl.searchParams.get("secret");
   const expectedSecret = process.env.FONNTE_WEBHOOK_SECRET;
-  if (expectedSecret && secret !== expectedSecret) {
+  if (!expectedSecret || secret !== expectedSecret) {
     return NextResponse.json({ ok: false }, { status: 401 });
   }
 
