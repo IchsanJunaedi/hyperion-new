@@ -8,10 +8,11 @@ export interface NumberInputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
   suffix?: React.ReactNode;
   containerClassName?: string;
+  hideSteppers?: boolean;
 }
 
 const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
-  ({ className, suffix, containerClassName, ...props }, ref) => {
+  ({ className, suffix, containerClassName, hideSteppers = false, ...props }, ref) => {
     const localRef = React.useRef<HTMLInputElement | null>(null);
 
     // Merge forwarded ref and local ref
@@ -70,7 +71,7 @@ const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
           className={cn(
             "flex h-10 w-full rounded-md border border-ui-border bg-ui-bg px-3 py-2 text-sm text-ui-text",
             "placeholder:text-ui-text-muted focus:border-ui-text-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50",
-            "pr-14", // Make room for custom stepper buttons + potential suffix
+            hideSteppers ? "pr-3" : "pr-14", // Make room for stepper buttons only if they are not hidden
             className
           )}
           {...props}
@@ -93,30 +94,32 @@ const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
             props.onFocus?.(e);
           }}
         />
-        {/* Custom Stepper Buttons */}
-        <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-1.5 pr-1">
-          {suffix && <span className="text-xs text-ui-text-muted select-none mr-0.5">{suffix}</span>}
-          <div className="flex flex-col border-l border-ui-border/60 pl-1.5">
-            <button
-              type="button"
-              tabIndex={-1}
-              onClick={() => handleStep("up")}
-              disabled={props.disabled}
-              className="flex items-center justify-center p-0.5 text-ui-text-muted hover:text-ui-text transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              <ChevronUp className="h-3.5 w-3.5" />
-            </button>
-            <button
-              type="button"
-              tabIndex={-1}
-              onClick={() => handleStep("down")}
-              disabled={props.disabled}
-              className="flex items-center justify-center p-0.5 text-ui-text-muted hover:text-ui-text transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              <ChevronDown className="h-3.5 w-3.5" />
-            </button>
+        {/* Custom Stepper Buttons (hidden if hideSteppers is true) */}
+        {!hideSteppers && (
+          <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-1.5 pr-1">
+            {suffix && <span className="text-xs text-ui-text-muted select-none mr-0.5">{suffix}</span>}
+            <div className="flex flex-col border-l border-ui-border/60 pl-1.5">
+              <button
+                type="button"
+                tabIndex={-1}
+                onClick={() => handleStep("up")}
+                disabled={props.disabled}
+                className="flex items-center justify-center p-0.5 text-ui-text-muted hover:text-ui-text transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                <ChevronUp className="h-3.5 w-3.5" />
+              </button>
+              <button
+                type="button"
+                tabIndex={-1}
+                onClick={() => handleStep("down")}
+                disabled={props.disabled}
+                className="flex items-center justify-center p-0.5 text-ui-text-muted hover:text-ui-text transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                <ChevronDown className="h-3.5 w-3.5" />
+              </button>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     );
   }

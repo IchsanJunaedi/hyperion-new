@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useTransition } from "react";
 import {
-  CheckCircle, ClipboardList, Loader2, Plus, Star,
+  CheckCircle, ChevronDown, ChevronUp, ClipboardList, Loader2, Plus, Star,
   Trophy, Upload, XCircle,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -119,6 +119,7 @@ const FinishScrimForm = ({
     Array.from({ length: config.minGames }, makeBlankGame),
   );
   const [activeGame, setActiveGame] = useState(0);
+  const [showScoreboardReview, setShowScoreboardReview] = useState(false);
 
   // Attending players (fetched on mount)
   const [attendingPlayers, setAttendingPlayers] = useState<AttendingPlayer[]>([]);
@@ -276,7 +277,10 @@ const FinishScrimForm = ({
 
   function handleAnalyzed(i: number, payload: AnalyzedPayload) {
     if (payload.kind === "draft") applyDraftScan(i, payload.data);
-    else applyScoreboardScan(i, payload.data);
+    else {
+      applyScoreboardScan(i, payload.data);
+      setShowScoreboardReview(true);
+    }
   }
 
   function updateScoreboardPlayer(i: number, pIdx: number, patch: Partial<ScoreboardResult["players"][number]>) {
@@ -518,29 +522,48 @@ const FinishScrimForm = ({
 
         {/* Scoreboard scan review */}
         {game.scoreboard && game.scoreboard.players.length > 0 && (
-          <div className="rounded-xl border border-yellow-400/20 bg-yellow-400/5 p-3 space-y-2">
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-yellow-300">
-              Hasil Scan Scoreboard — periksa &amp; koreksi
-            </p>
-            {game.scoreboard.players.map((pl, pIdx) => (
-              <div key={pIdx} className="grid grid-cols-[1fr_auto_auto_auto] items-center gap-2">
-                <input
-                  value={pl.heroName}
-                  onChange={(e) => updateScoreboardPlayer(activeGame, pIdx, { heroName: e.target.value })}
-                  className="h-7 rounded border border-ui-border bg-ui-surface px-2 text-xs text-ui-text"
-                />
-                {(["kills", "deaths", "assists"] as const).map((stat) => (
-                  <NumberInput
-                    key={stat}
-                    min={0}
-                    value={String(pl[stat])}
-                    onChange={(e) => updateScoreboardPlayer(activeGame, pIdx, { [stat]: parseInt(e.target.value || "0", 10) })}
-                    className="h-7 w-14 text-center text-xs text-ui-text bg-ui-surface border-ui-border"
-                    containerClassName="w-14"
-                  />
+          <div className="rounded-xl border border-ui-border bg-ui-surface p-3 space-y-2">
+            <button
+              type="button"
+              onClick={() => setShowScoreboardReview((v) => !v)}
+              className="flex w-full items-center justify-between text-[10px] font-semibold uppercase tracking-wider text-ui-text-muted hover:text-ui-text transition-colors cursor-pointer"
+            >
+              <span>Hasil Scan Scoreboard — periksa &amp; koreksi</span>
+              {showScoreboardReview ? (
+                <ChevronUp className="h-3.5 w-3.5" />
+              ) : (
+                <ChevronDown className="h-3.5 w-3.5" />
+              )}
+            </button>
+
+            {showScoreboardReview && (
+              <div className="space-y-2 pt-2 border-t border-ui-border">
+                {game.scoreboard.players.map((pl, pIdx) => (
+                  <div key={pIdx} className="grid grid-cols-[1fr_auto_auto_auto] items-center gap-2">
+                    <input
+                      value={pl.heroName}
+                      onChange={(e) => updateScoreboardPlayer(activeGame, pIdx, { heroName: e.target.value })}
+                      className="h-7 rounded border border-ui-border bg-ui-bg px-2 text-xs text-ui-text w-full min-w-0"
+                    />
+                    {(["kills", "deaths", "assists"] as const).map((stat) => (
+                      <div key={stat} className="flex items-center gap-1.5">
+                        <span className="text-[9px] font-bold uppercase text-ui-text-muted w-3 text-center">
+                          {stat === "kills" ? "K" : stat === "deaths" ? "D" : "A"}
+                        </span>
+                        <NumberInput
+                          min={0}
+                          hideSteppers
+                          value={String(pl[stat])}
+                          onChange={(e) => updateScoreboardPlayer(activeGame, pIdx, { [stat]: parseInt(e.target.value || "0", 10) })}
+                          className="h-7 w-12 text-center text-xs text-ui-text bg-ui-bg border-ui-border pr-2 pl-2"
+                          containerClassName="w-12"
+                        />
+                      </div>
+                    ))}
+                  </div>
                 ))}
               </div>
-            ))}
+            )}
           </div>
         )}
 
