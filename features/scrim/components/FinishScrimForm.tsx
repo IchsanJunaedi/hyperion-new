@@ -17,12 +17,12 @@ import {
   type AttendingPlayer,
   type DraftPicks,
 } from "./DraftSection";
-import { ROLES } from "@/features/scrim/data/mlbb-heroes";
+import { getHeroImageUrl, ROLES } from "@/features/scrim/data/mlbb-heroes";
 import type { RoleName } from "@/features/scrim/data/mlbb-heroes";
 import { cn } from "@/lib/utils/cn";
 import { ScreenshotDropzone } from "./ScreenshotDropzone";
 import type { AnalyzedPayload } from "./ScreenshotDropzone";
-import type { DraftResult, ScoreboardResult } from "@/features/scrim/ai/screenshot-schema";
+import type { DraftResult, ScoreboardResult, ScoreboardPlayer } from "@/features/scrim/ai/screenshot-schema";
 import { generateTacticalReviewAction } from "../actions/tacticalReviewAction";
 
 // ─── BO format logic ──────────────────────────────────────────────────────────
@@ -274,12 +274,27 @@ const FinishScrimForm = ({
     }
   }
 
-  function updateScoreboardPlayer(i: number, pIdx: number, patch: Partial<ScoreboardResult["players"][number]>) {
-    setGames((prev) => prev.map((g, idx) => {
-      if (idx !== i || !g.scoreboard) return g;
-      const players = g.scoreboard.players.map((pl, j) => (j === pIdx ? { ...pl, ...patch } : pl));
-      return { ...g, scoreboard: { ...g.scoreboard, players } };
-    }));
+  function updateScoreboardPlayer(
+    i: number,
+    side: "our" | "enemy",
+    pIdx: number,
+    patch: Partial<ScoreboardPlayer>,
+  ) {
+    setGames((prev) =>
+      prev.map((g, idx) => {
+        if (idx !== i || !g.scoreboard) return g;
+        const key = side === "our" ? "players" : "enemyPlayers";
+        const list = g.scoreboard[key] ?? [];
+        const updatedList = list.map((pl, j) => (j === pIdx ? { ...pl, ...patch } : pl));
+        return {
+          ...g,
+          scoreboard: {
+            ...g.scoreboard,
+            [key]: updatedList,
+          },
+        };
+      }),
+    );
   }
 
   function addGame() {
@@ -378,6 +393,44 @@ const FinishScrimForm = ({
   const wins = games.filter((g) => g.isWin === true).length;
   const losses = games.filter((g) => g.isWin === false).length;
   const game = games[activeGame]!;
+
+  const renderPlayerRow = (pl: ScoreboardPlayer, pIdx: number, side: "our" | "enemy") => (
+    <div key={pIdx} className="flex items-center gap-2">
+      {/* Hero Avatar */}
+      <div className="h-6 w-6 shrink-0 overflow-hidden rounded-full border border-ui-border bg-ui-bg">
+        {pl.heroName ? (
+          <img src={getHeroImageUrl(pl.heroName)} alt={pl.heroName} className="h-full w-full object-cover" />
+        ) : (
+          <div className="h-full w-full bg-ui-elevated" />
+        )}
+      </div>
+
+      {/* Hero Name input */}
+      <input
+        value={pl.heroName}
+        onChange={(e) => updateScoreboardPlayer(activeGame, side, pIdx, { heroName: e.target.value })}
+        className="h-7 flex-1 min-w-0 rounded border border-ui-border bg-ui-bg px-2 text-[11px] text-ui-text"
+        placeholder="Hero..."
+      />
+
+      {/* KDA inputs */}
+      {(["kills", "deaths", "assists"] as const).map((stat) => (
+        <div key={stat} className="flex items-center gap-1.5">
+          <span className="text-[9px] font-bold uppercase text-ui-text-muted w-3 text-center">
+            {stat === "kills" ? "K" : stat === "deaths" ? "D" : "A"}
+          </span>
+          <NumberInput
+            min={0}
+            hideSteppers
+            value={String(pl[stat])}
+            onChange={(e) => updateScoreboardPlayer(activeGame, side, pIdx, { [stat]: parseInt(e.target.value || "0", 10) })}
+            className="h-7 w-8 text-center text-xs text-ui-text bg-ui-bg border-ui-border pr-0.5 pl-0.5"
+            containerClassName="w-8 shrink-0"
+          />
+        </div>
+      ))}
+    </div>
+  );
 
   return (
     <div className="mx-auto w-full max-w-2xl space-y-5">
@@ -524,31 +577,24 @@ const FinishScrimForm = ({
             </button>
 
             {showScoreboardReview && (
-              <div className="space-y-2 pt-2 border-t border-ui-border">
-                {game.scoreboard.players.map((pl, pIdx) => (
-                  <div key={pIdx} className="grid grid-cols-[1fr_auto_auto_auto] items-center gap-2">
-                    <input
-                      value={pl.heroName}
-                      onChange={(e) => updateScoreboardPlayer(activeGame, pIdx, { heroName: e.target.value })}
-                      className="h-7 rounded border border-ui-border bg-ui-bg px-2 text-xs text-ui-text w-full min-w-0"
-                    />
-                    {(["kills", "deaths", "assists"] as const).map((stat) => (
-                      <div key={stat} className="flex items-center gap-1.5">
-                        <span className="text-[9px] font-bold uppercase text-ui-text-muted w-3 text-center">
-                          {stat === "kills" ? "K" : stat === "deaths" ? "D" : "A"}
-                        </span>
-                        <NumberInput
-                          min={0}
-                          hideSteppers
-                          value={String(pl[stat])}
-                          onChange={(e) => updateScoreboardPlayer(activeGame, pIdx, { [stat]: parseInt(e.target.value || "0", 10) })}
-                          className="h-7 w-12 text-center text-xs text-ui-text bg-ui-bg border-ui-border pr-2 pl-2"
-                          containerClassName="w-12"
-                        />
-                      </div>
-                    ))}
+              <div className="space-y-4 pt-3 border-t border-ui-border">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* Our team column */}
+                  <div className="space-y-2">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">Tim Kita</p>
+                    <div className="space-y-2">
+                      {game.scoreboard.players.map((pl, pIdx) => renderPlayerRow(pl, pIdx, "our"))}
+                    </div>
                   </div>
-                ))}
+
+                  {/* Enemy team column */}
+                  <div className="space-y-2">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-rose-400">Lawan</p>
+                    <div className="space-y-2">
+                      {(game.scoreboard.enemyPlayers ?? []).map((pl, pIdx) => renderPlayerRow(pl, pIdx, "enemy"))}
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
           </div>
