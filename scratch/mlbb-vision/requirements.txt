@@ -1,0 +1,11 @@
+opencv-python
+easyocr
+torch
+torchvision
+sentence-transformers
+fastapi
+uvicorn
+python-multipart
+pillow
+numpy
+matplotlib
