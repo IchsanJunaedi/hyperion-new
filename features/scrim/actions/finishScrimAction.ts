@@ -64,8 +64,8 @@ export async function finishScrimAction(
       .eq("user_id", user.id)
       .eq("is_active", true)
       .maybeSingle();
-    if (!membership || !["coach", "captain", "manager"].includes(membership.role)) {
-      return { ok: false, message: "Hanya coach, captain, atau manager yang bisa menyelesaikan scrim" };
+    if (!membership || !["owner", "coach", "captain", "manager"].includes(membership.role)) {
+      return { ok: false, message: "Hanya owner, coach, captain, atau manager yang bisa menyelesaikan scrim" };
     }
   }
 
