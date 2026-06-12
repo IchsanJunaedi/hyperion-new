@@ -614,6 +614,240 @@ describe("Calendar Access Permissions", () => {
     });
   });
 
+  describe("getAccessibleCalendars — visibility branches (PRF-01)", () => {
+    // Drives calendarVisibilityAllows across every switch arm in one pass.
+    function setupCalendars(
+      role: string | null,
+      calendars: Array<Record<string, unknown>>,
+      perms: Array<Record<string, unknown>> = [],
+    ) {
+      process.env.OWNER_EMAIL = "owner@test.com";
+      mockQuery.single.mockImplementation(() => {
+        if (currentTable === "team_members")
+          return role
+            ? Promise.resolve({ data: { role }, error: null })
+            : Promise.resolve({ data: null, error: { code: "PGRST116" } });
+        return Promise.resolve({ data: null, error: null });
+      });
+      mockQuery.then = vi.fn((resolve) => {
+        if (currentTable === "calendar_configs")
+          return resolve({ data: calendars, error: null });
+        if (currentTable === "calendar_member_permissions")
+          return resolve({ data: perms, error: null });
+        return resolve({ data: [], error: null });
+      });
+    }
+
+    it("captain sees captain-only + team-only, not management-only", async () => {
+      setupCalendars("captain", [
+        { id: "mgmt", visibility: "management-only", created_by: "x" },
+        { id: "cap", visibility: "captain-only", created_by: "x" },
+        { id: "team", visibility: "team-only", created_by: "x" },
+        { id: "pub", visibility: "public-workspace", created_by: "x" },
+      ]);
+      const result = await getAccessibleCalendars("captain-id", "org-1");
+      expect(result.map((c) => c.id).sort()).toEqual(["cap", "pub", "team"]);
+    });
+
+    it("owner-by-creator sees own private calendar; others denied", async () => {
+      setupCalendars("member", [
+        { id: "mine", visibility: "private", created_by: "member-id" },
+        { id: "theirs", visibility: "private", created_by: "x" },
+      ]);
+      const result = await getAccessibleCalendars("member-id", "org-1");
+      expect(result.map((c) => c.id)).toEqual(["mine"]);
+    });
+
+    it("creator sees own selected-members calendar without explicit permission", async () => {
+      setupCalendars(
+        "member",
+        [{ id: "sel", visibility: "selected-members", created_by: "member-id" }],
+        [],
+      );
+      const result = await getAccessibleCalendars("member-id", "org-1");
+      expect(result.map((c) => c.id)).toEqual(["sel"]);
+    });
+
+    it("non-member (null role) denied management/captain/team calendars", async () => {
+      setupCalendars(null, [
+        { id: "mgmt", visibility: "management-only", created_by: "x" },
+        { id: "cap", visibility: "captain-only", created_by: "x" },
+        { id: "team", visibility: "team-only", created_by: "x" },
+        { id: "pub", visibility: "public-workspace", created_by: "x" },
+      ]);
+      const result = await getAccessibleCalendars("outsider-id", "org-1");
+      expect(result.map((c) => c.id)).toEqual(["pub"]);
+    });
+
+    it("skips soft-deleted calendars", async () => {
+      setupCalendars("owner", [
+        { id: "live", visibility: "team-only", created_by: "x", deleted_at: null },
+        { id: "dead", visibility: "team-only", created_by: "x", deleted_at: "2026-01-01" },
+      ]);
+      const result = await getAccessibleCalendars("owner-id", "org-1");
+      expect(result.map((c) => c.id)).toEqual(["live"]);
+    });
+
+    it("logs and continues when bulk permission fetch errors", async () => {
+      process.env.OWNER_EMAIL = "owner@test.com";
+      const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+      mockQuery.single.mockImplementation(() =>
+        Promise.resolve({ data: { role: "member" }, error: null }),
+      );
+      mockQuery.then = vi.fn((resolve) => {
+        if (currentTable === "calendar_configs")
+          return resolve({
+            data: [{ id: "sel", visibility: "selected-members", created_by: "x" }],
+            error: null,
+          });
+        if (currentTable === "calendar_member_permissions")
+          return resolve({ data: null, error: { message: "boom" } });
+        return resolve({ data: [], error: null });
+      });
+      const result = await getAccessibleCalendars("member-id", "org-1");
+      // permission errored → no can_view → selected-members denied
+      expect(result).toEqual([]);
+      expect(spy).toHaveBeenCalledWith(
+        "Error fetching calendar member permissions:",
+        expect.objectContaining({ message: "boom" }),
+      );
+      spy.mockRestore();
+    });
+  });
+
+  describe("getAccessibleEvents — visibility branches (PRF-01)", () => {
+    function setupEvents(
+      role: string,
+      events: Array<Record<string, unknown>>,
+      overrides: Array<Record<string, unknown>> = [],
+      calVisibility = "public-workspace",
+    ) {
+      process.env.OWNER_EMAIL = "owner@test.com";
+      mockQuery.single.mockImplementation(() => {
+        if (currentTable === "team_members")
+          return Promise.resolve({ data: { role }, error: null });
+        return Promise.resolve({ data: null, error: null });
+      });
+      mockQuery.then = vi.fn((resolve) => {
+        if (currentTable === "calendar_configs")
+          return resolve({
+            data: [{ id: "cal-1", visibility: calVisibility, created_by: "x" }],
+            error: null,
+          });
+        if (currentTable === "calendar_events")
+          return resolve({ data: events, error: null });
+        if (currentTable === "event_visibility")
+          return resolve({ data: overrides, error: null });
+        return resolve({ data: [], error: null });
+      });
+    }
+
+    const evt = (id: string, extra: Record<string, unknown> = {}) => ({
+      id,
+      title: id,
+      event_type: "practice",
+      starts_at: "2026-06-01",
+      ends_at: null,
+      created_by: "x",
+      calendar_id: "cal-1",
+      ...extra,
+    });
+    const range = { from: "2026-06-01", to: "2026-06-30" };
+
+    it("selected-members override: only allowed member (or creator) sees event", async () => {
+      setupEvents(
+        "member",
+        [evt("ev-sel", { created_by: "x" })],
+        [{ event_id: "ev-sel", visibility: "selected-members", allowed_member_ids: ["member-id"] }],
+      );
+      const result = await getAccessibleEvents("member-id", "org-1", range);
+      expect(result.map((e) => e.id)).toEqual(["ev-sel"]);
+    });
+
+    it("selected-members override: non-listed member denied", async () => {
+      setupEvents(
+        "member",
+        [evt("ev-sel", { created_by: "x" })],
+        [{ event_id: "ev-sel", visibility: "selected-members", allowed_member_ids: ["other"] }],
+      );
+      const result = await getAccessibleEvents("member-id", "org-1", range);
+      expect(result).toEqual([]);
+    });
+
+    it("private override: only creator sees event", async () => {
+      setupEvents(
+        "member",
+        [evt("ev-mine", { created_by: "member-id" }), evt("ev-theirs", { created_by: "x" })],
+        [
+          { event_id: "ev-mine", visibility: "private", allowed_member_ids: null },
+          { event_id: "ev-theirs", visibility: "private", allowed_member_ids: null },
+        ],
+      );
+      const result = await getAccessibleEvents("member-id", "org-1", range);
+      expect(result.map((e) => e.id)).toEqual(["ev-mine"]);
+    });
+
+    it("captain-only and team-only overrides resolve by role", async () => {
+      setupEvents(
+        "captain",
+        [evt("ev-cap"), evt("ev-team"), evt("ev-mgmt")],
+        [
+          { event_id: "ev-cap", visibility: "captain-only", allowed_member_ids: null },
+          { event_id: "ev-team", visibility: "team-only", allowed_member_ids: null },
+          { event_id: "ev-mgmt", visibility: "management-only", allowed_member_ids: null },
+        ],
+      );
+      const result = await getAccessibleEvents("captain-id", "org-1", range);
+      expect(result.map((e) => e.id).sort()).toEqual(["ev-cap", "ev-team"]);
+    });
+
+    it("public-workspace override always visible", async () => {
+      setupEvents(
+        "member",
+        [evt("ev-pub")],
+        [{ event_id: "ev-pub", visibility: "public-workspace", allowed_member_ids: null }],
+      );
+      const result = await getAccessibleEvents("member-id", "org-1", range);
+      expect(result.map((e) => e.id)).toEqual(["ev-pub"]);
+    });
+
+    it("denies orphaned event with no calendar id and no override", async () => {
+      setupEvents("member", [evt("ev-orphan", { calendar_id: null })], []);
+      const result = await getAccessibleEvents("member-id", "org-1", range);
+      expect(result).toEqual([]);
+    });
+
+    it("logs and continues when bulk override fetch errors", async () => {
+      process.env.OWNER_EMAIL = "owner@test.com";
+      const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+      mockQuery.single.mockImplementation(() => {
+        if (currentTable === "team_members")
+          return Promise.resolve({ data: { role: "member" }, error: null });
+        return Promise.resolve({ data: null, error: null });
+      });
+      mockQuery.then = vi.fn((resolve) => {
+        if (currentTable === "calendar_configs")
+          return resolve({
+            data: [{ id: "cal-1", visibility: "public-workspace", created_by: "x" }],
+            error: null,
+          });
+        if (currentTable === "calendar_events")
+          return resolve({ data: [evt("ev-plain")], error: null });
+        if (currentTable === "event_visibility")
+          return resolve({ data: null, error: { message: "boom" } });
+        return resolve({ data: [], error: null });
+      });
+      const result = await getAccessibleEvents("member-id", "org-1", range);
+      // override fetch failed → events inherit calendar visibility, still visible
+      expect(result.map((e) => e.id)).toEqual(["ev-plain"]);
+      expect(spy).toHaveBeenCalledWith(
+        "Error fetching event visibility overrides:",
+        expect.objectContaining({ message: "boom" }),
+      );
+      spy.mockRestore();
+    });
+  });
+
   describe("userCanManageCalendars and PermissionContext", () => {
     it("validates management permissions", async () => {
       mockQuery.single.mockResolvedValueOnce({ data: { role: "coach" }, error: null });
