@@ -1,11 +1,28 @@
 "use client";
 
+import dynamic from "next/dynamic";
+
 import type { HomeChartData } from "@/features/dashboard/queries/homeCharts";
 import { ChartCard } from "./ChartCard";
-import { WinRateAreaChart } from "./WinRateAreaChart";
-import { CashFlowChart } from "./CashFlowChart";
-import { AttendanceLineChart } from "./AttendanceLineChart";
-import { SponsorDonutChart } from "./SponsorDonutChart";
+
+const chartFallback = <div className="h-[200px] w-full animate-pulse rounded bg-ui-border/30" />;
+
+const WinRateAreaChart = dynamic(
+  () => import("./WinRateAreaChart").then((m) => m.WinRateAreaChart),
+  { ssr: false, loading: () => chartFallback }
+);
+const CashFlowChart = dynamic(
+  () => import("./CashFlowChart").then((m) => m.CashFlowChart),
+  { ssr: false, loading: () => chartFallback }
+);
+const AttendanceLineChart = dynamic(
+  () => import("./AttendanceLineChart").then((m) => m.AttendanceLineChart),
+  { ssr: false, loading: () => chartFallback }
+);
+const SponsorDonutChart = dynamic(
+  () => import("./SponsorDonutChart").then((m) => m.SponsorDonutChart),
+  { ssr: false, loading: () => chartFallback }
+);
 
 const HomeCharts = ({ data }: { data: HomeChartData }) => {
   const scrimEmpty = data.months.every((m) => m.scrimCount === 0);

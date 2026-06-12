@@ -1,7 +1,19 @@
+"use client";
+
 import { Trophy, Users, Calendar, Handshake } from "lucide-react";
-import { WinRateTrendChart } from "@/features/reports/components/charts/WinRateTrendChart";
-import { FinanceTrendChart } from "@/features/reports/components/charts/FinanceTrendChart";
+import dynamic from "next/dynamic";
 import type { MonthlyReport } from "@/features/reports/queries";
+
+const chartFallback = <div className="h-[200px] w-full animate-pulse rounded bg-ui-border/30" />;
+
+const WinRateTrendChart = dynamic(
+  () => import("@/features/reports/components/charts/WinRateTrendChart").then((m) => m.WinRateTrendChart),
+  { ssr: false, loading: () => chartFallback }
+);
+const FinanceTrendChart = dynamic(
+  () => import("@/features/reports/components/charts/FinanceTrendChart").then((m) => m.FinanceTrendChart),
+  { ssr: false, loading: () => chartFallback }
+);
 
 function StatCard({ label, value, sub, color = "default" }: {
   label: string; value: string; sub: string;

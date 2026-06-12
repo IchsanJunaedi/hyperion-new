@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getOrgBySlug } from "@/features/teams/queries";
 import { getPlayerTargets } from "@/features/player-development/queries";
 import { PlayerTargetCard } from "@/features/player-development/components/PlayerTargetCard";
-import { SkillRadarChart } from "@/features/player-development/components/SkillRadarChart";
+import { SkillRadarChart } from "@/features/player-development/components/SkillRadarChartLazy";
 
 export const dynamic = "force-dynamic";
 
