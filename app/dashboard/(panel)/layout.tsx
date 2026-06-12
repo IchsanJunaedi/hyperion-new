@@ -13,7 +13,6 @@ import { DashboardSidebarNav } from "@/components/layout/DashboardSidebarNav";
 import { DashboardHeader } from "@/components/layout/DashboardHeader";
 import { DashboardMobileNav } from "@/components/layout/DashboardMobileNav";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
-import { getTodoBadgeCount } from "@/features/todos/queries";
 
 export const dynamic = "force-dynamic";
 
@@ -62,15 +61,6 @@ export default async function DashboardLayout({
     orgSlug = org.slug ?? "";
     orgName = (org as unknown as { name?: string; logo_url?: string | null }).name ?? "Hyperion Team";
     orgLogoUrl = (org as unknown as { name?: string; logo_url?: string | null }).logo_url ?? null;
-  }
-
-  let todoBadgeCount = 0;
-  if (dashboardOrgId) {
-    try {
-      todoBadgeCount = await getTodoBadgeCount(dashboardOrgId, user.id);
-    } catch {
-      // badge count is non-critical
-    }
   }
 
   const workspaceName = profile?.full_name ?? profile?.display_name ?? orgName;
@@ -122,7 +112,7 @@ export default async function DashboardLayout({
           </div>
 
           {/* Nav groups */}
-          <DashboardSidebarNav badgeCount={todoBadgeCount} />
+          <DashboardSidebarNav orgId={dashboardOrgId} />
 
           {/* Settings */}
           <div className="border-t border-ui-border px-2 py-3 shrink-0">
@@ -174,7 +164,7 @@ export default async function DashboardLayout({
               workspaceName={workspaceName}
               userId={user.id}
               orgSlug={orgSlug}
-              mobileNav={<DashboardMobileNav badgeCount={todoBadgeCount} />}
+              mobileNav={<DashboardMobileNav orgId={dashboardOrgId} />}
             />
             {children}
           </NotificationRealtimeProvider>

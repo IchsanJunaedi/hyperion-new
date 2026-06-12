@@ -5,7 +5,7 @@ import { useState } from "react";
 import { DashboardSidebarNav } from "@/components/layout/DashboardSidebarNav";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
-const DashboardMobileNav = ({ badgeCount }: { badgeCount?: number }) => {
+const DashboardMobileNav = ({ orgId }: { orgId?: string }) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -46,7 +46,7 @@ const DashboardMobileNav = ({ badgeCount }: { badgeCount?: number }) => {
         </div>
         {/* Clicking a nav link closes the drawer via navigation */}
         <div onClick={() => setOpen(false)} className="flex-1 overflow-y-auto">
-          <DashboardSidebarNav badgeCount={badgeCount} />
+          <DashboardSidebarNav orgId={orgId} />
         </div>
         <div className="flex shrink-0 items-center justify-between border-t border-ui-border px-4 py-3">
           <span className="text-sm text-ui-text-2">Tema</span>

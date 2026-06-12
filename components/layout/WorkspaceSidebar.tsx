@@ -32,6 +32,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { SettingsModal } from "@/features/settings/components/SettingsModal";
+import { TodoBadge } from "@/features/todos/components/TodoBadge";
 import { useWorkspaceStore } from "@/stores/useWorkspaceStore";
 import { TeamSwitcher } from "@/components/layout/TeamSwitcher";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
@@ -55,7 +56,6 @@ export interface WorkspaceSidebarProps {
   orgLogoUrl: string | null;
   divisions: SidebarDivision[];
   managedTeams?: ManagedTeam[];
-  todoBadgeCount?: number;
   user: {
     displayName: string;
     avatarUrl: string | null;
@@ -253,7 +253,6 @@ const WorkspaceSidebar = ({
   orgLogoUrl,
   divisions,
   managedTeams,
-  todoBadgeCount,
   user,
 }: WorkspaceSidebarProps) => {
   const pathname = usePathname();
@@ -433,11 +432,7 @@ const WorkspaceSidebar = ({
                     >
                       <item.Icon className="h-[18px] w-[18px] shrink-0" />
                       {item.label}
-                      {item.key === "manage-todos" && !!todoBadgeCount && todoBadgeCount > 0 && (
-                        <span className="rounded-full bg-red-500 px-1.5 py-0.5 text-[10px] font-bold leading-none text-white">
-                          {todoBadgeCount > 99 ? "99+" : todoBadgeCount}
-                        </span>
-                      )}
+                      {item.key === "manage-todos" && <TodoBadge orgId={orgId} />}
                     </Link>
                   </li>
                 );
