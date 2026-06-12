@@ -5,7 +5,7 @@ import { useState } from "react";
 
 import { AddTargetForm } from "./AddTargetForm";
 import { PlayerTargetCard } from "./PlayerTargetCard";
-import { SkillRadarChart } from "./SkillRadarChart";
+import { SkillRadarChart } from "./SkillRadarChartLazy";
 import type { PlayerTargetWithHistory } from "@/features/player-development/queries";
 
 interface PlayerDevelopmentClientProps {

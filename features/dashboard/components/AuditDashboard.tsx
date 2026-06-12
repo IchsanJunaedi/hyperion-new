@@ -1,8 +1,17 @@
 "use client";
 
+import dynamic from "next/dynamic";
+
 import type { ActivityPoint } from "@/features/dashboard/actions/fetchAuditActivity";
 import type { AuditLogItem } from "@/features/dashboard/actions/fetchAuditLogs";
-import { AuditActivityChart } from "./AuditActivityChart";
+
+const AuditActivityChart = dynamic(
+  () => import("./AuditActivityChart").then((m) => m.AuditActivityChart),
+  {
+    ssr: false,
+    loading: () => <div className="h-[200px] w-full animate-pulse rounded bg-ui-border/30" />,
+  }
+);
 import { AuditExportButton } from "./AuditExportButton";
 import { AuditFilterPanel } from "./AuditFilterPanel";
 import { AuditLogList } from "./AuditLogList";

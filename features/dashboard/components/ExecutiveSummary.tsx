@@ -1,6 +1,6 @@
 import { TrendingUp, Users, DollarSign, Wallet, Shield, Target } from "lucide-react";
 import type { ExecutiveSummary as ExecutiveSummaryType } from "@/features/dashboard/queries/executiveSummary";
-import { Sparkline } from "@/features/dashboard/components/charts/Sparkline";
+import { Sparkline } from "@/features/dashboard/components/charts/SparklineLazy";
 import type { HomeChartData } from "@/features/dashboard/queries/homeCharts";
 
 function formatRupiah(n: number): string {
