@@ -43,8 +43,10 @@ export default async function DashboardContentPage() {
     <>
       <main className="flex-1 max-w-[900px] w-full mx-auto px-4 sm:px-8 py-12">
         <div className="mb-8">
-          <FileText className="h-8 w-8 text-ui-text-2 mb-3" />
-          <h1 className="font-bold text-[28px] text-ui-text">Content Calendar</h1>
+          <div className="flex items-center gap-2">
+            <FileText className="h-8 w-8 text-ui-text-2" />
+            <h1 className="font-bold text-[28px] text-ui-text">Content Calendar</h1>
+          </div>
           <p className="text-ui-text-2 mt-1 text-sm">
             Jadwalkan dan approve konten sosial media tim.
           </p>

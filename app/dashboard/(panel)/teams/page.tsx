@@ -35,8 +35,10 @@ export default async function DashboardTeamsPage() {
     <>
       <main className="flex-1 max-w-[900px] w-full mx-auto px-4 sm:px-8 py-12">
         <div className="mb-8">
-          <Building2 className="h-8 w-8 text-ui-text-2 mb-3" />
-          <h1 className="font-bold text-[28px] text-ui-text">Setting Tim</h1>
+          <div className="flex items-center gap-2">
+            <Building2 className="h-8 w-8 text-ui-text-2" />
+            <h1 className="font-bold text-[28px] text-ui-text">Setting Tim</h1>
+          </div>
           <p className="text-ui-text-2 mt-1 text-sm">
             Edit nama tim dan kelola divisi per tim.
           </p>

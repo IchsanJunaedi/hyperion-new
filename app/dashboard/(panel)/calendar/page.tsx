@@ -1,4 +1,4 @@
-import { Plus } from "lucide-react";
+import { Plus, Calendar } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { format } from "date-fns";
@@ -189,9 +189,12 @@ const DashboardCalendarPage = async ({
     <>
       <main className="flex-1 px-4 sm:px-8 py-6">
         <div className="mb-6 flex items-center justify-between gap-4">
-          <h1 className="text-2xl font-bold text-ui-text sm:text-3xl">
-            Kalender Tim
-          </h1>
+          <div className="flex items-center gap-2">
+            <Calendar className="h-8 w-8 text-ui-text-2" />
+            <h1 className="text-2xl font-bold text-ui-text sm:text-3xl">
+              Kalender Tim
+            </h1>
+          </div>
           {!isAllOrgs && activeOrgSlug && (
             <Link
               href={`/${activeOrgSlug}/calendar/new`}

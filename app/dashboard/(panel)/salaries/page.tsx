@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Banknote } from "lucide-react";
 
 import { SalaryPageClient } from "@/features/salary/components/SalaryPageClient";
 import { listContracts, getPayrollSummary } from "@/features/salary/queries";
@@ -54,7 +55,10 @@ export default async function DashboardSalariesPage() {
     <>
       <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-8 py-10 space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-ui-text">Salary Player</h1>
+          <div className="flex items-center gap-2">
+            <Banknote className="h-8 w-8 text-ui-text-2" />
+            <h1 className="text-2xl font-bold text-ui-text">Salary Player</h1>
+          </div>
           <p className="mt-1 text-sm text-ui-text-2">
             Kelola kontrak, gaji bulanan, dan riwayat pembayaran tiap player.
           </p>

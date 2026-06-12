@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Plus } from "lucide-react";
+import { Plus, CheckSquare } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { TodoStatsBar } from "./TodoStatsBar";
 import { TodoFilterPanel } from "./TodoFilterPanel";
@@ -75,7 +75,10 @@ const TodosPage = ({ orgId, todos, assignedOutTodos, managers, isOwner, revalida
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-ui-text">Todos</h1>
+          <div className="flex items-center gap-2">
+            <CheckSquare className="h-6 w-6 text-ui-text-2" />
+            <h1 className="text-2xl font-bold text-ui-text">Todos</h1>
+          </div>
           <div className="mt-2">
             <TodoStatsBar
               overdueCount={overdueCount}

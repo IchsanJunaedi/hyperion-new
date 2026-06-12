@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Plus, Users, TrendingUp, DollarSign, AlertTriangle, FileDown } from "lucide-react";
+import { Plus, Users, TrendingUp, DollarSign, AlertTriangle, FileDown, Handshake } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils/cn";
 import { SponsorCard } from "./SponsorCard";
@@ -233,8 +233,11 @@ const SponsorListClient = ({ sponsors, orgId, orgName, detailBasePath, isAllOrgs
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-lg font-semibold text-ui-text">Sponsor &amp; Partner</h1>
-          <p className="text-sm text-ui-text-muted">Kelola sponsor, deal, dan deliverable tim</p>
+          <div className="flex items-center gap-2">
+            <Handshake className="h-5 w-5 text-ui-text-2" />
+            <h1 className="text-lg font-semibold text-ui-text">Sponsor &amp; Partner</h1>
+          </div>
+          <p className="text-sm text-ui-text-muted mt-1">Kelola sponsor, deal, dan deliverable tim</p>
         </div>
         <div className="flex items-center gap-2">
           {sponsors.length > 0 && (

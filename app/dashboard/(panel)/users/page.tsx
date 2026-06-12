@@ -142,8 +142,10 @@ export default async function DashboardUsersPage({ searchParams }: UsersPageProp
       <main className="flex-1 max-w-[1200px] w-full mx-auto px-4 sm:px-8 py-12">
         <div className="flex items-end justify-between mb-8">
           <div>
-            <Users className="h-8 w-8 text-ui-text-2 mb-3" />
-            <h1 className="font-bold text-[28px] text-ui-text">Semua User</h1>
+            <div className="flex items-center gap-2">
+              <Users className="h-8 w-8 text-ui-text-2" />
+              <h1 className="font-bold text-[28px] text-ui-text">Semua User</h1>
+            </div>
             <p className="text-ui-text-2 mt-1 text-sm">
               Semua user terdaftar. User &quot;none&quot; belum di-assign ke tim.
             </p>

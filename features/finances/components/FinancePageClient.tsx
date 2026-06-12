@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, DollarSign } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -56,7 +56,10 @@ const FinancePageClient = ({
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-ui-text">Kas Tim</h1>
+          <div className="flex items-center gap-2">
+            <DollarSign className="h-6 w-6 text-ui-text-2" />
+            <h1 className="text-2xl font-bold text-ui-text">Kas Tim</h1>
+          </div>
           <p className="mt-1 text-sm text-ui-text-2">Pencatatan keuangan organisasi.</p>
         </div>
         <button

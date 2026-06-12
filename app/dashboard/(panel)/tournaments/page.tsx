@@ -88,7 +88,8 @@ export default async function DashboardTournamentsPage({
     <>
       <main className="space-y-6 px-4 sm:px-8 py-6">
         <div className="flex items-center justify-between gap-4">
-          <div>
+          <div className="flex items-center gap-2">
+            <Trophy className="h-5 w-5 text-ui-text-2" />
             <h1 className="text-xl font-bold text-ui-text">Info Turnamen</h1>
           </div>
           {orgSlug && (

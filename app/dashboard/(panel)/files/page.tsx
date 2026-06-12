@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { FolderOpen } from "lucide-react";
 
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -49,9 +50,12 @@ export default async function DashboardFilesPage() {
     <>
       <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-8 py-10 space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-ui-text sm:text-3xl tracking-tight">
-            File Tim
-          </h1>
+          <div className="flex items-center gap-2">
+            <FolderOpen className="h-8 w-8 text-ui-text-2" />
+            <h1 className="text-2xl font-bold text-ui-text sm:text-3xl tracking-tight">
+              File Tim
+            </h1>
+          </div>
           <p className="mt-1 text-sm text-ui-text-2">
             Kelola dan unduh seluruh file yang diunggah oleh setiap divisi tim di platform Hyperion.
           </p>
