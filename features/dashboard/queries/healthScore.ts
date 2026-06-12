@@ -14,24 +14,31 @@ export async function getTeamHealthScore(orgId: string | string[]): Promise<Heal
   const orgIds = Array.isArray(orgId) ? orgId : [orgId];
   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
 
-  // Fetch scrims + members + recent activity in parallel
-  const [scrimsRes, membersRes, recentActivityRes] = await Promise.all([
+  // Fetch scrims + members + recent activity + all scrim IDs in parallel
+  const [scrimsRes, membersRes, recentActivityRes, allScrimsRes] = await Promise.all([
     admin
       .from("scrims")
       .select("id, scrim_results(is_win)")
       .in("organization_id", orgIds)
-      .eq("status", "completed"),
+      .eq("status", "completed")
+      .limit(500),
     admin
       .from("team_members")
       .select("availability")
       .in("organization_id", orgIds)
-      .eq("is_active", true),
+      .eq("is_active", true)
+      .limit(200),
     admin
       .from("scrims")
       .select("id")
       .in("organization_id", orgIds)
       .gte("scheduled_at", thirtyDaysAgo)
       .limit(1),
+    admin
+      .from("scrims")
+      .select("id")
+      .in("organization_id", orgIds)
+      .limit(500),
   ]);
 
   // Win rate (40%)
@@ -53,13 +60,8 @@ export async function getTeamHealthScore(orgId: string | string[]): Promise<Heal
   // Activity score (10%)
   const activityScore = (recentActivityRes.data?.length ?? 0) > 0 ? 100 : 0;
 
-  // Attendance rate (30%) — fetch all scrim IDs for org then query attendances
+  // Attendance rate (30%) — use allScrimsRes from parallel fetch above
   let attendanceRate = 0;
-  const allScrimsRes = await admin
-    .from("scrims")
-    .select("id")
-    .in("organization_id", orgIds);
-
   const allScrimIds = (allScrimsRes.data ?? []).map((s) => s.id);
 
   if (allScrimIds.length > 0) {

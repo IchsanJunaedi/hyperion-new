@@ -55,6 +55,20 @@ export async function finishScrimAction(
   if (scrim.status === "completed") return { ok: false, message: "Scrim sudah selesai" };
   if (scrim.status === "cancelled") return { ok: false, message: "Scrim sudah dibatalkan" };
 
+  const isOwner = user.email === process.env.OWNER_EMAIL;
+  if (!isOwner) {
+    const { data: membership } = await admin
+      .from("team_members")
+      .select("role")
+      .eq("organization_id", scrim.organization_id)
+      .eq("user_id", user.id)
+      .eq("is_active", true)
+      .maybeSingle();
+    if (!membership || !["coach", "captain", "manager"].includes(membership.role)) {
+      return { ok: false, message: "Hanya coach, captain, atau manager yang bisa menyelesaikan scrim" };
+    }
+  }
+
   const wins = input.games.filter((g) => g.isWin).length;
   const losses = input.games.filter((g) => !g.isWin).length;
   const overallWin = wins > losses ? true : wins < losses ? false : null;

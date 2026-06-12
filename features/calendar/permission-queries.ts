@@ -72,21 +72,25 @@ export async function getAccessibleCalendarsAction(
   try {
     const calendars = await getAccessibleCalendars(user.id, org.id);
 
-    // Get event counts for each calendar
-    const calendarsWithCounts = await Promise.all(
-      calendars.map(async (cal) => {
-        const { count } = await supabase
-          .from("calendar_events")
-          .select("*", { count: "exact", head: true })
-          .eq("calendar_id", cal.id)
-          .is("deleted_at", null);
-
-        return {
-          ...cal,
-          eventCount: count ?? 0,
-        };
-      }),
-    );
+    // Get event counts for all calendars in a single query
+    const calendarIds = calendars.map((c) => c.id);
+    const countMap: Record<string, number> = {};
+    if (calendarIds.length > 0) {
+      const { data: eventRows } = await supabase
+        .from("calendar_events")
+        .select("calendar_id")
+        .in("calendar_id", calendarIds)
+        .is("deleted_at", null)
+        .limit(2000);
+      for (const row of eventRows ?? []) {
+        if (!row.calendar_id) continue;
+        countMap[row.calendar_id] = (countMap[row.calendar_id] ?? 0) + 1;
+      }
+    }
+    const calendarsWithCounts = calendars.map((cal) => ({
+      ...cal,
+      eventCount: countMap[cal.id] ?? 0,
+    }));
 
     return {
       ok: true,

@@ -114,7 +114,8 @@ async function fanOutAnnouncementNotifications(
     .from("team_members")
     .select("user_id")
     .eq("organization_id", announcement.organization_id)
-    .eq("is_active", true);
+    .eq("is_active", true)
+    .limit(500);
 
   if (divisionId) {
     membersQuery = membersQuery.eq("division_id", divisionId);

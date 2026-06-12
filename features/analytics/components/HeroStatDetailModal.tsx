@@ -122,10 +122,13 @@ const HeroStatDetailModal = ({
     }
     setLoading(true);
     setData(null);
+    let mounted = true;
     getHeroDetailAction(orgId, heroName).then((res) => {
+      if (!mounted) return;
       if (res.ok) setData(res.data);
       setLoading(false);
     });
+    return () => { mounted = false; };
   }, [orgId, heroName]);
 
   useEffect(() => {

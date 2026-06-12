@@ -142,6 +142,22 @@ export async function PUT(
       return badRequest("Missing or invalid permissions object");
     }
 
+    // Validate all supplied member IDs belong to this org
+    const memberIds = Object.keys(body.permissions).filter((id) => isValidUUID(id));
+    if (memberIds.length > 0) {
+      const { data: validMembers } = await supabase
+        .from("team_members")
+        .select("user_id")
+        .eq("organization_id", orgId!)
+        .in("user_id", memberIds);
+      const validSet = new Set((validMembers ?? []).map((m) => m.user_id));
+      for (const memberId of memberIds) {
+        if (!validSet.has(memberId)) {
+          return badRequest(`Member ${memberId} tidak ditemukan di organisasi ini`);
+        }
+      }
+    }
+
     // Update each member's permissions
     const updates = [];
     for (const [memberId, perms] of Object.entries(body.permissions)) {

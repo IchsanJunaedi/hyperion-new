@@ -119,7 +119,8 @@ async function fanOutScrimNotifications(
     .from("team_members")
     .select("user_id")
     .eq("organization_id", scrim.organization_id)
-    .eq("is_active", true);
+    .eq("is_active", true)
+    .limit(500);
   if (!members || members.length === 0) return;
 
   const userIds = members.map((m) => m.user_id);
@@ -466,7 +467,8 @@ async function fanOutScrimUpdateNotification(scrim: Scrim, orgName: string) {
     .from("team_members")
     .select("user_id")
     .eq("organization_id", scrim.organization_id)
-    .eq("is_active", true);
+    .eq("is_active", true)
+    .limit(500);
   if (!members || members.length === 0) return;
 
   const scheduled = new Date(scrim.scheduled_at).toLocaleString("id-ID", {

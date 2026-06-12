@@ -175,6 +175,21 @@ export async function rejectInviteAction(
   }
 
   const admin = createAdminClient();
+
+  // Verify caller is the invite recipient
+  const { data: invite } = await admin
+    .from("organization_invites")
+    .select("email, phone_wa, status")
+    .eq("token", token)
+    .maybeSingle();
+
+  if (!invite) {
+    return { error: "Undangan tidak ditemukan." };
+  }
+  if (invite.email && invite.email !== user.email) {
+    return { error: "Undangan ini bukan untuk akun Anda." };
+  }
+
   const { error } = await admin
     .from("organization_invites")
     .update({ status: "rejected" })

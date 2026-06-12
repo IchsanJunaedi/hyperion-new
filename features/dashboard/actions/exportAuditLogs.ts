@@ -38,7 +38,7 @@ export async function exportAuditLogs(params: {
     .from("audit_logs")
     .select("*")
     .order("created_at", { ascending: false })
-    .limit(10000);
+    .limit(2000);
 
   if (params.search) {
     query = query.ilike("action", `%${params.search}%`);

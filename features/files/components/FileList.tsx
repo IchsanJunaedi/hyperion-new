@@ -32,6 +32,7 @@ const FileList = ({ orgId, folder = "files" }: FileListProps) => {
   const [loadingPreviewId, setLoadingPreviewId] = useState<string | null>(null);
 
   useEffect(() => {
+    let mounted = true;
     async function loadFiles() {
       const supabase = createClient();
       const { data, error } = await supabase.storage
@@ -41,12 +42,14 @@ const FileList = ({ orgId, folder = "files" }: FileListProps) => {
           sortBy: { column: "created_at", order: "desc" },
         });
 
+      if (!mounted) return;
       if (!error && data) {
         setFiles(data as StorageFile[]);
       }
       setLoading(false);
     }
     loadFiles();
+    return () => { mounted = false; };
   }, [orgId, folder]);
 
   async function handleDelete(fileName: string, fileId: string) {

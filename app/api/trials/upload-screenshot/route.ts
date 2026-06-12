@@ -2,12 +2,45 @@ import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { detectMimeType, getExtensionFromMime } from "@/lib/utils/file";
 
+const UPLOAD_RATE_LIMIT = 10;
+const UPLOAD_WINDOW_MS = 60 * 1000;
+
+async function checkUploadRateLimit(ip: string): Promise<boolean> {
+  const identifier = `trial-upload:${ip}`;
+  const admin = createAdminClient();
+  const now = new Date();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data } = await (admin as any)
+    .from("login_rate_limits")
+    .select("attempts, updated_at")
+    .eq("identifier", identifier)
+    .maybeSingle();
+  const lastUpdate = data?.updated_at ? new Date(data.updated_at) : null;
+  const isExpired = !lastUpdate || now.getTime() - lastUpdate.getTime() > UPLOAD_WINDOW_MS;
+  const attempts = isExpired ? 1 : (data?.attempts ?? 0) + 1;
+  if (attempts > UPLOAD_RATE_LIMIT) return false;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await (admin as any).from("login_rate_limits").upsert({
+    identifier,
+    attempts,
+    updated_at: isExpired ? now.toISOString() : data.updated_at,
+    locked_until: isExpired ? null : data?.locked_until ?? null,
+  });
+  return true;
+}
+
 const ALLOWED_TYPES = ["image/png", "image/jpeg", "image/webp"];
 const MAX_BYTES = 5 * 1024 * 1024; // 5 MB
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export async function POST(req: Request) {
   try {
+    const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+    const allowed = await checkUploadRateLimit(ip);
+    if (!allowed) {
+      return NextResponse.json({ error: "Terlalu banyak permintaan. Coba lagi nanti." }, { status: 429 });
+    }
+
     const form = await req.formData();
     const file = form.get("file") as File | null;
     const trialId = form.get("trialId") as string | null;

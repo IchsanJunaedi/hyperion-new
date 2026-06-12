@@ -81,7 +81,7 @@ export async function grantMemberPermissionAction(
     .from("organizations")
     .select("id")
     .eq("slug", orgSlug)
-    .single();
+    .maybeSingle();
 
   if (!org) {
     return { ok: false, message: "Organisasi tidak ditemukan" };
@@ -93,7 +93,7 @@ export async function grantMemberPermissionAction(
     .select("*")
     .eq("id", parsed.data.calendarId)
     .eq("organization_id", org.id)
-    .single();
+    .maybeSingle();
 
   if (!calendar) {
     return { ok: false, message: "Kalender tidak ditemukan" };
@@ -123,7 +123,7 @@ export async function grantMemberPermissionAction(
     .eq("user_id", parsed.data.memberUserId)
     .eq("organization_id", org.id)
     .eq("is_active", true)
-    .single();
+    .maybeSingle();
 
   if (!member) {
     return {
@@ -139,7 +139,7 @@ export async function grantMemberPermissionAction(
     .eq("calendar_id", parsed.data.calendarId)
     .eq("member_user_id", parsed.data.memberUserId)
     .is("deleted_at", null)
-    .single();
+    .maybeSingle();
 
   if (existing) {
     // Update existing permission
@@ -156,7 +156,7 @@ export async function grantMemberPermissionAction(
       })
       .eq("id", existing.id)
       .select("*")
-      .single();
+      .maybeSingle();
 
     if (error || !updated) {
       return {
@@ -223,7 +223,7 @@ export async function grantMemberPermissionAction(
       created_by: user.id,
     })
     .select("*")
-    .single();
+    .maybeSingle();
 
   if (createError || !newPermission) {
     return {
@@ -299,7 +299,7 @@ export async function revokeMemberPermissionAction(
     .from("organizations")
     .select("id")
     .eq("slug", orgSlug)
-    .single();
+    .maybeSingle();
 
   if (!org) {
     return { ok: false, message: "Organisasi tidak ditemukan" };
@@ -311,7 +311,7 @@ export async function revokeMemberPermissionAction(
     .select("*")
     .eq("id", parsed.data.calendarId)
     .eq("organization_id", org.id)
-    .single();
+    .maybeSingle();
 
   if (!calendar) {
     return { ok: false, message: "Kalender tidak ditemukan" };
@@ -341,7 +341,7 @@ export async function revokeMemberPermissionAction(
     .eq("calendar_id", parsed.data.calendarId)
     .eq("member_user_id", parsed.data.memberUserId)
     .is("deleted_at", null)
-    .single();
+    .maybeSingle();
 
   if (!permissionRecord) {
     return { ok: false, message: "Izin tidak ditemukan" };
@@ -420,7 +420,7 @@ export async function bulkGrantPermissionsAction(
     .from("organizations")
     .select("id")
     .eq("slug", orgSlug)
-    .single();
+    .maybeSingle();
 
   if (!org) {
     return { ok: false, message: "Organisasi tidak ditemukan" };
@@ -432,7 +432,7 @@ export async function bulkGrantPermissionsAction(
     .select("*")
     .eq("id", parsed.data.calendarId)
     .eq("organization_id", org.id)
-    .single();
+    .maybeSingle();
 
   if (!calendar) {
     return { ok: false, message: "Kalender tidak ditemukan" };
@@ -546,7 +546,7 @@ export async function getCalendarMembersAction(
     .from("organizations")
     .select("id")
     .eq("slug", orgSlug)
-    .single();
+    .maybeSingle();
 
   if (!org) {
     return { ok: false, message: "Organisasi tidak ditemukan" };
@@ -558,7 +558,7 @@ export async function getCalendarMembersAction(
     .select("*")
     .eq("id", calendarId)
     .eq("organization_id", org.id)
-    .single();
+    .maybeSingle();
 
   if (!calendar) {
     return { ok: false, message: "Kalender tidak ditemukan" };
