@@ -8,20 +8,22 @@ const PALETTE = ["#eab308", "#3b82f6", "#22c55e", "#a855f7", "#9ca3af"];
 const SponsorDonutChart = ({ sponsors }: { sponsors: SponsorSlice[] }) => {
   if (sponsors.length === 0) {
     return (
-      <div className="flex h-[180px] items-center justify-center text-xs text-ui-text-muted">
+      <div className="flex h-[200px] items-center justify-center text-xs text-ui-text-muted">
         Belum ada sponsor aktif
       </div>
     );
   }
   return (
-    <ResponsiveContainer width="100%" height={180}>
+    <ResponsiveContainer width="100%" height={200}>
       <PieChart>
         <Pie
           data={sponsors}
           dataKey="value"
           nameKey="name"
-          innerRadius={50}
-          outerRadius={72}
+          cx="50%"
+          cy="45%"
+          innerRadius={40}
+          outerRadius={62}
           paddingAngle={2}
           strokeWidth={0}
           isAnimationActive={false}
@@ -40,10 +42,10 @@ const SponsorDonutChart = ({ sponsors }: { sponsors: SponsorSlice[] }) => {
           ]}
         />
         <Legend
-          layout="vertical"
-          align="right"
-          verticalAlign="middle"
-          wrapperStyle={{ fontSize: 11, color: "var(--ui-text-2)" }}
+          layout="horizontal"
+          align="center"
+          verticalAlign="bottom"
+          wrapperStyle={{ fontSize: 10, color: "var(--ui-text-2)", paddingTop: 4 }}
         />
       </PieChart>
     </ResponsiveContainer>
