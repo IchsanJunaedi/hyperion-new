@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRef } from "react";
-import { motion, useInView } from "motion/react";
+import { gsap, useGSAP } from "@/lib/gsap";
 
 const GAME_META: Record<string, { color: string; abbr: string }> = {
   "mobile legends": { color: "#F5C400", abbr: "MLBB" },
@@ -33,16 +33,42 @@ interface DivisionsGridProps {
 
 const DivisionsGrid = ({ divisions }: DivisionsGridProps) => {
   const headerRef = useRef<HTMLDivElement>(null);
-  const inView = useInView(headerRef, { once: true, margin: "-60px" });
+  const gridRef = useRef<HTMLDivElement>(null);
+
+  useGSAP(() => {
+    if (!headerRef.current) return;
+    const trigger = {
+      trigger: headerRef.current,
+      start: "top bottom-=60",
+      once: true,
+    };
+    gsap.fromTo(
+      headerRef.current,
+      { opacity: 0, y: 16 },
+      { opacity: 1, y: 0, duration: 0.5, scrollTrigger: trigger }
+    );
+    if (!gridRef.current) return;
+    gsap.fromTo(
+      Array.from(gridRef.current.children),
+      { opacity: 0, y: 12 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.45,
+        ease: "power2.out",
+        stagger: 0.07,
+        delay: 0.1,
+        scrollTrigger: trigger,
+      }
+    );
+  });
 
   return (
     <>
-      <motion.div
+      <div
         ref={headerRef}
-        initial={{ opacity: 0, y: 16 }}
-        animate={inView ? { opacity: 1, y: 0 } : {}}
-        transition={{ duration: 0.5 }}
         className="mb-8 border-b border-white/12 pb-8"
+        style={{ opacity: 0 }}
       >
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
@@ -60,18 +86,13 @@ const DivisionsGrid = ({ divisions }: DivisionsGridProps) => {
             View All →
           </Link>
         </div>
-      </motion.div>
+      </div>
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-        {divisions.map((div, index) => {
+      <div ref={gridRef} className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+        {divisions.map((div) => {
           const meta = getMeta(div.game ?? "");
           return (
-            <motion.div
-              key={div.id}
-              initial={{ opacity: 0, y: 12 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.45, delay: index * 0.07 + 0.1, ease: "easeOut" }}
-            >
+            <div key={div.id} style={{ opacity: 0 }}>
               <Link
                 href={`/divisions/${div.slug}`}
                 className="group flex flex-col gap-3 border border-white/10 bg-[#071428] p-5 transition-all duration-200 hover:border-[#F5C400]/50 hover:bg-[#0C1E3C] sm:p-6"
@@ -96,7 +117,7 @@ const DivisionsGrid = ({ divisions }: DivisionsGridProps) => {
                   )}
                 </div>
               </Link>
-            </motion.div>
+            </div>
           );
         })}
       </div>

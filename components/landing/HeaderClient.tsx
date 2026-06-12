@@ -7,9 +7,9 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import { AnimatePresence, motion } from "motion/react";
 
 import { ProfileDropdown } from "@/components/landing/ProfileDropdown";
+import { cn } from "@/lib/utils/cn";
 
 interface HeaderProps {
   authed?: {
@@ -176,29 +176,23 @@ const HeaderClient = ({
       </header>
 
       {/* Mobile overlay */}
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.15 }}
-            className="fixed inset-0 z-40 bg-[#030914]/80 md:hidden"
-            onClick={() => setMobileOpen(false)}
-          />
+      <div
+        aria-hidden={!mobileOpen}
+        className={cn(
+          "fixed inset-0 z-40 bg-[#030914]/80 transition-opacity duration-150 md:hidden",
+          mobileOpen ? "opacity-100" : "pointer-events-none opacity-0"
         )}
-      </AnimatePresence>
+        onClick={() => setMobileOpen(false)}
+      />
 
       {/* Mobile drawer */}
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.div
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ type: "spring", stiffness: 340, damping: 34 }}
-            className="fixed right-0 top-0 z-50 flex h-full w-72 flex-col border-l border-white/5 bg-[#030914] md:hidden"
-          >
+      <div
+        aria-hidden={!mobileOpen}
+        className={cn(
+          "fixed right-0 top-0 z-50 flex h-full w-72 flex-col border-l border-white/5 bg-[#030914] transition-transform duration-300 ease-out md:hidden",
+          mobileOpen ? "translate-x-0" : "pointer-events-none translate-x-full"
+        )}
+      >
             <div className="flex h-16 items-center justify-between border-b border-white/5 px-5">
               <div className="flex flex-col items-start leading-none gap-0.5">
                 <span className="font-orbitron text-[8px] font-extrabold uppercase tracking-[0.25em] text-[#F5C400] opacity-80">
@@ -291,9 +285,7 @@ const HeaderClient = ({
                 @hyperionteam.id
               </Link>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      </div>
     </>
   );
 };
