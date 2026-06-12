@@ -7,7 +7,6 @@ import { NotifyProvider } from "@/features/dashboard/components/NotifyModal";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getTodoBadgeCount } from "@/features/todos/queries";
 
 export const dynamic = "force-dynamic";
 
@@ -96,13 +95,6 @@ const ManageTeamLayout = async ({ children, params }: ManageTeamLayoutProps) => 
     user.email ??
     "Akun saya";
 
-  let todoBadgeCount = 0;
-  try {
-    todoBadgeCount = await getTodoBadgeCount(org.id, user.id);
-  } catch (err) {
-    console.error("[manage layout] getTodoBadgeCount:", err);
-  }
-
   return (
     <QueryProvider>
     <NotifyProvider>
@@ -114,7 +106,6 @@ const ManageTeamLayout = async ({ children, params }: ManageTeamLayoutProps) => 
           orgLogoUrl={org.logo_url}
           divisions={divisions}
           managedTeams={managedTeams}
-          todoBadgeCount={todoBadgeCount}
           user={{
             displayName,
             avatarUrl: profile?.avatar_url ?? null,
