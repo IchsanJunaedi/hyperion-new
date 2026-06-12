@@ -19,6 +19,34 @@ const LABELS: Record<string, string> = {
   cumulativeBalance: "Saldo",
 };
 
+function fmtRp(v: number): string {
+  return `Rp ${v.toLocaleString("id-ID")}`;
+}
+
+interface TipProps {
+  active?: boolean;
+  payload?: Array<{ payload: MonthPoint }>;
+}
+
+const CashFlowTooltip = ({ active, payload }: TipProps) => {
+  if (!active || !payload || payload.length === 0) return null;
+  const m = payload[0]!.payload;
+  const rows = (m.breakdown ?? []).filter((b) => b.income !== 0 || b.expense !== 0);
+  return (
+    <div className="rounded-lg border border-ui-border bg-ui-surface px-3 py-2 text-xs shadow-lg">
+      <p className="font-medium text-ui-text">{m.monthLabel}</p>
+      <p className="text-green-500">Pemasukan: {fmtRp(m.income)}</p>
+      <p className="text-red-500">Pengeluaran: {fmtRp(m.expense)}</p>
+      <p className="text-blue-500">Saldo: {fmtRp(m.cumulativeBalance)}</p>
+      {rows.map((b) => (
+        <p key={b.orgName} className="text-ui-text-muted">
+          {b.orgName}: +{fmtRp(b.income)} / −{fmtRp(b.expense)}
+        </p>
+      ))}
+    </div>
+  );
+};
+
 const CashFlowChart = ({ months }: { months: MonthPoint[] }) => {
   return (
     <ResponsiveContainer width="100%" height={180}>
@@ -26,15 +54,7 @@ const CashFlowChart = ({ months }: { months: MonthPoint[] }) => {
         <CartesianGrid strokeDasharray="3 3" stroke="var(--ui-border)" vertical={false} />
         <XAxis dataKey="monthLabel" tick={{ fontSize: 11, fill: "var(--ui-text-muted)" }} axisLine={false} tickLine={false} />
         <YAxis tick={{ fontSize: 11, fill: "var(--ui-text-muted)" }} axisLine={false} tickLine={false} tickFormatter={formatRpShort} />
-        <Tooltip
-          contentStyle={{ background: "var(--ui-surface)", border: "1px solid var(--ui-border)", borderRadius: 8, fontSize: 12 }}
-          labelStyle={{ color: "var(--ui-text)" }}
-          itemStyle={{ color: "var(--ui-text-2)" }}
-          formatter={(value, name) => [
-            `Rp ${(Number(value) || 0).toLocaleString("id-ID")}`,
-            LABELS[String(name)] ?? String(name),
-          ]}
-        />
+        <Tooltip content={<CashFlowTooltip />} />
         <Legend
           wrapperStyle={{ fontSize: 11, color: "var(--ui-text-2)" }}
           formatter={(value) => LABELS[String(value)] ?? String(value)}

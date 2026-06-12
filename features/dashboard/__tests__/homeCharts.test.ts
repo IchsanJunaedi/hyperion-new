@@ -150,5 +150,75 @@ describe("getHomeChartData", () => {
     const out = await getHomeChartData(["org-1", "org-2"]);
     expect(out.months).toHaveLength(6);
     expect(out.sponsors).toEqual([{ name: "Acme", value: 1_000_000 }]);
+    expect(out.months[0]!.breakdown).toBeUndefined();
+  });
+
+  it("builds per-org breakdown and labels sponsors in Semua mode", async () => {
+    const now = new Date();
+    const thisMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+    const tables: Record<string, { data: unknown; error: unknown }> = {
+      scrims: {
+        data: [
+          {
+            id: "s1",
+            scheduled_at: `${thisMonth}-05T10:00:00`,
+            status: "completed",
+            organization_id: "org-1",
+            scrim_results: { is_win: true },
+          },
+          {
+            id: "s2",
+            scheduled_at: `${thisMonth}-06T10:00:00`,
+            status: "completed",
+            organization_id: "org-2",
+            scrim_results: { is_win: false },
+          },
+        ],
+        error: null,
+      },
+      finances: {
+        data: [
+          { type: "income", amount: 1000, date: `${thisMonth}-03`, organization_id: "org-1" },
+        ],
+        error: null,
+      },
+      sponsors: {
+        data: [{ name: "Acme", deal_value: 500, organization_id: "org-2" }],
+        error: null,
+      },
+      scrim_attendances: { data: [{ scrim_id: "s1", status: "confirmed" }], error: null },
+    };
+    vi.mocked(createAdminClient).mockReturnValue({
+      from: (table: string) => chain(tables[table] ?? { data: [], error: null }),
+    } as any);
+
+    const out = await getHomeChartData(["org-1", "org-2"], {
+      "org-1": "Alpha",
+      "org-2": "Beta",
+    });
+    const last = out.months[5]!;
+    expect(last.scrimCount).toBe(2);
+    expect(last.winRate).toBe(50);
+    expect(last.breakdown).toEqual([
+      {
+        orgName: "Alpha",
+        winRate: 100,
+        scrimCount: 1,
+        attendanceRate: 100,
+        income: 1000,
+        expense: 0,
+        cumulativeBalance: 1000,
+      },
+      {
+        orgName: "Beta",
+        winRate: 0,
+        scrimCount: 1,
+        attendanceRate: 0,
+        income: 0,
+        expense: 0,
+        cumulativeBalance: 0,
+      },
+    ]);
+    expect(out.sponsors).toEqual([{ name: "Acme · Beta", value: 500 }]);
   });
 });

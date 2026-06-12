@@ -1,6 +1,16 @@
 import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
 
+export interface OrgMonthBreakdown {
+  orgName: string;
+  winRate: number;
+  scrimCount: number;
+  attendanceRate: number;
+  income: number;
+  expense: number;
+  cumulativeBalance: number;
+}
+
 export interface MonthPoint {
   monthKey: string;
   monthLabel: string;
@@ -10,6 +20,7 @@ export interface MonthPoint {
   income: number;
   expense: number;
   cumulativeBalance: number;
+  breakdown?: OrgMonthBreakdown[];
 }
 
 export interface SponsorSlice {
@@ -26,6 +37,7 @@ export interface ScrimRow {
   id: string;
   scheduled_at: string;
   status: string;
+  organization_id?: string;
   scrim_results: { is_win: boolean | null } | { is_win: boolean | null }[] | null;
 }
 
@@ -38,6 +50,7 @@ export interface FinanceRow {
   type: "income" | "expense";
   amount: number;
   date: string;
+  organization_id?: string;
 }
 
 const MONTH_LABELS_ID = [
@@ -132,7 +145,10 @@ export function bucketFinances(
   });
 }
 
-export async function getHomeChartData(orgId: string | string[]): Promise<HomeChartData> {
+export async function getHomeChartData(
+  orgId: string | string[],
+  orgNameById?: Record<string, string>,
+): Promise<HomeChartData> {
   const admin = createAdminClient();
   const orgIds = Array.isArray(orgId) ? orgId : [orgId];
   const monthKeys = buildMonthKeys(new Date());
@@ -141,18 +157,18 @@ export async function getHomeChartData(orgId: string | string[]): Promise<HomeCh
   const [scrimsRes, financesRes, sponsorsRes] = await Promise.all([
     admin
       .from("scrims")
-      .select("id, scheduled_at, status, scrim_results(is_win)")
+      .select("id, scheduled_at, status, organization_id, scrim_results(is_win)")
       .in("organization_id", orgIds)
       .gte("scheduled_at", windowStart)
       .limit(200),
     admin
       .from("finances")
-      .select("type, amount, date")
+      .select("type, amount, date, organization_id")
       .in("organization_id", orgIds)
       .limit(500),
     admin
       .from("sponsors")
-      .select("name, deal_value")
+      .select("name, deal_value, organization_id")
       .in("organization_id", orgIds)
       .eq("status", "active")
       .limit(50),
@@ -195,9 +211,43 @@ export async function getHomeChartData(orgId: string | string[]): Promise<HomeCh
     };
   });
 
+  // Per-org breakdown for "Semua" mode — powers tooltip detail per team
+  const isMultiOrg = orgIds.length > 1 && orgNameById;
+  if (isMultiOrg) {
+    const finances = (financesRes.data ?? []) as FinanceRow[];
+    for (const id of orgIds) {
+      const orgName = orgNameById[id];
+      if (!orgName) continue;
+      const orgScrims = scrims.filter((s) => s.organization_id === id);
+      const orgScrimIds = new Set(orgScrims.map((s) => s.id));
+      const orgScrimMonth = new Map(orgScrims.map((s) => [s.id, monthKeyOf(s.scheduled_at)]));
+      const orgAttendances = attendances.filter((a) => orgScrimIds.has(a.scrim_id));
+      const sc = bucketScrims(orgScrims, monthKeys);
+      const at = bucketAttendance(orgAttendances, orgScrimMonth, monthKeys);
+      const fi = bucketFinances(finances.filter((f) => f.organization_id === id), monthKeys);
+      months.forEach((m, i) => {
+        (m.breakdown ??= []).push({
+          orgName,
+          winRate: sc[i]!.winRate,
+          scrimCount: sc[i]!.scrimCount,
+          attendanceRate: at[i] ?? 0,
+          income: fi[i]!.income,
+          expense: fi[i]!.expense,
+          cumulativeBalance: fi[i]!.cumulativeBalance,
+        });
+      });
+    }
+  }
+
   const sponsors: SponsorSlice[] = (sponsorsRes.data ?? [])
     .filter((s) => (s.deal_value ?? 0) > 0)
-    .map((s) => ({ name: s.name, value: s.deal_value ?? 0 }));
+    .map((s) => ({
+      name:
+        isMultiOrg && s.organization_id && orgNameById[s.organization_id]
+          ? `${s.name} · ${orgNameById[s.organization_id]}`
+          : s.name,
+      value: s.deal_value ?? 0,
+    }));
 
   return { months, sponsors };
 }

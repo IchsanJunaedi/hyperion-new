@@ -5,6 +5,28 @@ import {
 } from "recharts";
 import type { MonthPoint } from "@/features/dashboard/queries/homeCharts";
 
+interface TipProps {
+  active?: boolean;
+  payload?: Array<{ payload: MonthPoint }>;
+}
+
+const AttendanceTooltip = ({ active, payload }: TipProps) => {
+  if (!active || !payload || payload.length === 0) return null;
+  const m = payload[0]!.payload;
+  const rows = (m.breakdown ?? []).filter((b) => b.scrimCount > 0);
+  return (
+    <div className="rounded-lg border border-ui-border bg-ui-surface px-3 py-2 text-xs shadow-lg">
+      <p className="font-medium text-ui-text">{m.monthLabel}</p>
+      <p className="text-ui-text-2">Kehadiran: {m.attendanceRate}%</p>
+      {rows.map((b) => (
+        <p key={b.orgName} className="text-ui-text-muted">
+          {b.orgName}: {b.attendanceRate}%
+        </p>
+      ))}
+    </div>
+  );
+};
+
 const AttendanceLineChart = ({ months }: { months: MonthPoint[] }) => {
   return (
     <ResponsiveContainer width="100%" height={180}>
@@ -12,12 +34,7 @@ const AttendanceLineChart = ({ months }: { months: MonthPoint[] }) => {
         <CartesianGrid strokeDasharray="3 3" stroke="var(--ui-border)" vertical={false} />
         <XAxis dataKey="monthLabel" tick={{ fontSize: 11, fill: "var(--ui-text-muted)" }} axisLine={false} tickLine={false} />
         <YAxis domain={[0, 100]} tick={{ fontSize: 11, fill: "var(--ui-text-muted)" }} axisLine={false} tickLine={false} />
-        <Tooltip
-          contentStyle={{ background: "var(--ui-surface)", border: "1px solid var(--ui-border)", borderRadius: 8, fontSize: 12 }}
-          labelStyle={{ color: "var(--ui-text)" }}
-          itemStyle={{ color: "var(--ui-text-2)" }}
-          formatter={(value) => [`${value ?? 0}%`, "Kehadiran"]}
-        />
+        <Tooltip content={<AttendanceTooltip />} />
         <Line
           type="monotone"
           dataKey="attendanceRate"

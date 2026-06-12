@@ -91,7 +91,12 @@ export default async function DashboardPage({
       [healthScore, executiveSummary, homeChartData] = await Promise.all([
         getTeamHealthScore(statsOrgIds),
         getExecutiveSummary(statsOrgIds),
-        getHomeChartData(statsOrgIds),
+        getHomeChartData(
+          statsOrgIds,
+          isAllOrgs
+            ? Object.fromEntries((orgs ?? []).map((o) => [o.id, o.name]))
+            : undefined,
+        ),
       ]);
     } catch (e) {
       console.error("Failed to fetch dashboard stats:", e);
