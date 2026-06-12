@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { logAudit } from "@/lib/audit";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { SponsorStatus, DeliverableStatus, DeliverableCategory } from "./queries";
@@ -71,6 +72,15 @@ export async function createSponsorAction(
     .single();
 
   if (error) return { ok: false, message: error.message };
+
+  await logAudit({
+    actorId: user.id,
+    action: "sponsor.create",
+    entityType: "sponsor",
+    entityId: created.id,
+    metadata: { name: data.name.trim(), orgId },
+  });
+
   revalidatePath("/dashboard/sponsors");
   revalidatePath("/dashboard");
   revalidatePath("/manage", "layout");
@@ -82,8 +92,8 @@ export async function updateSponsorAction(
   sponsorId: string,
   data: SponsorFormData,
 ): Promise<ActionResult> {
-  const { ok } = await requireManagerAuth(orgId);
-  if (!ok) return { ok: false, message: "Akses ditolak" };
+  const { user, ok } = await requireManagerAuth(orgId);
+  if (!ok || !user) return { ok: false, message: "Akses ditolak" };
 
   const admin = createAdminClient();
   const { error } = await admin
@@ -105,6 +115,15 @@ export async function updateSponsorAction(
     .eq("id", sponsorId);
 
   if (error) return { ok: false, message: error.message };
+
+  await logAudit({
+    actorId: user.id,
+    action: "sponsor.update",
+    entityType: "sponsor",
+    entityId: sponsorId,
+    metadata: { name: data.name.trim(), status: data.status },
+  });
+
   revalidatePath("/dashboard/sponsors");
   revalidatePath("/dashboard");
   revalidatePath("/manage", "layout");
@@ -112,12 +131,20 @@ export async function updateSponsorAction(
 }
 
 export async function deleteSponsorAction(orgId: string, sponsorId: string): Promise<ActionResult> {
-  const { ok } = await requireManagerAuth(orgId);
-  if (!ok) return { ok: false, message: "Akses ditolak" };
+  const { user, ok } = await requireManagerAuth(orgId);
+  if (!ok || !user) return { ok: false, message: "Akses ditolak" };
 
   const admin = createAdminClient();
   const { error } = await admin.from("sponsors").delete().eq("id", sponsorId);
   if (error) return { ok: false, message: error.message };
+
+  await logAudit({
+    actorId: user.id,
+    action: "sponsor.delete",
+    entityType: "sponsor",
+    entityId: sponsorId,
+  });
+
   revalidatePath("/dashboard/sponsors");
   revalidatePath("/dashboard");
   revalidatePath("/manage", "layout");
@@ -129,8 +156,8 @@ export async function addDeliverableAction(
   sponsorId: string,
   data: { title: string; description: string; category: DeliverableCategory; due_date: string },
 ): Promise<ActionResult & { deliverable?: import("./queries").SponsorDeliverable }> {
-  const { ok } = await requireManagerAuth(orgId);
-  if (!ok) return { ok: false, message: "Akses ditolak" };
+  const { user, ok } = await requireManagerAuth(orgId);
+  if (!ok || !user) return { ok: false, message: "Akses ditolak" };
   if (!data.title.trim()) return { ok: false, message: "Judul deliverable tidak boleh kosong" };
 
   const admin = createAdminClient();
@@ -147,6 +174,15 @@ export async function addDeliverableAction(
     .single();
 
   if (error) return { ok: false, message: error.message };
+
+  await logAudit({
+    actorId: user.id,
+    action: "sponsor_deliverable.create",
+    entityType: "sponsor_deliverable",
+    entityId: created.id,
+    metadata: { title: data.title.trim(), sponsorId },
+  });
+
   return { ok: true, deliverable: created };
 }
 
@@ -155,8 +191,8 @@ export async function updateDeliverableStatusAction(
   deliverableId: string,
   status: DeliverableStatus,
 ): Promise<ActionResult> {
-  const { ok } = await requireManagerAuth(orgId);
-  if (!ok) return { ok: false, message: "Akses ditolak" };
+  const { user, ok } = await requireManagerAuth(orgId);
+  if (!ok || !user) return { ok: false, message: "Akses ditolak" };
 
   const admin = createAdminClient();
   const { error } = await admin
@@ -169,16 +205,33 @@ export async function updateDeliverableStatusAction(
     .eq("id", deliverableId);
 
   if (error) return { ok: false, message: error.message };
+
+  await logAudit({
+    actorId: user.id,
+    action: "sponsor_deliverable.update",
+    entityType: "sponsor_deliverable",
+    entityId: deliverableId,
+    metadata: { status },
+  });
+
   return { ok: true };
 }
 
 export async function deleteDeliverableAction(orgId: string, deliverableId: string): Promise<ActionResult> {
-  const { ok } = await requireManagerAuth(orgId);
-  if (!ok) return { ok: false, message: "Akses ditolak" };
+  const { user, ok } = await requireManagerAuth(orgId);
+  if (!ok || !user) return { ok: false, message: "Akses ditolak" };
 
   const admin = createAdminClient();
   const { error } = await admin.from("sponsor_deliverables").delete().eq("id", deliverableId);
   if (error) return { ok: false, message: error.message };
+
+  await logAudit({
+    actorId: user.id,
+    action: "sponsor_deliverable.delete",
+    entityType: "sponsor_deliverable",
+    entityId: deliverableId,
+  });
+
   return { ok: true };
 }
 
@@ -199,15 +252,32 @@ export async function addSponsorNoteAction(
     .single();
 
   if (error) return { ok: false, message: error.message };
+
+  await logAudit({
+    actorId: user.id,
+    action: "sponsor_note.create",
+    entityType: "sponsor_note",
+    entityId: note.id,
+    metadata: { sponsorId },
+  });
+
   return { ok: true, note };
 }
 
 export async function deleteSponsorNoteAction(orgId: string, noteId: string): Promise<ActionResult> {
-  const { ok } = await requireManagerAuth(orgId);
-  if (!ok) return { ok: false, message: "Akses ditolak" };
+  const { user, ok } = await requireManagerAuth(orgId);
+  if (!ok || !user) return { ok: false, message: "Akses ditolak" };
 
   const admin = createAdminClient();
   const { error } = await admin.from("sponsor_notes").delete().eq("id", noteId);
   if (error) return { ok: false, message: error.message };
+
+  await logAudit({
+    actorId: user.id,
+    action: "sponsor_note.delete",
+    entityType: "sponsor_note",
+    entityId: noteId,
+  });
+
   return { ok: true };
 }

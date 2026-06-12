@@ -1,5 +1,6 @@
 "use server";
 
+import { logAudit } from "@/lib/audit";
 import { createClient } from "@/lib/supabase/server";
 import type { MemberRole } from "@/types/database";
 
@@ -107,6 +108,18 @@ export async function createInviteAction(
           : (error?.message ?? "Gagal membuat undangan"),
     };
   }
+
+  await logAudit({
+    actorId: user.id,
+    action: "invite.create",
+    entityType: "organization_invite",
+    metadata: {
+      orgId,
+      role: raw.role,
+      divisionId: raw.division_id ?? null,
+      // No invitee PII in the audit trail — email/phone stay in the invite row.
+    },
+  });
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
   return {
