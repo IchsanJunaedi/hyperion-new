@@ -11,37 +11,38 @@ export interface ExecutiveSummary {
   activeMemberCount: number;
 }
 
-export async function getExecutiveSummary(orgId: string): Promise<ExecutiveSummary> {
+export async function getExecutiveSummary(orgId: string | string[]): Promise<ExecutiveSummary> {
   const admin = createAdminClient();
+  const orgIds = Array.isArray(orgId) ? orgId : [orgId];
 
   const [scrimsRes, membersRes, sponsorsRes, financesRes, allScrimsRes] = await Promise.all([
     admin
       .from("scrims")
       .select("id, scrim_results(is_win)")
-      .eq("organization_id", orgId)
+      .in("organization_id", orgIds)
       .eq("status", "completed")
       .limit(200),
     admin
       .from("team_members")
       .select("id")
-      .eq("organization_id", orgId)
+      .in("organization_id", orgIds)
       .eq("is_active", true)
       .limit(50),
     admin
       .from("sponsors")
       .select("deal_value, status")
-      .eq("organization_id", orgId)
+      .in("organization_id", orgIds)
       .eq("status", "active")
       .limit(50),
     admin
       .from("finances")
       .select("type, amount")
-      .eq("organization_id", orgId)
+      .in("organization_id", orgIds)
       .limit(500),
     admin
       .from("scrims")
       .select("id")
-      .eq("organization_id", orgId)
+      .in("organization_id", orgIds)
       .limit(200),
   ]);
 

@@ -9,8 +9,9 @@ export interface HealthScoreBreakdown {
   total: number;
 }
 
-export async function getTeamHealthScore(orgId: string): Promise<HealthScoreBreakdown> {
+export async function getTeamHealthScore(orgId: string | string[]): Promise<HealthScoreBreakdown> {
   const admin = createAdminClient();
+  const orgIds = Array.isArray(orgId) ? orgId : [orgId];
   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
 
   // Fetch scrims + members + recent activity in parallel
@@ -18,17 +19,17 @@ export async function getTeamHealthScore(orgId: string): Promise<HealthScoreBrea
     admin
       .from("scrims")
       .select("id, scrim_results(is_win)")
-      .eq("organization_id", orgId)
+      .in("organization_id", orgIds)
       .eq("status", "completed"),
     admin
       .from("team_members")
       .select("availability")
-      .eq("organization_id", orgId)
+      .in("organization_id", orgIds)
       .eq("is_active", true),
     admin
       .from("scrims")
       .select("id")
-      .eq("organization_id", orgId)
+      .in("organization_id", orgIds)
       .gte("scheduled_at", thirtyDaysAgo)
       .limit(1),
   ]);
@@ -57,7 +58,7 @@ export async function getTeamHealthScore(orgId: string): Promise<HealthScoreBrea
   const allScrimsRes = await admin
     .from("scrims")
     .select("id")
-    .eq("organization_id", orgId);
+    .in("organization_id", orgIds);
 
   const allScrimIds = (allScrimsRes.data ?? []).map((s) => s.id);
 

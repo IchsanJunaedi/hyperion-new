@@ -76,18 +76,22 @@ export default async function DashboardPage({
   for (const [uid, email] of emailMap.entries()) { if (email === ownerEmail) roleMap.set(uid, "owner"); }
 
   // Team health score + executive summary — sequential after Promise.all
+  const isAllOrgs = selectedOrgId === "all" && (orgs?.length ?? 0) > 1;
   const currentOrg = orgs?.find((o) => o.id === selectedOrgId) || orgs?.[orgs.length - 1];
-  const healthOrgId = currentOrg?.id ?? null;
-  const healthOrgName = currentOrg?.name ?? "";
+  const healthOrgId = isAllOrgs ? "all" : currentOrg?.id ?? null;
+  const healthOrgName = isAllOrgs ? "Semua Tim" : currentOrg?.name ?? "";
+  const statsOrgIds: string | string[] | null = isAllOrgs
+    ? (orgs ?? []).map((o) => o.id)
+    : currentOrg?.id ?? null;
   let healthScore = null;
   let executiveSummary = null;
   let homeChartData: HomeChartData | null = null;
-  if (healthOrgId) {
+  if (statsOrgIds && statsOrgIds.length > 0) {
     try {
       [healthScore, executiveSummary, homeChartData] = await Promise.all([
-        getTeamHealthScore(healthOrgId),
-        getExecutiveSummary(healthOrgId),
-        getHomeChartData(healthOrgId),
+        getTeamHealthScore(statsOrgIds),
+        getExecutiveSummary(statsOrgIds),
+        getHomeChartData(statsOrgIds),
       ]);
     } catch (e) {
       console.error("Failed to fetch dashboard stats:", e);
@@ -121,6 +125,7 @@ export default async function DashboardPage({
                 orgs={orgs}
                 currentOrgId={healthOrgId ?? ""}
                 basePath="/dashboard"
+                showAllOption
               />
             )}
             <ExecutiveSummary

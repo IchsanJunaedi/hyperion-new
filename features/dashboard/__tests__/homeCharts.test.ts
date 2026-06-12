@@ -145,4 +145,10 @@ describe("getHomeChartData", () => {
     expect(out.months.every((m) => m.scrimCount === 0 && m.winRate === 0)).toBe(true);
     expect(out.sponsors).toEqual([{ name: "Acme", value: 1_000_000 }]);
   });
+
+  it("accepts an array of org ids (Semua mode)", async () => {
+    const out = await getHomeChartData(["org-1", "org-2"]);
+    expect(out.months).toHaveLength(6);
+    expect(out.sponsors).toEqual([{ name: "Acme", value: 1_000_000 }]);
+  });
 });

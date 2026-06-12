@@ -9,14 +9,17 @@ interface OrgSwitcherProps {
   basePath: string;
   year?: number;
   month?: number;
+  showAllOption?: boolean;
 }
 
-const OrgSwitcher = ({ orgs, currentOrgId, basePath, year, month }: OrgSwitcherProps) => {
+const OrgSwitcher = ({ orgs, currentOrgId, basePath, year, month, showAllOption }: OrgSwitcherProps) => {
   if (orgs.length <= 1) return null;
+
+  const items = showAllOption ? [{ id: "all", name: "Semua" }, ...orgs] : orgs;
 
   return (
     <div className="flex flex-wrap gap-1.5">
-      {orgs.map((org) => {
+      {items.map((org) => {
         const active = org.id === currentOrgId;
         
         const params = new URLSearchParams();

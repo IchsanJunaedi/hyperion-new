@@ -132,8 +132,9 @@ export function bucketFinances(
   });
 }
 
-export async function getHomeChartData(orgId: string): Promise<HomeChartData> {
+export async function getHomeChartData(orgId: string | string[]): Promise<HomeChartData> {
   const admin = createAdminClient();
+  const orgIds = Array.isArray(orgId) ? orgId : [orgId];
   const monthKeys = buildMonthKeys(new Date());
   const windowStart = `${monthKeys[0]}-01`;
 
@@ -141,18 +142,18 @@ export async function getHomeChartData(orgId: string): Promise<HomeChartData> {
     admin
       .from("scrims")
       .select("id, scheduled_at, status, scrim_results(is_win)")
-      .eq("organization_id", orgId)
+      .in("organization_id", orgIds)
       .gte("scheduled_at", windowStart)
       .limit(200),
     admin
       .from("finances")
       .select("type, amount, date")
-      .eq("organization_id", orgId)
+      .in("organization_id", orgIds)
       .limit(500),
     admin
       .from("sponsors")
       .select("name, deal_value")
-      .eq("organization_id", orgId)
+      .in("organization_id", orgIds)
       .eq("status", "active")
       .limit(50),
   ]);
