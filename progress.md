@@ -1,4 +1,4 @@
-# Hyperion Progress — Status as of 2026-06-09
+# Hyperion Progress — Status as of 2026-06-12
 
 > Read this file first at the start of every session. It is the single source of truth for what's built, what's broken, and what's next.
 
@@ -129,6 +129,18 @@
 | `audit_logs` | All create/update/delete actions | `20260514000002` |
 | `notification_preferences` | Per-user WA notification toggles | `20260516120000` |
 | `content_calendar` | Social media content scheduling | `20260515000004` |
+
+---
+
+## Features & Fixes Completed (2026-06-12 session)
+
+### Perf + Landing Polish (PR #50–#53, all merged, CI green)
+- **PR #50** — `motion` dep dihapus: landing components migrasi ke GSAP/CSS transitions (HeaderClient drawer = CSS, DivisionsGrid + AboutImageMarquee = GSAP ScrollTrigger)
+- **PR #51** — 9 komponen recharts lazy-load via `next/dynamic` ssr:false (+ `SparklineLazy`/`SkillRadarChartLazy` wrapper untuk server components); `@next/bundle-analyzer` di next.config (`ANALYZE=true npm run build`)
+- **PR #52** — GSAP landing polish: SplitText hero headline (word stagger), reusable `components/landing/Reveal.tsx` scroll-reveal, hormati `prefers-reduced-motion` via `gsap.matchMedia`
+- **PR #53** — fix regression dari 96e616e: guard `finishScrimAction` kurang role `"owner"` — org creator tidak bisa finish scrim. +5 unit tests (806 total)
+- **GOTCHA:** org creator dapat `team_members.role = "owner"` dari onboarding — setiap role guard WAJIB include `"owner"` (pattern: `["owner", "coach", "captain", "manager"]`)
+- GSAP 3.13+: semua bonus plugin (SplitText dll) gratis di package `gsap` npm; register di `lib/gsap.ts`
 
 ---
 
@@ -351,19 +363,15 @@ All `<input type="number">` must use `<NumberInput>` from `@/components/ui/numbe
 
 ## What's NOT Done (Future Work)
 - WA Vision Upload (finish scrim via WhatsApp foto draft+scoreboard) — **DEFERRED, butuh biaya VPS** untuk hosting vision server. Desain lengkap: `docs/superpowers/specs/2026-06-11-wa-vision-upload-deferred.md`
-- Reports page activation for managers (GH #32 — needs audit of manager-visible data)
-- Light/dark mode CSS variable refactor (GH #33 — DO NOT START before palette finalized)
 - *(all migrations applied — no pending migrations)*
 
-### Light/Dark Mode Theming Refactor (future, before light mode launch)
-- **Problem:** 146 file TSX hardcode hex design-system colors (`#191919`, `#2D2D2D`, dll) — akan salah di light mode
-- **Root cause:** `globals.css` pakai `oklch()` generic, tidak ada CSS variable spesifik untuk Notion-dark palette
-- **Fix needed:**
-  1. Tentukan light mode color palette (padanan tiap token)
-  2. Tambah CSS vars ke `globals.css` (`:root` light + `.dark`) + `@theme inline` untuk Tailwind utility
-  3. Update 146 file: ganti `bg-[#191919]` → `bg-surface`, `text-[#9B9A97]` → `text-muted`, dll
-- **Scope:** ~146 TSX files di `app/`, `features/`, `components/`
-- **Do NOT start** sebelum light mode color palette diputuskan
+### Resolved Backlog (verified 2026-06-12 — items below were stale in this section)
+- ✅ **Reports page LIVE** untuk owner (`/dashboard/reports`, sidebar "Laporan") DAN manager (`/manage/[orgSlug]/reports`, link di `WorkspaceSidebar.tsx:147`) — GH #32 done
+- ✅ **Light/dark mode LIVE** — `globals.css` punya `:root` (warm cream light) + `.dark` (Notion dark) + `@theme inline`, toggle "Tema" di sidebar. Refactor 146 file selesai; sisa 8 file hardcode hex = halaman publik dark-by-design (landing components, about, `/p/[orgSlug]`, trial, schedule, results) — bukan bug, halaman publik tidak punya theme toggle. GH #33 closed.
+- ✅ Strategy comments realtime — `StrategyComments.tsx` subscribe channel + cleanup
+- ✅ RSVP count di calendar grid cells — `CalendarGrid.tsx` tampilkan `X hadir · Y?`
+- ✅ GH #49 (3 temuan low, closed): #2 sudah fixed (`.eq("organization_id", orgId)` di `features/salary/actions.ts:107`); #1 speculative (domain proxy hardcoded const, bukan configurable); #3 intentional (WA fire-and-forget di trials = keputusan H6 — registrasi tidak boleh gagal karena WA error; `analyzeScreenshotAction.ts:158` bukan WA send)
+- ❌ React Compiler — diputuskan SKIP (2026-06-12): masih experimental, TanStack Query + Zustand sudah minimalisir re-render, risk > reward. Revisit saat stable.
 
 ---
 
