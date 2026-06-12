@@ -575,6 +575,71 @@ export async function checkCalendarPermission(
 // ============================================================================
 
 /**
+ * In-memory mirror of the checkCalendarVisibility switch, used by the bulk
+ * list paths (getAccessibleCalendars / getAccessibleEvents) so they don't
+ * issue one DB roundtrip per row (PRF-01).
+ */
+function calendarVisibilityAllows(
+  visibility: CalendarVisibility,
+  ctx: {
+    userId: string;
+    userRole: UserRole | null;
+    createdBy?: string | null;
+    permission?: { can_view?: boolean | null } | null;
+  },
+): boolean {
+  switch (visibility) {
+    case "private":
+      return ctx.userId === ctx.createdBy;
+    case "management-only":
+      return !!(ctx.userRole && ["owner", "manager", "coach"].includes(ctx.userRole));
+    case "captain-only":
+      return !!(ctx.userRole && ["owner", "manager", "coach", "captain"].includes(ctx.userRole));
+    case "team-only":
+      return !!ctx.userRole;
+    case "selected-members":
+      return ctx.userId === ctx.createdBy || ctx.permission?.can_view === true;
+    case "public-workspace":
+      return true;
+    default:
+      return false;
+  }
+}
+
+/**
+ * In-memory mirror of the checkEventVisibility override switch (bulk paths).
+ */
+function eventVisibilityAllows(
+  visibility: CalendarVisibility,
+  ctx: {
+    userId: string;
+    userRole: UserRole | null;
+    createdBy?: string | null;
+    allowedMembers?: string[] | null;
+  },
+): boolean {
+  switch (visibility) {
+    case "private":
+      return ctx.userId === ctx.createdBy;
+    case "management-only":
+      return !!(ctx.userRole && ["owner", "manager", "coach"].includes(ctx.userRole));
+    case "captain-only":
+      return !!(ctx.userRole && ["owner", "manager", "coach", "captain"].includes(ctx.userRole));
+    case "team-only":
+      return !!ctx.userRole;
+    case "selected-members":
+      return (
+        (ctx.allowedMembers?.includes(ctx.userId) ?? false) ||
+        ctx.userId === ctx.createdBy
+      );
+    case "public-workspace":
+      return true;
+    default:
+      return false;
+  }
+}
+
+/**
  * Get all calendars accessible to the user
  * Filters based on visibility and explicit permissions
  *
@@ -632,37 +697,54 @@ export async function getAccessibleCalendars(
       return [];
     }
 
-    // Filter based on visibility and role
+    // Bulk-fetch this user's explicit permissions for all selected-members
+    // calendars in one query instead of one query per calendar (PRF-01).
+    const selectedMemberIds = calendars
+      .filter((c) => c.visibility === "selected-members")
+      .map((c) => c.id);
+
+    const permByCalendar = new Map<string, CalendarMemberPermission>();
+    if (selectedMemberIds.length > 0) {
+      const { data: perms, error: permError } = await client
+        .from("calendar_member_permissions")
+        .select("*")
+        .in("calendar_id", selectedMemberIds)
+        .eq("member_user_id", userId)
+        .is("deleted_at", null)
+        .limit(200);
+      if (permError) {
+        console.error("Error fetching calendar member permissions:", permError);
+      }
+      for (const perm of (perms ?? []) as CalendarMemberPermission[]) {
+        permByCalendar.set(perm.calendar_id, perm);
+      }
+    }
+
+    // Filter based on visibility and role — in memory, no per-row queries
     const result: AccessibleCalendarResult[] = [];
 
     for (const calendar of calendars) {
-      const visCheck = await checkCalendarVisibility(
-        userId,
-        calendar.id,
-        organizationId,
-      );
-
-      if (!visCheck.allowed) {
+      // Parity with checkCalendarVisibility: deleted calendars are never visible
+      if (calendar.deleted_at) {
         continue;
       }
 
-      // Get explicit permissions if selected-members
-      let userPermissions: CalendarMemberPermission | null = null;
-      if (calendar.visibility === "selected-members") {
-        const { data: perm } = await client
-          .from("calendar_member_permissions")
-          .select("*")
-          .eq("calendar_id", calendar.id)
-          .eq("member_user_id", userId)
-          .is("deleted_at", null)
-          .maybeSingle();
+      const visibility = calendar.visibility as CalendarVisibility;
+      const userPermissions = permByCalendar.get(calendar.id) ?? null;
 
-        userPermissions = perm as CalendarMemberPermission | null;
+      const allowed = calendarVisibilityAllows(visibility, {
+        userId,
+        userRole,
+        createdBy: calendar.created_by,
+        permission: userPermissions,
+      });
+      if (!allowed) {
+        continue;
       }
 
       result.push({
         ...(calendar as unknown as import("@/lib/permissions/calendar-types").CalendarConfig),
-        userPermissions,
+        userPermissions: visibility === "selected-members" ? userPermissions : null,
       });
     }
 
@@ -695,10 +777,14 @@ export async function getAccessibleEvents(
 ): Promise<AccessibleEventResult[]> {
   try {
     const client = await createClient();
+    const userRole = await getUserRoleInOrg(userId, organizationId);
 
     // Get accessible calendars first
     const calendars = await getAccessibleCalendars(userId, organizationId);
     const calendarIds = calendars.map((c) => c.id);
+    const calendarVisibilityById = new Map(
+      calendars.map((c) => [c.id, c.visibility as CalendarVisibility]),
+    );
 
     if (calendarIds.length === 0) {
       return [];
@@ -734,17 +820,68 @@ export async function getAccessibleEvents(
       return [];
     }
 
-    // Get event visibility for each event
+    // Bulk-fetch event-level visibility overrides in one query instead of
+    // two queries per event (PRF-01).
+    const overrideByEvent = new Map<
+      string,
+      { visibility: CalendarVisibility; allowed_member_ids: string[] | null }
+    >();
+    if (events.length > 0) {
+      const { data: overrides, error: overrideError } = await client
+        .from("event_visibility")
+        .select("event_id, visibility, allowed_member_ids")
+        .in(
+          "event_id",
+          events.map((e) => e.id),
+        )
+        .limit(500);
+      if (overrideError) {
+        console.error("Error fetching event visibility overrides:", overrideError);
+      }
+      for (const o of overrides ?? []) {
+        overrideByEvent.set(o.event_id, {
+          visibility: o.visibility as CalendarVisibility,
+          allowed_member_ids: o.allowed_member_ids,
+        });
+      }
+    }
+
     const result: AccessibleEventResult[] = [];
 
     for (const event of events) {
-      const visCheck = await checkEventVisibility(
-        userId,
-        event.id,
-        organizationId,
-      );
+      const override = overrideByEvent.get(event.id);
 
-      if (!visCheck.allowed) {
+      if (!override) {
+        // No override → event inherits its calendar's visibility. Events are
+        // only queried from calendars the user can already access, so the
+        // calendar-level check has effectively passed.
+        const calVisibility = event.calendar_id
+          ? calendarVisibilityById.get(event.calendar_id)
+          : undefined;
+        if (!calVisibility) {
+          // Orphaned event (no calendar) — deny, parity with checkEventVisibility
+          continue;
+        }
+        result.push({
+          id: event.id,
+          title: event.title,
+          event_type: event.event_type,
+          starts_at: event.starts_at,
+          ends_at: event.ends_at,
+          visibility: calVisibility,
+          calendar_id: event.calendar_id || undefined,
+          created_by: event.created_by,
+        });
+        continue;
+      }
+
+      const allowed = eventVisibilityAllows(override.visibility, {
+        userId,
+        userRole,
+        createdBy: event.created_by,
+        allowedMembers: override.allowed_member_ids,
+      });
+      if (!allowed) {
         continue;
       }
 
@@ -754,7 +891,7 @@ export async function getAccessibleEvents(
         event_type: event.event_type,
         starts_at: event.starts_at,
         ends_at: event.ends_at,
-        visibility: visCheck.visibility || "team-only",
+        visibility: override.visibility || "team-only",
         calendar_id: event.calendar_id || undefined,
         created_by: event.created_by,
       });

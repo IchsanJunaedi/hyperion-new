@@ -481,6 +481,139 @@ describe("Calendar Access Permissions", () => {
     });
   });
 
+  describe("getAccessibleCalendars — bulk permissions (PRF-01)", () => {
+    it("grants selected-members calendar via one bulk permission query", async () => {
+      process.env.OWNER_EMAIL = "owner@test.com";
+      mockQuery.single.mockImplementation(() => {
+        if (currentTable === "team_members")
+          return Promise.resolve({ data: { role: "member" }, error: null });
+        return Promise.resolve({ data: null, error: null });
+      });
+
+      mockQuery.then = vi.fn((resolve) => {
+        if (currentTable === "calendar_configs") {
+          return resolve({
+            data: [
+              { id: "cal-sel", visibility: "selected-members", created_by: "someone-else" },
+              { id: "cal-priv", visibility: "private", created_by: "someone-else" },
+            ],
+            error: null,
+          });
+        }
+        if (currentTable === "calendar_member_permissions") {
+          return resolve({
+            data: [{ calendar_id: "cal-sel", member_user_id: "member-id", can_view: true }],
+            error: null,
+          });
+        }
+        return resolve({ data: [], error: null });
+      });
+
+      const result = await getAccessibleCalendars("member-id", "org-1");
+      expect(result.length).toBe(1);
+      expect(result[0]!.id).toBe("cal-sel");
+      expect(result[0]!.userPermissions).toMatchObject({ can_view: true });
+
+      // Bulk: permissions table hit exactly once, not once per calendar
+      const permCalls = mockClient.from.mock.calls.filter(
+        (c: string[]) => c[0] === "calendar_member_permissions",
+      );
+      expect(permCalls.length).toBe(1);
+    });
+  });
+
+  describe("getAccessibleEvents — bulk visibility (PRF-01)", () => {
+    it("applies override in-memory and inherits calendar visibility without per-event queries", async () => {
+      process.env.OWNER_EMAIL = "owner@test.com";
+      mockQuery.single.mockImplementation(() => {
+        if (currentTable === "team_members")
+          return Promise.resolve({ data: { role: "member" }, error: null });
+        return Promise.resolve({ data: null, error: null });
+      });
+
+      mockQuery.then = vi.fn((resolve) => {
+        if (currentTable === "calendar_configs") {
+          return resolve({
+            data: [{ id: "cal-1", visibility: "public-workspace", created_by: "x" }],
+            error: null,
+          });
+        }
+        if (currentTable === "calendar_events") {
+          return resolve({
+            data: [
+              { id: "ev-plain", title: "A", event_type: "practice", starts_at: "2026-06-01", ends_at: null, created_by: "x", calendar_id: "cal-1" },
+              { id: "ev-mgmt", title: "B", event_type: "meeting", starts_at: "2026-06-02", ends_at: null, created_by: "x", calendar_id: "cal-1" },
+            ],
+            error: null,
+          });
+        }
+        if (currentTable === "event_visibility") {
+          return resolve({
+            data: [{ event_id: "ev-mgmt", visibility: "management-only", allowed_member_ids: null }],
+            error: null,
+          });
+        }
+        return resolve({ data: [], error: null });
+      });
+
+      const result = await getAccessibleEvents("member-id", "org-1", {
+        from: "2026-06-01",
+        to: "2026-06-30",
+      });
+
+      // member sees the plain event (inherits public-workspace calendar),
+      // but the management-only override hides ev-mgmt
+      expect(result.map((e) => e.id)).toEqual(["ev-plain"]);
+      expect(result[0]!.visibility).toBe("public-workspace");
+
+      // Bulk: overrides fetched once, not per event
+      const overrideCalls = mockClient.from.mock.calls.filter(
+        (c: string[]) => c[0] === "event_visibility",
+      );
+      expect(overrideCalls.length).toBe(1);
+    });
+
+    it("allows manager through management-only override", async () => {
+      process.env.OWNER_EMAIL = "owner@test.com";
+      mockQuery.single.mockImplementation(() => {
+        if (currentTable === "team_members")
+          return Promise.resolve({ data: { role: "manager" }, error: null });
+        return Promise.resolve({ data: null, error: null });
+      });
+
+      mockQuery.then = vi.fn((resolve) => {
+        if (currentTable === "calendar_configs") {
+          return resolve({
+            data: [{ id: "cal-1", visibility: "public-workspace", created_by: "x" }],
+            error: null,
+          });
+        }
+        if (currentTable === "calendar_events") {
+          return resolve({
+            data: [
+              { id: "ev-mgmt", title: "B", event_type: "meeting", starts_at: "2026-06-02", ends_at: null, created_by: "x", calendar_id: "cal-1" },
+            ],
+            error: null,
+          });
+        }
+        if (currentTable === "event_visibility") {
+          return resolve({
+            data: [{ event_id: "ev-mgmt", visibility: "management-only", allowed_member_ids: null }],
+            error: null,
+          });
+        }
+        return resolve({ data: [], error: null });
+      });
+
+      const result = await getAccessibleEvents("manager-id", "org-1", {
+        from: "2026-06-01",
+        to: "2026-06-30",
+      });
+      expect(result.map((e) => e.id)).toEqual(["ev-mgmt"]);
+      expect(result[0]!.visibility).toBe("management-only");
+    });
+  });
+
   describe("userCanManageCalendars and PermissionContext", () => {
     it("validates management permissions", async () => {
       mockQuery.single.mockResolvedValueOnce({ data: { role: "coach" }, error: null });
