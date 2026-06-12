@@ -8,6 +8,7 @@ import { Header } from "@/components/landing/Header";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { JoinUsSection } from "@/components/landing/JoinUsSection";
 import { PartnersSection } from "@/components/landing/PartnersSection";
+import { Reveal } from "@/components/landing/Reveal";
 import { TestimonialsSection } from "@/components/landing/TestimonialsSection";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -198,12 +199,22 @@ export default async function HomePage() {
           nearestTournament={nearestTournament}
           upcomingMatches={displayUpcoming}
         />
-        <DivisionsSection description={settings.divisions_description} />
+        <Reveal>
+          <DivisionsSection description={settings.divisions_description} />
+        </Reveal>
         <AchievementsSection entries={mergedAchievements} />
-        <LatestNewsSection posts={latestNews.slice(0, 7)} />
-        <TestimonialsSection testimonials={testimonials} />
-        <PartnersSection partners={partners} />
-        <JoinUsSection settings={joinSettings} />
+        <Reveal>
+          <LatestNewsSection posts={latestNews.slice(0, 7)} />
+        </Reveal>
+        <Reveal>
+          <TestimonialsSection testimonials={testimonials} />
+        </Reveal>
+        <Reveal>
+          <PartnersSection partners={partners} />
+        </Reveal>
+        <Reveal>
+          <JoinUsSection settings={joinSettings} />
+        </Reveal>
       </main>
       <Footer settings={footerSettings} />
     </>

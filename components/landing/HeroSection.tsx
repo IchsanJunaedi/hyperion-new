@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Calendar, Clock, Trophy } from "lucide-react";
-import { gsap, useGSAP } from "@/lib/gsap";
+import { gsap, SplitText, useGSAP } from "@/lib/gsap";
 import type { PublicTournament } from "@/features/admin/queries";
 
 export interface HeroSlide {
@@ -89,8 +89,24 @@ const HeroSection = ({
   }, [target]);
 
   useGSAP(() => {
-    gsap.from(".hero-card-left", { x: -30, opacity: 0, duration: 0.8, ease: "power3.out", delay: 0.15 });
-    gsap.from(".hero-card-right", { x: 30, opacity: 0, duration: 0.8, ease: "power3.out", delay: 0.25 });
+    const mm = gsap.matchMedia();
+    mm.add("(prefers-reduced-motion: no-preference)", () => {
+      gsap.from(".hero-card-left", { x: -30, opacity: 0, duration: 0.8, ease: "power3.out", delay: 0.15 });
+      gsap.from(".hero-card-right", { x: 30, opacity: 0, duration: 0.8, ease: "power3.out", delay: 0.25 });
+
+      const title = sectionRef.current?.querySelector(".hero-title");
+      if (title) {
+        const split = SplitText.create(title, { type: "words" });
+        gsap.from(split.words, {
+          yPercent: 60,
+          autoAlpha: 0,
+          stagger: 0.06,
+          duration: 0.7,
+          ease: "power3.out",
+          delay: 0.3,
+        });
+      }
+    });
   }, { scope: sectionRef });
 
   return (
@@ -136,7 +152,7 @@ const HeroSection = ({
 
                 {nearestTournament ? (
                   <>
-                    <h2 className="font-bebas text-4xl sm:text-6xl lg:text-7xl font-black uppercase leading-[0.9] text-white tracking-wide">
+                    <h2 className="hero-title font-bebas text-4xl sm:text-6xl lg:text-7xl font-black uppercase leading-[0.9] text-white tracking-wide">
                       {nearestTournament.name}
                     </h2>
 
@@ -180,7 +196,7 @@ const HeroSection = ({
                 ) : (
                   <div className="flex flex-col items-start py-8 text-white/35">
                     <Trophy className="h-8 w-8 text-white/15 mb-3 animate-pulse" />
-                    <span className="font-bebas text-2xl uppercase tracking-wider text-white/55">Belum Ada Turnamen Terdekat</span>
+                    <span className="hero-title font-bebas text-2xl uppercase tracking-wider text-white/55">Belum Ada Turnamen Terdekat</span>
                     <p className="text-xs mt-1 max-w-xs leading-relaxed text-[#6B6A68]">
                       Tidak ada jadwal turnamen yang akan datang. Silakan cek kembali nanti.
                     </p>
