@@ -42,6 +42,11 @@ export async function acceptInviteAction(
   if (!invite) {
     return { error: "Link undangan tidak ditemukan atau sudah kadaluarsa." };
   }
+  // Targeted invites may only be accepted by the invited account —
+  // without this, anyone holding the link could claim the role (SEC-01).
+  if (invite.email && invite.email !== user.email) {
+    return { error: "Undangan ini bukan untuk akun Anda." };
+  }
   if (invite.status === "expired" || new Date(invite.expires_at) < new Date()) {
     if (invite.status !== "expired") {
       await admin

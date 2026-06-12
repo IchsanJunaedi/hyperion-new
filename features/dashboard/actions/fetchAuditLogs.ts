@@ -120,6 +120,9 @@ export async function fetchDistinctActors(): Promise<
   } = await supabase.auth.getUser();
   if (!user) return [];
 
+  // Audit data is owner-only — same gate as fetchAuditLogs/fetchAuditActivity.
+  if (user.email !== process.env.OWNER_EMAIL) return [];
+
   const admin = createAdminClient();
 
   // Fetch only actor_id (single narrow column), ordered so duplicates are

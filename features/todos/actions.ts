@@ -60,6 +60,30 @@ export async function createManualTodoAction(
 
   const admin = createAdminClient();
 
+  // Caller must be the global owner or an active owner/manager of this org —
+  // admin client bypasses RLS, so the gate lives here (SEC-03). limit(1)
+  // because a user can hold seats across multiple divisions in the same org.
+  const isGlobalOwner = user.email === process.env.OWNER_EMAIL;
+  if (!isGlobalOwner) {
+    const { data: membership, error: membershipError } = await admin
+      .from("team_members")
+      .select("role")
+      .eq("organization_id", orgId)
+      .eq("user_id", user.id)
+      .eq("is_active", true)
+      .in("role", ["owner", "manager"])
+      .limit(1)
+      .maybeSingle();
+
+    if (membershipError) {
+      console.error("[todos] createManualTodoAction (caller check):", membershipError.message);
+    }
+
+    if (!membership) {
+      return { ok: false, message: "Akses ditolak" };
+    }
+  }
+
   // Validate assigned_to is a real manager in this org
   if (assigned_to) {
     const { data: member, error: memberError } = await admin
