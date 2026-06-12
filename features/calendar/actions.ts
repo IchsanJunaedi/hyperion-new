@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
+import { logAudit } from "@/lib/audit";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import {
@@ -111,6 +112,14 @@ export async function createCalendarEventAction(
   fanOutCalendarNotifications(event, user.id, org.name, org.id).catch((e) =>
     console.error("[calendar] fanOut error:", e),
   );
+
+  await logAudit({
+    actorId: user.id,
+    action: "calendar_event.create",
+    entityType: "calendar_event",
+    entityId: event.id,
+    metadata: { title: event.title, orgId: org.id },
+  });
 
   revalidatePath(`/${orgSlug}/calendar`);
   revalidatePath(`/dashboard/calendar`);
@@ -227,6 +236,14 @@ export async function updateCalendarEventAction(
     };
   }
 
+  await logAudit({
+    actorId: user.id,
+    action: "calendar_event.update",
+    entityType: "calendar_event",
+    entityId: id,
+    metadata: { fields: Object.keys(updateData) },
+  });
+
   revalidatePath(`/${orgSlug}/calendar`);
   revalidatePath(`/${orgSlug}/calendar/${id}`);
   return { ok: true };
@@ -267,6 +284,14 @@ export async function updateEventPropertyAction(
     };
   }
 
+  await logAudit({
+    actorId: user.id,
+    action: "calendar_event.update",
+    entityType: "calendar_event",
+    entityId: id,
+    metadata: { field },
+  });
+
   revalidatePath(`/${orgSlug}/calendar/${id}`);
   return { ok: true };
 }
@@ -293,6 +318,13 @@ export async function deleteCalendarEventAction(
           : error.message,
     };
   }
+
+  await logAudit({
+    actorId: user.id,
+    action: "calendar_event.delete",
+    entityType: "calendar_event",
+    entityId: eventId,
+  });
 
   revalidatePath(`/${orgSlug}/calendar`);
   revalidatePath(`/dashboard/calendar`);
@@ -445,6 +477,14 @@ export async function dragRescheduleEventAction(
           : error.message,
     };
   }
+
+  await logAudit({
+    actorId: user.id,
+    action: "calendar_event.reschedule",
+    entityType: "calendar_event",
+    entityId: eventId,
+    metadata: { newStartsAt },
+  });
 
   revalidatePath(`/${orgSlug}/calendar`);
   return { ok: true };

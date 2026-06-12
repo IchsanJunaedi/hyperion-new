@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { logAudit } from "@/lib/audit";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { sendWaMessage } from "@/lib/utils/fonnte";
@@ -104,16 +105,29 @@ export async function createTrialAction(
     .maybeSingle();
   if (!division) return { ok: false, message: "Divisi tidak ditemukan" };
 
-  const { error } = await admin.from("open_trials").insert({
-    org_id: session.orgId,
-    division_id: divisionId,
-    title,
-    game: division.game,
-    positions,
-    created_by: session.user.id,
-  });
+  const { data: created, error } = await admin
+    .from("open_trials")
+    .insert({
+      org_id: session.orgId,
+      division_id: divisionId,
+      title,
+      game: division.game,
+      positions,
+      created_by: session.user.id,
+    })
+    .select("id")
+    .maybeSingle();
 
   if (error) return { ok: false, message: error.message };
+
+  await logAudit({
+    actorId: session.user.id,
+    action: "trial.create",
+    entityType: "open_trial",
+    entityId: created?.id,
+    metadata: { title, orgId: session.orgId },
+  });
+
   revalidatePaths.forEach((p) => revalidatePath(p));
   return { ok: true };
 }
@@ -134,6 +148,15 @@ export async function updateTrialStatusAction(
     .eq("org_id", session.orgId);
 
   if (error) return { ok: false, message: error.message };
+
+  await logAudit({
+    actorId: session.user.id,
+    action: "trial.update_status",
+    entityType: "open_trial",
+    entityId: trialId,
+    metadata: { status },
+  });
+
   revalidatePaths.forEach((p) => revalidatePath(p));
   return { ok: true };
 }
@@ -186,6 +209,14 @@ export async function updateApplicantStatusAction(
     }
   }
 
+  await logAudit({
+    actorId: session.user.id,
+    action: "trial_applicant.update_status",
+    entityType: "trial_applicant",
+    entityId: applicantId,
+    metadata: { status, trialId },
+  });
+
   revalidatePaths.forEach((p) => revalidatePath(p));
   return { ok: true };
 }
@@ -214,6 +245,15 @@ export async function deleteApplicantAction(
     .eq("trial_id", trialId);
 
   if (error) return { ok: false, message: error.message };
+
+  await logAudit({
+    actorId: session.user.id,
+    action: "trial_applicant.delete",
+    entityType: "trial_applicant",
+    entityId: applicantId,
+    metadata: { trialId },
+  });
+
   revalidatePaths.forEach((p) => revalidatePath(p));
   return { ok: true };
 }

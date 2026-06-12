@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
+import { logAudit } from "@/lib/audit";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import type { MemberRole } from "@/types/database";
@@ -72,6 +73,19 @@ export async function updateRoleAction(
   if (error) {
     return { ok: false, message: error.message };
   }
+
+  await logAudit({
+    actorId: user.id,
+    action: "member.update_role",
+    entityType: "team_member",
+    entityId: memberId,
+    metadata: {
+      targetUserId: targetMember.user_id,
+      fromRole: targetMember.role,
+      toRole: role,
+      orgId: targetMember.organization_id,
+    },
+  });
 
   revalidatePath(`/${orgSlug}/roster`);
   return { ok: true };

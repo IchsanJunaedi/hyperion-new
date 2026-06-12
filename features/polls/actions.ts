@@ -241,6 +241,13 @@ export async function closePollAction(
 
   if (error) return { ok: false, message: error.message };
 
+  await logAudit({
+    actorId: user.id,
+    action: "poll.close",
+    entityType: "poll",
+    entityId: pollId,
+  });
+
   revalidatePath(`/${orgSlug}/polls`);
   return { ok: true };
 }
