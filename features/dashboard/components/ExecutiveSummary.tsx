@@ -1,5 +1,7 @@
 import { TrendingUp, Users, DollarSign, Wallet, Shield, Target } from "lucide-react";
 import type { ExecutiveSummary as ExecutiveSummaryType } from "@/features/dashboard/queries/executiveSummary";
+import { Sparkline } from "@/features/dashboard/components/charts/Sparkline";
+import type { HomeChartData } from "@/features/dashboard/queries/homeCharts";
 
 function formatRupiah(n: number): string {
   if (Math.abs(n) >= 1_000_000_000)
@@ -17,9 +19,12 @@ interface MetricCardProps {
   value: string;
   sub?: string;
   accent?: string;
+  trend?: number[];
+  trendColor?: string;
+  sparkId?: string;
 }
 
-function MetricCard({ icon, label, value, sub, accent }: MetricCardProps) {
+function MetricCard({ icon, label, value, sub, accent, trend, trendColor, sparkId }: MetricCardProps) {
   return (
     <div className="rounded-xl border border-ui-border bg-ui-surface p-3 sm:p-4 flex flex-col justify-between items-center text-center min-h-[100px]">
       <div className="flex items-center justify-center gap-1.5 text-[10px] text-ui-text-muted font-semibold uppercase tracking-wider whitespace-nowrap w-full">
@@ -31,6 +36,9 @@ function MetricCard({ icon, label, value, sub, accent }: MetricCardProps) {
           {value}
         </p>
       </div>
+      {trend && sparkId && (
+        <Sparkline data={trend} color={trendColor ?? "#22c55e"} id={sparkId} />
+      )}
       {sub && <p className="text-[10px] text-ui-text-muted whitespace-nowrap text-center w-full">{sub}</p>}
     </div>
   );
@@ -39,9 +47,10 @@ function MetricCard({ icon, label, value, sub, accent }: MetricCardProps) {
 interface ExecutiveSummaryProps {
   summary: ExecutiveSummaryType;
   orgName: string;
+  chartData?: HomeChartData;
 }
 
-const ExecutiveSummary = ({ summary, orgName }: ExecutiveSummaryProps) => {
+const ExecutiveSummary = ({ summary, orgName, chartData }: ExecutiveSummaryProps) => {
   const winRateColor =
     summary.winRate >= 60 ? "text-green-400" :
     summary.winRate >= 40 ? "text-yellow-400" : "text-red-400";
@@ -51,6 +60,12 @@ const ExecutiveSummary = ({ summary, orgName }: ExecutiveSummaryProps) => {
     summary.attendanceRate >= 50 ? "text-yellow-400" : "text-red-400";
 
   const balanceColor = summary.netBalance >= 0 ? "text-green-400" : "text-red-400";
+
+  const winTrend = chartData?.months.map((m) => m.winRate);
+  const attendanceTrend = chartData?.months.map((m) => m.attendanceRate);
+  const balanceTrend = chartData?.months.map((m) => m.cumulativeBalance);
+  const balanceTrendColor =
+    (balanceTrend?.[balanceTrend.length - 1] ?? 0) >= 0 ? "#22c55e" : "#ef4444";
 
   return (
     <div className="space-y-3">
@@ -66,6 +81,9 @@ const ExecutiveSummary = ({ summary, orgName }: ExecutiveSummaryProps) => {
           value={`${summary.winRate}%`}
           sub={`${summary.totalScrims} scrim selesai`}
           accent={winRateColor}
+          trend={winTrend}
+          trendColor="#22c55e"
+          sparkId="winrate"
         />
         <MetricCard
           icon={<Target className="h-3.5 w-3.5" />}
@@ -73,6 +91,9 @@ const ExecutiveSummary = ({ summary, orgName }: ExecutiveSummaryProps) => {
           value={`${summary.attendanceRate}%`}
           sub="Rata-rata kehadiran"
           accent={attendanceColor}
+          trend={attendanceTrend}
+          trendColor="#3b82f6"
+          sparkId="attendance"
         />
         <MetricCard
           icon={<Users className="h-3.5 w-3.5" />}
@@ -100,6 +121,9 @@ const ExecutiveSummary = ({ summary, orgName }: ExecutiveSummaryProps) => {
           value={formatRupiah(summary.netBalance)}
           sub="Kumulatif semua waktu"
           accent={balanceColor}
+          trend={balanceTrend}
+          trendColor={balanceTrendColor}
+          sparkId="balance"
         />
       </div>
     </div>

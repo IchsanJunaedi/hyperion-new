@@ -11,6 +11,8 @@ import { TeamHealthScore } from "@/features/dashboard/components/TeamHealthScore
 import { getTeamHealthScore } from "@/features/dashboard/queries/healthScore";
 import { ExecutiveSummary } from "@/features/dashboard/components/ExecutiveSummary";
 import { getExecutiveSummary } from "@/features/dashboard/queries/executiveSummary";
+import { HomeCharts } from "@/features/dashboard/components/charts/HomeCharts";
+import { getHomeChartData, type HomeChartData } from "@/features/dashboard/queries/homeCharts";
 import type { UserDetail } from "@/features/dashboard/components/UserDetailModal";
 import { OrgSwitcher } from "@/features/finances/components/OrgSwitcher";
 
@@ -79,11 +81,13 @@ export default async function DashboardPage({
   const healthOrgName = currentOrg?.name ?? "";
   let healthScore = null;
   let executiveSummary = null;
+  let homeChartData: HomeChartData | null = null;
   if (healthOrgId) {
     try {
-      [healthScore, executiveSummary] = await Promise.all([
+      [healthScore, executiveSummary, homeChartData] = await Promise.all([
         getTeamHealthScore(healthOrgId),
         getExecutiveSummary(healthOrgId),
+        getHomeChartData(healthOrgId),
       ]);
     } catch (e) {
       console.error("Failed to fetch dashboard stats:", e);
@@ -119,7 +123,12 @@ export default async function DashboardPage({
                 basePath="/dashboard"
               />
             )}
-            <ExecutiveSummary summary={executiveSummary} orgName={healthOrgName} />
+            <ExecutiveSummary
+              summary={executiveSummary}
+              orgName={healthOrgName}
+              chartData={homeChartData ?? undefined}
+            />
+            {homeChartData && <HomeCharts data={homeChartData} />}
           </div>
         )}
 
