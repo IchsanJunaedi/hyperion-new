@@ -24,6 +24,7 @@ const RESERVED_ROOT_SEGMENTS = new Set([
   "dashboard",
   "manage",
   "admin",
+  "team",
   // Static / infrastructure
   "_next",
   "api",

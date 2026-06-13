@@ -367,7 +367,15 @@ export async function managerAssignRoleAction(input: {
  */
 export async function updateOrgAction(
   orgId: string,
-  data: { name: string; tier: "pelajar" | "komunitas" | "pro"; logo_url: string | null },
+  data: {
+    name?: string;
+    tier?: "pelajar" | "komunitas" | "pro";
+    logo_url?: string | null;
+    banner_url?: string | null;
+    description?: string | null;
+    game_focus?: string[] | null;
+    is_public?: boolean;
+  },
 ): Promise<ActionError | { ok: true }> {
   const supabase = await createClient();
   const {
@@ -375,14 +383,29 @@ export async function updateOrgAction(
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, message: "Anda harus login" };
 
+  // Permission Check: Owner or Manager
+  const ownerEmailCheck = process.env.OWNER_EMAIL || process.env.E2E_OWNER_EMAIL;
+  const isOwnerByEmail = ownerEmailCheck && user.email === ownerEmailCheck;
+
+  if (!isOwnerByEmail) {
+    const { data: membership } = await supabase
+      .from("team_members")
+      .select("role")
+      .eq("user_id", user.id)
+      .eq("organization_id", orgId)
+      .eq("role", "manager")
+      .eq("is_active", true)
+      .maybeSingle();
+
+    if (!membership) {
+      return { ok: false, message: "Hanya Manager atau Owner yang bisa mengubah data tim" };
+    }
+  }
+
   const admin = createAdminClient();
   const { error } = await admin
     .from("organizations")
-    .update({
-      name: data.name,
-      tier: data.tier,
-      logo_url: data.logo_url,
-    })
+    .update(data)
     .eq("id", orgId);
 
   if (error) return { ok: false, message: error.message };
@@ -394,10 +417,11 @@ export async function updateOrgAction(
     action: "org_updated",
     entityType: "organization",
     entityId: orgId,
-    metadata: { name: data.name, tier: data.tier },
+    metadata: data,
   });
 
   revalidatePath("/dashboard/teams");
+  revalidatePath("/manage");
   return { ok: true };
 }
 

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { ManageMemberTable } from "@/features/dashboard/components/ManageMemberTable";
 import { InviteSection } from "@/features/manage/components/InviteSection";
+import { OrgSettingsCard } from "@/features/dashboard/components/OrgSettingsCard";
 
 export const dynamic = "force-dynamic";
 
@@ -17,7 +18,7 @@ const ManageTeamPage = async ({ params }: Props) => {
 
   const { data: org } = await admin
     .from("organizations")
-    .select("id, name, slug")
+    .select("id, name, slug, logo_url, banner_url, is_public")
     .eq("slug", orgSlug)
     .maybeSingle();
 
@@ -33,7 +34,7 @@ const ManageTeamPage = async ({ params }: Props) => {
       .limit(100),
     admin
       .from("divisions")
-      .select("id, name")
+      .select("id, name, slug, game, is_active")
       .eq("organization_id", org.id)
       .eq("is_active", true)
       .order("name"),
@@ -149,6 +150,8 @@ const ManageTeamPage = async ({ params }: Props) => {
           };
         })}
       />
+
+      <OrgSettingsCard org={org} divisions={divisions} />
     </div>
   );
 };
