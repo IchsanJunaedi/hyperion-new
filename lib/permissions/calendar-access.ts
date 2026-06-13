@@ -651,11 +651,13 @@ function eventVisibilityAllows(
 export async function getAccessibleCalendars(
   userId: string,
   organizationId: string,
-  options: { limit?: number; offset?: number; includeDeleted?: boolean } = {},
+  options: { limit?: number; offset?: number; includeDeleted?: boolean; userRole?: UserRole | null } = {},
 ): Promise<AccessibleCalendarResult[]> {
   try {
     const client = await createClient();
-    const userRole = await getUserRoleInOrg(userId, organizationId);
+    const userRole = options.userRole !== undefined
+      ? options.userRole
+      : await getUserRoleInOrg(userId, organizationId);
 
     // Base query
     let query = client
@@ -779,8 +781,8 @@ export async function getAccessibleEvents(
     const client = await createClient();
     const userRole = await getUserRoleInOrg(userId, organizationId);
 
-    // Get accessible calendars first
-    const calendars = await getAccessibleCalendars(userId, organizationId);
+    // Get accessible calendars first — pass userRole to avoid a second DB fetch
+    const calendars = await getAccessibleCalendars(userId, organizationId, { userRole });
     const calendarIds = calendars.map((c) => c.id);
     const calendarVisibilityById = new Map(
       calendars.map((c) => [c.id, c.visibility as CalendarVisibility]),
@@ -833,8 +835,7 @@ export async function getAccessibleEvents(
         .in(
           "event_id",
           events.map((e) => e.id),
-        )
-        .limit(500);
+        );
       if (overrideError) {
         console.error("Error fetching event visibility overrides:", overrideError);
       }
