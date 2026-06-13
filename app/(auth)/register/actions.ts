@@ -78,6 +78,20 @@ export async function signUpAction(
     return { error: rateLimit.message ?? "Terlalu banyak pendaftaran." };
   }
 
+  // Block public registration of privileged system emails (owner / admin).
+  // These accounts must be created via Supabase dashboard or Google OAuth
+  // using the actual email inbox — prevents race-condition account squatting
+  // when mailer_autoconfirm is enabled.
+  const emailLower = parsed.data.email.toLowerCase();
+  const ownerEmail = process.env.OWNER_EMAIL?.toLowerCase();
+  const adminEmail = process.env.ADMIN_EMAIL?.toLowerCase();
+  if (
+    (ownerEmail && emailLower === ownerEmail) ||
+    (adminEmail && emailLower === adminEmail)
+  ) {
+    return { error: "Email ini tidak tersedia untuk pendaftaran publik." };
+  }
+
   const supabase = await createClient();
   const next = sanitizeNext(input.next) ?? "/onboarding/profile";
 
