@@ -7,7 +7,7 @@ import { FileList } from "@/features/files/components/FileList";
 describe("FileList component", () => {
   it("shows empty state when no files", async () => {
     // The global mock returns empty data by default
-    render(<FileList orgId="org-123" />);
+    render(<FileList orgSlug="test-team" orgId="org-123" />);
 
     // Shows loader initially, then empty state after resolve
     // We use findByText to wait for async state

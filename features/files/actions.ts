@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import { logAudit } from "@/lib/audit";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
 export interface FileActionError {
@@ -69,4 +70,67 @@ export async function recordFileUploadAction(
 
   revalidatePath(`/${orgSlug}/files`);
   return { ok: true, id: data.id };
+}
+
+/**
+ * Delete a file from Storage and the `files` table, then emit an audit event.
+ * Runs server-side so the actor is resolved from the session (not trusting
+ * client input) and the audit trail cannot be bypassed.
+ */
+export async function deleteFileAction(
+  orgSlug: string,
+  orgId: string,
+  storagePath: string,
+): Promise<FileActionError | { ok: true }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, message: "Anda harus login" };
+
+  // Only coach+ may delete files — mirrors upload permission gate
+  const { data: member } = await supabase
+    .from("team_members")
+    .select("role")
+    .eq("organization_id", orgId)
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  const ownerEmail = process.env.OWNER_EMAIL;
+  const isOwner = user.email === ownerEmail;
+  const allowedRoles = ["owner", "manager", "coach"];
+  if (!isOwner && (!member || !allowedRoles.includes(member.role))) {
+    return { ok: false, message: "Tidak ada akses untuk menghapus file" };
+  }
+
+  // Guard against path traversal — storage path must belong to this org
+  if (!storagePath.startsWith(`${orgId}/`)) {
+    return { ok: false, message: "Path file tidak valid" };
+  }
+
+  const admin = createAdminClient();
+
+  const { error: storageError } = await admin.storage
+    .from("org-private")
+    .remove([storagePath]);
+
+  if (storageError) {
+    return { ok: false, message: "Gagal menghapus file dari storage" };
+  }
+
+  await admin.from("files").delete().eq("storage_path", storagePath);
+
+  await logAudit({
+    actorId: user.id,
+    action: "file.delete",
+    entityType: "file",
+    metadata: {
+      name: storagePath.split("/").pop() ?? storagePath,
+      path: storagePath,
+      orgId,
+    },
+  });
+
+  revalidatePath(`/${orgSlug}/files`);
+  return { ok: true };
 }
