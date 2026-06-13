@@ -36,7 +36,7 @@ export async function exportAuditLogs(params: {
 
   let query = admin
     .from("audit_logs")
-    .select("*")
+    .select("id, actor_id, action, entity_type, entity_id, metadata, created_at")
     .order("created_at", { ascending: false })
     .limit(2000);
 

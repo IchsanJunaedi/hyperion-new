@@ -28,42 +28,42 @@ const ExportButtons = () => {
       let csv = "";
 
       if (key === "profiles") {
-        const { data } = await supabase.from("profiles").select("full_name, username, display_name, phone_wa, date_of_birth, created_at");
+        const { data } = await supabase.from("profiles").select("full_name, username, display_name, phone_wa, date_of_birth, created_at").limit(5000);
         if (!data || data.length === 0) { notifyError("Tidak ada data"); setLoading(null); return; }
         csv = toCsv(data, ["Nama Lengkap", "Username", "Display Name", "WhatsApp", "Tanggal Lahir", "Terdaftar"]);
       } else if (key === "members") {
-        const { data } = await supabase.from("team_members").select("user_id, organization_id, division_id, role, is_active, joined_at");
+        const { data } = await supabase.from("team_members").select("user_id, organization_id, division_id, role, is_active, joined_at").limit(5000);
         if (!data || data.length === 0) { notifyError("Tidak ada data"); setLoading(null); return; }
         csv = toCsv(data, ["User ID", "Organization ID", "Division ID", "Role", "Aktif", "Bergabung"]);
       } else if (key === "scrims") {
-        const { data } = await supabase.from("scrims").select("opponent_name, scheduled_at, format, status, notes, created_at");
+        const { data } = await supabase.from("scrims").select("opponent_name, scheduled_at, format, status, notes, created_at").limit(5000);
         if (!data || data.length === 0) { notifyError("Tidak ada data"); setLoading(null); return; }
         csv = toCsv(data, ["Lawan", "Jadwal", "Format", "Status", "Catatan", "Dibuat"]);
       } else if (key === "results") {
-        const { data } = await supabase.from("scrim_results").select("our_score, opponent_score, is_win, notes, performance_rating, recorded_at");
+        const { data } = await supabase.from("scrim_results").select("our_score, opponent_score, is_win, notes, performance_rating, recorded_at").limit(5000);
         if (!data || data.length === 0) { notifyError("Tidak ada data"); setLoading(null); return; }
         csv = toCsv(data, ["Skor Kita", "Skor Lawan", "Menang", "Catatan", "Rating", "Dicatat"]);
       } else if (key === "announcements") {
-        const { data } = await supabase.from("announcements").select("title, body, is_pinned, created_at");
+        const { data } = await supabase.from("announcements").select("title, body, is_pinned, created_at").limit(5000);
         if (!data || data.length === 0) { notifyError("Tidak ada data"); setLoading(null); return; }
         csv = toCsv(data, ["Judul", "Isi", "Pinned", "Dibuat"]);
       } else if (key === "finances") {
-        const { data } = await supabase.from("finances").select("type, amount, category, description, date, created_at");
+        const { data } = await supabase.from("finances").select("type, amount, category, description, date, created_at").limit(5000);
         if (!data || data.length === 0) { notifyError("Tidak ada data"); setLoading(null); return; }
         csv = toCsv(data, ["Tipe", "Jumlah", "Kategori", "Deskripsi", "Tanggal", "Dibuat"]);
       } else if (key === "salaries") {
-        const { data } = await supabase.from("player_contracts").select("user_id, monthly_salary, bonus_percentage, status, start_date, end_date, notes");
+        const { data } = await supabase.from("player_contracts").select("user_id, monthly_salary, bonus_percentage, status, start_date, end_date, notes").limit(5000);
         if (!data || data.length === 0) { notifyError("Tidak ada data"); setLoading(null); return; }
         csv = toCsv(data, ["Player ID", "Gaji Bulanan", "Bonus %", "Status", "Mulai", "Berakhir", "Catatan"]);
       } else if (key === "sponsors") {
-        const { data } = await supabase.from("sponsors").select("name, status, deal_value, currency, start_date, end_date, notes");
+        const { data } = await supabase.from("sponsors").select("name, status, deal_value, currency, start_date, end_date, notes").limit(5000);
         if (!data || data.length === 0) { notifyError("Tidak ada data"); setLoading(null); return; }
         csv = toCsv(data, ["Nama", "Status", "Nilai Deal", "Mata Uang", "Mulai", "Berakhir", "Catatan"]);
       }
 
       if (!csv) { notifyError("Gagal export"); setLoading(null); return; }
 
-      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8;" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
