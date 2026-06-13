@@ -5,9 +5,11 @@ import { useEffect, useState } from "react";
 import { notify } from "@/features/dashboard/components/NotifyModal";
 
 import { createClient } from "@/lib/supabase/client";
+import { deleteFileAction } from "@/features/files/actions";
 import { FilePreviewModal } from "./FilePreviewModal";
 
 interface FileListProps {
+  orgSlug: string;
   orgId: string;
   folder?: string;
 }
@@ -24,7 +26,7 @@ interface PreviewState {
   signedUrl: string;
 }
 
-const FileList = ({ orgId, folder = "files" }: FileListProps) => {
+const FileList = ({ orgSlug, orgId, folder = "files" }: FileListProps) => {
   const [files, setFiles] = useState<StorageFile[]>([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -54,28 +56,13 @@ const FileList = ({ orgId, folder = "files" }: FileListProps) => {
 
   async function handleDelete(fileName: string, fileId: string) {
     setDeletingId(fileId);
-    const supabase = createClient();
-    const filePath = `${orgId}/${folder}/${fileName}`;
-    
-    // 1. Delete from Storage
-    const { error: storageError } = await supabase.storage
-      .from("org-private")
-      .remove([filePath]);
+    const storagePath = `${orgId}/${folder}/${fileName}`;
+    const result = await deleteFileAction(orgSlug, orgId, storagePath);
 
-    if (storageError) {
-      notify.error("Gagal menghapus file dari storage");
+    if (!result.ok) {
+      notify.error(result.message);
       setDeletingId(null);
       return;
-    }
-
-    // 2. Delete from Database
-    const { error: dbError } = await supabase
-      .from("files")
-      .delete()
-      .eq("storage_path", filePath);
-
-    if (dbError) {
-      console.error("Failed to delete database record for file:", dbError);
     }
 
     setFiles((prev) => prev.filter((f) => f.id !== fileId));

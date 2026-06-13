@@ -48,7 +48,7 @@ export default async function FilesPage({ params }: FilesPageProps) {
         <h2 className="mb-4 text-sm font-semibold text-ui-text">
           File yang tersimpan
         </h2>
-        <FileList orgId={organization.id} />
+        <FileList orgSlug={slug} orgId={organization.id} />
       </div>
     </div>
   );
