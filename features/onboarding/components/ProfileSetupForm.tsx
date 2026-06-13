@@ -7,14 +7,16 @@ import { saveProfileAction } from "@/app/onboarding/profile/actions";
 import type { ProfileSetupInput } from "@/lib/validations/onboarding";
 
 interface LockedValues {
-  full_name: string;
-  phone_wa: string;
+  full_name?: string;
+  phone_wa?: string;
   email: string;
 }
 
 interface ProfileSetupFormProps {
   lockedValues: LockedValues;
   defaultValues: Omit<ProfileSetupInput, "full_name" | "phone_wa"> & {
+    full_name?: string;
+    phone_wa?: string;
     social_links?: { instagram?: string; tiktok?: string };
     game_ids?: { mlbb?: string; mlbb_server?: string };
   };
@@ -23,6 +25,9 @@ interface ProfileSetupFormProps {
 const ProfileSetupForm = ({ lockedValues, defaultValues }: ProfileSetupFormProps) => {
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+
+  const [fullName, setFullName] = useState(lockedValues.full_name || defaultValues.full_name || "");
+  const [phoneWa, setPhoneWa] = useState(lockedValues.phone_wa || defaultValues.phone_wa || "");
 
   const [mlbbId, setMlbbId] = useState(defaultValues.game_ids?.mlbb ?? "");
   const [mlbbServer, setMlbbServer] = useState(defaultValues.game_ids?.mlbb_server ?? "");
@@ -75,9 +80,9 @@ const ProfileSetupForm = ({ lockedValues, defaultValues }: ProfileSetupFormProps
         startTransition(async () => {
           setError(null);
           const input: ProfileSetupInput = {
-            full_name: lockedValues.full_name,
+            full_name: fullName,
             username: fd.get("username") as string,
-            phone_wa: lockedValues.phone_wa,
+            phone_wa: phoneWa,
             date_of_birth: fd.get("date_of_birth") as string,
             social_links: {
               instagram: fd.get("social_instagram") as string,
@@ -98,12 +103,18 @@ const ProfileSetupForm = ({ lockedValues, defaultValues }: ProfileSetupFormProps
       <section className="space-y-4">
         <h3 className="text-sm font-semibold text-foreground">Data Akun</h3>
 
-        <Field label="Nama Lengkap" name="full_name_display">
+        <Field label="Nama Lengkap" name="full_name" required={!lockedValues.full_name}>
           <input
-            readOnly
-            disabled
-            value={lockedValues.full_name}
-            className="h-10 w-full rounded-md border border-input bg-muted px-3 text-sm text-muted-foreground cursor-not-allowed"
+            name="full_name"
+            readOnly={!!lockedValues.full_name}
+            disabled={!!lockedValues.full_name}
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            className={`h-10 w-full rounded-md border border-input px-3 text-sm focus:border-primary focus:outline-none ${
+              lockedValues.full_name
+                ? "bg-muted text-muted-foreground cursor-not-allowed"
+                : "bg-background text-foreground"
+            }`}
           />
         </Field>
 
@@ -116,12 +127,18 @@ const ProfileSetupForm = ({ lockedValues, defaultValues }: ProfileSetupFormProps
           />
         </Field>
 
-        <Field label="Nomor WhatsApp" name="phone_wa_display">
+        <Field label="Nomor WhatsApp" name="phone_wa" required={!lockedValues.phone_wa}>
           <input
-            readOnly
-            disabled
-            value={lockedValues.phone_wa}
-            className="h-10 w-full rounded-md border border-input bg-muted px-3 text-sm text-muted-foreground cursor-not-allowed"
+            name="phone_wa"
+            readOnly={!!lockedValues.phone_wa}
+            disabled={!!lockedValues.phone_wa}
+            value={phoneWa}
+            onChange={(e) => setPhoneWa(e.target.value)}
+            className={`h-10 w-full rounded-md border border-input px-3 text-sm focus:border-primary focus:outline-none ${
+              lockedValues.phone_wa
+                ? "bg-muted text-muted-foreground cursor-not-allowed"
+                : "bg-background text-foreground"
+            }`}
           />
         </Field>
       </section>

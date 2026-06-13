@@ -42,8 +42,16 @@ export default async function ProfileOnboardingPage() {
     (profile?.data?.social_links as Record<string, string> | null | undefined) ?? {};
 
   // Prefer data from auth user metadata (set during registration) as defaults
-  const metaFullName = (user?.user_metadata?.display_name as string | undefined) ?? "";
+  const metaFullName =
+    (user?.user_metadata?.full_name as string | undefined) ??
+    (user?.user_metadata?.name as string | undefined) ??
+    (user?.user_metadata?.display_name as string | undefined) ??
+    "";
   const metaPhoneWa = (user?.user_metadata?.phone_wa as string | undefined) ?? "";
+
+  // If there is no phone number in user metadata, they registered via Google/OAuth.
+  // In that case, we don't lock full_name and phone_wa; we let them fill/edit them.
+  const isGoogleUser = !metaPhoneWa;
 
   return (
     <Card>
@@ -57,12 +65,18 @@ export default async function ProfileOnboardingPage() {
       <CardContent>
         <ProfileSetupForm
           lockedValues={{
-            full_name: profile?.data?.full_name || metaFullName,
-            phone_wa: profile?.data?.phone_wa || metaPhoneWa,
+            full_name: isGoogleUser
+              ? (profile?.data?.full_name ?? undefined)
+              : (profile?.data?.full_name || metaFullName),
+            phone_wa: isGoogleUser
+              ? (profile?.data?.phone_wa ?? undefined)
+              : (profile?.data?.phone_wa || metaPhoneWa),
             email: user?.email ?? "",
           }}
           defaultValues={{
             username: profile?.data?.username ?? "",
+            full_name: isGoogleUser ? (profile?.data?.full_name || metaFullName) : undefined,
+            phone_wa: isGoogleUser ? (profile?.data?.phone_wa || "") : undefined,
             date_of_birth: profile?.data?.date_of_birth ?? "",
             social_links: {
               instagram: socialLinks.instagram ?? "",
