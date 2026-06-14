@@ -141,9 +141,15 @@ export default async function HomePage() {
     tournament_id: null,
     created_at: "",
     href: `/gallery/${e.slug}`,
+    sort_order: e.sort_order,
   }));
 
-  const mergedAchievements = [...galleryAsAchievements].sort((a, b) => b.achieved_at.localeCompare(a.achieved_at));
+  const mergedAchievements = [...galleryAsAchievements].sort((a, b) => {
+    if (a.sort_order !== b.sort_order) {
+      return a.sort_order - b.sort_order;
+    }
+    return b.achieved_at.localeCompare(a.achieved_at);
+  });
 
   const heroSettings: HeroSettings = {
     hero_eyebrow: settings.hero_eyebrow ?? "Est. 2020 — Palembang, Indonesia",

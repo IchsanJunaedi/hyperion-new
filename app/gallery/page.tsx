@@ -12,7 +12,7 @@ async function GalleryPage() {
     getSiteSettings(),
   ]);
 
-  // Sort by date (newest first)
+  // Sort by sort_order ascending, then date descending (newest first)
   function getTime(dateStr: string): number {
     if (!dateStr) return 0;
     const clean = /^\d{4}$/.test(dateStr) ? `${dateStr}-01-01` : dateStr;
@@ -21,7 +21,12 @@ async function GalleryPage() {
   }
 
   const galleries = [...galleryEntries];
-  galleries.sort((x, y) => getTime(y.tournament_date) - getTime(x.tournament_date));
+  galleries.sort((x, y) => {
+    if (x.sort_order !== y.sort_order) {
+      return x.sort_order - y.sort_order;
+    }
+    return getTime(y.tournament_date) - getTime(x.tournament_date);
+  });
 
   const footerSettings = {
     footer_tagline:
