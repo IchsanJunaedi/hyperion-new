@@ -97,9 +97,9 @@ const HeaderClient = ({
           {/* Desktop centered nav */}
           <nav
             aria-label="Main"
-            className="absolute left-1/2 hidden -translate-x-1/2 lg:block"
+            className="hidden lg:flex lg:flex-1 lg:justify-center mx-6"
           >
-            <ul ref={navRef} className="relative flex items-center gap-3 lg:gap-5 xl:gap-8 font-orbitron text-[9px] lg:text-[10px] uppercase tracking-[0.08em] lg:tracking-[0.15em] xl:tracking-[0.2em]">
+            <ul ref={navRef} className="relative flex items-center gap-2.5 lg:gap-3 xl:gap-8 font-orbitron text-[9px] lg:text-[10px] uppercase tracking-[0.05em] lg:tracking-[0.08em] xl:tracking-[0.2em]">
               {/* GSAP glow pill */}
               <div
                 ref={pillRef}
@@ -143,7 +143,7 @@ const HeaderClient = ({
                 <ProfileDropdown authed={authed} />
               </div>
             ) : (
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-4">
                 <Link
                   href="/login"
                   className="relative p-[1.5px] bg-white/10 hover:bg-white/30 clip-cyber-btn transition-colors duration-200"
