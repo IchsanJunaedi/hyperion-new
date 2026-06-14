@@ -143,7 +143,7 @@ const GalleryCard = ({
           </h3>
 
           {/* Description */}
-          <p className="text-sm sm:text-base leading-relaxed text-[#9B9A97] mb-6">
+          <p className="text-sm sm:text-base leading-relaxed text-[#9B9A97] mb-6 line-clamp-5">
             {description}
           </p>
 
