@@ -4,17 +4,12 @@ import { ArrowLeft } from "lucide-react";
 
 import { Footer } from "@/components/landing/Footer";
 import { Header } from "@/components/landing/Header";
-import { getGalleryEntryBySlug, getGalleryEntries, getSiteSettings } from "@/features/admin/queries";
+import { getGalleryEntryBySlug, getSiteSettings } from "@/features/admin/queries";
 
 export const dynamic = "force-dynamic";
 
 interface Props {
   params: Promise<{ slug: string }>;
-}
-
-export async function generateStaticParams() {
-  const entries = await getGalleryEntries();
-  return entries.map((g) => ({ slug: g.slug }));
 }
 
 export default async function GalleryShowPage({ params }: Props) {
