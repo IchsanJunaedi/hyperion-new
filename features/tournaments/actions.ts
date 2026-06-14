@@ -14,6 +14,7 @@ import {
   createTournamentStageSchema,
 } from "@/lib/validations/tournament";
 import { shouldAutoCreateAchievement, buildAchievementTitle } from "./achievement-helpers";
+import { slugify } from "@/lib/utils/slugify";
 
 export interface ActionError {
   ok: false;
@@ -684,17 +685,42 @@ export async function completeTournamentAction(
       .maybeSingle();
     if (tErr) console.error("completeTournamentAction: fetch tournament for achievement:", tErr);
     if (tournamentRow) {
-      const { error: achErr } = await admin.from("achievements").insert({
-        title: buildAchievementTitle(data.placement!, tournamentRow.name),
+      let divisionName = "Esports";
+      if (tournamentRow.division_id) {
+        const { data: divRow } = await admin
+          .from("divisions")
+          .select("name")
+          .eq("id", tournamentRow.division_id)
+          .maybeSingle();
+        if (divRow?.name) divisionName = divRow.name;
+      }
+
+      const title = buildAchievementTitle(data.placement!, tournamentRow.name);
+      const baseSlug = slugify(title);
+      const slug = `${baseSlug}-${tournamentId.slice(0, 8)}`;
+      const tournamentDate = tournamentRow.end_date ?? new Date().toISOString().slice(0, 10);
+      const position = data.placement === 1 ? "Champion" : data.placement === 2 ? "Runner Up" : "3rd Place";
+
+      const { error: achErr } = await admin.from("gallery_entries").insert({
+        slug,
+        title,
+        division: divisionName,
+        tournament_date: tournamentDate,
+        position,
+        status: "Online",
+        logo_url: "/brand/logo.jpg",
+        preview_images: ["/brand/logo.jpg"],
+        description: "Pencapaian luar biasa tim dalam turnamen.",
         organization_id: org.id,
         division_id: tournamentRow.division_id,
         tournament_id: tournamentId,
         placement: data.placement!,
-        achieved_at: tournamentRow.end_date ?? new Date().toISOString().slice(0, 10),
-        image_url: null,
       });
       if (achErr) console.error("completeTournamentAction: achievement insert:", achErr);
-      else revalidatePath("/");
+      else {
+        revalidatePath("/");
+        revalidatePath("/gallery");
+      }
     }
   }
 

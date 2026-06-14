@@ -4,9 +4,7 @@ import { ArrowLeft } from "lucide-react";
 
 import { Footer } from "@/components/landing/Footer";
 import { Header } from "@/components/landing/Header";
-import { getGalleryEntryBySlug, getGalleryEntries, getSiteSettings, getPublicAchievements } from "@/features/admin/queries";
-import { slugify } from "@/lib/utils/slugify";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { getGalleryEntryBySlug, getGalleryEntries, getSiteSettings } from "@/features/admin/queries";
 
 export const dynamic = "force-dynamic";
 
@@ -15,67 +13,17 @@ interface Props {
 }
 
 export async function generateStaticParams() {
-  const [entries, achievements] = await Promise.all([
-    getGalleryEntries(),
-    getPublicAchievements(),
-  ]);
-  const slugs = [
-    ...entries.map((g) => ({ slug: g.slug })),
-    ...achievements.map((a) => ({ slug: slugify(a.title) })),
-  ];
-  return slugs;
+  const entries = await getGalleryEntries();
+  return entries.map((g) => ({ slug: g.slug }));
 }
 
 export default async function GalleryShowPage({ params }: Props) {
   const { slug } = await params;
 
-  const [initialGallery, settings] = await Promise.all([
+  const [gallery, settings] = await Promise.all([
     getGalleryEntryBySlug(slug),
     getSiteSettings(),
   ]);
-
-  let gallery = initialGallery;
-
-  if (!gallery) {
-    // Try to find in achievements table
-    const admin = createAdminClient();
-    const { data: achievements } = await admin
-      .from("achievements")
-      .select("id, title, description, placement, achieved_at, image_url, organization_id, division_id, tournament_id, created_at")
-      .limit(100);
-    // Find matching slug or ID
-    const matched = achievements?.find(a => slugify(a.title) === slug || a.id === slug);
-    if (matched) {
-      // Get division name
-      const { data: div } = matched.division_id 
-        ? await admin.from("divisions").select("name").eq("id", matched.division_id).maybeSingle()
-        : { data: null };
-      
-      gallery = {
-        id: matched.id,
-        slug: slugify(matched.title),
-        title: matched.title,
-        division: div?.name ?? "Esports",
-        tournament_date: matched.achieved_at,
-        position: matched.placement
-          ? (matched.placement === 1
-              ? "Champion"
-              : matched.placement === 2
-              ? "Runner Up"
-              : "3rd Place")
-          : "Winner",
-        status: "Completed",
-        logo_url: matched.image_url || "/brand/logo.jpg",
-        preview_images: [matched.image_url || "/brand/logo.jpg"],
-        description: matched.description ?? "",
-        sort_order: 0,
-        metric_value: null,
-        metric_label: null,
-        created_at: matched.created_at,
-        updated_at: matched.created_at,
-      };
-    }
-  }
 
   if (!gallery) notFound();
 

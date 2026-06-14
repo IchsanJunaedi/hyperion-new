@@ -28,7 +28,6 @@ const NAV_GROUPS = [
     label: "KONTEN LIST",
     items: [
       { href: "/admin/gallery", Icon: Image, label: "Gallery & Achievement" },
-      { href: "/admin/achievements", Icon: Trophy, label: "Achievements" },
       { href: "/admin/news", Icon: Newspaper, label: "News" },
       { href: "/admin/tournaments", Icon: CalendarRange, label: "Tournaments & Schedule" },
       { href: "/admin/results", Icon: Medal, label: "Results" },

@@ -2,7 +2,19 @@
 
 import { useRef, useEffect, useState } from "react";
 import { gsap } from "gsap";
-import type { Achievement } from "@/features/admin/queries";
+export type Achievement = {
+  id: string;
+  title: string;
+  description: string | null;
+  placement: number | null;
+  achieved_at: string;
+  image_url: string | null;
+  organization_id: string | null;
+  division_id: string | null;
+  tournament_id: string | null;
+  created_at: string;
+};
+
 import { GridTexture, GoldRadialGlow } from "@/components/landing/LandingTextures";
 
 export type AchievementItem = Achievement & { href?: string };

@@ -82,10 +82,10 @@ export default async function TeamDetailPage({ params }: Props) {
   }
 
   const { data: achievements, error: aErr } = await admin
-    .from("achievements")
-    .select("id, title, placement, achieved_at")
+    .from("gallery_entries")
+    .select("id, title, placement, achieved_at:tournament_date")
     .eq("organization_id", org.id)
-    .order("achieved_at", { ascending: false })
+    .order("tournament_date", { ascending: false })
     .limit(20);
   if (aErr) console.error("TeamDetailPage: achievements fetch:", aErr);
 

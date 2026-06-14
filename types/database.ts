@@ -41,67 +41,7 @@ export type Database = {
         }
         Relationships: []
       }
-      achievements: {
-        Row: {
-          achieved_at: string
-          created_at: string
-          description: string | null
-          division_id: string | null
-          id: string
-          image_url: string | null
-          organization_id: string | null
-          placement: number | null
-          title: string
-          tournament_id: string | null
-        }
-        Insert: {
-          achieved_at: string
-          created_at?: string
-          description?: string | null
-          division_id?: string | null
-          id?: string
-          image_url?: string | null
-          organization_id?: string | null
-          placement?: number | null
-          title: string
-          tournament_id?: string | null
-        }
-        Update: {
-          achieved_at?: string
-          created_at?: string
-          description?: string | null
-          division_id?: string | null
-          id?: string
-          image_url?: string | null
-          organization_id?: string | null
-          placement?: number | null
-          title?: string
-          tournament_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "achievements_division_id_fkey"
-            columns: ["division_id"]
-            isOneToOne: false
-            referencedRelation: "divisions"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "achievements_organization_id_fkey"
-            columns: ["organization_id"]
-            isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "achievements_tournament_id_fkey"
-            columns: ["tournament_id"]
-            isOneToOne: false
-            referencedRelation: "tournaments"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
+
       announcement_reads: {
         Row: {
           announcement_id: string
@@ -863,6 +803,10 @@ export type Database = {
           title: string
           tournament_date: string
           updated_at: string | null
+          organization_id: string | null
+          division_id: string | null
+          tournament_id: string | null
+          placement: number | null
         }
         Insert: {
           created_at?: string | null
@@ -880,6 +824,10 @@ export type Database = {
           title: string
           tournament_date: string
           updated_at?: string | null
+          organization_id?: string | null
+          division_id?: string | null
+          tournament_id?: string | null
+          placement?: number | null
         }
         Update: {
           created_at?: string | null
@@ -897,8 +845,34 @@ export type Database = {
           title?: string
           tournament_date?: string
           updated_at?: string | null
+          organization_id?: string | null
+          division_id?: string | null
+          tournament_id?: string | null
+          placement?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "gallery_entries_division_id_fkey"
+            columns: ["division_id"]
+            isOneToOne: false
+            referencedRelation: "divisions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gallery_entries_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gallery_entries_tournament_id_fkey"
+            columns: ["tournament_id"]
+            isOneToOne: false
+            referencedRelation: "tournaments"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       login_rate_limits: {
         Row: {

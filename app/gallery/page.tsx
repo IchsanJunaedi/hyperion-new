@@ -1,57 +1,16 @@
 import { Footer } from "@/components/landing/Footer";
 import { Header } from "@/components/landing/Header";
 import { GalleryCard } from "@/components/landing/GalleryCard";
-import { getGalleryEntries, getSiteSettings, getPublicAchievements } from "@/features/admin/queries";
+import { getGalleryEntries, getSiteSettings } from "@/features/admin/queries";
 import { slugify } from "@/lib/utils/slugify";
-import { createAdminClient } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
 
 async function GalleryPage() {
-  const [galleryEntries, manualAchievements, settings] = await Promise.all([
+  const [galleryEntries, settings] = await Promise.all([
     getGalleryEntries(),
-    getPublicAchievements(),
     getSiteSettings(),
   ]);
-
-  const admin = createAdminClient();
-  const { data: divisionsData } = await admin
-    .from("divisions")
-    .select("id, name")
-    .limit(100);
-  const divMap = new Map((divisionsData ?? []).map((d) => [d.id, d.name]));
-
-  // Map achievements to GalleryEntry shape
-  const manualAsGallery = manualAchievements.map((a) => ({
-    id: a.id,
-    slug: slugify(a.title),
-    title: a.title,
-    division: divMap.get(a.division_id ?? "") ?? "Esports",
-    tournament_date: a.achieved_at,
-    position: a.placement
-      ? (a.placement === 1
-          ? "Champion"
-          : a.placement === 2
-          ? "Runner Up"
-          : "3rd Place")
-      : "Winner",
-    status: "Completed",
-    logo_url: a.image_url || "/brand/logo.jpg",
-    preview_images: [a.image_url || "/brand/logo.jpg"],
-    description: a.description ?? "",
-    sort_order: 0,
-    metric_value: null,
-    metric_label: null,
-    created_at: a.created_at,
-    updated_at: a.created_at,
-  }));
-
-  // Merge: manual achievements take priority by title
-  const manualTitles = new Set(manualAsGallery.map((m) => m.title));
-  const merged = [
-    ...manualAsGallery,
-    ...galleryEntries.filter((g) => !manualTitles.has(g.title)),
-  ];
 
   // Sort by date (newest first)
   function getTime(dateStr: string): number {
@@ -60,9 +19,9 @@ async function GalleryPage() {
     const t = new Date(clean).getTime();
     return isNaN(t) ? 0 : t;
   }
-  merged.sort((x, y) => getTime(y.tournament_date) - getTime(x.tournament_date));
 
-  const galleries = merged;
+  const galleries = [...galleryEntries];
+  galleries.sort((x, y) => getTime(y.tournament_date) - getTime(x.tournament_date));
 
   const footerSettings = {
     footer_tagline:

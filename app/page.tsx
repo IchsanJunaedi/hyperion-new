@@ -13,7 +13,6 @@ import { TestimonialsSection } from "@/components/landing/TestimonialsSection";
 import { createClient } from "@/lib/supabase/server";
 import {
   getGalleryEntries,
-  getPublicAchievements,
   getActivePartners,
   getActiveTestimonials,
   getSiteSettings,
@@ -105,10 +104,9 @@ export default async function HomePage() {
     }
   }
 
-  const [galleryEntries, manualAchievements, partners, testimonials, settings, featuredTournaments, upcomingMatches, nearestTournament, latestNews] =
+  const [galleryEntries, partners, testimonials, settings, featuredTournaments, upcomingMatches, nearestTournament, latestNews] =
     await Promise.all([
       getGalleryEntries(),
-      getPublicAchievements(),
       getActivePartners(),
       getActiveTestimonials(),
       getSiteSettings(),
@@ -125,8 +123,6 @@ export default async function HomePage() {
     year: e.tournament_date,
   }));
 
-  // Manual achievements (from /admin/achievements) take priority.
-  // Fall back to gallery_entries mapped to Achievement shape if no manual entries exist.
   function parsePlacement(position: string): number | null {
     if (/#?1\b/i.test(position) || /champion/i.test(position)) return 1;
     if (/#?2\b/i.test(position)) return 2;
@@ -146,12 +142,8 @@ export default async function HomePage() {
     created_at: "",
     href: `/gallery/${e.slug}`,
   }));
-  // Merge: manual achievements first, then gallery entries not already covered by title
-  const manualTitles = new Set(manualAchievements.map((a) => a.title));
-  const mergedAchievements = [
-    ...manualAchievements.map((a) => ({ ...a, href: "/gallery" })),
-    ...galleryAsAchievements.filter((a) => !manualTitles.has(a.title)),
-  ].sort((a, b) => b.achieved_at.localeCompare(a.achieved_at));
+
+  const mergedAchievements = [...galleryAsAchievements].sort((a, b) => b.achieved_at.localeCompare(a.achieved_at));
 
   const heroSettings: HeroSettings = {
     hero_eyebrow: settings.hero_eyebrow ?? "Est. 2020 — Palembang, Indonesia",

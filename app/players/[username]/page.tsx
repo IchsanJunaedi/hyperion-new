@@ -81,10 +81,10 @@ export default async function PlayerProfilePage({ params }: Props) {
   let achievements: AchievementRow[] = [];
   if (orgIds.length > 0) {
     const { data, error: aErr } = await admin
-      .from("achievements")
-      .select("id, title, placement, achieved_at, organization_id")
+      .from("gallery_entries")
+      .select("id, title, placement, achieved_at:tournament_date, organization_id")
       .in("organization_id", orgIds)
-      .order("achieved_at", { ascending: false })
+      .order("tournament_date", { ascending: false })
       .limit(30);
     if (aErr) console.error("PlayerProfilePage: achievements fetch:", aErr);
     achievements = (data ?? []) as AchievementRow[];
