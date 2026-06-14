@@ -42,9 +42,10 @@ const GalleryCard = ({
   useGSAP(() => {
     if (!imgRef.current || !ref.current) return;
     gsap.fromTo(imgRef.current,
-      { yPercent: -8 },
+      { yPercent: -10, scale: 1.2 },
       {
-        yPercent: 8,
+        yPercent: 10,
+        scale: 1.0,
         ease: "none",
         scrollTrigger: {
           trigger: ref.current,
