@@ -3,12 +3,14 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { upsertSiteSettings } from "@/features/admin/actions";
+import { ImageUpload } from "./ImageUpload";
 
 export interface SettingsField {
   key: string;
   label: string;
   placeholder?: string;
   multiline?: boolean;
+  type?: "text" | "textarea" | "image";
 }
 
 interface Props {
@@ -42,8 +44,17 @@ const SettingsForm = ({ fields, initialValues, title }: Props) => {
       <div className="space-y-4 rounded border border-ui-border bg-ui-bg p-6">
         {fields.map((field) => (
           <div key={field.key}>
-            <label className={labelClass}>{field.label}</label>
-            {field.multiline ? (
+            {field.type !== "image" && <label className={labelClass}>{field.label}</label>}
+            {field.type === "image" ? (
+              <ImageUpload
+                value={values[field.key] || null}
+                onChange={(url) =>
+                  setValues((prev) => ({ ...prev, [field.key]: url ?? "" }))
+                }
+                folder="site-settings"
+                label={field.label}
+              />
+            ) : field.multiline ? (
               <textarea
                 className={inputClass + " min-h-[80px] resize-y"}
                 value={values[field.key] ?? ""}

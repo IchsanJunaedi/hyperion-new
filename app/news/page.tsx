@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Header } from "@/components/landing/Header";
 import { Footer } from "@/components/landing/Footer";
 import { InteractiveBackground } from "@/components/landing/InteractiveBackground";
-import { getPublishedNewsPosts } from "@/features/admin/queries";
+import { getPublishedNewsPosts, getSiteSettings } from "@/features/admin/queries";
 import { NewsListClient } from "./_components/NewsListClient";
 
 export const dynamic = "force-dynamic";
@@ -12,7 +12,11 @@ export const metadata: Metadata = {
 };
 
 const NewsPage = async () => {
-  const posts = await getPublishedNewsPosts();
+  const [posts, settings] = await Promise.all([
+    getPublishedNewsPosts(),
+    getSiteSettings(),
+  ]);
+  const defaultImage = settings.default_news_image || "/brand/logo.jpg";
 
   return (
     <>
@@ -43,7 +47,7 @@ const NewsPage = async () => {
           </div>
         </section>
 
-        <NewsListClient posts={posts} />
+        <NewsListClient posts={posts} defaultImage={defaultImage} />
       </main>
       <Footer />
     </>

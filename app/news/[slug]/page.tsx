@@ -4,18 +4,22 @@ import Link from "next/link";
 import { ArrowLeft, Calendar, Clock } from "lucide-react";
 import { Header } from "@/components/landing/Header";
 import { Footer } from "@/components/landing/Footer";
-import { getNewsPostBySlug } from "@/features/admin/queries";
+import { getNewsPostBySlug, getSiteSettings } from "@/features/admin/queries";
 
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const post = await getNewsPostBySlug(slug);
+  const [post, settings] = await Promise.all([
+    getNewsPostBySlug(slug),
+    getSiteSettings(),
+  ]);
   if (!post) return { title: "Not Found" };
+  const coverImage = post.cover_image_url || settings.default_news_image || "/brand/logo.jpg";
   return {
     title: `${post.title} — Hyperion Team`,
     description: post.excerpt ?? undefined,
-    openGraph: post.cover_image_url ? { images: [post.cover_image_url] } : undefined,
+    openGraph: coverImage ? { images: [coverImage] } : undefined,
   };
 }
 
@@ -31,19 +35,24 @@ function formatDate(iso: string | null): string {
 
 const NewsDetailPage = async ({ params }: { params: Promise<{ slug: string }> }) => {
   const { slug } = await params;
-  const post = await getNewsPostBySlug(slug);
+  const [post, settings] = await Promise.all([
+    getNewsPostBySlug(slug),
+    getSiteSettings(),
+  ]);
   if (!post) notFound();
+
+  const coverImage = post.cover_image_url || settings.default_news_image || "/brand/logo.jpg";
 
   return (
     <>
       <Header />
       <main className="min-h-screen flex-1 bg-[#040D1C] pt-20">
         {/* Cover image full-width */}
-        {post.cover_image_url && (
+        {coverImage && (
           <div className="relative h-[40vh] min-h-[280px] w-full overflow-hidden sm:h-[50vh]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={post.cover_image_url}
+              src={coverImage}
               alt={post.title}
               className="h-full w-full object-cover"
             />

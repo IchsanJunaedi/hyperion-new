@@ -1,8 +1,8 @@
-# Home Corporate Charts Implementation Plan
+﻿# Home Corporate Charts Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
-**Goal:** Add corporate-style analytics to the owner dashboard Home: sparklines inside the Executive Summary metric cards plus a 2×2 theme-aware chart grid (win rate, cash flow, attendance, sponsor donut) below them.
+**Goal:** Add corporate-style analytics to the owner dashboard Home: sparklines inside the Executive Summary metric cards plus a 2Ã—2 theme-aware chart grid (win rate, cash flow, attendance, sponsor donut) below them.
 
 **Architecture:** A new server-only query `getHomeChartData(orgId)` aggregates 6 months of scrims/attendance/finances/sponsors into pure, unit-tested bucketing functions. Client chart components (recharts 3.8.1, already installed) render the data using CSS variables (`var(--ui-border)` etc.) so dark/light theming is automatic. The page wires the query into the existing `Promise.all` and renders charts inside the Executive Summary block so the org switcher updates them.
 
@@ -10,11 +10,11 @@
 
 **Spec:** `docs/superpowers/specs/2026-06-12-home-corporate-charts-design.md`
 
-**Spec amendment (donut center label):** total sponsor value goes in the ChartCard subtitle ("Total Rp X") instead of an SVG center label — the legend shifts the pie center, making an absolute-positioned center label fragile.
+**Spec amendment (donut center label):** total sponsor value goes in the ChartCard subtitle ("Total Rp X") instead of an SVG center label â€” the legend shifts the pie center, making an absolute-positioned center label fragile.
 
 **Coverage note:** `features/dashboard/**` is NOT in the vitest coverage `include` scope (see `vitest.config.ts`), so this feature cannot drop coverage below thresholds. Tests are still written for correctness.
 
-**Commits:** Two gated commits — Task 2 (data layer + tests) and Task 6 (UI + wiring). Per CLAUDE.md, run `npm run lint`, `npm run typecheck`, `npm run test:unit:coverage` before each commit.
+**Commits:** Two gated commits â€” Task 2 (data layer + tests) and Task 6 (UI + wiring). Per CLAUDE.md, run `npm run lint`, `npm run typecheck`, `npm run test:unit:coverage` before each commit.
 
 ---
 
@@ -24,7 +24,7 @@
 - Create: `features/dashboard/queries/homeCharts.ts` (pure functions only in this task)
 - Create: `features/dashboard/__tests__/homeCharts.test.ts`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Create `features/dashboard/__tests__/homeCharts.test.ts`:
 
@@ -135,12 +135,12 @@ describe("bucketFinances", () => {
 });
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `rtk vitest run features/dashboard/__tests__/homeCharts.test.ts`
-Expected: FAIL — module `@/features/dashboard/queries/homeCharts` not found.
+Expected: FAIL â€” module `@/features/dashboard/queries/homeCharts` not found.
 
-- [ ] **Step 3: Implement the pure functions**
+- [x] **Step 3: Implement the pure functions**
 
 Create `features/dashboard/queries/homeCharts.ts`:
 
@@ -281,7 +281,7 @@ export function bucketFinances(
 
 (Note: `"YYYY-MM"` string comparison `key < firstKey` is correct lexicographic date ordering.)
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `rtk vitest run features/dashboard/__tests__/homeCharts.test.ts`
 Expected: all tests PASS.
@@ -294,7 +294,7 @@ Expected: all tests PASS.
 - Modify: `features/dashboard/queries/homeCharts.ts` (append)
 - Modify: `features/dashboard/__tests__/homeCharts.test.ts` (append)
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Append to `features/dashboard/__tests__/homeCharts.test.ts` (add `vi` and the mock at the top of the file):
 
@@ -351,12 +351,12 @@ describe("getHomeChartData", () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `rtk vitest run features/dashboard/__tests__/homeCharts.test.ts`
-Expected: FAIL — `getHomeChartData` is not exported.
+Expected: FAIL â€” `getHomeChartData` is not exported.
 
-- [ ] **Step 3: Implement the wrapper**
+- [x] **Step 3: Implement the wrapper**
 
 Append to `features/dashboard/queries/homeCharts.ts` (and add the import at the top, below `import "server-only";`):
 
@@ -431,12 +431,12 @@ export async function getHomeChartData(orgId: string): Promise<HomeChartData> {
 }
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `rtk vitest run features/dashboard/__tests__/homeCharts.test.ts`
 Expected: all tests PASS.
 
-- [ ] **Step 5: Pre-commit gate + commit**
+- [x] **Step 5: Pre-commit gate + commit**
 
 Run all three (per CLAUDE.md, all must pass):
 
@@ -462,7 +462,7 @@ rtk git push
 - Create: `features/dashboard/components/charts/Sparkline.tsx`
 - Modify: `features/dashboard/components/ExecutiveSummary.tsx`
 
-- [ ] **Step 1: Create Sparkline**
+- [x] **Step 1: Create Sparkline**
 
 Create `features/dashboard/components/charts/Sparkline.tsx`:
 
@@ -507,7 +507,7 @@ const Sparkline = ({ data, color, id }: SparklineProps) => {
 export { Sparkline };
 ```
 
-- [ ] **Step 2: Extend MetricCard + ExecutiveSummary**
+- [x] **Step 2: Extend MetricCard + ExecutiveSummary**
 
 Modify `features/dashboard/components/ExecutiveSummary.tsx`:
 
@@ -518,7 +518,7 @@ import { Sparkline } from "@/features/dashboard/components/charts/Sparkline";
 import type { HomeChartData } from "@/features/dashboard/queries/homeCharts";
 ```
 
-Note: `homeCharts.ts` imports `"server-only"`, but `import type` is erased at compile time, so importing the type here is safe regardless of where the component renders. Use `import type` exactly as shown — a value import would break client bundling.
+Note: `homeCharts.ts` imports `"server-only"`, but `import type` is erased at compile time, so importing the type here is safe regardless of where the component renders. Use `import type` exactly as shown â€” a value import would break client bundling.
 
 Extend `MetricCardProps` and `MetricCard`:
 
@@ -610,7 +610,7 @@ Pass to the three cards (others unchanged):
         />
 ```
 
-- [ ] **Step 3: Verify diagnostics clean**
+- [x] **Step 3: Verify diagnostics clean**
 
 Run: `rtk npm run typecheck`
 Expected: exit 0.
@@ -626,13 +626,13 @@ Expected: exit 0.
 - Create: `features/dashboard/components/charts/AttendanceLineChart.tsx`
 - Create: `features/dashboard/components/charts/SponsorDonutChart.tsx`
 
-Shared style constants (repeat in each chart file — they're small): tooltip
+Shared style constants (repeat in each chart file â€” they're small): tooltip
 `contentStyle={{ background: "var(--ui-surface)", border: "1px solid var(--ui-border)", borderRadius: 8, fontSize: 12 }}`,
 `labelStyle={{ color: "var(--ui-text)" }}`, `itemStyle={{ color: "var(--ui-text-2)" }}`;
 axis ticks `tick={{ fontSize: 11, fill: "var(--ui-text-muted)" }}` with `axisLine={false} tickLine={false}`;
 grid `<CartesianGrid strokeDasharray="3 3" stroke="var(--ui-border)" vertical={false} />`.
 
-- [ ] **Step 1: Create ChartCard**
+- [x] **Step 1: Create ChartCard**
 
 Create `features/dashboard/components/charts/ChartCard.tsx`:
 
@@ -665,7 +665,7 @@ const ChartCard = ({ title, subtitle, isEmpty, children }: ChartCardProps) => {
 export { ChartCard };
 ```
 
-- [ ] **Step 2: Create WinRateAreaChart**
+- [x] **Step 2: Create WinRateAreaChart**
 
 Create `features/dashboard/components/charts/WinRateAreaChart.tsx`:
 
@@ -714,7 +714,7 @@ const WinRateAreaChart = ({ months }: { months: MonthPoint[] }) => {
 export { WinRateAreaChart };
 ```
 
-- [ ] **Step 3: Create CashFlowChart**
+- [x] **Step 3: Create CashFlowChart**
 
 Create `features/dashboard/components/charts/CashFlowChart.tsx`:
 
@@ -770,7 +770,7 @@ const CashFlowChart = ({ months }: { months: MonthPoint[] }) => {
 export { CashFlowChart };
 ```
 
-- [ ] **Step 4: Create AttendanceLineChart**
+- [x] **Step 4: Create AttendanceLineChart**
 
 Create `features/dashboard/components/charts/AttendanceLineChart.tsx`:
 
@@ -809,7 +809,7 @@ const AttendanceLineChart = ({ months }: { months: MonthPoint[] }) => {
 export { AttendanceLineChart };
 ```
 
-- [ ] **Step 5: Create SponsorDonutChart**
+- [x] **Step 5: Create SponsorDonutChart**
 
 Create `features/dashboard/components/charts/SponsorDonutChart.tsx`:
 
@@ -868,7 +868,7 @@ const SponsorDonutChart = ({ sponsors }: { sponsors: SponsorSlice[] }) => {
 export { SponsorDonutChart };
 ```
 
-- [ ] **Step 6: Verify diagnostics clean**
+- [x] **Step 6: Verify diagnostics clean**
 
 Run: `rtk npm run typecheck`
 Expected: exit 0.
@@ -880,7 +880,7 @@ Expected: exit 0.
 **Files:**
 - Create: `features/dashboard/components/charts/HomeCharts.tsx`
 
-- [ ] **Step 1: Create HomeCharts**
+- [x] **Step 1: Create HomeCharts**
 
 ```tsx
 "use client";
@@ -923,7 +923,7 @@ const HomeCharts = ({ data }: { data: HomeChartData }) => {
 export { HomeCharts };
 ```
 
-- [ ] **Step 2: Verify diagnostics clean**
+- [x] **Step 2: Verify diagnostics clean**
 
 Run: `rtk npm run typecheck`
 Expected: exit 0.
@@ -935,7 +935,7 @@ Expected: exit 0.
 **Files:**
 - Modify: `app/dashboard/(panel)/page.tsx`
 
-- [ ] **Step 1: Wire query + components into the page**
+- [x] **Step 1: Wire query + components into the page**
 
 Add imports:
 
@@ -989,11 +989,11 @@ Replace the Executive Summary JSX block:
 
 Run dev server, open `/dashboard` as owner:
 - Metric cards show sparklines for Win Rate / Attendance / Saldo Kas (when data varies).
-- 2×2 chart grid renders below cards; org switcher updates charts.
+- 2Ã—2 chart grid renders below cards; org switcher updates charts.
 - Toggle theme (light/dark): grid lines, axis labels, tooltips follow theme.
 - Org with no data: "Belum ada data" overlays + "Belum ada sponsor aktif".
 
-- [ ] **Step 3: Pre-commit gate**
+- [x] **Step 3: Pre-commit gate**
 
 ```bash
 rtk npm run lint
@@ -1003,7 +1003,7 @@ rtk npm run test:unit:coverage
 
 All must pass (lint: no errors; typecheck exit 0; tests pass + thresholds met).
 
-- [ ] **Step 4: Commit + push**
+- [x] **Step 4: Commit + push**
 
 ```bash
 rtk git add features/dashboard/components/charts features/dashboard/components/ExecutiveSummary.tsx "app/dashboard/(panel)/page.tsx"

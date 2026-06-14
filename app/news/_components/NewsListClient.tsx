@@ -17,7 +17,7 @@ function getCategoryLabel(cat: string | null): string {
   return map[cat ?? ""] ?? cat ?? "Berita";
 }
 
-const NewsListClient = ({ posts }: { posts: NewsPost[] }) => {
+const NewsListClient = ({ posts, defaultImage }: { posts: NewsPost[]; defaultImage?: string }) => {
   const filtered = posts;
 
   const [featured, ...rest] = filtered;
@@ -38,10 +38,10 @@ const NewsListClient = ({ posts }: { posts: NewsPost[] }) => {
               href={`/news/${featured.slug}`}
               className="group relative flex min-h-[400px] items-end overflow-hidden rounded-2xl border border-white/5"
             >
-              {featured.cover_image_url ? (
+              {(featured.cover_image_url || defaultImage) ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
-                  src={featured.cover_image_url}
+                  src={featured.cover_image_url || defaultImage}
                   alt={featured.title}
                   className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
@@ -100,10 +100,10 @@ const NewsListClient = ({ posts }: { posts: NewsPost[] }) => {
                   className="group flex flex-col overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02] transition-all hover:border-white/10 hover:bg-white/[0.04]"
                 >
                   <div className="relative h-48 overflow-hidden">
-                    {post.cover_image_url ? (
+                    {(post.cover_image_url || defaultImage) ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
-                        src={post.cover_image_url}
+                        src={post.cover_image_url || defaultImage}
                         alt={post.title}
                         className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                       />

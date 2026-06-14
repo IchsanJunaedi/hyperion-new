@@ -14,7 +14,8 @@ const SEO_FIELDS: SettingsField[] = [
   { key: "seo_rekrutmen_description", label: "Rekrutmen — Description", placeholder: "Lihat posisi yang sedang dibuka.", multiline: true },
   { key: "seo_divisions_title", label: "Divisions — Title", placeholder: "Divisi — Hyperion Team" },
   { key: "seo_divisions_description", label: "Divisions — Description", placeholder: "Lihat semua divisi Hyperion Team.", multiline: true },
-  { key: "seo_og_image", label: "Default OG Image URL", placeholder: "https://..." },
+  { key: "seo_og_image", label: "Default OG Image", placeholder: "https://...", type: "image" },
+  { key: "default_news_image", label: "Default News Cover Image (Hyperion Logo)", placeholder: "/brand/logo.jpg", type: "image" },
 ];
 
 export default async function AdminSeoPage() {

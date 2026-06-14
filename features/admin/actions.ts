@@ -276,6 +276,7 @@ export async function upsertSiteSettings(settings: Record<string, string>): Prom
     .upsert(rows, { onConflict: "key" });
   if (error) return { ok: false, message: error.message };
   revalidatePath("/");
+  revalidatePath("/news");
   revalidatePath("/admin");
   return { ok: true };
 }

@@ -97,9 +97,9 @@ const HeaderClient = ({
           {/* Desktop centered nav */}
           <nav
             aria-label="Main"
-            className="absolute left-1/2 hidden -translate-x-1/2 md:block"
+            className="absolute left-1/2 hidden -translate-x-1/2 lg:block"
           >
-            <ul ref={navRef} className="relative flex items-center gap-8 font-orbitron text-[10px] uppercase tracking-[0.2em]">
+            <ul ref={navRef} className="relative flex items-center gap-3 lg:gap-5 xl:gap-8 font-orbitron text-[9px] lg:text-[10px] uppercase tracking-[0.08em] lg:tracking-[0.15em] xl:tracking-[0.2em]">
               {/* GSAP glow pill */}
               <div
                 ref={pillRef}
@@ -129,7 +129,7 @@ const HeaderClient = ({
             </ul>
           </nav>
 
-          <div className="hidden items-center gap-5 md:flex">
+          <div className="hidden items-center gap-5 lg:flex">
             {authed ? (
               <div className="flex items-center gap-3">
                 {authed.workspaceHref && (
@@ -168,7 +168,7 @@ const HeaderClient = ({
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
             aria-expanded={mobileOpen}
             onClick={() => setMobileOpen((v) => !v)}
-            className="flex h-8 w-8 cursor-pointer items-center justify-center text-white/50 transition hover:text-white md:hidden"
+            className="flex h-8 w-8 cursor-pointer items-center justify-center text-white/50 transition hover:text-white lg:hidden"
           >
             {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
@@ -179,7 +179,7 @@ const HeaderClient = ({
       <div
         aria-hidden={!mobileOpen}
         className={cn(
-          "fixed inset-0 z-40 bg-[#030914]/80 transition-opacity duration-150 md:hidden",
+          "fixed inset-0 z-40 bg-[#030914]/80 transition-opacity duration-150 lg:hidden",
           mobileOpen ? "opacity-100" : "pointer-events-none opacity-0"
         )}
         onClick={() => setMobileOpen(false)}
@@ -189,7 +189,7 @@ const HeaderClient = ({
       <div
         aria-hidden={!mobileOpen}
         className={cn(
-          "fixed right-0 top-0 z-50 flex h-full w-72 flex-col border-l border-white/5 bg-[#030914] transition-transform duration-300 ease-out md:hidden",
+          "fixed right-0 top-0 z-50 flex h-full w-72 flex-col border-l border-white/5 bg-[#030914] transition-transform duration-300 ease-out lg:hidden",
           mobileOpen ? "translate-x-0" : "pointer-events-none translate-x-full"
         )}
       >

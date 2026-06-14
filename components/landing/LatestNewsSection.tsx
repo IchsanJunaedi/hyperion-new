@@ -7,6 +7,7 @@ import type { NewsPost } from "@/features/admin/queries";
 
 interface Props {
   posts: NewsPost[];
+  defaultImage?: string;
 }
 
 // ── Fallback dummy data ───────────────────────────────────────────────────────
@@ -95,9 +96,10 @@ function getCategoryLabel(category: string | null): string {
 interface DarkCardProps {
   post: NewsPost;
   textPosition?: "top" | "bottom";
+  defaultImage?: string;
 }
 
-function DarkCard({ post, textPosition = "bottom" }: DarkCardProps) {
+function DarkCard({ post, textPosition = "bottom", defaultImage }: DarkCardProps) {
   const isTop = textPosition === "top";
 
   return (
@@ -105,10 +107,10 @@ function DarkCard({ post, textPosition = "bottom" }: DarkCardProps) {
       href={`/news/${post.slug}`}
       className="lns-item group relative flex h-full w-full overflow-hidden rounded-2xl bg-[#030813]"
     >
-      {post.cover_image_url ? (
+      {(post.cover_image_url || defaultImage) ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          src={post.cover_image_url}
+          src={post.cover_image_url || defaultImage}
           alt=""
           aria-hidden
           loading="lazy"
@@ -148,62 +150,90 @@ function DarkCard({ post, textPosition = "bottom" }: DarkCardProps) {
   );
 }
 
-const LatestNewsSection = ({ posts }: Props) => {
+const LatestNewsSection = ({ posts, defaultImage }: Props) => {
   const sectionRef = useRef<HTMLElement>(null);
   
   // Combine real posts with dummy posts to guarantee 7 cards in the grid without duplicates
   const postSlugs = new Set(posts.map((p) => p.slug));
-  const postIds = new Set(posts.map((p) => p.id));
-  const filteredDummies = DUMMY_POSTS.filter((d) => !postSlugs.has(d.slug) && !postIds.has(d.id));
-  const data = [...posts, ...filteredDummies].slice(0, 7);
+  const mergedPosts = [
+    ...posts,
+    ...DUMMY_POSTS.filter((p) => !postSlugs.has(p.slug)),
+  ].slice(0, 7);
 
-  // Grid slots: a=data[0], b=data[1](featured), c=data[2], d=data[3](tall), e=data[4], f=data[5], g=data[6]
-  const [a, b, c, d, e, f, g] = data;
+  // Destructure for grid coordinates:
+  // a: top-left (tall)
+  // b: middle-left-top (featured style)
+  // c: middle-right-top
+  // d: far-right (full height)
+  // e: middle-left-bottom
+  // f: middle-left-bottom-right (tall)
+  // g: middle-right-bottom (tall)
+  const [a, b, c, d, e, f, g] = mergedPosts;
+  const data = mergedPosts;
 
-  useGSAP(() => {
-    gsap.from(".lns-header", {
-      y: 16, opacity: 0, duration: 0.5, ease: "power2.out",
-      scrollTrigger: { trigger: sectionRef.current, start: "top 85%", once: true },
-    });
-    gsap.from(".lns-item", {
-      y: 20, opacity: 0, duration: 0.5, stagger: 0.07, ease: "power2.out",
-      scrollTrigger: { trigger: ".lns-item", start: "top 88%", once: true },
-    });
-  }, { scope: sectionRef });
+  useGSAP(
+    () => {
+      // Reveal the whole section first
+      gsap.from(".lns-header", {
+        y: 40,
+        opacity: 0,
+        duration: 0.8,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top 80%",
+        },
+      });
 
-  if (data.length === 0) return null;
+      // Stagger items
+      gsap.from(".lns-item", {
+        scale: 0.96,
+        y: 30,
+        opacity: 0,
+        duration: 0.75,
+        stagger: 0.08,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: ".lns-item",
+          start: "top 85%",
+        },
+      });
+    },
+    { scope: sectionRef }
+  );
 
   return (
     <section
       ref={sectionRef}
-      className="relative bg-transparent px-5 py-20 sm:px-8 lg:px-10 border-t border-white/5"
+      className="relative z-20 bg-[#040D1C] px-5 py-24 sm:px-8 lg:px-10"
     >
-      <div className="relative mx-auto max-w-7xl">
-
-        {/* ── Header (artikel unggulan style) ─────────────────────────── */}
-        <div className="lns-header mb-8 flex flex-wrap items-start justify-between gap-4">
-          <h2 className="font-bebas text-5xl sm:text-6xl font-black uppercase tracking-wide text-white leading-none">
-            News
-          </h2>
-          <div className="flex flex-col items-end gap-1 text-right max-w-xs">
-            <p className="text-sm text-white/40 font-sans leading-relaxed">
-              Denyut nadi cerita kami,<br />
-              disampaikan satu postingan demi satu.
-            </p>
-            <Link
-              href="/news"
-              className="mt-1 font-orbitron text-[9px] font-bold uppercase tracking-widest text-[#F5C400]/60 transition hover:text-[#F5C400]"
-            >
-              Lihat Semua →
-            </Link>
+      <div className="mx-auto max-w-7xl">
+        {/* Header */}
+        <div className="lns-header mb-12 flex flex-col items-center justify-between gap-4 border-b border-white/5 pb-6 sm:flex-row sm:items-end">
+          <div className="text-center sm:text-left">
+            <span className="font-orbitron text-[9px] font-extrabold uppercase tracking-[0.3em] text-[#F5C400]">
+              Berita & Pengumuman
+            </span>
+            <h2 className="font-bebas text-5xl font-black uppercase tracking-wide text-white sm:text-6xl">
+              LATEST NEWS
+            </h2>
           </div>
+          <Link
+            href="/news"
+            className="group font-orbitron text-[10px] font-bold uppercase tracking-widest text-[#F5C400] transition-colors hover:text-white"
+          >
+            LIHAT SEMUA
+            <span className="ml-1 inline-block transition-transform group-hover:translate-x-1">
+              &rarr;
+            </span>
+          </Link>
         </div>
 
         {/* ── MOBILE: simple 2-col grid ───────────────────────────────── */}
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:hidden">
           {data.slice(0, 6).map((post) => (
             <div key={post.id} className="h-52">
-              <DarkCard post={post} />
+              <DarkCard post={post} defaultImage={defaultImage} />
             </div>
           ))}
         </div>
@@ -219,10 +249,10 @@ const LatestNewsSection = ({ posts }: Props) => {
           {/* Column 1 */}
           <div className="flex flex-col gap-3">
             <div className="h-[370px]">
-              {a && <DarkCard post={a} textPosition="bottom" />}
+              {a && <DarkCard post={a} textPosition="bottom" defaultImage={defaultImage} />}
             </div>
             <div className="h-[230px]">
-              {e && <DarkCard post={e} textPosition="top" />}
+              {e && <DarkCard post={e} textPosition="top" defaultImage={defaultImage} />}
             </div>
           </div>
 
@@ -234,10 +264,10 @@ const LatestNewsSection = ({ posts }: Props) => {
                   href={`/news/${b.slug}`}
                   className="lns-item group relative flex h-full w-full overflow-hidden rounded-2xl bg-[#F5C400]"
                 >
-                  {b.cover_image_url && (
+                  {(b.cover_image_url || defaultImage) && (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
-                      src={b.cover_image_url}
+                      src={b.cover_image_url || defaultImage}
                       alt=""
                       aria-hidden
                       loading="lazy"
@@ -270,24 +300,24 @@ const LatestNewsSection = ({ posts }: Props) => {
               )}
             </div>
             <div className="h-[370px]">
-              {f && <DarkCard post={f} textPosition="top" />}
+              {f && <DarkCard post={f} textPosition="top" defaultImage={defaultImage} />}
             </div>
           </div>
 
           {/* Column 3 */}
           <div className="flex flex-col gap-3">
             <div className="h-[230px]">
-              {c && <DarkCard post={c} textPosition="bottom" />}
+              {c && <DarkCard post={c} textPosition="bottom" defaultImage={defaultImage} />}
             </div>
             <div className="h-[370px]">
-              {g && <DarkCard post={g} textPosition="top" />}
+              {g && <DarkCard post={g} textPosition="top" defaultImage={defaultImage} />}
             </div>
           </div>
 
           {/* Column 4 */}
           <div className="flex flex-col gap-3">
             <div className="h-[612px]">
-              {d && <DarkCard post={d} textPosition="top" />}
+              {d && <DarkCard post={d} textPosition="top" defaultImage={defaultImage} />}
             </div>
           </div>
 

@@ -204,7 +204,7 @@ export default async function HomePage() {
         </Reveal>
         <AchievementsSection entries={mergedAchievements} />
         <Reveal>
-          <LatestNewsSection posts={latestNews.slice(0, 7)} />
+          <LatestNewsSection posts={latestNews.slice(0, 7)} defaultImage={settings.default_news_image || "/brand/logo.jpg"} />
         </Reveal>
         <Reveal>
           <TestimonialsSection testimonials={testimonials} />
