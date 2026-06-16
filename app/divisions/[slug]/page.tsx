@@ -84,6 +84,7 @@ export default async function DivisionDetailPage({ params }: Props) {
       .select("organization_id, role, user_id")
       .in("organization_id", allOrgIds)
       .eq("is_active", true)
+      .eq("is_public", true)
       .in("role", ["captain", "member"])
       .limit(100);
     if (mErr) console.error("DivisionDetailPage: team_members fetch:", mErr);

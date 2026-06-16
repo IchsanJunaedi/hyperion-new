@@ -46,7 +46,6 @@ export async function getDivisionsWithMembers(): Promise<DivisionWithMembers[]> 
     .in("division_id", divisionIds)
     .in("role", ["captain", "member", "coach"])
     .eq("is_active", true)
-    .eq("is_public", true)
     .limit(500);
   if (memErr) console.error("getDivisionsWithMembers members:", memErr);
 
