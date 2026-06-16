@@ -33,12 +33,12 @@ export async function saveProfileAction(
     .select("id")
     .eq("phone_wa", parsed.data.phone_wa)
     .neq("id", user.id)
-    .maybeSingle();
+    .limit(1);
 
   if (phoneCheck.error) {
     return { error: phoneCheck.error.message };
   }
-  if (phoneCheck.data) {
+  if (phoneCheck.data && phoneCheck.data.length > 0) {
     return { error: "Nomor WhatsApp ini sudah terdaftar. Gunakan nomor lain." };
   }
 
