@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { logAudit } from "@/lib/audit";
 
 type ActionResult = { ok: true } | { ok: false; message: string };
 
@@ -552,5 +553,75 @@ export async function togglePlayerPublicAction(
   if (error) return { ok: false, message: error.message };
   revalidatePath("/divisions");
   revalidatePath("/admin/players");
+  return { ok: true };
+}
+
+export async function updatePlayerProfileAction(
+  memberId: string,
+  userId: string,
+  data: {
+    display_name: string;
+    avatar_url: string | null;
+    is_public: boolean;
+    jersey_number: number | null;
+    position: string | null;
+  }
+): Promise<ActionResult> {
+  const auth = await verifyAdminAccess();
+  if (!auth.ok) return auth;
+
+  // Retrieve user for audit trail
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { ok: false, message: "Tidak terautentikasi" };
+
+  const admin = createAdminClient();
+
+  // 1. Update profiles table (display_name and avatar_url)
+  const { error: profError } = await admin
+    .from("profiles")
+    .update({
+      display_name: data.display_name.trim(),
+      avatar_url: data.avatar_url,
+    })
+    .eq("id", userId);
+
+  if (profError) {
+    console.error("updatePlayerProfileAction profiles error:", profError);
+    return { ok: false, message: "Gagal mengupdate profil player: " + profError.message };
+  }
+
+  // 2. Update team_members table (is_public, jersey_number, position)
+  const { error: memError } = await admin
+    .from("team_members")
+    .update({
+      is_public: data.is_public,
+      jersey_number: data.jersey_number,
+      position: data.position ? data.position.trim() || null : null,
+    })
+    .eq("id", memberId);
+
+  if (memError) {
+    console.error("updatePlayerProfileAction team_members error:", memError);
+    return { ok: false, message: "Gagal mengupdate keanggotaan player: " + memError.message };
+  }
+
+  // 3. Log audit trail
+  await logAudit({
+    actorId: user.id,
+    action: "update",
+    entityType: "team_members",
+    entityId: memberId,
+    metadata: {
+      user_id: userId,
+      display_name: data.display_name,
+      is_public: data.is_public,
+    },
+  });
+
+  revalidatePath("/divisions");
+  revalidatePath("/admin/players");
+  revalidatePath("/admin/divisions");
+
   return { ok: true };
 }

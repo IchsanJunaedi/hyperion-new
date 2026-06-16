@@ -4,7 +4,8 @@ import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import { Pencil, Check, X } from "lucide-react";
 import { toggleDivisionPublic, updateDivisionPublicInfo } from "@/features/admin/actions";
-import type { DivisionWithMembers } from "@/features/admin/queries";
+import type { DivisionWithMembers, DivisionMember } from "@/features/admin/queries";
+import { EditPlayerModal } from "./EditPlayerModal";
 
 const ROLE_LABEL: Record<string, string> = {
   captain: "Captain",
@@ -24,6 +25,7 @@ interface EditState {
 }
 
 const DivisionCard = ({ division }: { division: DivisionWithMembers }) => {
+  const [members, setMembers] = useState(division.members);
   const [isPublic, setIsPublic] = useState(division.is_public);
   const [isPending, startTransition] = useTransition();
   const [editing, setEditing] = useState(false);
@@ -32,6 +34,19 @@ const DivisionCard = ({ division }: { division: DivisionWithMembers }) => {
     logo_url: division.logo_url ?? "",
   });
   const [savePending, startSave] = useTransition();
+  const [editingPlayer, setEditingPlayer] = useState<DivisionMember | null>(null);
+
+  const handlePlayerSuccess = (memberId: string, updated: {
+    display_name: string;
+    avatar_url: string | null;
+    is_public: boolean;
+    jersey_number: number | null;
+    position: string | null;
+  }) => {
+    setMembers((prev) =>
+      prev.map((m) => (m.id === memberId ? { ...m, ...updated } : m))
+    );
+  };
 
   const handleToggle = () => {
     const next = !isPublic;
@@ -170,7 +185,7 @@ const DivisionCard = ({ division }: { division: DivisionWithMembers }) => {
       )}
 
       {/* Members */}
-      {division.members.length > 0 && (
+      {members.length > 0 && (
         <div className="border-t border-ui-border px-4 py-3 space-y-3">
           {players.length > 0 && (
             <div>
@@ -179,23 +194,39 @@ const DivisionCard = ({ division }: { division: DivisionWithMembers }) => {
               </p>
               <div className="space-y-1">
                 {players.map((m) => (
-                  <div key={m.user_id} className="flex items-center gap-2">
-                    <div className="flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded-full bg-ui-hover text-[9px] font-bold text-ui-text-muted">
-                      {m.avatar_url ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={m.avatar_url} alt="" className="h-full w-full object-cover" />
-                      ) : (
-                        (m.display_name ?? "?").slice(0, 1).toUpperCase()
+                  <div key={m.user_id} className="flex items-center justify-between py-0.5">
+                    <div className="flex items-center gap-2">
+                      <div className="flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded-full bg-ui-hover text-[9px] font-bold text-ui-text-muted">
+                        {m.avatar_url ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={m.avatar_url} alt="" className="h-full w-full object-cover" />
+                        ) : (
+                          (m.display_name ?? "?").slice(0, 1).toUpperCase()
+                        )}
+                      </div>
+                      <span className="text-xs text-ui-text">{m.display_name ?? "—"}</span>
+                      <span className={`text-[10px] ${ROLE_COLOR[m.role]}`}>{ROLE_LABEL[m.role]}</span>
+                      {m.jersey_number != null && (
+                        <span className="text-[10px] text-ui-text-muted">#{m.jersey_number}</span>
                       )}
+                      {m.position && (
+                        <span className="text-[10px] text-ui-text-muted">· {m.position}</span>
+                      )}
+                      <span className={`text-[9px] px-1 rounded-sm font-semibold uppercase tracking-wider ${
+                        m.is_public ? "bg-[#F5C400]/15 text-[#F5C400]" : "bg-ui-border text-ui-text-muted"
+                      }`}>
+                        {m.is_public ? "Publik" : "Hidden"}
+                      </span>
                     </div>
-                    <span className="text-xs text-ui-text">{m.display_name ?? "—"}</span>
-                    <span className={`text-[10px] ${ROLE_COLOR[m.role]}`}>{ROLE_LABEL[m.role]}</span>
-                    {m.jersey_number != null && (
-                      <span className="text-[10px] text-ui-text-muted">#{m.jersey_number}</span>
-                    )}
-                    {m.position && (
-                      <span className="text-[10px] text-ui-text-muted">· {m.position}</span>
-                    )}
+
+                    <button
+                      type="button"
+                      onClick={() => setEditingPlayer(m)}
+                      className="cursor-pointer rounded p-1 text-ui-text-muted hover:bg-ui-hover hover:text-ui-text-dim transition"
+                      title="Edit player info & visibilitas"
+                    >
+                      <Pencil className="h-3 w-3" />
+                    </button>
                   </div>
                 ))}
               </div>
@@ -209,23 +240,47 @@ const DivisionCard = ({ division }: { division: DivisionWithMembers }) => {
               </p>
               <div className="space-y-1">
                 {coaches.map((m) => (
-                  <div key={m.user_id} className="flex items-center gap-2">
-                    <div className="flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded-full bg-ui-hover text-[9px] font-bold text-blue-400/60">
-                      {m.avatar_url ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={m.avatar_url} alt="" className="h-full w-full object-cover" />
-                      ) : (
-                        (m.display_name ?? "?").slice(0, 1).toUpperCase()
-                      )}
+                  <div key={m.user_id} className="flex items-center justify-between py-0.5">
+                    <div className="flex items-center gap-2">
+                      <div className="flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded-full bg-ui-hover text-[9px] font-bold text-blue-400/60">
+                        {m.avatar_url ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={m.avatar_url} alt="" className="h-full w-full object-cover" />
+                        ) : (
+                          (m.display_name ?? "?").slice(0, 1).toUpperCase()
+                        )}
+                      </div>
+                      <span className="text-xs text-ui-text">{m.display_name ?? "—"}</span>
+                      <span className="text-[10px] text-blue-400">Coach</span>
+                      <span className={`text-[9px] px-1 rounded-sm font-semibold uppercase tracking-wider ${
+                        m.is_public ? "bg-[#F5C400]/15 text-[#F5C400]" : "bg-ui-border text-ui-text-muted"
+                      }`}>
+                        {m.is_public ? "Publik" : "Hidden"}
+                      </span>
                     </div>
-                    <span className="text-xs text-ui-text">{m.display_name ?? "—"}</span>
-                    <span className="text-[10px] text-blue-400">Coach</span>
+
+                    <button
+                      type="button"
+                      onClick={() => setEditingPlayer(m)}
+                      className="cursor-pointer rounded p-1 text-ui-text-muted hover:bg-ui-hover hover:text-ui-text-dim transition"
+                      title="Edit player info & visibilitas"
+                    >
+                      <Pencil className="h-3 w-3" />
+                    </button>
                   </div>
                 ))}
               </div>
             </div>
           )}
         </div>
+      )}
+
+      {editingPlayer && (
+        <EditPlayerModal
+          member={editingPlayer}
+          onClose={() => setEditingPlayer(null)}
+          onSuccess={(updated) => handlePlayerSuccess(editingPlayer.id, updated)}
+        />
       )}
     </div>
   );

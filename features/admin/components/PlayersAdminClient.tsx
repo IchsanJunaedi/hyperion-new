@@ -2,9 +2,10 @@
 
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { Users } from "lucide-react";
+import { Users, Pencil } from "lucide-react";
 import { togglePlayerPublicAction } from "@/features/admin/actions";
 import type { AdminPlayerMember } from "@/features/admin/queries";
+import { EditPlayerModal } from "./EditPlayerModal";
 
 interface Props { members: AdminPlayerMember[]; }
 
@@ -18,6 +19,19 @@ const ROLE_COLOR: Record<string, string> = {
 const PlayersAdminClient = ({ members: initial }: Props) => {
   const [members, setMembers] = useState(initial);
   const [, startTransition] = useTransition();
+  const [editingPlayer, setEditingPlayer] = useState<AdminPlayerMember | null>(null);
+
+  const handlePlayerSuccess = (memberId: string, updated: {
+    display_name: string;
+    avatar_url: string | null;
+    is_public: boolean;
+    jersey_number: number | null;
+    position: string | null;
+  }) => {
+    setMembers((prev) =>
+      prev.map((m) => (m.id === memberId ? { ...m, ...updated } : m))
+    );
+  };
 
   const handleToggle = (id: string, current: boolean) => {
     const next = !current;
@@ -83,16 +97,34 @@ const PlayersAdminClient = ({ members: initial }: Props) => {
                       {m.jersey_number != null && <span className="text-ui-text-muted">· #{m.jersey_number}</span>}
                     </div>
                   </div>
-                  <button onClick={() => handleToggle(m.id, m.is_public)}
-                    className={`shrink-0 cursor-pointer px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider border transition ${m.is_public ? "border-[#F5C400] bg-[#F5C400] text-black" : "border-ui-border text-ui-text-muted hover:border-[#F5C400]/50 hover:text-[#F5C400]"}`}>
-                    {m.is_public ? "Publik ✓" : "Publik"}
-                  </button>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => setEditingPlayer(m)}
+                      className="cursor-pointer rounded border border-ui-border p-1.5 text-ui-text-muted hover:bg-ui-hover hover:text-ui-text-dim transition"
+                      title="Edit player info & visibilitas"
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                    </button>
+                    <button onClick={() => handleToggle(m.id, m.is_public)}
+                      className={`cursor-pointer px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider border transition ${m.is_public ? "border-[#F5C400] bg-[#F5C400] text-black" : "border-ui-border text-ui-text-muted hover:border-[#F5C400]/50 hover:text-[#F5C400]"}`}>
+                      {m.is_public ? "Publik ✓" : "Publik"}
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
         ))}
       </div>
+
+      {editingPlayer && (
+        <EditPlayerModal
+          member={editingPlayer}
+          onClose={() => setEditingPlayer(null)}
+          onSuccess={(updated) => handlePlayerSuccess(editingPlayer.id, updated)}
+        />
+      )}
     </div>
   );
 };

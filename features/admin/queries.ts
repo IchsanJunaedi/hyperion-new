@@ -8,12 +8,14 @@ export type DivisionPublic = Database["public"]["Tables"]["divisions_public"]["R
 export type SiteSetting = Database["public"]["Tables"]["site_settings"]["Row"];
 
 export type DivisionMember = {
+  id: string;
   user_id: string;
   role: string;
   position: string | null;
   jersey_number: number | null;
   display_name: string | null;
   avatar_url: string | null;
+  is_public: boolean;
 };
 
 export type DivisionWithMembers = {
@@ -42,7 +44,7 @@ export async function getDivisionsWithMembers(): Promise<DivisionWithMembers[]> 
 
   const { data: members, error: memErr } = await admin
     .from("team_members")
-    .select("user_id, role, position, jersey_number, division_id")
+    .select("id, user_id, role, position, jersey_number, division_id, is_public")
     .in("division_id", divisionIds)
     .in("role", ["captain", "member", "coach"])
     .eq("is_active", true)
@@ -69,12 +71,14 @@ export async function getDivisionsWithMembers(): Promise<DivisionWithMembers[]> 
         .map((m) => {
           const profile = profileMap.get(m.user_id);
           return {
+            id: m.id,
             user_id: m.user_id,
             role: m.role,
             position: m.position,
             jersey_number: m.jersey_number,
             display_name: profile?.display_name ?? null,
             avatar_url: profile?.avatar_url ?? null,
+            is_public: m.is_public,
           };
         });
       return { ...div, members: divMembers };
