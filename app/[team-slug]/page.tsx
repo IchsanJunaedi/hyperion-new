@@ -56,7 +56,7 @@ export default async function TeamSlugPage({ params }: TeamSlugPageProps) {
     getTeamHomeData(organization),
     getCurrentUserRole(organization.id),
   ]);
-  const canManageScrims = ["captain", "manager", "owner"].includes(currentUserRole ?? "");
+  const canManageScrims = ["captain", "coach", "manager", "owner"].includes(currentUserRole ?? "");
   const personalStats =
     !isOwner && (currentUserRole === "captain" || currentUserRole === "member")
       ? await getPersonalPlayerStats(organization.id, user.id)

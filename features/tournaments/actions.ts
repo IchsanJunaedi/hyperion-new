@@ -60,8 +60,8 @@ export async function createTournamentAction(
       .eq("user_id", user.id)
       .eq("is_active", true)
       .maybeSingle();
-    const canCreate = membership?.role && ["captain", "manager", "owner"].includes(membership.role);
-    if (!canCreate) return { ok: false, message: "Hanya captain atau manager yang bisa menambah turnamen" };
+    const canCreate = membership?.role && ["captain", "coach", "manager", "owner"].includes(membership.role);
+    if (!canCreate) return { ok: false, message: "Hanya captain, coach, atau manager yang bisa menambah turnamen" };
   }
 
   const { data: tournament, error } = await admin

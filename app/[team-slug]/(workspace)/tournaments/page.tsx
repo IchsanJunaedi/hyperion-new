@@ -30,7 +30,7 @@ export default async function TournamentsPage({ params, searchParams }: Tourname
   if (!organization) notFound();
 
   const currentUserRole = await getCurrentUserRole(organization.id);
-  const canManage = ["captain", "manager", "owner"].includes(currentUserRole ?? "");
+  const canManage = ["captain", "coach", "manager", "owner"].includes(currentUserRole ?? "");
 
   const tournaments = await listTournaments(organization.id);
   const { upcoming, registered, ongoing, completed, cancelled } = categorizeTournaments(tournaments);

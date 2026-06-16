@@ -18,7 +18,7 @@ export default async function NewScrimPage({ params }: NewScrimPageProps) {
   if (!organization) notFound();
 
   const currentUserRole = await getCurrentUserRole(organization.id);
-  const canManageScrims = ["captain", "manager", "owner"].includes(currentUserRole ?? "");
+  const canManageScrims = ["captain", "coach", "manager", "owner"].includes(currentUserRole ?? "");
   if (!canManageScrims) redirect(`/${slug}/scrim`);
 
   const { divisions } = await getPublicTeamData(organization);

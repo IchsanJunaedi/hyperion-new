@@ -31,7 +31,7 @@ export default async function ScrimListPage({
   if (!organization) notFound();
 
   const currentUserRole = await getCurrentUserRole(organization.id);
-  const canManageScrims = ["captain", "manager", "owner"].includes(currentUserRole ?? "");
+  const canManageScrims = ["captain", "coach", "manager", "owner"].includes(currentUserRole ?? "");
 
   const filter: ScrimListFilter =
     sp.tab === "ongoing" || sp.tab === "completed" || sp.tab === "all"

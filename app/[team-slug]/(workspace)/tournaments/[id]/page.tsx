@@ -88,7 +88,7 @@ export default async function TournamentDetailPage({ params }: TournamentDetailP
   if (!detail) notFound();
 
   const currentUserRole = await getCurrentUserRole(organization.id);
-  const canManage = ["captain", "manager", "owner"].includes(currentUserRole ?? "");
+  const canManage = ["captain", "coach", "manager", "owner"].includes(currentUserRole ?? "");
   const canManageBracket = ["captain", "manager", "owner", "coach"].includes(currentUserRole ?? "");
 
   const startTimeStr = detail.start_time ? detail.start_time.slice(0, 5) : "00:00";

@@ -18,7 +18,7 @@ export default async function NewTournamentPage({ params }: NewTournamentPagePro
   if (!organization) notFound();
 
   const currentUserRole = await getCurrentUserRole(organization.id);
-  const canManage = ["captain", "manager", "owner"].includes(currentUserRole ?? "");
+  const canManage = ["captain", "coach", "manager", "owner"].includes(currentUserRole ?? "");
   if (!canManage) redirect(`/${slug}/tournaments`);
 
   const { divisions } = await getPublicTeamData(organization);

@@ -20,7 +20,7 @@ export default async function FinishScrimPage({ params }: FinishScrimPageProps) 
   const { scrim } = detail;
 
   const currentUserRole = await getCurrentUserRole(scrim.organization_id);
-  const canFinish = ["captain", "manager", "owner"].includes(currentUserRole ?? "");
+  const canFinish = ["captain", "coach", "manager", "owner"].includes(currentUserRole ?? "");
   if (!canFinish) redirect(`/${slug}/scrim/${id}`);
 
   if (scrim.status === "completed" || scrim.status === "cancelled") {

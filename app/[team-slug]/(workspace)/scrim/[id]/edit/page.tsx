@@ -19,7 +19,7 @@ export default async function EditScrimPage({ params }: EditScrimPageProps) {
   if (!organization) notFound();
 
   const currentUserRole = await getCurrentUserRole(organization.id);
-  const canManageScrims = ["captain", "manager", "owner"].includes(currentUserRole ?? "");
+  const canManageScrims = ["captain", "coach", "manager", "owner"].includes(currentUserRole ?? "");
   if (!canManageScrims) redirect(`/${slug}/scrim/${id}`);
 
   const detail = await getScrimDetail(id);

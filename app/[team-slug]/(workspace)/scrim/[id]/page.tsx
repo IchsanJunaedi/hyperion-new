@@ -40,7 +40,7 @@ export default async function ScrimDetailPage({
   const locked = scrim.status === "completed" || scrim.status === "cancelled";
 
   const currentUserRole = await getCurrentUserRole(scrim.organization_id);
-  const canManageScrims = ["captain", "manager", "owner"].includes(currentUserRole ?? "");
+  const canManageScrims = ["captain", "coach", "manager", "owner"].includes(currentUserRole ?? "");
   const isCoach = currentUserRole === "coach";
 
   const [opponentProfile, reviewRequest, opponentHistory, linkedFiles] = await Promise.all([
