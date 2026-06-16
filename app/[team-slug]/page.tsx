@@ -16,7 +16,6 @@ import {
 } from "@/features/teams/queries";
 import { getCurrentUserRole } from "@/features/roster/queries";
 import { createClient } from "@/lib/supabase/server";
-import type { AppMetadataWithOrgs } from "@/types/jwt";
 
 export const dynamic = "force-dynamic";
 
@@ -74,6 +73,40 @@ export default async function TeamSlugPage({ params }: TeamSlugPageProps) {
     myNextScrimAttendanceStatus = att?.status ?? "pending";
   }
 
+  // Fetch user's managed/coached teams for TeamSwitcher
+  const isManager = currentUserRole === "manager";
+  const isCoach = currentUserRole === "coach";
+  let managedTeams: Array<{ id: string; slug: string; name: string; logoUrl: string | null }> = [];
+
+  if (isManager || isCoach) {
+    const { data: allMemberships } = await supabase
+      .from("team_members")
+      .select("organization_id")
+      .eq("user_id", user.id)
+      .in("role", ["manager", "coach"])
+      .eq("is_active", true)
+      .limit(20);
+
+    const allOrgIds = [
+      ...new Set((allMemberships ?? []).map((m) => m.organization_id)),
+    ];
+
+    if (allOrgIds.length > 1) {
+      const { data: orgsData } = await supabase
+        .from("organizations")
+        .select("id, slug, name, logo_url")
+        .in("id", allOrgIds)
+        .limit(20);
+
+      managedTeams = (orgsData ?? []).map((o) => ({
+        id: o.id,
+        slug: o.slug,
+        name: o.name,
+        logoUrl: o.logo_url,
+      }));
+    }
+  }
+
   return (
     <div className="flex min-h-screen flex-1">
       <WorkspaceSidebar
@@ -82,6 +115,7 @@ export default async function TeamSlugPage({ params }: TeamSlugPageProps) {
         orgName={organization.name}
         orgLogoUrl={organization.logo_url}
         divisions={data.divisions.map((d: { id: string; name: string }) => ({ id: d.id, name: d.name }))}
+        managedTeams={managedTeams.length > 1 ? managedTeams : undefined}
         user={{
           userId: user.id,
           displayName:

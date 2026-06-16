@@ -67,16 +67,17 @@ export default async function WorkspaceLayout({
   const { divisions } = teamData;
   const userRole: string | undefined = isOwner ? "owner" : (membershipRow.data?.role ?? undefined);
 
-  // Phase 3: if manager, fetch all their managed teams for team switcher
+  // Phase 3: if manager or coach, fetch all their teams for switcher
   const isManager = userRole === "manager";
+  const isCoach = userRole === "coach";
   let managedTeams: Array<{ id: string; slug: string; name: string; logoUrl: string | null }> = [];
 
-  if (isManager) {
+  if (isManager || isCoach) {
     const { data: allMemberships } = await supabase
       .from("team_members")
       .select("organization_id")
       .eq("user_id", user.id)
-      .eq("role", "manager")
+      .in("role", ["manager", "coach"])
       .eq("is_active", true)
       .limit(20);
 
