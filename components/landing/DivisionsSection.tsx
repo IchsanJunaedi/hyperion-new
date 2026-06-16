@@ -123,7 +123,7 @@ export async function DivisionsSection({ description }: { description?: string }
             return (
               <Link
                 key={div.id}
-                href={`/divisions/${div.slug}`}
+                href="/divisions"
                 className="group relative flex h-44 overflow-hidden border border-white/5 bg-[#030c1b] hover:border-[#F5C400]/40 transition-all duration-500 clip-cyber-btn"
               >
                 {/* Left Side: Photo (slides open on hover) */}
@@ -145,11 +145,7 @@ export async function DivisionsSection({ description }: { description?: string }
                     <h3 className="font-bebas text-2xl font-black uppercase tracking-wide text-white leading-none mt-1">
                       {div.name}
                     </h3>
-                    {div.org && (
-                      <p className="mt-1 font-orbitron text-[8px] font-bold uppercase tracking-wider text-white/50">
-                        {div.org.name}
-                      </p>
-                    )}
+
                   </div>
                 </div>
 
@@ -164,11 +160,7 @@ export async function DivisionsSection({ description }: { description?: string }
                     <span className="block font-bebas text-lg uppercase tracking-wider text-white leading-none">
                       {div.name}
                     </span>
-                    {div.org && (
-                      <span className="block mt-1 font-orbitron text-[8px] font-bold uppercase tracking-widest text-[#F5C400]">
-                        {div.org.name}
-                      </span>
-                    )}
+
                   </div>
                 </div>
               </Link>

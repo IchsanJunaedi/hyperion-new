@@ -72,7 +72,7 @@ async function DivisionsPage() {
                 return (
                   <Link
                     key={div.id}
-                    href={`/divisions/${div.slug}`}
+                    href={div.org ? `/divisions/${div.slug}/${div.org.slug}` : `/divisions/${div.slug}`}
                     className="group relative overflow-hidden rounded-lg border border-zinc-800 bg-gradient-to-b from-[#0a1931]/60 to-[#071428]/80 p-8 backdrop-blur-md transition-all duration-500 hover:-translate-y-1.5 hover:border-zinc-700 hover:shadow-2xl hover:shadow-black/60"
                   >
                     {/* Radial background glow (expands on hover) */}
