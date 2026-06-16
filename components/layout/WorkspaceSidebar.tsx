@@ -217,6 +217,12 @@ const WORKSPACE_NAV_GROUPS: NavGroup[] = [
         label: "Sponsor",
         Icon: Handshake,
       },
+      {
+        key: "salary",
+        href: "/salary",
+        label: "Gaji & Bonus",
+        Icon: Banknote,
+      },
     ],
   },
   {
@@ -301,6 +307,11 @@ const WorkspaceSidebar = ({
     user.role === "owner" ||
     user.role === "manager";
 
+  const hasSalaryAccess =
+    user.role === "captain" ||
+    user.role === "coach" ||
+    user.role === "member";
+
   const allGroups: NavGroup[] = (isManager
     ? [getManagerNavGroup(orgSlug), ...WORKSPACE_NAV_GROUPS]
     : WORKSPACE_NAV_GROUPS)
@@ -310,6 +321,7 @@ const WorkspaceSidebar = ({
         if (item.key === "files") return hasFilesAccess;
         if (item.key === "scouting") return hasScoutingAccess;
         if (item.key === "trials") return hasTrialsAccess;
+        if (item.key === "salary") return hasSalaryAccess;
         if (item.key === "development") return !isManager;
         return true;
       }),

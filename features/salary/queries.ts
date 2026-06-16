@@ -1,5 +1,6 @@
 import "server-only";
 
+import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { Database } from "@/types/database";
 import { computePayrollSpend, type MonthlySpend } from "./logic";
@@ -209,5 +210,66 @@ export async function getPayrollSummary(orgIdOrIds: string | string[]): Promise<
     paidThisMonth,
     outstandingThisMonth: Math.max(0, totalMonthlyPayroll - paidThisMonth),
     monthlySpend,
+  };
+}
+
+export interface PersonalSalaryData {
+  contract: PlayerContract | null;
+  payments: SalaryPayment[];
+  bonusDistributions: BonusDistribution[];
+}
+
+export async function getPersonalSalaryData(orgId: string): Promise<PersonalSalaryData> {
+  const supabase = await createClient();
+
+  const { data: contracts, error: cErr } = await supabase
+    .from("player_contracts")
+    .select("id, user_id, organization_id, monthly_salary, bonus_percentage, status, start_date, end_date, notes, created_by, created_at, updated_at")
+    .eq("organization_id", orgId)
+    .eq("status", "active")
+    .limit(1);
+
+  if (cErr) {
+    console.error("getPersonalSalaryData contract:", cErr);
+  }
+
+  const contract = contracts?.[0] ?? null;
+  if (!contract) {
+    return { contract: null, payments: [], bonusDistributions: [] };
+  }
+
+  const [paymentsRes, bonusRes] = await Promise.all([
+    supabase
+      .from("salary_payments")
+      .select("id, contract_id, organization_id, pay_period, amount, status, paid_at, paid_by, notes, created_at")
+      .eq("contract_id", contract.id)
+      .order("pay_period", { ascending: false })
+      .limit(50),
+    supabase
+      .from("tournament_bonus_distributions")
+      .select("id, tournament_id, contract_id, tournament_name, placement, bonus_amount, bonus_percentage, distributed_at")
+      .eq("contract_id", contract.id)
+      .order("distributed_at", { ascending: false })
+      .limit(50),
+  ]);
+
+  if (paymentsRes.error) console.error("getPersonalSalaryData payments:", paymentsRes.error);
+  if (bonusRes.error) console.error("getPersonalSalaryData bonuses:", bonusRes.error);
+
+  const payments = (paymentsRes.data ?? []) as SalaryPayment[];
+  const bonusDistributions = (bonusRes.data ?? []).map((b) => ({
+    id: b.id,
+    tournamentId: b.tournament_id,
+    tournamentName: b.tournament_name,
+    placement: b.placement,
+    bonusAmount: Number(b.bonus_amount),
+    bonusPercentage: Number(b.bonus_percentage),
+    distributedAt: b.distributed_at,
+  }));
+
+  return {
+    contract,
+    payments,
+    bonusDistributions,
   };
 }
