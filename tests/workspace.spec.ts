@@ -4,9 +4,9 @@ test("Workspace Features E2E Flow", async ({ page }) => {
   test.setTimeout(300000);
   const timestamp = Date.now();
   const uniqueEmail = `user-${timestamp}@hyperion.com`;
-  const uniqueUsername = `tester${timestamp}`;
   const uniqueTeamName = `Team ${timestamp}`;
   const uniqueTeamSlug = `team-${timestamp}`;
+  const uniquePhone = `08${Math.floor(1000000000 + Math.random() * 9000000000)}`;
 
   // Helper: set datetime-local input via JS (more reliable than fill)
   const setDatetimeLocal = async (selector: string, dateStr: string) => {
@@ -32,13 +32,12 @@ test("Workspace Features E2E Flow", async ({ page }) => {
   await page.fill("input[id='display_name']", "Workspace Tester");
   await page.fill("input[id='email']", uniqueEmail);
   await page.fill("input[id='password']", "StrongPassword123!");
-  await page.fill("input[id='phone_wa']", "081234567890");
+  await page.fill("input[id='phone_wa']", uniquePhone);
   await page.click("button[type='submit']");
 
   await expect(page).toHaveURL(/\/onboarding\/profile/);
 
   // 2. Profile Setup
-  await page.fill("input[name='username']", uniqueUsername);
   // Use JS to set date input reliably
   await setDatetimeLocal("input[name='date_of_birth']", "2000-01-01");
   await page.waitForTimeout(300);

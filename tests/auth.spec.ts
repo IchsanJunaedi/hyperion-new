@@ -21,12 +21,13 @@ test.describe("Authentication & Route Protection", () => {
 
   test("Registration and Onboarding Gating Redirects", async ({ page }) => {
     const uniqueEmail = `user-${Date.now()}@hyperion.com`;
+    const uniquePhone = `08${Math.floor(1000000000 + Math.random() * 9000000000)}`;
 
     await page.goto("/register");
     await page.fill("input[id='display_name']", "Dynamic Tester");
     await page.fill("input[id='email']", uniqueEmail);
     await page.fill("input[id='password']", "StrongPassword123!");
-    await page.fill("input[id='phone_wa']", "081234567890");
+    await page.fill("input[id='phone_wa']", uniquePhone);
     await page.click("button[type='submit']");
 
     // After successful signup, should redirect to /onboarding/profile because username is not set
@@ -51,23 +52,22 @@ test.describe("Authentication & Route Protection", () => {
   test("Registration, Profile Setup, and Team Onboarding Flow", async ({ page }) => {
     const timestamp = Date.now();
     const uniqueEmail = `user-${timestamp}@hyperion.com`;
-    const uniqueUsername = `tester${timestamp}`;
     const uniqueTeamName = `Team ${timestamp}`;
     const uniqueTeamSlug = `team-${timestamp}`;
+    const uniquePhone = `08${Math.floor(1000000000 + Math.random() * 9000000000)}`;
 
     // 1. Registration
     await page.goto("/register");
     await page.fill("input[id='display_name']", "E2E Tester");
     await page.fill("input[id='email']", uniqueEmail);
     await page.fill("input[id='password']", "StrongPassword123!");
-    await page.fill("input[id='phone_wa']", "081234567890");
+    await page.fill("input[id='phone_wa']", uniquePhone);
     await page.click("button[type='submit']");
 
     // After registration, should redirect to profile onboarding
     await expect(page).toHaveURL(/\/onboarding\/profile/);
 
     // 2. Profile Setup
-    await page.fill("input[name='username']", uniqueUsername);
     await page.fill("input[name='date_of_birth']", "2000-01-01");
     await page.click("button[type='submit']");
 
