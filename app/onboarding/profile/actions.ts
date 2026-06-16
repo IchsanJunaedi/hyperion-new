@@ -27,19 +27,43 @@ export async function saveProfileAction(
   } = await supabase.auth.getUser();
   if (!user) return { error: "Sesi kamu sudah berakhir. Silakan masuk lagi." };
 
-  // Check username uniqueness
-  const dupCheck = await supabase
+  // Check phone_wa uniqueness
+  const phoneCheck = await supabase
     .from("profiles")
     .select("id")
-    .eq("username", parsed.data.username)
+    .eq("phone_wa", parsed.data.phone_wa)
     .neq("id", user.id)
     .maybeSingle();
 
-  if (dupCheck.error) {
-    return { error: dupCheck.error.message };
+  if (phoneCheck.error) {
+    return { error: phoneCheck.error.message };
   }
-  if (dupCheck.data) {
-    return { error: "Nickname sudah dipakai. Coba yang lain." };
+  if (phoneCheck.data) {
+    return { error: "Nomor WhatsApp ini sudah terdaftar. Gunakan nomor lain." };
+  }
+
+  // Check username uniqueness and automatically resolve duplicates
+  let username = parsed.data.username;
+  let isUnique = false;
+  let attempts = 0;
+  while (!isUnique && attempts < 10) {
+    const dupCheck = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("username", username)
+      .neq("id", user.id)
+      .maybeSingle();
+
+    if (dupCheck.error) {
+      return { error: dupCheck.error.message };
+    }
+    if (!dupCheck.data) {
+      isUnique = true;
+    } else {
+      attempts++;
+      const suffix = Math.floor(10 + Math.random() * 90).toString(); // 2-digit random number
+      username = parsed.data.username.slice(0, 24 - suffix.length - 1) + "_" + suffix;
+    }
   }
 
   const cleanGameIds = stripEmpty(parsed.data.game_ids ?? {});
@@ -49,8 +73,8 @@ export async function saveProfileAction(
     .from("profiles")
     .update({
       full_name: parsed.data.full_name,
-      username: parsed.data.username,
-      display_name: parsed.data.username,
+      username: username,
+      display_name: username,
       phone_wa: parsed.data.phone_wa,
       date_of_birth: parsed.data.date_of_birth,
       social_links: cleanSocialLinks,

@@ -78,6 +78,22 @@ export async function signUpAction(
     return { error: rateLimit.message ?? "Terlalu banyak pendaftaran." };
   }
 
+  // Check if phone_wa is already registered
+  const admin = createAdminClient();
+  const { data: phoneCheck, error: phoneErr } = await admin
+    .from("profiles")
+    .select("id")
+    .eq("phone_wa", parsed.data.phone_wa)
+    .limit(1)
+    .maybeSingle();
+
+  if (phoneErr) {
+    console.error("signUpAction phone check error:", phoneErr);
+  }
+  if (phoneCheck) {
+    return { error: "Nomor WhatsApp ini sudah terdaftar. Gunakan nomor lain." };
+  }
+
   // Block public registration of privileged system emails (owner / admin).
   // These accounts must be created via Supabase dashboard or Google OAuth
   // using the actual email inbox — prevents race-condition account squatting

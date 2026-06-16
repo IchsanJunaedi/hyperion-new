@@ -36,6 +36,25 @@ const ProfileSetupForm = ({ lockedValues, defaultValues }: ProfileSetupFormProps
   const [mlbbError, setMlbbError] = useState<string | null>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const [computedUsername, setComputedUsername] = useState(defaultValues.username || "");
+
+  const sanitizeUsername = (val: string) => {
+    const clean = val
+      .toLowerCase()
+      .replace(/[^a-z0-9_]/g, "_")
+      .replace(/_+/g, "_")
+      .replace(/^_+|_+$/g, "");
+    if (clean.length < 3) {
+      return (clean + "_user").slice(0, 24);
+    }
+    return clean.slice(0, 24);
+  };
+
+  useEffect(() => {
+    const base = mlbbNickname || fullName || lockedValues.email.split("@")[0] || "user";
+    setComputedUsername(sanitizeUsername(base));
+  }, [mlbbNickname, fullName, lockedValues.email]);
+
   useEffect(() => {
     setMlbbNickname(null);
     setMlbbError(null);
@@ -81,7 +100,7 @@ const ProfileSetupForm = ({ lockedValues, defaultValues }: ProfileSetupFormProps
           setError(null);
           const input: ProfileSetupInput = {
             full_name: fullName,
-            username: fd.get("username") as string,
+            username: computedUsername,
             phone_wa: phoneWa,
             date_of_birth: fd.get("date_of_birth") as string,
             social_links: {
@@ -191,15 +210,7 @@ const ProfileSetupForm = ({ lockedValues, defaultValues }: ProfileSetupFormProps
           <p className="text-xs text-destructive">{mlbbError}</p>
         )}
 
-        <Field label="Nickname" name="username" required>
-          <input
-            name="username"
-            required
-            defaultValue={defaultValues.username}
-            maxLength={24}
-            className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm focus:border-primary focus:outline-none"
-          />
-        </Field>
+
 
         <Field label="Tanggal Lahir" name="date_of_birth" required>
           <input
