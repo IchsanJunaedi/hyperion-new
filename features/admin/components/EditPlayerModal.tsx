@@ -4,7 +4,6 @@ import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import { X } from "lucide-react";
 import { ImageUpload } from "./ImageUpload";
-import { NumberInput } from "@/components/ui/number-input";
 import { updatePlayerProfileAction } from "@/features/admin/actions";
 
 interface EditPlayerModalProps {
@@ -31,10 +30,6 @@ interface EditPlayerModalProps {
 const EditPlayerModal = ({ member, onClose, onSuccess }: EditPlayerModalProps) => {
   const [displayName, setDisplayName] = useState(member.display_name ?? "");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(member.avatar_url);
-  const [position, setPosition] = useState(member.position ?? "");
-  const [jerseyNumberStr, setJerseyNumberStr] = useState(
-    member.jersey_number != null ? String(member.jersey_number) : ""
-  );
   const [isPublic, setIsPublic] = useState(member.is_public);
   const [isPending, startTransition] = useTransition();
 
@@ -44,19 +39,13 @@ const EditPlayerModal = ({ member, onClose, onSuccess }: EditPlayerModalProps) =
       return;
     }
 
-    const jerseyNumber = jerseyNumberStr !== "" ? parseInt(jerseyNumberStr, 10) : null;
-    if (jerseyNumber !== null && isNaN(jerseyNumber)) {
-      toast.error("Nomor jersey tidak valid");
-      return;
-    }
-
     startTransition(async () => {
       const result = await updatePlayerProfileAction(member.id, member.user_id, {
         display_name: displayName,
         avatar_url: avatarUrl,
         is_public: isPublic,
-        jersey_number: jerseyNumber,
-        position: position,
+        jersey_number: member.jersey_number,
+        position: member.position,
       });
 
       if (!result.ok) {
@@ -67,8 +56,8 @@ const EditPlayerModal = ({ member, onClose, onSuccess }: EditPlayerModalProps) =
           display_name: displayName,
           avatar_url: avatarUrl,
           is_public: isPublic,
-          jersey_number: jerseyNumber,
-          position: position || null,
+          jersey_number: member.jersey_number,
+          position: member.position,
         });
         onClose();
       }
@@ -125,34 +114,7 @@ const EditPlayerModal = ({ member, onClose, onSuccess }: EditPlayerModalProps) =
             />
           </div>
 
-          {/* Jersey Number & Position */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="mb-1 block text-xs font-semibold text-ui-text-2">
-                Nomor Jersey
-              </label>
-              <NumberInput
-                value={jerseyNumberStr}
-                onChange={(e) => setJerseyNumberStr(e.target.value)}
-                placeholder="Jersey #"
-                min={0}
-                max={999}
-                hideSteppers
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-xs font-semibold text-ui-text-2">
-                Posisi / Role Game
-              </label>
-              <input
-                type="text"
-                value={position}
-                onChange={(e) => setPosition(e.target.value)}
-                className="w-full rounded border border-ui-border bg-ui-bg px-3 py-2 text-sm text-ui-text placeholder-ui-text-muted focus:border-[#F5C400]/50 focus:outline-none"
-                placeholder="e.g. Roamer, Jungler"
-              />
-            </div>
-          </div>
+
 
           {/* Public Toggle */}
           <div className="flex items-center justify-between border-t border-ui-border pt-4 mt-2">

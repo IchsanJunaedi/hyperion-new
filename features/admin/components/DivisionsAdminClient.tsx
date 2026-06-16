@@ -3,8 +3,8 @@
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import { Pencil, Check, X } from "lucide-react";
-import { toggleDivisionPublic, updateDivisionPublicInfo } from "@/features/admin/actions";
-import type { DivisionWithMembers, DivisionMember } from "@/features/admin/queries";
+import { toggleDivisionPublic, updateDivisionPublicInfo, createGalleryEntry, deleteGalleryEntry } from "@/features/admin/actions";
+import type { DivisionWithMembers, DivisionMember, DivisionAchievement } from "@/features/admin/queries";
 import { EditPlayerModal } from "./EditPlayerModal";
 
 const ROLE_LABEL: Record<string, string> = {
@@ -36,6 +36,69 @@ const DivisionCard = ({ division }: { division: DivisionWithMembers }) => {
   const [savePending, startSave] = useTransition();
   const [editingPlayer, setEditingPlayer] = useState<DivisionMember | null>(null);
 
+  const [achievements, setAchievements] = useState<DivisionAchievement[]>(division.achievements || []);
+  const [newAch, setNewAch] = useState({ title: "", placementStr: "", date: "" });
+  const [achPending, startAchTransition] = useTransition();
+
+  const handleAddAchievement = () => {
+    if (!newAch.title || !newAch.date) {
+      toast.error("Judul dan Tanggal/Tahun wajib diisi");
+      return;
+    }
+    const placement = newAch.placementStr ? parseInt(newAch.placementStr, 10) : null;
+    const slug = `${newAch.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${Date.now()}`;
+    
+    startAchTransition(async () => {
+      const result = await createGalleryEntry({
+        slug,
+        title: newAch.title,
+        division: division.name,
+        tournament_date: newAch.date,
+        position: placement ? `Juara ${placement}` : "Champion",
+        status: "published",
+        logo_url: null,
+        preview_images: [],
+        description: "",
+        sort_order: 0,
+        organization_id: division.organization_id,
+        division_id: division.id,
+        placement,
+      });
+
+      if (!result.ok) {
+        toast.error(result.message);
+      } else {
+        toast.success("Prestasi berhasil ditambahkan");
+        setAchievements((prev) => [
+          ...prev,
+          {
+            id: slug,
+            title: newAch.title,
+            placement,
+            tournament_date: newAch.date,
+            description: "",
+            organization_id: division.organization_id,
+            division_id: division.id,
+          }
+        ]);
+        setNewAch({ title: "", placementStr: "", date: "" });
+      }
+    });
+  };
+
+  const handleDeleteAchievement = (achId: string) => {
+    if (!confirm("Apakah Anda yakin ingin menghapus prestasi ini?")) return;
+    startAchTransition(async () => {
+      const result = await deleteGalleryEntry(achId);
+      if (!result.ok) {
+        toast.error(result.message);
+      } else {
+        toast.success("Prestasi berhasil dihapus");
+        setAchievements((prev) => prev.filter((a) => a.id !== achId));
+      }
+    });
+  };
+
   const handlePlayerSuccess = (memberId: string, updated: {
     display_name: string;
     avatar_url: string | null;
@@ -58,6 +121,7 @@ const DivisionCard = ({ division }: { division: DivisionWithMembers }) => {
         toast.error(result.message);
       } else {
         toast.success(next ? "Division ditampilkan di public" : "Division disembunyikan dari public");
+        setMembers((prev) => prev.map((m) => ({ ...m, is_public: next })));
       }
     });
   };
@@ -77,8 +141,8 @@ const DivisionCard = ({ division }: { division: DivisionWithMembers }) => {
     });
   };
 
-  const players = division.members.filter((m) => m.role === "captain" || m.role === "member");
-  const coaches = division.members.filter((m) => m.role === "coach");
+  const players = members.filter((m) => m.role === "captain" || m.role === "member");
+  const coaches = members.filter((m) => m.role === "coach");
 
   return (
     <div className="border border-ui-border bg-ui-bg">
@@ -96,7 +160,7 @@ const DivisionCard = ({ division }: { division: DivisionWithMembers }) => {
         <div className="min-w-0 flex-1">
           <p className="font-bold text-ui-text">{division.name}</p>
           <p className="text-xs text-ui-text-muted">
-            {division.game} · {division.members.length} anggota
+            {division.game} · {members.length} anggota
           </p>
         </div>
 
@@ -159,6 +223,90 @@ const DivisionCard = ({ division }: { division: DivisionWithMembers }) => {
               className="w-full rounded border border-ui-border bg-ui-bg px-3 py-2 text-sm text-ui-text placeholder-ui-text-muted focus:border-[#F5C400]/50 focus:outline-none"
             />
           </div>
+
+          {/* Achievements Section */}
+          <div className="border-t border-ui-border pt-3 mt-3">
+            <h4 className="mb-2 text-xs font-bold uppercase tracking-wider text-ui-text">
+              Prestasi Tim
+            </h4>
+            
+            {/* List existing */}
+            {achievements.length > 0 ? (
+              <div className="mb-3 space-y-1.5 max-h-48 overflow-y-auto pr-1">
+                {achievements.map((ach) => (
+                  <div key={ach.id} className="flex items-center justify-between rounded bg-ui-surface p-2 text-xs">
+                    <div>
+                      <span className="font-bold text-white">
+                        {ach.placement ? `#${ach.placement} ` : ""}
+                      </span>
+                      <span className="text-ui-text-dim">{ach.title} ({ach.tournament_date})</span>
+                    </div>
+                    <button
+                      type="button"
+                      disabled={achPending}
+                      onClick={() => handleDeleteAchievement(ach.id)}
+                      className="cursor-pointer text-red-400 hover:text-red-300 disabled:opacity-50 text-[10px] uppercase font-bold px-1 py-0.5 rounded hover:bg-red-500/10"
+                    >
+                      Hapus
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="mb-3 text-xs text-ui-text-muted">Belum ada prestasi tim.</p>
+            )}
+
+            {/* Add New Achievement form */}
+            <div className="rounded border border-ui-border bg-ui-surface/30 p-3 space-y-2">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-[#F5C400]">
+                Tambah Prestasi Baru
+              </p>
+              <div className="grid grid-cols-3 gap-2">
+                <div className="col-span-2">
+                  <input
+                    type="text"
+                    placeholder="Nama Turnamen / Pencapaian (Contoh: Juara 1 - RRQ Mabar)"
+                    value={newAch.title}
+                    onChange={(e) => setNewAch((s) => ({ ...s, title: e.target.value }))}
+                    className="w-full rounded border border-ui-border bg-ui-bg px-2 py-1 text-xs text-ui-text placeholder-ui-text-muted focus:border-[#F5C400]/50 focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <input
+                    type="text"
+                    placeholder="Tahun (e.g. 2025)"
+                    value={newAch.date}
+                    onChange={(e) => setNewAch((s) => ({ ...s, date: e.target.value }))}
+                    className="w-full rounded border border-ui-border bg-ui-bg px-2 py-1 text-xs text-ui-text placeholder-ui-text-muted focus:border-[#F5C400]/50 focus:outline-none"
+                  />
+                </div>
+              </div>
+              <div className="flex gap-2 items-center">
+                <div className="w-1/3">
+                  <input
+                    type="number"
+                    min={1}
+                    max={10}
+                    placeholder="Placement (1, 2, 3)"
+                    value={newAch.placementStr}
+                    onChange={(e) => setNewAch((s) => ({ ...s, placementStr: e.target.value }))}
+                    className="w-full rounded border border-ui-border bg-ui-bg px-2 py-1 text-xs text-ui-text placeholder-ui-text-muted focus:border-[#F5C400]/50 focus:outline-none"
+                  />
+                </div>
+                <div className="w-2/3 text-right">
+                  <button
+                    type="button"
+                    disabled={achPending}
+                    onClick={handleAddAchievement}
+                    className="cursor-pointer rounded bg-[#F5C400]/10 border border-[#F5C400]/30 text-[#F5C400] px-3 py-1 text-xs font-bold transition hover:bg-[#F5C400] hover:text-black disabled:opacity-50"
+                  >
+                    + Tambah Prestasi
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div className="flex gap-2 pt-1">
             <button
               type="button"

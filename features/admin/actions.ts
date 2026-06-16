@@ -34,6 +34,9 @@ export async function createGalleryEntry(data: {
   sort_order: number;
   metric_value?: string | null;
   metric_label?: string | null;
+  organization_id?: string | null;
+  division_id?: string | null;
+  placement?: number | null;
 }): Promise<ActionResult> {
   const auth = await verifyAdminAccess();
   if (!auth.ok) return auth;
@@ -59,6 +62,9 @@ export async function updateGalleryEntry(id: string, data: {
   sort_order?: number;
   metric_value?: string | null;
   metric_label?: string | null;
+  organization_id?: string | null;
+  division_id?: string | null;
+  placement?: number | null;
 }): Promise<ActionResult> {
   const auth = await verifyAdminAccess();
   if (!auth.ok) return auth;
@@ -239,6 +245,13 @@ export async function toggleDivisionPublic(id: string, isPublic: boolean): Promi
   const admin = createAdminClient();
   const { error } = await admin.from("divisions").update({ is_public: isPublic }).eq("id", id);
   if (error) return { ok: false, message: error.message };
+
+  const { error: memberError } = await admin
+    .from("team_members")
+    .update({ is_public: isPublic })
+    .eq("division_id", id);
+  if (memberError) console.error("toggleDivisionPublic members:", memberError);
+
   revalidatePath("/");
   revalidatePath("/admin/divisions");
   return { ok: true };

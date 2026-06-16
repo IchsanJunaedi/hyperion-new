@@ -18,6 +18,16 @@ export type DivisionMember = {
   is_public: boolean;
 };
 
+export type DivisionAchievement = {
+  id: string;
+  title: string;
+  placement: number | null;
+  tournament_date: string;
+  description: string;
+  organization_id: string | null;
+  division_id: string | null;
+};
+
 export type DivisionWithMembers = {
   id: string;
   name: string;
@@ -26,7 +36,9 @@ export type DivisionWithMembers = {
   logo_url: string | null;
   is_active: boolean;
   is_public: boolean;
+  organization_id: string | null;
   members: DivisionMember[];
+  achievements: DivisionAchievement[];
 };
 
 export async function getDivisionsWithMembers(): Promise<DivisionWithMembers[]> {
@@ -34,7 +46,7 @@ export async function getDivisionsWithMembers(): Promise<DivisionWithMembers[]> 
 
   const { data: divisions, error: divErr } = await admin
     .from("divisions")
-    .select("id, name, game, description, logo_url, is_active, is_public")
+    .select("id, name, game, description, logo_url, is_active, is_public, organization_id")
     .order("name")
     .limit(50);
   if (divErr) console.error("getDivisionsWithMembers divisions:", divErr);
@@ -64,6 +76,35 @@ export async function getDivisionsWithMembers(): Promise<DivisionWithMembers[]> 
     profileMap = new Map((profiles ?? []).map((p) => [p.id, p]));
   }
 
+  const orgIds = divisions.map((d) => d.organization_id).filter(Boolean) as string[];
+  const achievementsMap = new Map<string, DivisionAchievement[]>();
+
+  if (orgIds.length > 0) {
+    const { data: achievements, error: achErr } = await admin
+      .from("gallery_entries")
+      .select("id, title, placement, tournament_date, description, organization_id, division_id")
+      .in("organization_id", orgIds)
+      .order("tournament_date", { ascending: false })
+      .limit(100);
+    if (achErr) console.error("getDivisionsWithMembers achievements:", achErr);
+
+    for (const ach of achievements ?? []) {
+      if (ach.organization_id) {
+        const list = achievementsMap.get(ach.organization_id) ?? [];
+        list.push({
+          id: ach.id,
+          title: ach.title,
+          placement: ach.placement,
+          tournament_date: ach.tournament_date,
+          description: ach.description ?? "",
+          organization_id: ach.organization_id,
+          division_id: ach.division_id,
+        });
+        achievementsMap.set(ach.organization_id, list);
+      }
+    }
+  }
+
   return divisions
     .map((div) => {
       const divMembers = (members ?? [])
@@ -81,10 +122,9 @@ export async function getDivisionsWithMembers(): Promise<DivisionWithMembers[]> 
             is_public: m.is_public,
           };
         });
-      return { ...div, members: divMembers };
+      const divAchievements = div.organization_id ? (achievementsMap.get(div.organization_id) ?? []) : [];
+      return { ...div, members: divMembers, achievements: divAchievements };
     })
-    // Only surface divisions that actually have a roster — empty/orphan
-    // divisions (standalone categories, test orgs) stay out of the admin list.
     .filter((div) => div.members.length > 0);
 }
 
