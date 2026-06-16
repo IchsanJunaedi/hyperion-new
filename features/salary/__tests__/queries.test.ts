@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { getPersonalSalaryData } from "../queries";
 import { createClient } from "@/lib/supabase/server";
