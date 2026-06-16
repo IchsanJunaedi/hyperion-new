@@ -44,7 +44,7 @@ export default async function DivisionDetailPage({ params }: Props) {
   // Only orgs whose division row is public should surface on the public site.
   const subQuery = await admin
     .from("divisions")
-    .select("organization_id")
+    .select("id, organization_id")
     .eq("slug", slug)
     .eq("is_public", true)
     .not("organization_id", "is", null)
@@ -52,6 +52,7 @@ export default async function DivisionDetailPage({ params }: Props) {
   if (subQuery.error) console.error("DivisionDetailPage orgs:", subQuery.error);
 
   const orgIds = (subQuery.data ?? []).map((d) => d.organization_id).filter(Boolean) as string[];
+  const divisionIds = (subQuery.data ?? []).map((d) => d.id).filter(Boolean) as string[];
 
   let teams: { id: string; name: string; slug: string; logo_url: string | null; description: string | null }[] = [];
   if (orgIds.length > 0) {
@@ -72,6 +73,7 @@ export default async function DivisionDetailPage({ params }: Props) {
     username: string | null;
     role: string;
     instagram: string | null;
+    orgName: string | null;
   }
 
   let players: PlayerRoster[] = [];
@@ -81,8 +83,9 @@ export default async function DivisionDetailPage({ params }: Props) {
 
     const { data: membersData, error: mErr } = await admin
       .from("team_members")
-      .select("organization_id, role, user_id")
+      .select("organization_id, role, user_id, organizations(name)")
       .in("organization_id", allOrgIds)
+      .in("division_id", divisionIds)
       .eq("is_active", true)
       .eq("is_public", true)
       .in("role", ["captain", "member"])
@@ -105,6 +108,7 @@ export default async function DivisionDetailPage({ params }: Props) {
     players = (membersData ?? []).map((m) => {
       const p = profileMap.get(m.user_id);
       const socials = (p?.social_links ?? {}) as { instagram?: string; tiktok?: string };
+      const org = m.organizations as unknown as { name: string } | null;
       return {
         id: m.user_id,
         display_name: p?.display_name ?? p?.username ?? "Player",
@@ -112,6 +116,7 @@ export default async function DivisionDetailPage({ params }: Props) {
         username: p?.username ?? null,
         role: m.role,
         instagram: socials.instagram?.trim() || null,
+        orgName: org?.name ?? null,
       };
     });
   }
@@ -217,7 +222,7 @@ export default async function DivisionDetailPage({ params }: Props) {
                         {player.display_name}
                       </h4>
                       <p className="font-orbitron text-[8px] font-bold uppercase tracking-widest text-white/45 mb-2">
-                        {player.role.toUpperCase()}
+                        {player.role.toUpperCase()} {player.orgName && `• ${player.orgName.toUpperCase()}`}
                       </p>
 
                       {/* Instagram — button avoids nested <a> inside <Link> */}

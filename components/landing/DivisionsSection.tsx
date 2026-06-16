@@ -63,16 +63,27 @@ export async function DivisionsSection({ description }: { description?: string }
 
   const { data: divisions, error } = await admin
     .from("divisions")
-    .select("id, name, slug, game, description, logo_url")
+    .select("id, name, slug, game, description, logo_url, organizations(name, slug)")
     .eq("is_public", true)
     .eq("is_active", true)
     .order("name")
-    .limit(20);
+    .limit(50);
 
   if (error) console.error("DivisionsSection dynamic fetch:", error);
 
   const items = divisions ?? [];
-  if (items.length === 0) return null;
+  const seen = new Set<string>();
+  const uniqueItems = [];
+  for (const item of items) {
+    if (!item.slug) continue;
+    if (!seen.has(item.slug)) {
+      seen.add(item.slug);
+      const org = item.organizations as unknown as { name: string; slug: string } | null;
+      uniqueItems.push({ ...item, org });
+    }
+  }
+
+  if (uniqueItems.length === 0) return null;
 
   return (
     <section className="bg-transparent px-5 py-24 sm:px-8 lg:px-10 border-t border-white/5">
@@ -104,9 +115,8 @@ export async function DivisionsSection({ description }: { description?: string }
           </div>
         </div>
 
-        {/* Division Cards Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {items.map((div) => {
+          {uniqueItems.map((div) => {
             const logo = getGameLogo(div.game, div.logo_url, div.name);
             const image = getGameBackground(div.game);
 
@@ -135,14 +145,31 @@ export async function DivisionsSection({ description }: { description?: string }
                     <h3 className="font-bebas text-2xl font-black uppercase tracking-wide text-white leading-none mt-1">
                       {div.name}
                     </h3>
+                    {div.org && (
+                      <p className="mt-1 font-orbitron text-[8px] font-bold uppercase tracking-wider text-white/50">
+                        {div.org.name}
+                      </p>
+                    )}
                   </div>
                 </div>
 
                 {/* Right Side: Logo vertical stripe (covers full card initially, shrinks to stripe on hover) */}
-                <div className="absolute inset-y-0 right-0 w-full group-hover:w-[24%] transition-all duration-500 ease-out flex flex-col items-center justify-center bg-[#071428] group-hover:bg-[#0b1b33] border-l border-transparent group-hover:border-white/10 z-10">
+                <div className="absolute inset-y-0 right-0 w-full group-hover:w-[24%] transition-all duration-500 ease-out flex flex-col items-center justify-center bg-[#071428] group-hover:bg-[#0b1b33] border-l border-transparent group-hover:border-white/10 z-10 px-2 text-center">
                   <span className="text-white/80 group-hover:text-[#F5C400] transition-colors duration-500 scale-100 group-hover:scale-90">
                     {logo}
                   </span>
+                  
+                  {/* Division name and Team name when not hovered (fades out on hover) */}
+                  <div className="mt-3 group-hover:opacity-0 transition-opacity duration-300 pointer-events-none">
+                    <span className="block font-bebas text-lg uppercase tracking-wider text-white leading-none">
+                      {div.name}
+                    </span>
+                    {div.org && (
+                      <span className="block mt-1 font-orbitron text-[8px] font-bold uppercase tracking-widest text-[#F5C400]">
+                        {div.org.name}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </Link>
             );

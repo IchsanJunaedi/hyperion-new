@@ -24,18 +24,15 @@ async function DivisionsPage() {
 
   const { data: divisions, error } = await admin
     .from("divisions")
-    .select("id, name, slug, game, description, is_active")
+    .select("id, name, slug, game, description, is_active, organizations(name, slug)")
     .eq("is_public", true)
     .order("name")
     .limit(50);
   if (error) console.error("DivisionsPage:", error);
 
-  // Dedupe by slug — multiple orgs can share the same game/slug.
-  const seen = new Set<string>();
-  const items = (divisions ?? []).filter((d) => {
-    if (seen.has(d.slug)) return false;
-    seen.add(d.slug);
-    return true;
+  const items = (divisions ?? []).map((d) => {
+    const org = d.organizations as unknown as { name: string; slug: string } | null;
+    return { ...d, org };
   });
 
   return (
@@ -131,6 +128,13 @@ async function DivisionsPage() {
                         <p className="mt-1 font-orbitron text-[9px] font-bold uppercase tracking-[0.20em] text-white/40 group-hover:text-white/60 transition-colors duration-300">
                           {div.name}
                         </p>
+
+                        {/* Team Name Badge */}
+                        {div.org && (
+                          <div className="mt-2 inline-block rounded bg-white/5 border border-white/10 px-2 py-0.5 text-[8px] font-bold tracking-widest text-[#F5C400] uppercase font-orbitron">
+                            {div.org.name}
+                          </div>
+                        )}
 
                         {/* Description */}
                         <p className="mt-4 text-sm leading-relaxed text-white/65 font-medium line-clamp-3">
