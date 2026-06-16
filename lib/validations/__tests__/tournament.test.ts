@@ -112,6 +112,27 @@ describe("createTournamentSchema", () => {
     });
     expect(result.success).toBe(false);
   });
+
+  it("accepts valid location_type and location", () => {
+    const result = createTournamentSchema.safeParse({
+      ...baseValid,
+      location_type: "offline",
+      location: "Jakarta, Indonesia",
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.location_type).toBe("offline");
+      expect(result.data.location).toBe("Jakarta, Indonesia");
+    }
+  });
+
+  it("rejects invalid location_type enum value", () => {
+    const result = createTournamentSchema.safeParse({
+      ...baseValid,
+      location_type: "hybrid",
+    });
+    expect(result.success).toBe(false);
+  });
 });
 
 describe("updateTournamentSchema", () => {
