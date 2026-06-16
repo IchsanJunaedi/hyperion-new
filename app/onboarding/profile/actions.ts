@@ -66,6 +66,17 @@ export async function saveProfileAction(
     }
   }
 
+  // Fetch existing profile to preserve display_name casing/spaces
+  const { data: existingProfile } = await supabase
+    .from("profiles")
+    .select("display_name")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  const finalDisplayName = existingProfile?.display_name && !existingProfile.display_name.includes("@")
+    ? existingProfile.display_name
+    : parsed.data.full_name;
+
   const cleanGameIds = stripEmpty(parsed.data.game_ids ?? {});
   const cleanSocialLinks = stripEmpty(parsed.data.social_links ?? {});
 
@@ -74,7 +85,7 @@ export async function saveProfileAction(
     .update({
       full_name: parsed.data.full_name,
       username: username,
-      display_name: username,
+      display_name: finalDisplayName,
       phone_wa: parsed.data.phone_wa,
       date_of_birth: parsed.data.date_of_birth,
       social_links: cleanSocialLinks,

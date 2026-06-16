@@ -6,6 +6,7 @@ import { useState, useTransition } from "react";
 import { useNotify } from "@/features/dashboard/components/NotifyModal";
 import { createTournamentAction, updateTournamentAction } from "@/features/tournaments/actions";
 import type { Tournament } from "@/features/tournaments/queries";
+import { CustomSelect } from "@/features/dashboard/components/CustomSelect";
 
 interface TournamentFormProps {
   orgSlug: string;
@@ -51,6 +52,11 @@ const TournamentForm = ({ orgSlug, divisionId, tournament, onSuccess }: Tourname
   );
   const [deadlineError, setDeadlineError] = useState<string | null>(null);
 
+  const [locationType, setLocationType] = useState<"online" | "offline" | "">(
+    (tournament?.location_type as "online" | "offline" | undefined) ?? ""
+  );
+  const [location, setLocation] = useState(tournament?.location ?? "");
+
   // Max datetime-local value = start_date at 23:59 (user can only pick up to a moment before start_date)
   const deadlineMax = startDate ? `${startDate}T23:58` : undefined;
 
@@ -85,6 +91,8 @@ const TournamentForm = ({ orgSlug, divisionId, tournament, onSuccess }: Tourname
       registration_url: registrationUrl || undefined,
       notes: notes || undefined,
       registration_deadline: registrationDeadline || undefined,
+      location_type: locationType || undefined,
+      location: location || undefined,
     };
 
     startTransition(async () => {
@@ -202,6 +210,31 @@ const TournamentForm = ({ orgSlug, divisionId, tournament, onSuccess }: Tourname
           className="h-9 w-full rounded-md border border-ui-border bg-ui-surface px-3 text-sm text-ui-text focus:border-yellow-400/50 focus:outline-none"
         />
       </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div>
+          <label className="text-xs text-ui-text-2 mb-1.5 block">Tipe Lokasi</label>
+          <CustomSelect
+            value={locationType}
+            onChange={(val) => setLocationType(val as "online" | "offline" | "")}
+            options={[
+              { value: "", label: "Pilih tipe lokasi..." },
+              { value: "online", label: "Online" },
+              { value: "offline", label: "Offline" },
+            ]}
+          />
+        </div>
+        <div>
+          <label className="text-xs text-ui-text-2 mb-1 block">Detail Lokasi</label>
+          <input
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            className="h-9 w-full rounded-md border border-ui-border bg-ui-surface px-3 text-sm text-ui-text focus:border-yellow-400/50 focus:outline-none"
+          />
+        </div>
+      </div>
+
+      {/* Stages timeline and WA blast removed from new tournament form */}
 
       <div>
         <label className="text-xs text-ui-text-2 mb-1 block">Catatan</label>

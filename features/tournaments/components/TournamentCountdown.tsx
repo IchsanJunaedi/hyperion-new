@@ -117,11 +117,11 @@ const TournamentCountdown = ({
 
         <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-ui-text">
           <span className="inline-flex items-center gap-1.5">
-            <Calendar className="h-3.5 w-3.5 text-orange-400/70" />
+            <Calendar className="h-3.5 w-3.5 text-white" />
             Tutup: {formattedReg}
           </span>
           <span className="inline-flex items-center gap-1.5">
-            <Calendar className="h-3.5 w-3.5 text-ui-text-muted" />
+            <Calendar className="h-3.5 w-3.5 text-white" />
             Mulai: {formattedMatch}
           </span>
           {prizePool && (
@@ -174,7 +174,7 @@ const TournamentCountdown = ({
 
       <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-ui-text">
         <span className="inline-flex items-center gap-1.5">
-          <Calendar className="h-3.5 w-3.5 text-ui-text-2" />
+          <Calendar className="h-3.5 w-3.5 text-white" />
           {formattedMatch}
         </span>
         {prizePool && (

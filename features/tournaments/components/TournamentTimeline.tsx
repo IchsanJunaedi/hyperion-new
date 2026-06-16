@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle2, Circle, Loader2, Pencil, Plus, Swords, Trash2, X } from "lucide-react";
+import { CheckCircle2, Circle, Loader2, Pencil, Plus, Swords, Trash2, X, Send } from "lucide-react";
 import { useState, useTransition } from "react";
 
 import { NumberInput } from "@/components/ui/number-input";
@@ -11,6 +11,7 @@ import {
   addTournamentMatchAction,
   updateTournamentMatchAction,
   deleteTournamentMatchAction,
+  blastTournamentTimelineAction,
 } from "@/features/tournaments/actions";
 import type { TournamentStageWithMatches, TournamentMatch } from "@/features/tournaments/queries";
 
@@ -23,20 +24,53 @@ interface TournamentTimelineProps {
 
 const TournamentTimeline = ({ stages, tournamentId, orgSlug, canManage }: TournamentTimelineProps) => {
   const [showForm, setShowForm] = useState(false);
+  const { success, error } = useNotify();
+  const [isBlasting, startBlastTransition] = useTransition();
+
+  function handleBlastWA() {
+    startBlastTransition(async () => {
+      const res = await blastTournamentTimelineAction(orgSlug, tournamentId);
+      if (res.ok) {
+        success("Timeline turnamen berhasil di-blast ke WhatsApp member!");
+      } else {
+        error(res.message);
+      }
+    });
+  }
+
+  const sortedStages = [...stages].sort((a, b) => {
+    return new Date(a.scheduled_at).getTime() - new Date(b.scheduled_at).getTime();
+  });
 
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold text-ui-text">Timeline Tahapan</h3>
         {canManage && (
-          <button
-            type="button"
-            onClick={() => setShowForm((v) => !v)}
-            className="inline-flex items-center gap-1 text-xs text-ui-text-2 hover:text-ui-text cursor-pointer"
-          >
-            <Plus className="h-3 w-3" />
-            Tambah tahap
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              disabled={isBlasting}
+              onClick={handleBlastWA}
+              className="inline-flex items-center gap-1 text-xs text-yellow-400 hover:text-yellow-300 disabled:opacity-50 cursor-pointer"
+              title="Blast timeline stages ke WhatsApp member"
+            >
+              {isBlasting ? (
+                <Loader2 className="h-3 w-3 animate-spin" />
+              ) : (
+                <Send className="h-3 w-3" />
+              )}
+              Blast WA
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowForm((v) => !v)}
+              className="inline-flex items-center gap-1 text-xs text-ui-text-2 hover:text-ui-text cursor-pointer"
+            >
+              <Plus className="h-3 w-3" />
+              Tambah tahap
+            </button>
+          </div>
         )}
       </div>
 
@@ -48,17 +82,18 @@ const TournamentTimeline = ({ stages, tournamentId, orgSlug, canManage }: Tourna
         />
       )}
 
-      {stages.length === 0 ? (
+      {sortedStages.length === 0 ? (
         <p className="text-xs text-ui-text-muted">Belum ada tahapan.</p>
       ) : (
-        <div className="relative ml-3 border-l border-ui-border pl-4 space-y-3">
-          {stages.map((stage) => (
+        <div className="relative ml-3 pl-4 space-y-3">
+          {sortedStages.map((stage, i) => (
             <StageItem
               key={stage.id}
               stage={stage}
               orgSlug={orgSlug}
               tournamentId={tournamentId}
               canManage={canManage}
+              isLast={i === sortedStages.length - 1}
             />
           ))}
         </div>
@@ -73,11 +108,13 @@ function StageItem({
   orgSlug,
   tournamentId,
   canManage,
+  isLast,
 }: {
   stage: TournamentStageWithMatches;
   orgSlug: string;
   tournamentId: string;
   canManage: boolean;
+  isLast: boolean;
 }) {
   const [pending, startTransition] = useTransition();
   const [showMatchForm, setShowMatchForm] = useState(false);
@@ -105,8 +142,11 @@ function StageItem({
 
   return (
     <div className="relative space-y-2">
+      {!isLast && (
+        <div className="absolute left-[-16px] top-[15px] bottom-[-17px] w-[1px] bg-ui-border" />
+      )}
       <div className="flex items-start gap-3">
-        <div className="absolute -left-[21px] top-0.5">
+        <div className="absolute -left-[24px] top-0.5">
           {stage.is_completed ? (
             <CheckCircle2 className="h-4 w-4 text-green-400" />
           ) : (

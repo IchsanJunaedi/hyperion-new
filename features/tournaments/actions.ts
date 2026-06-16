@@ -44,7 +44,7 @@ export async function createTournamentAction(
   const admin = createAdminClient();
   const { data: org } = await admin
     .from("organizations")
-    .select("id")
+    .select("id, name")
     .eq("slug", orgSlug)
     .maybeSingle();
   if (!org) return { ok: false, message: "Organisasi tidak ditemukan" };
@@ -79,6 +79,8 @@ export async function createTournamentAction(
       notes: parsed.data.notes,
       start_time: parsed.data.start_time ?? null,
       registration_deadline: parsed.data.registration_deadline ?? null,
+      location_type: parsed.data.location_type ?? null,
+      location: parsed.data.location ?? null,
       status: "upcoming",
     })
     .select("id")
@@ -98,8 +100,95 @@ export async function createTournamentAction(
     entityId: tournament.id,
   });
 
+  // Fan-out WA blast if requested
+  if (parsed.data.send_wa_blast) {
+    await fanOutTournamentNotifications(
+      supabase,
+      {
+        id: tournament.id,
+        name: parsed.data.name,
+        start_date: parsed.data.start_date,
+        start_time: parsed.data.start_time ?? null,
+        location_type: parsed.data.location_type ?? null,
+        location: parsed.data.location ?? null,
+        organization_id: org.id,
+      },
+      org.name,
+      parsed.data.division_id,
+    );
+  }
+
   revalidatePath(`/${orgSlug}/tournaments`);
   return { ok: true, id: tournament.id };
+}
+
+async function fanOutTournamentNotifications(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  tournament: {
+    id: string;
+    name: string;
+    start_date: string;
+    start_time: string | null;
+    location_type: string | null;
+    location: string | null;
+    organization_id: string;
+  },
+  orgName: string,
+  divisionId: string,
+) {
+  let membersQuery = supabase
+    .from("team_members")
+    .select("user_id")
+    .eq("organization_id", tournament.organization_id)
+    .eq("is_active", true)
+    .limit(500);
+
+  if (divisionId) {
+    membersQuery = membersQuery.eq("division_id", divisionId);
+  }
+
+  const { data: members } = await membersQuery;
+  if (!members || members.length === 0) return;
+
+  const userIds = members.map((m) => m.user_id);
+  const { data: profiles } = await supabase
+    .from("profiles")
+    .select("id, phone_wa")
+    .in("id", userIds);
+  const phoneMap = new Map(
+    (profiles ?? []).map((p) => [p.id, p.phone_wa]),
+  );
+
+  const title = `Turnamen Baru: ${tournament.name}`;
+  const startStr = tournament.start_time
+    ? `${tournament.start_date} pukul ${tournament.start_time}`
+    : tournament.start_date;
+  const locationStr = tournament.location_type
+    ? `${tournament.location_type === "online" ? "Online" : "Offline"}${tournament.location ? ` - ${tournament.location}` : ""}`
+    : "—";
+
+  const waMessage = [
+    `[${orgName}] Turnamen Baru`,
+    `🏆 Turnamen: ${tournament.name}`,
+    `📅 Mulai: ${startStr}`,
+    `📍 Lokasi: ${locationStr}`,
+    "",
+    "Persiapkan tim Anda dan buka aplikasi untuk info selengkapnya.",
+  ].join("\n");
+
+  const rows = members.map((m) => ({
+    organization_id: tournament.organization_id,
+    user_id: m.user_id,
+    type: "system" as const,
+    title,
+    body: `Turnamen Baru: ${tournament.name}. Mulai ${startStr}. Lokasi: ${locationStr}`,
+    ref_id: tournament.id,
+    ref_type: "tournament",
+    wa_number: phoneMap.get(m.user_id) ?? null,
+    wa_message: phoneMap.get(m.user_id) ? waMessage : null,
+  }));
+
+  await supabase.from("notifications").insert(rows);
 }
 
 export async function updateTournamentAction(
@@ -136,6 +225,8 @@ export async function updateTournamentAction(
       notes: parsed.data.notes,
       start_time: parsed.data.start_time ?? null,
       registration_deadline: parsed.data.registration_deadline ?? null,
+      location_type: parsed.data.location_type ?? null,
+      location: parsed.data.location ?? null,
       h1_reminder_sent_at: null,
       day_reminder_sent_at: null,
     })
@@ -905,5 +996,123 @@ async function fanOutWinNotification(
       console.error("[WA Blast] Win notification error:", err),
     );
   }
+}
+
+export async function blastTournamentTimelineAction(
+  orgSlug: string,
+  tournamentId: string,
+): Promise<ActionError | { ok: true }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, message: "Anda harus login" };
+
+  const admin = createAdminClient();
+  const { data: org } = await admin
+    .from("organizations")
+    .select("id, name")
+    .eq("slug", orgSlug)
+    .maybeSingle();
+  if (!org) return { ok: false, message: "Organisasi tidak ditemukan" };
+
+  const { data: tournament, error: tourError } = await admin
+    .from("tournaments")
+    .select("id, name, division_id")
+    .eq("id", tournamentId)
+    .single();
+
+  if (tourError || !tournament) {
+    return { ok: false, message: "Turnamen tidak ditemukan" };
+  }
+
+  // Fetch stages
+  const { data: stages } = await admin
+    .from("tournament_stages")
+    .select("stage_name, scheduled_at, is_completed")
+    .eq("tournament_id", tournamentId)
+    .order("scheduled_at", { ascending: true })
+    .limit(50);
+
+  // Fetch team members
+  const { data: members } = await admin
+    .from("team_members")
+    .select("user_id")
+    .eq("organization_id", org.id)
+    .eq("division_id", tournament.division_id)
+    .eq("is_active", true)
+    .limit(500);
+
+  if (!members || members.length === 0) {
+    return { ok: false, message: "Tidak ada member aktif di divisi ini" };
+  }
+
+  const userIds = members.map((m) => m.user_id);
+  const { data: profiles } = await admin
+    .from("profiles")
+    .select("id, phone_wa")
+    .in("id", userIds);
+  const phoneMap = new Map(
+    (profiles ?? []).map((p) => [p.id, p.phone_wa]),
+  );
+
+  const title = `Timeline: ${tournament.name}`;
+  const stagesList = (stages ?? [])
+    .map((s) => {
+      const date = new Date(s.scheduled_at).toLocaleDateString("id-ID", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        timeZone: "Asia/Jakarta",
+      });
+      return `- ${s.stage_name}: ${date}${s.is_completed ? " (Selesai)" : ""}`;
+    })
+    .join("\n");
+
+  const waMessage = [
+    `[${org.name}] Timeline Turnamen: ${tournament.name}`,
+    "",
+    stagesList || "Belum ada tahapan.",
+    "",
+    "Persiapkan tim Anda dan cek info selengkapnya di aplikasi.",
+  ].join("\n");
+
+  const rows = members.map((m) => ({
+    organization_id: org.id,
+    user_id: m.user_id,
+    type: "system" as const,
+    title,
+    body: `Timeline Turnamen: ${tournament.name}`,
+    ref_id: tournament.id,
+    ref_type: "tournament",
+    wa_number: phoneMap.get(m.user_id) ?? null,
+    wa_message: phoneMap.get(m.user_id) ? waMessage : null,
+  }));
+
+  const { error: notifError } = await admin.from("notifications").insert(rows);
+  if (notifError) return { ok: false, message: notifError.message };
+
+  await logAudit({
+    actorId: user.id,
+    action: "tournament.timeline_blast",
+    entityType: "tournament",
+    entityId: tournamentId,
+  });
+
+  const recipients = rows
+    .filter((r): r is typeof r & { wa_number: string; wa_message: string } =>
+      Boolean(r.wa_number && r.wa_message),
+    )
+    .map((r) => ({ phone: r.wa_number, message: r.wa_message }));
+
+  if (recipients.length > 0) {
+    blastWaMessage(recipients).catch((err) =>
+      console.error("[WA Blast] Timeline blast error:", err),
+    );
+  }
+
+  return { ok: true };
 }
 

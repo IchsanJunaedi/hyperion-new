@@ -20,11 +20,15 @@ function stageResult(stage: TournamentStageWithMatches): "win" | "loss" | "draw"
 const TournamentJourney = ({ stages, tournamentName }: TournamentJourneyProps) => {
   if (stages.length === 0) return null;
 
-  const totalWins = stages.reduce((sum, s) => sum + s.matches.filter((m) => m.is_win === true).length, 0);
-  const totalLosses = stages.reduce((sum, s) => sum + s.matches.filter((m) => m.is_win === false).length, 0);
-  const completedStages = stages.filter((s) => s.is_completed).length;
+  const sortedStages = [...stages].sort((a, b) => {
+    return new Date(a.scheduled_at).getTime() - new Date(b.scheduled_at).getTime();
+  });
 
-  const lastEliminated = stages.findLast((s) => {
+  const totalWins = sortedStages.reduce((sum, s) => sum + s.matches.filter((m) => m.is_win === true).length, 0);
+  const totalLosses = sortedStages.reduce((sum, s) => sum + s.matches.filter((m) => m.is_win === false).length, 0);
+  const completedStages = sortedStages.filter((s) => s.is_completed).length;
+
+  const lastEliminated = sortedStages.findLast((s) => {
     const res = stageResult(s);
     return res === "loss" && s.is_completed;
   });
@@ -35,7 +39,7 @@ const TournamentJourney = ({ stages, tournamentName }: TournamentJourneyProps) =
       <div className="flex flex-wrap items-center gap-2 text-xs">
         {completedStages > 0 && (
           <span className="rounded-full bg-ui-elevated px-2.5 py-1 text-ui-text-2">
-            {completedStages}/{stages.length} tahap selesai
+            {completedStages}/{sortedStages.length} tahap selesai
           </span>
         )}
         {(totalWins + totalLosses) > 0 && (
@@ -57,7 +61,7 @@ const TournamentJourney = ({ stages, tournamentName }: TournamentJourneyProps) =
 
       {/* Journey cards */}
       <div className="flex flex-wrap items-center gap-1">
-        {stages.map((stage, i) => {
+        {sortedStages.map((stage, i) => {
           const result = stageResult(stage);
           const wins = stage.matches.filter((m) => m.is_win === true).length;
           const losses = stage.matches.filter((m) => m.is_win === false).length;
@@ -102,7 +106,7 @@ const TournamentJourney = ({ stages, tournamentName }: TournamentJourneyProps) =
               </div>
 
               {/* Arrow connector */}
-              {i < stages.length - 1 && (
+              {i < sortedStages.length - 1 && (
                 <span className="text-[10px] text-ui-text-muted">→</span>
               )}
             </div>

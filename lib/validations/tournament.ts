@@ -13,6 +13,9 @@ export const createTournamentSchema = z
     notes: z.string().trim().max(2000).optional().transform((v) => (v && v.length > 0 ? v : null)),
     start_time: z.string().regex(/^\d{2}:\d{2}$/, "Format jam tidak valid").optional().transform((v) => (v && v.length > 0 ? v : null)),
     registration_deadline: z.string().min(1, "Batas pendaftaran wajib diisi").transform((v) => new Date(v).toISOString()),
+    location_type: z.enum(["online", "offline"]).optional().nullable(),
+    location: z.string().trim().max(500).optional().nullable().transform((v) => (v && v.length > 0 ? v : null)),
+    send_wa_blast: z.coerce.boolean().default(false),
   })
   .refine(
     (data) => new Date(data.registration_deadline) < new Date(data.start_date),

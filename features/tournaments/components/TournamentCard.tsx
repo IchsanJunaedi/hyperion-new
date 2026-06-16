@@ -76,7 +76,7 @@ const TournamentCard = ({ tournament, orgSlug, placement }: TournamentCardProps)
 
       <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-ui-text-2">
         <span className="inline-flex items-center gap-1">
-          <Calendar className="h-3 w-3" />
+          <Calendar className="h-3 w-3 text-white" />
           {startDate}
         </span>
         {tournament.prize_pool && (

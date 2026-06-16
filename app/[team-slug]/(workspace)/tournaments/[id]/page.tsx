@@ -144,7 +144,7 @@ export default async function TournamentDetailPage({ params }: TournamentDetailP
         {isRegistrationExpired ? (
           <div className="mt-3 rounded-xl border border-red-500/20 bg-red-500/[0.04] p-5">
             <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-red-400">
-              <Calendar className="h-3.5 w-3.5" />
+              <Calendar className="h-3.5 w-3.5 text-white" />
               Pendaftaran Ditutup
             </div>
             <h3 className="mt-3 text-xl font-bold text-ui-text sm:text-2xl">
@@ -177,7 +177,7 @@ export default async function TournamentDetailPage({ params }: TournamentDetailP
 
         <dl className="grid gap-1 text-sm text-ui-text sm:grid-cols-2">
           <div className="inline-flex items-center gap-2">
-            <Calendar className="h-3.5 w-3.5 text-ui-text-2" />
+            <Calendar className="h-3.5 w-3.5 text-white" />
             {scheduled}
             {detail.end_date && ` — ${new Date(detail.end_date).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}`}
           </div>
