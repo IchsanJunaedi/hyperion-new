@@ -4,6 +4,7 @@ import { ChevronDown } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 
 interface ManagedTeam {
   id: string;
@@ -18,12 +19,34 @@ interface TeamSwitcherProps {
 }
 
 const TeamSwitcher = ({ teams, currentSlug }: TeamSwitcherProps) => {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
   if (teams.length <= 1) return null;
 
   const current: ManagedTeam =
     teams.find((t) => t.slug === currentSlug) ?? teams[0]!;
+
+  const isManage = pathname.startsWith("/manage");
+
+  const getSwitchHref = (teamSlug: string) => {
+    const segments = pathname.split("/");
+    if (isManage) {
+      if (segments.length > 2) {
+        segments[2] = teamSlug;
+      } else {
+        return `/manage/${teamSlug}`;
+      }
+      return segments.join("/");
+    } else {
+      if (segments.length > 1) {
+        segments[1] = teamSlug;
+      } else {
+        return `/${teamSlug}`;
+      }
+      return segments.join("/");
+    }
+  };
 
   return (
     <div className="relative px-3 pt-3">
@@ -59,7 +82,7 @@ const TeamSwitcher = ({ teams, currentSlug }: TeamSwitcherProps) => {
           {teams.map((team) => (
             <li key={team.id}>
               <Link
-                href={`/manage/${team.slug}`}
+                href={getSwitchHref(team.slug)}
                 onClick={() => setOpen(false)}
                 className={`flex items-center gap-2 rounded px-3 py-1.5 transition hover:bg-ui-hover ${
                   team.slug === currentSlug
