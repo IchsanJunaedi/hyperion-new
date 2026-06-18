@@ -36,18 +36,24 @@ const ProfileSetupForm = ({ lockedValues, defaultValues }: ProfileSetupFormProps
   const [mlbbError, setMlbbError] = useState<string | null>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const [usernameInput, setUsernameInput] = useState(defaultValues.username || "");
+  const [userTouched, setUserTouched] = useState(false);
+
   const [computedUsername, setComputedUsername] = useState(defaultValues.username || "");
 
+  useEffect(() => {
+    if (!userTouched && computedUsername) {
+      setUsernameInput(computedUsername);
+    }
+  }, [computedUsername, userTouched]);
+
   const sanitizeUsername = (val: string) => {
-    const clean = val
+    return val
       .toLowerCase()
       .replace(/[^a-z0-9_]/g, "_")
       .replace(/_+/g, "_")
-      .replace(/^_+|_+$/g, "");
-    if (clean.length < 3) {
-      return (clean + "_user").slice(0, 24);
-    }
-    return clean.slice(0, 24);
+      .replace(/^_+|_+$/g, "")
+      .slice(0, 24);
   };
 
   useEffect(() => {
@@ -100,7 +106,7 @@ const ProfileSetupForm = ({ lockedValues, defaultValues }: ProfileSetupFormProps
           setError(null);
           const input: ProfileSetupInput = {
             full_name: fullName,
-            username: computedUsername,
+            username: usernameInput,
             phone_wa: phoneWa,
             date_of_birth: fd.get("date_of_birth") as string,
             social_links: {
@@ -210,7 +216,19 @@ const ProfileSetupForm = ({ lockedValues, defaultValues }: ProfileSetupFormProps
           <p className="text-xs text-destructive">{mlbbError}</p>
         )}
 
-
+        <Field label="Nickname" name="username" required>
+          <input
+            name="username"
+            required
+            value={usernameInput}
+            onChange={(e) => {
+              if (!userTouched) setUserTouched(true);
+              setUsernameInput(sanitizeUsername(e.target.value));
+            }}
+            maxLength={24}
+            className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm focus:border-primary focus:outline-none"
+          />
+        </Field>
 
         <Field label="Tanggal Lahir" name="date_of_birth" required>
           <input
