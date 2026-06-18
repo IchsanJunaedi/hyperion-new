@@ -57,7 +57,7 @@ const ManageTeamPage = async ({ params }: Props) => {
   const { data: profiles } = memberUserIds.length > 0
     ? await admin
         .from("profiles")
-        .select("id, full_name, username, display_name, phone_wa, date_of_birth, bio, social_links, game_ids")
+        .select("id, full_name, username, display_name, email, phone_wa, date_of_birth, bio, social_links, game_ids")
         .in("id", memberUserIds)
     : { data: [] };
 
@@ -135,7 +135,7 @@ const ManageTeamPage = async ({ params }: Props) => {
             userId: m.user_id,
             fullName: p?.full_name ?? p?.display_name ?? null,
             username: p?.username ?? null,
-            email: null,
+            email: p?.email ?? null,
             phoneWa: p?.phone_wa ?? null,
             dateOfBirth: (p as { date_of_birth?: string } | undefined)?.date_of_birth ?? null,
             bio: (p as { bio?: string } | undefined)?.bio ?? null,
