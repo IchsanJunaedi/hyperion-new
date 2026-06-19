@@ -15,3 +15,10 @@ jobs:
             "https://pqzdukrlmbwjjgjyoqva.supabase.co/rest/v1/?limit=1" \
             -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}")
           echo "supabase responded: $code"
+
+      - name: Ping Railway app health
+        continue-on-error: true
+        run: |
+          code=$(curl -s -o /dev/null -w "%{http_code}" \
+            "https://hyperion-new-production.up.railway.app/api/health")
+          echo "railway app responded: $code"
