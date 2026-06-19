@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { ChevronDown, X } from "lucide-react";
-import type { EventPriority, EventStatus } from "../types";
+
 
 interface PropertyFieldProps {
   label: string;
@@ -23,7 +23,6 @@ interface PropertyFieldProps {
   options?: Array<{ value: string; label: string }>;
   placeholder?: string;
   editable?: boolean;
-  isEditing?: boolean;
   onEdit?: (isEditing: boolean) => void;
 }
 
@@ -51,7 +50,6 @@ const PropertyField = ({
   options = [],
   placeholder = "Tambahkan...",
   editable = true,
-  isEditing: isEditingProp,
   onEdit,
 }: PropertyFieldProps) => {
   const [isEditing, setIsEditing] = useState(false);

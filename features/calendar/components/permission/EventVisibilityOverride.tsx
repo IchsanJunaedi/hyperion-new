@@ -2,9 +2,7 @@
 
 import { useState, useMemo } from "react";
 import {
-  AlertCircle,
   CheckCircle2,
-  XCircle,
   Search,
   RotateCcw,
 } from "lucide-react";
@@ -26,7 +24,6 @@ interface TeamMember {
 }
 
 interface EventVisibilityOverrideProps {
-  eventId: string;
   eventTitle: string;
   calendarVisibility: CalendarVisibility;
   currentOverride?: CalendarVisibility;
@@ -217,7 +214,6 @@ function MemberSelector({
  * Allows setting a different visibility for a specific event than its calendar default.
  */
 const EventVisibilityOverride = ({
-  eventId,
   eventTitle,
   calendarVisibility,
   currentOverride,

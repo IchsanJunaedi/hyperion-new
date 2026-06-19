@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useMemo } from "react";
-import { AlertCircle, CheckCircle2, XCircle, Search, X } from "lucide-react";
+import { AlertCircle, CheckCircle2, XCircle, Search } from "lucide-react";
 import { useNotify } from "@/features/dashboard/components/NotifyModal";
 
 import type {
@@ -21,7 +21,6 @@ interface TeamMember {
 }
 
 interface VisibilityManagerProps {
-  calendarId: string;
   currentVisibility: CalendarVisibility;
   selectedMembers?: string[];
   teamMembers?: TeamMember[];
@@ -280,7 +279,6 @@ function MemberSelector({
 // ============================================================================
 
 const VisibilityManager = ({
-  calendarId,
   currentVisibility,
   selectedMembers: initialSelectedMembers = [],
   teamMembers = [],

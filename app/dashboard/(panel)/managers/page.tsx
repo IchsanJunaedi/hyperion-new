@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation";
-import Link from "next/link";
 import { Shield } from "lucide-react";
 
 import { createClient } from "@/lib/supabase/server";

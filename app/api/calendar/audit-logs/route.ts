@@ -25,7 +25,6 @@ import {
   success,
   unauthorized,
   forbidden,
-  badRequest,
   internalError,
 } from "@/lib/api/response";
 

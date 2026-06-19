@@ -28,7 +28,7 @@ const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
         } else {
           input.stepDown();
         }
-      } catch (e) {
+      } catch {
         // Fallback for stepUp/stepDown if type/step doesn't support it natively or throws
         const current = parseFloat(input.value) || 0;
         const stepVal = parseFloat(String(props.step || "1")) || 1;

@@ -50,18 +50,6 @@ function diffParts(target: Date): CountdownParts {
   };
 }
 
-function formatScrimDate(dateStr: string): string {
-  const date = new Date(dateStr);
-  return date.toLocaleString("id-ID", {
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-    timeZone: "Asia/Jakarta",
-  }) + " WIB";
-}
-
 function formatMatchDate(dateStr: string, timeStr: string | null): string {
   const date = new Date(dateStr + "T00:00:00");
   const d = date.toLocaleDateString("id-ID", { weekday: "short", day: "numeric", month: "short" });

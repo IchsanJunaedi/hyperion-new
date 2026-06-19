@@ -54,7 +54,7 @@ function getGameLogo(game: string | null, logoUrl: string | null, name: string) 
   );
 }
 
-function getGameBackground(_game: string | null) {
+function getGameBackground() {
   return "/brand/logo.jpg";
 }
 
@@ -118,7 +118,7 @@ export async function DivisionsSection({ description }: { description?: string }
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {uniqueItems.map((div) => {
             const logo = getGameLogo(div.game, div.logo_url, div.name);
-            const image = getGameBackground(div.game);
+            const image = getGameBackground();
 
             return (
               <Link

@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { getAccessibleCalendars, getAccessibleEvents } from "@/lib/permissions/calendar-access";
+import { getAccessibleCalendars } from "@/lib/permissions/calendar-access";
 
 import type {
   CalendarConfig,

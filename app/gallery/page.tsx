@@ -2,7 +2,6 @@ import { Footer } from "@/components/landing/Footer";
 import { Header } from "@/components/landing/Header";
 import { GalleryCard } from "@/components/landing/GalleryCard";
 import { getGalleryEntries, getSiteSettings } from "@/features/admin/queries";
-import { slugify } from "@/lib/utils/slugify";
 
 export const dynamic = "force-dynamic";
 

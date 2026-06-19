@@ -41,7 +41,6 @@ interface PermissionToggleProps {
 
 interface BulkActionBarProps {
   selectedCount: number;
-  onSelectAll: () => void;
   onClearAll: () => void;
   onBulkUpdate: (permission: string, value: boolean) => Promise<void>;
   isLoading?: boolean;
@@ -102,7 +101,6 @@ function PermissionToggle({
 
 function BulkActionBar({
   selectedCount,
-  onSelectAll,
   onClearAll,
   onBulkUpdate,
   isLoading = false,
@@ -314,7 +312,6 @@ const MemberPermissionTable = ({
       {selectedMembers.size > 0 && (
         <BulkActionBar
           selectedCount={selectedMembers.size}
-          onSelectAll={toggleSelectAll}
           onClearAll={() => setSelectedMembers(new Set())}
           onBulkUpdate={(permission, value) => onUpdatePermission("", permission, value)}
           isLoading={isLoading}

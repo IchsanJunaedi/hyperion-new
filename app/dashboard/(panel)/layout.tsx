@@ -3,11 +3,9 @@ import { redirect } from "next/navigation";
 import { LogOut } from "lucide-react";
 
 import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
 import { dashboardLogoutAction } from "@/lib/actions/auth";
 import { NotifyProvider } from "@/features/dashboard/components/NotifyModal";
 import { DashboardSettingsButton } from "@/components/layout/DashboardSettingsButton";
-import { NotificationBell } from "@/features/notifications/components/NotificationBell";
 import { NotificationRealtimeProvider } from "@/features/notifications/components/NotificationRealtimeProvider";
 import { DashboardSidebarNav } from "@/components/layout/DashboardSidebarNav";
 import { DashboardHeader } from "@/components/layout/DashboardHeader";

@@ -3,7 +3,6 @@ import {
   Banknote,
   CheckCircle2,
   Clock,
-  Gift,
   Trophy,
   Calendar,
   AlertCircle,

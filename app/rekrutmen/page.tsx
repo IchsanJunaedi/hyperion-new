@@ -17,7 +17,6 @@ import type { Metadata } from "next";
 
 import { Header } from "@/components/landing/Header";
 import { Footer } from "@/components/landing/Footer";
-import { InteractiveBackground } from "@/components/landing/InteractiveBackground";
 import { getActivePublicTrials } from "@/features/trials/queries";
 import { getSiteSettings } from "@/features/admin/queries";
 
@@ -32,21 +31,6 @@ export async function generateMetadata(): Promise<Metadata> {
       "Lihat posisi yang sedang dibuka dan daftar jadi bagian dari Hyperion Team.",
   };
 }
-
-const ROLE_ICONS: Record<string, LucideIcon> = {
-  jungler: Zap,
-  "mid lane": Flame,
-  "midlane": Flame,
-  roamer: Compass,
-  "gold lane": Coins,
-  goldlane: Coins,
-  "exp lane": Shield,
-  explane: Shield,
-  captain: Swords,
-  coach: Trophy,
-  analyst: Trophy,
-  member: Activity,
-};
 
 function getPositionIcon(pos: string) {
   const p = pos.toLowerCase();

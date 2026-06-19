@@ -13,7 +13,6 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import {
   validateRequest,
   requireRole,
-  applyRateLimit,
 } from "@/lib/api/permission-middleware";
 import {
   success,

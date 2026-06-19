@@ -15,7 +15,6 @@ import {
   Home,
   LayoutDashboard,
   Lightbulb,
-  LogOut,
   Megaphone,
   Radar,
   Settings,

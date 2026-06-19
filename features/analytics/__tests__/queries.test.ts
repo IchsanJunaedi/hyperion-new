@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { getHeroStatistics, getHeroDetail, getOverviewStats, getRecentScrims, getDraftAnalytics, getEnterprisePlayerStats, getOpponentSummary, getPlayerTrendByMonth } from "../queries";
 import { createClient } from "@/lib/supabase/server";

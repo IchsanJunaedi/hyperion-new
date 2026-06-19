@@ -13,7 +13,6 @@ import {
   validateRequest,
   requireRole,
   applyRateLimit,
-  requireCalendarPermission,
 } from "@/lib/api/permission-middleware";
 import {
   success,

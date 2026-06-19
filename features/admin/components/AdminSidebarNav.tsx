@@ -11,7 +11,6 @@ import {
   UserCircle,
   Heart,
   LayoutTemplate,
-  Trophy,
   CalendarRange,
   Mail,
   FileText,

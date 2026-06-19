@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import { useCallback, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -9,10 +8,7 @@ import type {
   CalendarMemberPermission,
   CalendarAuditLog,
   CalendarVisibility,
-  UserRole,
 } from "@/lib/permissions/calendar-types";
-import type { Database } from "@/types/database";
-
 // ============================================================================
 // Type Definitions
 // ============================================================================

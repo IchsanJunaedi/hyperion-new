@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation";
-import Link from "next/link";
 import { FileText } from "lucide-react";
 
 import { createClient } from "@/lib/supabase/server";
@@ -56,8 +55,6 @@ export default async function DashboardReportsPage({ searchParams }: ReportsPage
   }));
 
   const { data: profiles } = await admin.from("profiles").select("id, full_name");
-  const workspaceName = profiles?.find(p => p.id === user.id)?.full_name ?? "Hyperion Team";
-
   return (
     <>
       <main className="flex-1 max-w-[900px] w-full mx-auto px-4 sm:px-8 py-12 space-y-6">

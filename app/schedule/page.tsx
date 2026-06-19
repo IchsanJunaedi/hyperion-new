@@ -33,12 +33,6 @@ function formatMonthHeader(yyyyMm: string): string {
   return date.toLocaleDateString("id-ID", { month: "long", year: "numeric" }).toUpperCase();
 }
 
-function formatDate(dateStr: string, timeStr: string | null): string {
-  const date = new Date(dateStr + "T00:00:00");
-  const d = date.toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long" });
-  return timeStr ? `${d} · ${timeStr.slice(0, 5)}` : d;
-}
-
 function formatLeftDate(dateStr: string): { day: string; month: string } {
   const date = new Date(dateStr + "T00:00:00");
   const day = date.toLocaleDateString("id-ID", { day: "2-digit" });

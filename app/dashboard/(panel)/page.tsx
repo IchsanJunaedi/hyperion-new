@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Crown, Plus, Users, Tags, Settings, FileOutput, Shield, Building2, ChevronRight } from "lucide-react";
+import { Crown, Plus, Users, Tags, Settings, FileOutput, Shield, ChevronRight } from "lucide-react";
 
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -59,8 +59,6 @@ export default async function DashboardPage({
     admin.from("divisions").select("id, name, organization_id"),
     admin.from("profiles").select("id, full_name, username, display_name, phone_wa, avatar_url, date_of_birth, bio, social_links, game_ids, email").order("created_at", { ascending: false }),
   ]);
-
-  const workspaceName = profiles?.find(p => p.id === user.id)?.full_name ?? "Hyperion Team";
 
   // Email map
   const emailMap = new Map<string, string>();

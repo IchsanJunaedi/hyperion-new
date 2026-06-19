@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation";
-import Link from "next/link";
 import { Users } from "lucide-react";
 
 import { createClient } from "@/lib/supabase/server";
@@ -33,8 +32,6 @@ export default async function DashboardUsersPage({ searchParams }: UsersPageProp
     .select("id, full_name, username, display_name, phone_wa, email")
     .order("full_name", { ascending: true });
   
-  const workspaceName = allProfiles?.find(p => p.id === user.id)?.full_name ?? "Hyperion Team";
-
   // Get all team members
   const { data: members } = await admin
     .from("team_members")

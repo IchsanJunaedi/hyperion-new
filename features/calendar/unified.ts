@@ -113,7 +113,6 @@ export async function listUnifiedCalendarEvents(
 
   for (const t of tournaments ?? []) {
     if (linkedTournamentIds.has(t.id)) continue;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     events.push({
       id: `tournament-${t.id}`,
       organization_id: orgId,

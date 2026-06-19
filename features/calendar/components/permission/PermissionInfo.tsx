@@ -182,7 +182,6 @@ const PermissionInfo = ({
   onRequestAccess,
   compact = false,
 }: PermissionInfoProps) => {
-  const { success } = useNotify();
   const [copied, setCopied] = useState(false);
 
   const roleInfo = ROLE_COLORS[userRole];

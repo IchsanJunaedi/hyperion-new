@@ -1,10 +1,8 @@
-import { BarChart3, Plus } from "lucide-react";
 import { notFound } from "next/navigation";
 
 import { getCurrentUserRole } from "@/features/roster/queries";
 import { getOrgBySlug } from "@/features/teams/queries";
 import { listPolls } from "@/features/polls/queries";
-import { PollCard } from "@/features/polls/components/PollCard";
 import { PollPageClient } from "@/features/polls/components/PollPageClient";
 import { createClient } from "@/lib/supabase/server";
 

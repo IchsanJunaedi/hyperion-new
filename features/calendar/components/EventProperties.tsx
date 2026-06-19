@@ -11,7 +11,6 @@ import {
   Zap,
   CheckCircle,
 } from "lucide-react";
-import { useState } from "react";
 import { PropertyField } from "./PropertyField";
 import type { CalendarEvent } from "../types";
 

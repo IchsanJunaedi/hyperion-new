@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { Shield, Trophy, Users, Gamepad2, Award, Sword, TrendingDown } from "lucide-react";
+import { Shield, Trophy, Users, Gamepad2, Award } from "lucide-react";
 
 import { getPublicProfile } from "@/features/teams/queries";
 import { cn } from "@/lib/utils/cn";

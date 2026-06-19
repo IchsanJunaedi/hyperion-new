@@ -162,14 +162,12 @@ const EventPermissionModal = ({
   onClose,
   onPermissionChange,
 }: EventPermissionModalProps) => {
-  const [selectedVisibility, setSelectedVisibility] = useState<CalendarVisibility | null>(null);
   const { visibility, calendarVisibility, isOverridden, allowedMembers, isLoading, error, setEventVisibility } = useEventPermission(eventId);
   const [isUpdating, setIsUpdating] = useState(false);
 
   if (!isOpen) return null;
 
   const handleVisibilityChange = async (newVisibility: CalendarVisibility) => {
-    setSelectedVisibility(newVisibility);
     setIsUpdating(true);
 
     try {
@@ -202,7 +200,6 @@ const EventPermissionModal = ({
       console.error("Failed to update visibility:", err);
     } finally {
       setIsUpdating(false);
-      setSelectedVisibility(null);
     }
   };
 

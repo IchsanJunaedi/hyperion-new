@@ -17,8 +17,6 @@ export default async function DashboardExportPage() {
 
   const admin = createAdminClient();
   const { data: profile } = await admin.from("profiles").select("full_name").eq("id", user.id).maybeSingle();
-  const workspaceName = profile?.full_name ?? "Hyperion Team";
-
   return (
     <>
       <main className="mx-auto max-w-7xl px-4 py-6 space-y-6">

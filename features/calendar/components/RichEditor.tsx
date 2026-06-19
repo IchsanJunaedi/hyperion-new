@@ -1,7 +1,7 @@
 "use client";
 
 import { Bold, Italic, Link2, List, ListChecks, Quote } from "lucide-react";
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef } from "react";
 import { useDebouncedCallback } from "use-debounce";
 
 interface RichEditorProps {

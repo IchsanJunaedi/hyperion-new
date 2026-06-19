@@ -14,7 +14,6 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import {
   validateRequest,
   requireRole,
-  requireCalendarPermission,
   applyRateLimit,
 } from "@/lib/api/permission-middleware";
 import {

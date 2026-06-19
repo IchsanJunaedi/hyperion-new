@@ -199,7 +199,6 @@ export async function getRsvpCountsForEvents(eventIds: string[]): Promise<RsvpCo
 export async function getRsvpCounts(
   eventId: string,
 ): Promise<{ hadir: number; tentative: number; tidak_hadir: number }> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const supabase = await createClient();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data, error } = await (supabase as any)

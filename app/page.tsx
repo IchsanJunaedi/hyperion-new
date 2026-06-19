@@ -21,7 +21,6 @@ import {
   getNearestPublicTournament,
   getPublishedNewsPosts,
 } from "@/features/admin/queries";
-import { UpcomingMatchesSection } from "@/components/landing/UpcomingMatchesSection";
 import { LatestNewsSection } from "@/components/landing/LatestNewsSection";
 import { InteractiveBackground } from "@/components/landing/InteractiveBackground";
 import type { PublicTournament } from "@/features/admin/queries";

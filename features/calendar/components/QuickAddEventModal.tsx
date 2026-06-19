@@ -1,6 +1,6 @@
 "use client";
 
-import { X, Loader2, Calendar, Clock, Tag } from "lucide-react";
+import { X, Loader2, Calendar, Clock } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
 
@@ -86,7 +86,7 @@ const QuickAddEventModal = ({
       setStartsAt(defaultStartsAt);
       setTimeout(() => titleRef.current?.focus(), 50);
     }
-  }, [isOpen]);
+  }, [isOpen, defaultStartsAt]);
 
   // Close on Escape
   useEffect(() => {

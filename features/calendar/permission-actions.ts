@@ -11,14 +11,10 @@ import {
   createCalendarSchema,
   updateCalendarSchema,
   setCalendarVisibilitySchema,
-  getCalendarAuditLogsSchema,
 } from "@/lib/validations/calendar-permissions";
 
 import type { CalendarConfig } from "@/lib/permissions/calendar-types";
 import type { Database } from "@/types/database";
-
-type CalendarConfigRow =
-  Database["public"]["Tables"]["calendar_configs"]["Row"];
 
 // ============================================================================
 // Type Definitions
