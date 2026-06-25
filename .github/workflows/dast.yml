@@ -1,0 +1,65 @@
+name: DAST — OWASP ZAP Baseline Scan
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  zap_scan:
+    name: OWASP ZAP Scan
+    runs-on: ubuntu-latest
+    
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: https://tbuxtlbtjpoholcflmoy.supabase.co
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: sb_publishable_placeholder
+      NEXT_PUBLIC_APP_URL: http://localhost:3000
+      NEXT_PUBLIC_MAIN_DOMAIN: localhost:3000
+      OWNER_EMAIL: test-owner@hyperionteam.id
+      NODE_ENV: production
+
+    steps:
+      - name: ⬇️ Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: 📥 Install dependencies
+        run: npm ci
+
+      - name: 🏗️ Build Next.js application
+        run: npm run build
+
+      - name: 🚀 Start Next.js App in Background
+        run: |
+          npm run start &
+          echo "Waiting for app to start..."
+          for i in {1..30}; do
+            if curl -s http://localhost:3000 > /dev/null; then
+              echo "App is up!"
+              break
+            fi
+            echo "Waiting..."
+            sleep 2
+          done
+
+      - name: 🔍 Run OWASP ZAP Baseline Scan
+        uses: zaproxy/action-baseline@v0.14.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          target: 'http://localhost:3000'
+          allow_issue_writing: false
+          fail_action: false
+
+      - name: 📊 Upload ZAP Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: zap-report
+          path: zap_report.html

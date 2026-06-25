@@ -1,0 +1,64 @@
+name: Load Testing — k6 Performance Benchmarks
+
+on:
+  workflow_dispatch:
+    inputs:
+      scenario:
+        description: 'Load test scenario to run'
+        required: true
+        default: 'load'
+        type: choice
+        options:
+          - smoke
+          - load
+          - stress
+      target_url:
+        description: 'Target application URL to test'
+        required: true
+        default: 'http://localhost:3000'
+        type: string
+
+jobs:
+  k6_load_test:
+    name: Run k6 Load Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ⬇️ Checkout repository
+        uses: actions/checkout@v4
+
+      # If testing localhost, we need to spin up the local server
+      - name: 🚀 Start local server if target is localhost
+        if: ${{ contains(github.event.inputs.target_url, 'localhost') }}
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_APP_URL: http://localhost:3000
+          NEXT_PUBLIC_MAIN_DOMAIN: localhost:3000
+          OWNER_EMAIL: ${{ secrets.OWNER_EMAIL }}
+        run: |
+          npm ci
+          npm run build
+          npm run start &
+          echo "Waiting for app to start..."
+          for i in {1..30}; do
+            if curl -s http://localhost:3000 > /dev/null; then
+              echo "App is up!"
+              break
+            fi
+            echo "Waiting..."
+            sleep 2
+          done
+
+      - name: 🧪 Run k6 Load Test
+        uses: grafana/k6-action@v0.3.1
+        env:
+          K6_TARGET_URL: ${{ github.event.inputs.target_url }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          K6_TEST_USER_EMAIL: ${{ secrets.K6_TEST_USER_EMAIL }}
+          K6_TEST_USER_PASSWORD: ${{ secrets.K6_TEST_USER_PASSWORD }}
+          K6_TEST_TEAM_SLUG: ${{ secrets.E2E_TEAM_SLUG || 'hyperion' }}
+        with:
+          filename: load-tests/scenarios/${{ github.event.inputs.scenario }}.js
+          flags: --vus 10 --duration 10s # Safety overrides if we want to run CI test run quickly
