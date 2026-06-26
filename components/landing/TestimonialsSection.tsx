@@ -123,6 +123,7 @@ const TestimonialsSection = ({ testimonials }: TestimonialsSectionProps) => {
   const sectionRef = useRef<HTMLElement>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState<"next" | "prev">("next");
+  const length = testimonials ? testimonials.length : 0;
 
   // GSAP Entrance animations
   useGSAP(() => {
@@ -418,7 +419,6 @@ const TestimonialsSection = ({ testimonials }: TestimonialsSectionProps) => {
 
   if (!testimonials || testimonials.length === 0) return null;
 
-  const length = testimonials.length;
   const active = testimonials[currentIndex];
 
   if (!active) return null;
