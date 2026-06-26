@@ -22,6 +22,7 @@ import { findOpponentByName } from "@/features/scouting/queries";
 import { ScoutingCard } from "@/features/scouting/components/ScoutingCard";
 import { ContextFiles } from "@/features/files/components/ContextFiles";
 import { getLinkedFiles } from "@/features/files/queries";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
 
@@ -43,12 +44,31 @@ export default async function ScrimDetailPage({
   const canManageScrims = ["captain", "coach", "manager", "owner"].includes(currentUserRole ?? "");
   const isCoach = currentUserRole === "coach";
 
-  const [opponentProfile, reviewRequest, opponentHistory, linkedFiles] = await Promise.all([
+  const [opponentProfile, reviewRequest, opponentHistory, linkedFiles, gameResultsRes] = await Promise.all([
     findOpponentByName(scrim.organization_id, scrim.opponent_name),
     getScrimReviewRequest(id),
     getOpponentHistory(scrim.organization_id, scrim.opponent_name, id),
     getLinkedFiles(scrim.organization_id, "scrim", id),
+    createAdminClient()
+      .from("scrim_game_results")
+      .select("game_number, is_win, image_url")
+      .eq("scrim_id", id)
+      .order("game_number", { ascending: true }),
   ]);
+
+  const gameResults = gameResultsRes.data ?? [];
+  const gamesWithUrls = await Promise.all(
+    gameResults.map(async (g) => {
+      let signedUrl: string | null = null;
+      if (g.image_url) {
+        const { data } = await createAdminClient().storage
+          .from("org-private")
+          .createSignedUrl(g.image_url, 3600);
+        signedUrl = data?.signedUrl ?? null;
+      }
+      return { ...g, signedUrl };
+    }),
+  );
 
   const scheduled = new Date(scrim.scheduled_at).toLocaleString("id-ID", {
     weekday: "long",
@@ -222,6 +242,47 @@ export default async function ScrimDetailPage({
                 canUpload={isCoach || canManageScrims}
                 initialFiles={linkedFiles}
               />
+            </article>
+          )}
+
+          {/* Game Screenshots Grid */}
+          {gamesWithUrls.length > 0 && (
+            <article className="rounded-2xl border border-ui-border bg-ui-surface/40 p-5 space-y-4">
+              <h2 className="text-sm font-semibold text-ui-text">Screenshot Game</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {gamesWithUrls.map((game) => (
+                  <div
+                    key={game.game_number}
+                    className="flex flex-col rounded-xl border border-ui-border bg-ui-bg/50 overflow-hidden"
+                  >
+                    {/* Game header */}
+                    <div className="flex items-center justify-between px-4 py-2 bg-ui-surface/60 border-b border-ui-border">
+                      <span className="text-xs font-semibold text-ui-text">
+                        Game {game.game_number}
+                      </span>
+                      <span className={`text-[10px] font-bold uppercase tracking-wider ${
+                        game.is_win ? "text-green-400" : "text-red-400"
+                      }`}>
+                        {game.is_win ? "Menang" : "Kalah"}
+                      </span>
+                    </div>
+
+                    {/* Screenshot image */}
+                    <div className="flex-1 flex items-center justify-center p-3 min-h-[160px] bg-black/10">
+                      {game.signedUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={game.signedUrl}
+                          alt={`Screenshot Game ${game.game_number}`}
+                          className="max-w-full max-h-[180px] object-contain rounded border border-ui-border"
+                        />
+                      ) : (
+                        <span className="text-xs text-ui-text-muted">Tidak ada screenshot</span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </article>
           )}
 

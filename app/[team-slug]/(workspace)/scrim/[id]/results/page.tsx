@@ -23,6 +23,13 @@ const ROLE_LABELS: Record<string, string> = {
 
 const ROLE_ORDER = ["exp_lane", "jungler", "mid_lane", "gold_lane", "roamer"];
 
+function formatDuration(totalSeconds: number | null): string {
+  if (!totalSeconds) return "00:00";
+  const m = Math.floor(totalSeconds / 60);
+  const s = totalSeconds % 60;
+  return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+}
+
 interface ScrimResultsPageProps {
   params: Promise<{ "team-slug": string; id: string }>;
 }
@@ -238,7 +245,14 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
             >
               {/* Game header */}
               <div className="flex items-center justify-between px-5 py-3.5 border-b border-ui-border">
-                <h3 className="text-sm font-semibold text-ui-text">Game {game.game_number}</h3>
+                <h3 className="text-sm font-semibold text-ui-text">
+                  Game {game.game_number}
+                  {game.duration_seconds ? (
+                    <span className="ml-2 text-xs text-ui-text-muted font-normal md:hidden">
+                      ({formatDuration(game.duration_seconds)})
+                    </span>
+                  ) : null}
+                </h3>
                 <div className={`text-xs font-semibold ${
                   game.is_win
                     ? "text-green-400"
@@ -251,7 +265,7 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
               <div className="p-5 space-y-4">
                 {/* Draft picks */}
                 {hasDraft && (
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-2 md:grid-cols-[1fr_auto_1fr] gap-3">
                     {/* Our team */}
                     <div className="space-y-1.5">
                       <div className="flex items-center gap-1.5 mb-2">
@@ -312,6 +326,18 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
                       })}
                     </div>
 
+                    {/* Divider / Duration */}
+                    <div className="hidden md:flex flex-col items-center justify-center px-4 shrink-0">
+                      <div className="flex-1 w-[1px] bg-ui-border" />
+                      {game.duration_seconds ? (
+                        <div className="my-2 rounded-xl border border-ui-border bg-ui-surface/60 px-2.5 py-1 text-center shrink-0 shadow-sm">
+                          <span className="text-[8px] font-bold text-ui-text-muted block uppercase tracking-wider">Durasi</span>
+                          <span className="text-xs font-semibold text-ui-text">{formatDuration(game.duration_seconds)}</span>
+                        </div>
+                      ) : null}
+                      <div className="flex-1 w-[1px] bg-ui-border" />
+                    </div>
+
                     {/* Enemy team */}
                     <div className="space-y-1.5">
                       <div className="flex items-center gap-1.5 mb-2">
@@ -369,23 +395,6 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
                   <p className="text-sm text-ui-text whitespace-pre-line">{game.notes}</p>
                 )}
 
-                {/* Screenshot */}
-                {game.signedUrl && (
-                  <a
-                    href={game.signedUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block"
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={game.signedUrl}
-                      alt={`Screenshot Game ${game.game_number}`}
-                      className="rounded-lg border border-ui-border w-full max-h-[300px] object-contain"
-                    />
-                  </a>
-                )}
-
                 {/* AI Tactical Review */}
                 {(() => {
                   const narrative = reviewByGame.get(game.game_number);
@@ -403,6 +412,23 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
                 currentUserId={currentUserId}
                 isCoach={isCoach}
               />
+
+              {/* Screenshot Scoreboard */}
+              {game.signedUrl && (
+                <div className="px-5 pb-5 pt-4 border-t border-ui-border">
+                  <h4 className="text-[10px] font-semibold uppercase tracking-wider text-ui-text-muted mb-2">
+                    Screenshot Scoreboard
+                  </h4>
+                  <div className="overflow-hidden rounded-lg border border-ui-border bg-black/20">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={game.signedUrl}
+                      alt={`Screenshot Game ${game.game_number}`}
+                      className="w-full max-h-[400px] object-contain mx-auto"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           );
         })}

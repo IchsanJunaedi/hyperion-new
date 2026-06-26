@@ -1912,6 +1912,7 @@ export type Database = {
       scrim_game_results: {
         Row: {
           created_at: string
+          duration_seconds: number | null
           game_number: number
           id: string
           image_url: string | null
@@ -1921,6 +1922,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          duration_seconds?: number | null
           game_number: number
           id?: string
           image_url?: string | null
@@ -1930,6 +1932,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          duration_seconds?: number | null
           game_number?: number
           id?: string
           image_url?: string | null

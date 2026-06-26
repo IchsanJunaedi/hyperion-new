@@ -65,10 +65,11 @@ interface GameResult {
   uploading: boolean;
   draft: DraftPicks;
   scoreboard: ScoreboardResult | null; // AI-scanned, editable, persisted to scrim_ai_reviews
+  durationSeconds: number | null;
 }
 
 function makeBlankGame(): GameResult {
-  return { isWin: null, notes: "", imageUrl: null, uploading: false, draft: makeBlankDraft(), scoreboard: null };
+  return { isWin: null, notes: "", imageUrl: null, uploading: false, draft: makeBlankDraft(), scoreboard: null, durationSeconds: null };
 }
 
 function extractDraftResult(draft: DraftPicks): DraftResult | null {
@@ -269,6 +270,7 @@ const FinishScrimForm = ({
         ...g,
         isWin: s.isWin,
         scoreboard: s,
+        durationSeconds: s.durationSeconds || g.durationSeconds,
         draft: {
           ...g.draft,
           our,
@@ -354,6 +356,7 @@ const FinishScrimForm = ({
           isWin: g.isWin!,
           notes: g.notes || null,
           imageUrl: g.imageUrl,
+          durationSeconds: g.durationSeconds,
           bans: {
             our: g.draft.bans?.our ?? [],
             enemy: g.draft.bans?.enemy ?? [],
@@ -513,34 +516,69 @@ const FinishScrimForm = ({
 
       {/* ── Active game card ─────────────────────────────────────────────── */}
       <div className="rounded-2xl border border-ui-border bg-ui-surface/40 p-5 shadow-xl shadow-black/20 space-y-4">
-        {/* Win / Loss */}
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={() => updateGame(activeGame, { isWin: game.isWin === true ? null : true })}
-            className={cn(
-              "inline-flex h-9 items-center gap-2 rounded-lg px-4 text-sm font-medium transition-all",
-              game.isWin === true
-                ? "bg-emerald-500 text-white shadow-md shadow-emerald-500/30"
-                : "border border-ui-border bg-ui-elevated text-ui-text-2 hover:bg-ui-hover",
-            )}
-          >
-            <CheckCircle className="h-4 w-4" />
-            Menang
-          </button>
-          <button
-            type="button"
-            onClick={() => updateGame(activeGame, { isWin: game.isWin === false ? null : false })}
-            className={cn(
-              "inline-flex h-9 items-center gap-2 rounded-lg px-4 text-sm font-medium transition-all",
-              game.isWin === false
-                ? "bg-red-500 text-white shadow-md shadow-red-500/30"
-                : "border border-ui-border bg-ui-elevated text-ui-text-2 hover:bg-ui-hover",
-            )}
-          >
-            <XCircle className="h-4 w-4" />
-            Kalah
-          </button>
+        {/* Win/Loss & Durasi */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => updateGame(activeGame, { isWin: game.isWin === true ? null : true })}
+              className={cn(
+                "inline-flex h-9 items-center gap-2 rounded-lg px-4 text-sm font-medium transition-all cursor-pointer",
+                game.isWin === true
+                  ? "bg-emerald-500 text-white shadow-md shadow-emerald-500/30"
+                  : "border border-ui-border bg-ui-elevated text-ui-text-2 hover:bg-ui-hover",
+              )}
+            >
+              <CheckCircle className="h-4 w-4" />
+              Menang
+            </button>
+            <button
+              type="button"
+              onClick={() => updateGame(activeGame, { isWin: game.isWin === false ? null : false })}
+              className={cn(
+                "inline-flex h-9 items-center gap-2 rounded-lg px-4 text-sm font-medium transition-all cursor-pointer",
+                game.isWin === false
+                  ? "bg-red-500 text-white shadow-md shadow-red-500/30"
+                  : "border border-ui-border bg-ui-elevated text-ui-text-2 hover:bg-ui-hover",
+              )}
+            >
+              <XCircle className="h-4 w-4" />
+              Kalah
+            </button>
+          </div>
+
+          {/* Menit Pertandingan (Duration) */}
+          <div className="flex items-center gap-2 bg-white/[0.02] border border-ui-border rounded-lg px-3 py-1 shrink-0">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-ui-text-muted">Durasi:</span>
+            <div className="flex items-center gap-1">
+              <NumberInput
+                min={0}
+                max={99}
+                value={String(game.durationSeconds ? Math.floor(game.durationSeconds / 60) : 0)}
+                onChange={(e) => {
+                  const mins = parseInt(e.target.value || "0", 10);
+                  const secs = game.durationSeconds ? game.durationSeconds % 60 : 0;
+                  updateGame(activeGame, { durationSeconds: mins * 60 + secs });
+                }}
+                className="h-7 w-10 text-center text-xs text-ui-text bg-ui-bg border-ui-border pr-0.5 pl-0.5"
+                containerClassName="w-10"
+              />
+              <span className="text-xs text-ui-text-muted">m</span>
+              <NumberInput
+                min={0}
+                max={59}
+                value={String(game.durationSeconds ? game.durationSeconds % 60 : 0)}
+                onChange={(e) => {
+                  const secs = parseInt(e.target.value || "0", 10);
+                  const mins = game.durationSeconds ? Math.floor(game.durationSeconds / 60) : 0;
+                  updateGame(activeGame, { durationSeconds: mins * 60 + secs });
+                }}
+                className="h-7 w-10 text-center text-xs text-ui-text bg-ui-bg border-ui-border pr-0.5 pl-0.5"
+                containerClassName="w-10"
+              />
+              <span className="text-xs text-ui-text-muted">s</span>
+            </div>
+          </div>
         </div>
 
         {/* AI auto-fill */}

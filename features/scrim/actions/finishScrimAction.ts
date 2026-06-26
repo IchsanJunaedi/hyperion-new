@@ -18,6 +18,7 @@ interface GameInput {
   imageUrl: string | null;
   draftPicks?: DraftPickInput[];
   bans?: { our: string[]; enemy: string[] };
+  durationSeconds?: number | null;
 }
 
 interface PlayerEvalInput {
@@ -83,6 +84,7 @@ export async function finishScrimAction(
         is_win: g.isWin,
         notes: g.notes,
         image_url: g.imageUrl,
+        duration_seconds: g.durationSeconds ?? null,
       })),
       { onConflict: "scrim_id,game_number" },
     );
