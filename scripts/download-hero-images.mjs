@@ -48,7 +48,7 @@ const HERO_IDS = {
   "Arlott": 118, "Ixia": 119, "Nolan": 120, "Cici": 121, "Chip": 122,
   "Zhuxin": 123, "Suyou": 124, "Lukas": 127, "Gloo": 126, "Sora": 131, "Marcel": 132,
   // Heroes that may have different IDs — fallback to name search
-  "Benedetta": 118, "Kalea": 133, "Zetian": 129, "Obsidia": 130,
+  "Benedetta": 118, "Kalea": 133, "Zetian": 129, "Obsidia": 130, "Hirara": 133,
 };
 
 const HEROES = [
@@ -72,7 +72,7 @@ const HEROES = [
   // New added heroes
   "Alice", "Bane", "Karina", "Argus", "Martis", "Kaja", "Selena", "Kadita",
   "Masha", "Luo Yi", "Edith", "Fredrinn", "Arlott", "Sora", "Marcel",
-  "Gloo", "Kalea", "Zetian", "Obsidia"
+  "Gloo", "Kalea", "Zetian", "Obsidia", "Hirara"
 ];
 
 function heroToSlug(name) {

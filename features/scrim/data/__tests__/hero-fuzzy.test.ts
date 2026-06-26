@@ -13,6 +13,8 @@ describe("matchHero", () => {
   it("corrects a small OCR typo (1-2 chars off)", () => {
     expect(matchHero("Lanclot")).toBe("Lancelot"); // transposition/missing char
     expect(matchHero("Guslon")).toBe("Gusion");
+    expect(matchHero("Hlrara")).toBe("Hirara");
+    expect(matchHero("  hirara ")).toBe("Hirara");
   });
 
   it("returns the raw trimmed string when nothing is close", () => {

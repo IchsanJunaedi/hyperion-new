@@ -20,7 +20,7 @@ export const MLBB_HEROES: string[] = [
   // New added heroes
   "Alice", "Bane", "Karina", "Argus", "Martis", "Kaja", "Selena", "Kadita",
   "Masha", "Luo Yi", "Edith", "Fredrinn", "Arlott", "Sora", "Marcel",
-  "Gloo", "Kalea", "Zetian", "Obsidia"
+  "Gloo", "Kalea", "Zetian", "Obsidia", "Hirara"
 ].sort((a, b) => a.localeCompare(b));
 
 /** Convert hero name to the slug used for /public/heroes/<slug>.webp */
@@ -72,6 +72,7 @@ export const HERO_CLASSES: Record<string, string> = {
   "Vexana": "Mage", "Wanwan": "Marksman", "X.Borg": "Fighter", "Xavier": "Mage",
   "Yi Sun-shin": "Assassin", "Yin": "Fighter", "Yu Zhong": "Fighter", "Yve": "Mage",
   "Zetian": "Mage", "Zhask": "Mage", "Zhuxin": "Mage", "Zilong": "Fighter",
+  "Hirara": "Assassin",
 };
 
 export const ROLE_LABELS: Record<string, string> = {
