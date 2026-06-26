@@ -12,13 +12,22 @@ export const createTournamentSchema = z
     registration_url: z.string().trim().max(500).optional().transform((v) => (v && v.length > 0 ? v : null)),
     notes: z.string().trim().max(2000).optional().transform((v) => (v && v.length > 0 ? v : null)),
     start_time: z.string().regex(/^\d{2}:\d{2}$/, "Format jam tidak valid").optional().transform((v) => (v && v.length > 0 ? v : null)),
-    registration_deadline: z.string().min(1, "Batas pendaftaran wajib diisi").transform((v) => new Date(v).toISOString()),
-    location_type: z.enum(["online", "offline"]).optional().nullable(),
+    // Optional — historical tournaments may not have a registration deadline
+    registration_deadline: z
+      .string()
+      .optional()
+      .transform((v) => (v && v.length > 0 ? new Date(v).toISOString() : null)),
+    location_type: z.enum(["online", "offline", "hybrid"]).optional().nullable(),
     location: z.string().trim().max(500).optional().nullable().transform((v) => (v && v.length > 0 ? v : null)),
+    // Online platform/link for hybrid tournaments
+    online_platform: z.string().trim().max(500).optional().nullable().transform((v) => (v && v.length > 0 ? v : null)),
     send_wa_blast: z.coerce.boolean().default(false),
   })
   .refine(
-    (data) => new Date(data.registration_deadline) < new Date(data.start_date),
+    (data) => {
+      if (!data.registration_deadline || !data.start_date) return true;
+      return new Date(data.registration_deadline) < new Date(data.start_date);
+    },
     {
       message: "Batas pendaftaran harus sebelum tanggal mulai turnamen",
       path: ["registration_deadline"],
@@ -41,3 +50,4 @@ export const createTournamentStageSchema = z.object({
 });
 
 export type CreateTournamentStageInput = z.infer<typeof createTournamentStageSchema>;
+

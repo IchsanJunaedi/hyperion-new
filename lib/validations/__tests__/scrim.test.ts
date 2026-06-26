@@ -73,6 +73,28 @@ describe("createScrimSchema", () => {
     expect(r.success).toBe(true);
     if (r.success) expect(r.data.notes).toBe("Pakai patch terbaru");
   });
+
+  it("accepts past scheduled_at (historical scrim)", () => {
+    const pastIso = new Date(Date.now() - 86400000 * 7).toISOString();
+    expect(createScrimSchema.safeParse({ ...valid, scheduled_at: pastIso }).success).toBe(true);
+  });
+
+  it("accepts optional patch field", () => {
+    const r = createScrimSchema.safeParse({ ...valid, patch: "1.8.44" });
+    expect(r.success).toBe(true);
+    if (r.success) expect(r.data.patch).toBe("1.8.44");
+  });
+
+  it("transforms empty patch to null", () => {
+    const r = createScrimSchema.safeParse({ ...valid, patch: "" });
+    expect(r.success).toBe(true);
+    if (r.success) expect(r.data.patch).toBeNull();
+  });
+
+  it("rejects patch longer than 30 chars", () => {
+    const r = createScrimSchema.safeParse({ ...valid, patch: "a".repeat(31) });
+    expect(r.success).toBe(false);
+  });
 });
 
 describe("submitResultSchema", () => {

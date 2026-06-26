@@ -25,7 +25,7 @@ export default async function EditScrimPage({ params }: EditScrimPageProps) {
   const detail = await getScrimDetail(id);
   if (!detail) notFound();
 
-  if (detail.scrim.status === "completed" || detail.scrim.status === "cancelled") {
+  if (detail.scrim.status === "cancelled") {
     redirect(`/${slug}/scrim/${id}`);
   }
 
@@ -69,6 +69,7 @@ export default async function EditScrimPage({ params }: EditScrimPageProps) {
               server_region: detail.scrim.server_region,
               room_info: detail.scrim.room_info,
               notes: detail.scrim.notes,
+              patch: detail.scrim.patch,
             }}
           />
         </div>

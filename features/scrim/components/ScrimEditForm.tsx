@@ -20,6 +20,7 @@ interface ScrimEditFormProps {
     server_region: string | null;
     room_info: string | null;
     notes: string | null;
+    patch: string | null;
   };
 }
 
@@ -68,6 +69,7 @@ const ScrimEditForm = ({
             server_region: fd.get("server_region"),
             room_info: fd.get("room_info"),
             notes: fd.get("notes"),
+            patch: fd.get("patch"),
           });
           if (!res.ok) {
             setGlobalError(res.message);
@@ -196,6 +198,16 @@ const ScrimEditForm = ({
           placeholder="Catatan strategis, request map, dsb"
           defaultValue={initialValues.notes ?? ""}
           className="w-full rounded-md border border-ui-border bg-ui-surface px-3 py-2 text-sm text-ui-text focus:border-yellow-400 focus:outline-none"
+        />
+      </Field>
+
+      <Field label="Versi patch (opsional)" name="patch" errors={fieldErrors["patch"]}>
+        <input
+          name="patch"
+          maxLength={30}
+          placeholder="mis. 1.8.44, Patch Juni 2026"
+          defaultValue={initialValues.patch ?? ""}
+          className="h-10 w-full rounded-md border border-ui-border bg-ui-surface px-3 text-sm text-ui-text focus:border-yellow-400 focus:outline-none"
         />
       </Field>
 

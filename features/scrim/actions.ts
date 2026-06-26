@@ -64,6 +64,12 @@ export async function createScrimAction(
     .maybeSingle();
   if (orgError || !org) return { ok: false, message: "Organisasi tidak ditemukan" };
 
+  // Parse datetime-local string as WIB (UTC+7) — browser sends localtime
+  // without timezone suffix; appending +07:00 prevents the server (UTC)
+  // from double-shifting the time by 7 hours.
+  const scheduledAtUtc = new Date(parsed.data.scheduled_at + ":00+07:00").toISOString();
+  const isPast = new Date(scheduledAtUtc) < new Date();
+
   const { data: scrim, error } = await supabase
     .from("scrims")
     .insert({
@@ -72,13 +78,18 @@ export async function createScrimAction(
       created_by: user.id,
       opponent_name: parsed.data.opponent_name,
       opponent_contact: parsed.data.opponent_contact,
-      scheduled_at: new Date(parsed.data.scheduled_at).toISOString(),
+      scheduled_at: scheduledAtUtc,
       format: parsed.data.format,
       server_region: parsed.data.server_region,
       room_info: parsed.data.room_info,
       notes: parsed.data.notes,
-      reminder_sent_at: null,
-      h24_reminder_sent_at: null,
+      patch: parsed.data.patch ?? null,
+      // Historical scrims are created as completed immediately
+      status: isPast ? "completed" : "scheduled",
+      reminder_sent_at: isPast ? new Date().toISOString() : null,
+      h24_reminder_sent_at: isPast ? new Date().toISOString() : null,
+      h60_reminder_sent_at: isPast ? new Date().toISOString() : null,
+      h7_reminder_sent_at: isPast ? new Date().toISOString() : null,
     })
     .select("*")
     .single();
@@ -100,7 +111,15 @@ export async function createScrimAction(
     metadata: { opponent: scrim.opponent_name, format: scrim.format },
   });
 
-  await fanOutScrimNotifications(supabase, scrim, org.name);
+  // Skip WA blast for past scrims, and for scrims >7 days away
+  // (those will get an H-7 reminder from the cron job instead).
+  if (!isPast) {
+    const daysUntilScrim = (new Date(scheduledAtUtc).getTime() - Date.now()) / (1000 * 60 * 60 * 24);
+    if (daysUntilScrim <= 7) {
+      await fanOutScrimNotifications(supabase, scrim, org.name);
+    }
+    // else: H-7 cron will send the WA blast when the time comes
+  }
 
   revalidatePath(`/${orgSlug}/scrim`);
   revalidatePath(`/${orgSlug}`);
@@ -376,6 +395,32 @@ export async function cancelScrimAction(
     entityId: parsed.data.scrim_id,
   });
 
+  // Fan-out WA cancel notification (best-effort)
+  const admin = createAdminClient();
+  const { data: scrimRow } = await admin
+    .from("scrims")
+    .select("opponent_name, scheduled_at, format, organization_id")
+    .eq("id", parsed.data.scrim_id)
+    .maybeSingle();
+  if (scrimRow) {
+    const { data: orgRow } = await admin
+      .from("organizations")
+      .select("name")
+      .eq("id", scrimRow.organization_id)
+      .maybeSingle();
+    if (orgRow) {
+      fanOutScrimCancelNotification(
+        parsed.data.scrim_id,
+        scrimRow.organization_id,
+        orgRow.name,
+        scrimRow.opponent_name,
+        scrimRow.scheduled_at,
+        scrimRow.format,
+        parsed.data.reason ?? null,
+      ).catch((err) => console.error("[Scrim Cancel Notification]", err));
+    }
+  }
+
   revalidatePath(`/${orgSlug}/scrim/${parsed.data.scrim_id}`);
   revalidatePath(`/${orgSlug}/scrim`);
   return { ok: true };
@@ -408,17 +453,21 @@ export async function updateScrimAction(
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, message: "Anda harus login" };
 
+  // Parse datetime-local string as WIB (UTC+7) to avoid double-shift.
+  const scheduledAtUtc = new Date(parsed.data.scheduled_at + ":00+07:00").toISOString();
+
   const { data: updatedScrim, error } = await supabase
     .from("scrims")
     .update({
       division_id: parsed.data.division_id,
-      scheduled_at: new Date(parsed.data.scheduled_at).toISOString(),
+      scheduled_at: scheduledAtUtc,
       opponent_name: parsed.data.opponent_name,
       opponent_contact: parsed.data.opponent_contact,
       format: parsed.data.format,
       server_region: parsed.data.server_region,
       room_info: parsed.data.room_info,
       notes: parsed.data.notes,
+      patch: parsed.data.patch ?? null,
     })
     .eq("id", parsed.data.scrim_id)
     .select("*")
@@ -495,6 +544,84 @@ async function fanOutScrimUpdateNotification(scrim: Scrim, orgName: string) {
   }));
 
   await admin.from("notifications").insert(rows);
+}
+
+/**
+ * Fan out a cancellation notification (in-app bell + WA) to all active org
+ * members when a scrim is cancelled.
+ */
+async function fanOutScrimCancelNotification(
+  scrimId: string,
+  organizationId: string,
+  orgName: string,
+  opponentName: string,
+  scheduledAt: string,
+  format: string,
+  reason: string | null,
+) {
+  const admin = createAdminClient();
+  const { data: members } = await admin
+    .from("team_members")
+    .select("user_id")
+    .eq("organization_id", organizationId)
+    .eq("is_active", true)
+    .limit(500);
+  if (!members || members.length === 0) return;
+
+  const { data: profiles } = await admin
+    .from("profiles")
+    .select("id, phone_wa")
+    .in("id", members.map((m) => m.user_id));
+  const phoneMap = new Map(
+    (profiles ?? []).map((p) => [p.id, p.phone_wa]),
+  );
+
+  const scheduled = new Date(scheduledAt).toLocaleString("id-ID", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "Asia/Jakarta",
+  });
+  const title = `Scrim dibatalkan: vs ${opponentName}`;
+  const body = reason
+    ? `Scrim ${format.toUpperCase()} vs ${opponentName} (${scheduled}) dibatalkan. Alasan: ${reason}`
+    : `Scrim ${format.toUpperCase()} vs ${opponentName} (${scheduled}) dibatalkan.`;
+  const waMessage = [
+    `❌ [${orgName}] Scrim Dibatalkan`,
+    ``,
+    `*Lawan:* ${opponentName}`,
+    `*Jadwal:* ${scheduled} WIB`,
+    `*Format:* ${format.toUpperCase()}`,
+    reason ? `*Alasan:* ${reason}` : null,
+  ]
+    .filter((line) => line !== null)
+    .join("\n");
+
+  const rows = members.map((m) => ({
+    organization_id: organizationId,
+    user_id: m.user_id,
+    type: "scrim_invite" as const,
+    title,
+    body,
+    ref_id: scrimId,
+    ref_type: "scrim",
+    wa_number: phoneMap.get(m.user_id) ?? null,
+    wa_message: phoneMap.get(m.user_id) ? waMessage : null,
+  }));
+
+  await admin.from("notifications").insert(rows);
+
+  // Immediate WA blast
+  const recipients = members
+    .map((m) => ({ phone: phoneMap.get(m.user_id), message: waMessage }))
+    .filter((r): r is { phone: string; message: string } => Boolean(r.phone));
+  if (recipients.length > 0) {
+    blastWaMessage(recipients).catch((err) =>
+      console.error("[WA Blast] Cancel notification error:", err),
+    );
+  }
 }
 
 /**
@@ -630,6 +757,7 @@ export async function createScrimFormAction(
     server_region: formData.get("server_region"),
     room_info: formData.get("room_info"),
     notes: formData.get("notes"),
+    patch: formData.get("patch"),
   };
   const res = await createScrimAction(orgSlug, raw);
   if (!res.ok) return res;

@@ -16,6 +16,15 @@ describe("createTournamentSchema", () => {
     registration_deadline: "2026-05-30T23:59:00.000Z",
   };
 
+  it("accepts valid minimal input without registration_deadline (historical)", () => {
+    const result = createTournamentSchema.safeParse({
+      division_id: VALID_UUID,
+      name: "Historical Championship",
+      start_date: "2025-01-01",
+    });
+    expect(result.success).toBe(true);
+  });
+
   it("accepts valid minimal input", () => {
     const result = createTournamentSchema.safeParse(baseValid);
     expect(result.success).toBe(true);
@@ -126,10 +135,22 @@ describe("createTournamentSchema", () => {
     }
   });
 
-  it("rejects invalid location_type enum value", () => {
+  it("accepts hybrid as a valid location_type", () => {
     const result = createTournamentSchema.safeParse({
       ...baseValid,
       location_type: "hybrid",
+      location: "Jakarta Convention Center",
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.location_type).toBe("hybrid");
+    }
+  });
+
+  it("rejects unknown location_type enum value", () => {
+    const result = createTournamentSchema.safeParse({
+      ...baseValid,
+      location_type: "in-person",
     });
     expect(result.success).toBe(false);
   });

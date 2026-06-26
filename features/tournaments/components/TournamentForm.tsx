@@ -52,10 +52,11 @@ const TournamentForm = ({ orgSlug, divisionId, tournament, onSuccess }: Tourname
   );
   const [deadlineError, setDeadlineError] = useState<string | null>(null);
 
-  const [locationType, setLocationType] = useState<"online" | "offline" | "">(
-    (tournament?.location_type as "online" | "offline" | undefined) ?? ""
+  const [locationType, setLocationType] = useState<"online" | "offline" | "hybrid" | "">(
+    (tournament?.location_type as "online" | "offline" | "hybrid" | undefined) ?? ""
   );
   const [location, setLocation] = useState(tournament?.location ?? "");
+  const [onlinePlatform, setOnlinePlatform] = useState((tournament as { online_platform?: string | null } | undefined)?.online_platform ?? "");
 
   // Max datetime-local value = start_date at 23:59 (user can only pick up to a moment before start_date)
   const deadlineMax = startDate ? `${startDate}T23:58` : undefined;
@@ -93,6 +94,7 @@ const TournamentForm = ({ orgSlug, divisionId, tournament, onSuccess }: Tourname
       registration_deadline: registrationDeadline || undefined,
       location_type: locationType || undefined,
       location: location || undefined,
+      online_platform: onlinePlatform || undefined,
     };
 
     startTransition(async () => {
@@ -216,23 +218,39 @@ const TournamentForm = ({ orgSlug, divisionId, tournament, onSuccess }: Tourname
           <label className="text-xs text-ui-text-2 mb-1.5 block">Tipe Lokasi</label>
           <CustomSelect
             value={locationType}
-            onChange={(val) => setLocationType(val as "online" | "offline" | "")}
+            onChange={(val) => setLocationType(val as "online" | "offline" | "hybrid" | "")}
             options={[
               { value: "", label: "Pilih tipe lokasi..." },
               { value: "online", label: "Online" },
               { value: "offline", label: "Offline" },
+              { value: "hybrid", label: "Hybrid (Online + Offline)" },
             ]}
           />
         </div>
         <div>
-          <label className="text-xs text-ui-text-2 mb-1 block">Detail Lokasi</label>
+          <label className="text-xs text-ui-text-2 mb-1 block">
+            {locationType === "hybrid" ? "Venue / Lokasi Offline" : "Detail Lokasi"}
+          </label>
           <input
             value={location}
             onChange={(e) => setLocation(e.target.value)}
+            placeholder={locationType === "hybrid" ? "mis. Jakarta Convention Center" : ""}
             className="h-9 w-full rounded-md border border-ui-border bg-ui-surface px-3 text-sm text-ui-text focus:border-yellow-400/50 focus:outline-none"
           />
         </div>
       </div>
+
+      {locationType === "hybrid" && (
+        <div>
+          <label className="text-xs text-ui-text-2 mb-1 block">Platform / Link Online</label>
+          <input
+            value={onlinePlatform}
+            onChange={(e) => setOnlinePlatform(e.target.value)}
+            placeholder="mis. Discord, Zoom, https://meet.google.com/..."
+            className="h-9 w-full rounded-md border border-ui-border bg-ui-surface px-3 text-sm text-ui-text focus:border-yellow-400/50 focus:outline-none"
+          />
+        </div>
+      )}
 
       {/* Stages timeline and WA blast removed from new tournament form */}
 
@@ -248,7 +266,7 @@ const TournamentForm = ({ orgSlug, divisionId, tournament, onSuccess }: Tourname
 
       <button
         type="button"
-        disabled={pending || !name || !startDate || !registrationDeadline || !!deadlineError}
+        disabled={pending || !name || !startDate || !!deadlineError}
         onClick={handleSubmit}
         className="inline-flex h-9 items-center gap-1.5 rounded-md bg-yellow-400 px-4 text-xs font-semibold text-black hover:bg-yellow-300 disabled:opacity-50 cursor-pointer"
       >

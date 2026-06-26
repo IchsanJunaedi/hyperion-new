@@ -2160,11 +2160,13 @@ export type Database = {
           h24_reminder_sent_at: string | null
           h30_reminder_sent_at: string | null
           h60_reminder_sent_at: string | null
+          h7_reminder_sent_at: string | null
           id: string
           notes: string | null
           opponent_contact: string | null
           opponent_name: string
           organization_id: string
+          patch: string | null
           reminder_sent_at: string | null
           room_info: string | null
           scheduled_at: string
@@ -2183,11 +2185,13 @@ export type Database = {
           h24_reminder_sent_at?: string | null
           h30_reminder_sent_at?: string | null
           h60_reminder_sent_at?: string | null
+          h7_reminder_sent_at?: string | null
           id?: string
           notes?: string | null
           opponent_contact?: string | null
           opponent_name: string
           organization_id: string
+          patch?: string | null
           reminder_sent_at?: string | null
           room_info?: string | null
           scheduled_at: string
@@ -2206,11 +2210,13 @@ export type Database = {
           h24_reminder_sent_at?: string | null
           h30_reminder_sent_at?: string | null
           h60_reminder_sent_at?: string | null
+          h7_reminder_sent_at?: string | null
           id?: string
           notes?: string | null
           opponent_contact?: string | null
           opponent_name?: string
           organization_id?: string
+          patch?: string | null
           reminder_sent_at?: string | null
           room_info?: string | null
           scheduled_at?: string

@@ -64,6 +64,11 @@ export async function createTournamentAction(
     if (!canCreate) return { ok: false, message: "Hanya captain, coach, atau manager yang bisa menambah turnamen" };
   }
 
+  // Auto-detect status: if start_date is in the past, mark as completed immediately
+  // Use end of day WIB for comparison (a tournament on today is still valid)
+  const endOfStartDay = new Date(parsed.data.start_date + "T23:59:59+07:00");
+  const isHistorical = endOfStartDay < new Date();
+
   const { data: tournament, error } = await admin
     .from("tournaments")
     .insert({
@@ -81,7 +86,11 @@ export async function createTournamentAction(
       registration_deadline: parsed.data.registration_deadline ?? null,
       location_type: parsed.data.location_type ?? null,
       location: parsed.data.location ?? null,
-      status: "upcoming",
+      status: isHistorical ? "completed" : "upcoming",
+      // Mark all reminders as sent for historical entries so they don't trigger
+      h30_reminder_sent_at: isHistorical ? new Date().toISOString() : null,
+      h1_reminder_sent_at: isHistorical ? new Date().toISOString() : null,
+      day_reminder_sent_at: isHistorical ? new Date().toISOString() : null,
     })
     .select("id")
     .single();
@@ -100,8 +109,8 @@ export async function createTournamentAction(
     entityId: tournament.id,
   });
 
-  // Fan-out WA blast if requested
-  if (parsed.data.send_wa_blast) {
+  // Skip WA blast for historical tournaments
+  if (!isHistorical && parsed.data.send_wa_blast) {
     await fanOutTournamentNotifications(
       supabase,
       {
@@ -111,6 +120,7 @@ export async function createTournamentAction(
         start_time: parsed.data.start_time ?? null,
         location_type: parsed.data.location_type ?? null,
         location: parsed.data.location ?? null,
+        online_platform: parsed.data.online_platform ?? null,
         organization_id: org.id,
       },
       org.name,
@@ -131,6 +141,7 @@ async function fanOutTournamentNotifications(
     start_time: string | null;
     location_type: string | null;
     location: string | null;
+    online_platform: string | null;
     organization_id: string;
   },
   orgName: string,
@@ -164,7 +175,11 @@ async function fanOutTournamentNotifications(
     ? `${tournament.start_date} pukul ${tournament.start_time}`
     : tournament.start_date;
   const locationStr = tournament.location_type
-    ? `${tournament.location_type === "online" ? "Online" : "Offline"}${tournament.location ? ` - ${tournament.location}` : ""}`
+    ? tournament.location_type === "online"
+      ? `Online${tournament.online_platform ? ` - ${tournament.online_platform}` : ""}`
+      : tournament.location_type === "hybrid"
+        ? `Hybrid${tournament.location ? ` - Offline: ${tournament.location}` : ""}${tournament.online_platform ? ` / Online: ${tournament.online_platform}` : ""}`
+        : `Offline${tournament.location ? ` - ${tournament.location}` : ""}`
     : "—";
 
   const waMessage = [

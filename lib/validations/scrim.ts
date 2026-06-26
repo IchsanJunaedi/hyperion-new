@@ -11,8 +11,9 @@ export const attendanceStatusSchema = z.enum([
 
 /**
  * Schema for creating a scrim. `scheduled_at` is a local-time ISO string
- * coming from a datetime-local input; we normalize it to a UTC ISO string
- * before insert.
+ * coming from a datetime-local input (WIB, no timezone suffix). The server
+ * action appends '+07:00' before constructing a UTC Date for storage.
+ * Past dates are allowed so that historical scrims can be recorded.
  */
 export const createScrimSchema = z.object({
   division_id: z.string().uuid("Divisi wajib dipilih"),
@@ -30,11 +31,7 @@ export const createScrimSchema = z.object({
   scheduled_at: z
     .string()
     .min(1, "Jadwal wajib diisi")
-    .refine((iso) => !Number.isNaN(new Date(iso).getTime()), "Jadwal tidak valid")
-    .refine(
-      (iso) => new Date(iso).getTime() > Date.now() - 60_000,
-      "Jadwal harus di masa depan",
-    ),
+    .refine((iso) => !Number.isNaN(new Date(iso).getTime()), "Jadwal tidak valid"),
   format: matchFormatSchema,
   server_region: z
     .string()
@@ -52,6 +49,12 @@ export const createScrimSchema = z.object({
     .string()
     .trim()
     .max(2000)
+    .optional()
+    .transform((v) => (v && v.length > 0 ? v : null)),
+  patch: z
+    .string()
+    .trim()
+    .max(30)
     .optional()
     .transform((v) => (v && v.length > 0 ? v : null)),
 });
@@ -143,6 +146,12 @@ export const updateScrimSchema = z.object({
     .string()
     .trim()
     .max(2000)
+    .optional()
+    .transform((v) => (v && v.length > 0 ? v : null)),
+  patch: z
+    .string()
+    .trim()
+    .max(30)
     .optional()
     .transform((v) => (v && v.length > 0 ? v : null)),
 });

@@ -55,6 +55,7 @@ const ScrimForm = ({ orgSlug, divisions }: ScrimFormProps) => {
             server_region: fd.get("server_region"),
             room_info: roomInfo || undefined,
             notes: fd.get("notes"),
+            patch: fd.get("patch"),
           });
           if (!res.ok) {
             setGlobalError(res.message);
@@ -200,6 +201,16 @@ const ScrimForm = ({ orgSlug, divisions }: ScrimFormProps) => {
           rows={3}
           maxLength={2000}
           className="w-full rounded-lg border border-ui-border bg-ui-bg/40 px-3 py-2 text-sm text-ui-text focus:border-yellow-400 focus:outline-none"
+        />
+      </Field>
+
+      {/* Patch - Full Width */}
+      <Field label="Versi patch (opsional)" name="patch" errors={fieldErrors["patch"]}>
+        <input
+          name="patch"
+          maxLength={30}
+          placeholder="mis. 1.8.44, Patch Juni 2026"
+          className="h-10 w-full rounded-lg border border-ui-border bg-ui-bg/40 px-3 text-sm text-ui-text focus:border-yellow-400 focus:outline-none"
         />
       </Field>
 
