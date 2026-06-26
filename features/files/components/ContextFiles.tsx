@@ -10,7 +10,7 @@ import type { FileRow } from "../queries";
 interface ContextFilesProps {
   orgId: string;
   orgSlug: string;
-  refType: "scrim" | "strategy" | "announcement";
+  refType: "scrim" | "strategy" | "announcement" | "tournament";
   refId: string;
   canUpload: boolean;
   initialFiles?: FileRow[];

@@ -1,6 +1,7 @@
 "use client";
 
 import { Loader2, Star, Trophy, Upload, X } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
 
@@ -45,7 +46,15 @@ const FinishScrimSection = ({
 
   if (scrim.status === "completed") {
     if (!initialResult) return null;
-    return <ResultDisplay result={initialResult} imageUrl={resultImageUrl} orgSlug={orgSlug} scrimId={scrim.id} />;
+    return (
+      <ResultDisplay
+        result={initialResult}
+        imageUrl={resultImageUrl}
+        orgSlug={orgSlug}
+        scrimId={scrim.id}
+        canManage={canManage}
+      />
+    );
   }
 
   if (scrim.status === "cancelled") return null;
@@ -103,11 +112,13 @@ function ResultDisplay({
   imageUrl,
   orgSlug,
   scrimId,
+  canManage,
 }: {
   result: ScrimResult;
   imageUrl: string | null;
   orgSlug?: string;
   scrimId?: string;
+  canManage?: boolean;
 }) {
   return (
     <article className="rounded-2xl border border-ui-border bg-ui-surface/40 p-5">
@@ -116,14 +127,24 @@ function ResultDisplay({
           <Trophy className="h-4 w-4 text-yellow-400" />
           Hasil pertandingan
         </h2>
-        {orgSlug && scrimId && (
-          <a
-            href={`/${orgSlug}/scrim/${scrimId}/results`}
-            className="text-xs text-ui-text-2 hover:text-ui-text transition-colors"
-          >
-            Lihat detail →
-          </a>
-        )}
+        <div className="flex items-center gap-3">
+          {canManage && orgSlug && scrimId && (
+            <Link
+              href={`/${orgSlug}/scrim/${scrimId}/finish`}
+              className="text-xs text-yellow-400 hover:text-yellow-300 transition-colors"
+            >
+              Edit Hasil
+            </Link>
+          )}
+          {orgSlug && scrimId && (
+            <Link
+              href={`/${orgSlug}/scrim/${scrimId}/results`}
+              className="text-xs text-ui-text-2 hover:text-ui-text transition-colors"
+            >
+              Lihat detail →
+            </Link>
+          )}
+        </div>
       </div>
       <div className="mt-4 space-y-3">
         <div>

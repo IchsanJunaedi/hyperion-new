@@ -207,8 +207,16 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
       </div>
 
       {/* Header */}
-      <div className="mx-auto max-w-2xl w-full space-y-2">
-        <h1 className="text-2xl font-bold text-ui-text sm:text-3xl tracking-tight">
+      <div className="mx-auto max-w-2xl w-full space-y-2 relative">
+        {canEdit && (
+          <Link
+            href={`/${slug}/scrim/${id}/finish`}
+            className="absolute right-0 top-1 text-xs font-semibold text-yellow-400 hover:text-yellow-300 transition-colors"
+          >
+            Edit Hasil
+          </Link>
+        )}
+        <h1 className="text-2xl font-bold text-ui-text sm:text-3xl tracking-tight pr-20">
           Hasil Pertandingan
         </h1>
         <p className="text-sm text-ui-text-2">

@@ -53,7 +53,6 @@ export async function finishScrimAction(
     .maybeSingle();
 
   if (!scrim) return { ok: false, message: "Scrim tidak ditemukan" };
-  if (scrim.status === "completed") return { ok: false, message: "Scrim sudah selesai" };
   if (scrim.status === "cancelled") return { ok: false, message: "Scrim sudah dibatalkan" };
 
   const isOwner = user.email === process.env.OWNER_EMAIL;
@@ -69,6 +68,12 @@ export async function finishScrimAction(
       return { ok: false, message: "Hanya owner, coach, captain, atau manager yang bisa menyelesaikan scrim" };
     }
   }
+
+  // Delete existing records to prevent orphans when editing
+  await admin.from("scrim_game_results").delete().eq("scrim_id", input.scrimId);
+  await admin.from("scrim_draft_picks").delete().eq("scrim_id", input.scrimId);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await admin.from("scrim_draft_bans" as any).delete().eq("scrim_id", input.scrimId);
 
   const wins = input.games.filter((g) => g.isWin).length;
   const losses = input.games.filter((g) => !g.isWin).length;

@@ -11,6 +11,8 @@ import { TournamentJourney } from "@/features/tournaments/components/TournamentJ
 import { TournamentDetailActions } from "@/features/tournaments/components/TournamentDetailActions";
 import { TournamentBracketCard } from "@/features/tournaments/components/TournamentBracketCard";
 import { TournamentTechMeetCard } from "@/features/tournaments/components/TournamentTechMeetCard";
+import { ContextFiles } from "@/features/files/components/ContextFiles";
+import { getLinkedFiles } from "@/features/files/queries";
 
 export const dynamic = "force-dynamic";
 
@@ -87,7 +89,10 @@ export default async function TournamentDetailPage({ params }: TournamentDetailP
   const detail = await getTournamentDetail(id);
   if (!detail) notFound();
 
-  const currentUserRole = await getCurrentUserRole(organization.id);
+  const [currentUserRole, linkedFiles] = await Promise.all([
+    getCurrentUserRole(organization.id),
+    getLinkedFiles(organization.id, "tournament", id),
+  ]);
   const canManage = ["captain", "coach", "manager", "owner"].includes(currentUserRole ?? "");
   const canManageBracket = ["captain", "manager", "owner", "coach"].includes(currentUserRole ?? "");
 
@@ -242,6 +247,20 @@ export default async function TournamentDetailPage({ params }: TournamentDetailP
                   {detail.notes}
                 </p>
               )}
+            </article>
+          )}
+
+          {/* Files linked to this tournament */}
+          {(linkedFiles.length > 0 || canManage) && (
+            <article className="rounded-2xl border border-ui-border bg-ui-surface/40 p-5">
+              <ContextFiles
+                orgId={organization.id}
+                orgSlug={slug}
+                refType="tournament"
+                refId={id}
+                canUpload={canManage}
+                initialFiles={linkedFiles}
+              />
             </article>
           )}
         </section>

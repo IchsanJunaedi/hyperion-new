@@ -95,6 +95,8 @@ interface FinishScrimFormProps {
   orgSlug: string;
   orgId: string;
   format: string;
+  initialGames?: GameResult[];
+  initialCoachNotes?: string | null;
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -104,16 +106,19 @@ const FinishScrimForm = ({
   orgSlug,
   orgId,
   format,
+  initialGames,
+  initialCoachNotes,
 }: FinishScrimFormProps) => {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
-  const [coachNotes, setCoachNotes] = useState("");
+  const [coachNotes, setCoachNotes] = useState(initialCoachNotes ?? "");
 
   const config = getConfig(format);
-  const [games, setGames] = useState<GameResult[]>(
-    Array.from({ length: config.minGames }, makeBlankGame),
-  );
+  const [games, setGames] = useState<GameResult[]>(() => {
+    if (initialGames && initialGames.length > 0) return initialGames;
+    return Array.from({ length: config.minGames }, makeBlankGame);
+  });
   const [activeGame, setActiveGame] = useState(0);
   const [showScoreboardReview, setShowScoreboardReview] = useState(false);
 
