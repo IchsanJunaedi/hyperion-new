@@ -8,10 +8,10 @@ import { ConfirmDeleteDialog } from "@/features/dashboard/components/ConfirmDele
 import { useNotify } from "@/features/dashboard/components/NotifyModal";
 import { deleteTournamentAction, updateTournamentStatusAction } from "@/features/tournaments/actions";
 import { TournamentCompleteModal } from "@/features/tournaments/components/TournamentCompleteModal";
-import type { Tournament } from "@/features/tournaments/queries";
+import type { TournamentWithStages } from "@/features/tournaments/queries";
 
 interface TournamentDetailActionsProps {
-  tournament: Tournament;
+  tournament: TournamentWithStages;
   orgSlug: string;
 }
 
@@ -95,8 +95,8 @@ const TournamentDetailActions = ({ tournament, orgSlug }: TournamentDetailAction
           </span>
         )}
 
-        {/* Turnamen Selesai — when ongoing (sudah daftar) */}
-        {tournament.status === "ongoing" && (
+        {/* Turnamen Selesai — when ongoing (sudah daftar) or completed (edit hasil) */}
+        {(tournament.status === "ongoing" || tournament.status === "completed") && (
           <button
             type="button"
             disabled={pending}
@@ -104,7 +104,7 @@ const TournamentDetailActions = ({ tournament, orgSlug }: TournamentDetailAction
             className="inline-flex h-9 items-center gap-2 rounded-md border border-ui-border px-4 text-sm font-medium text-ui-text transition hover:bg-ui-elevated disabled:opacity-50 cursor-pointer"
           >
             {pending && <Loader2 className="h-3 w-3 animate-spin" />}
-            Turnamen Selesai
+            {tournament.status === "completed" ? "Edit Hasil" : "Turnamen Selesai"}
           </button>
         )}
 
@@ -137,6 +137,7 @@ const TournamentDetailActions = ({ tournament, orgSlug }: TournamentDetailAction
           tournamentName={tournament.name}
           orgSlug={orgSlug}
           isPastStartDate={isPastStartDate}
+          initialResult={tournament.result}
           onClose={() => setCompleteModalOpen(false)}
         />
       )}

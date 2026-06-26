@@ -13,6 +13,11 @@ interface TournamentCompleteModalProps {
   orgSlug: string;
   isPastStartDate: boolean;
   onClose: () => void;
+  initialResult?: {
+    placement: number | null;
+    prize_earned: string | null;
+    notes: string | null;
+  } | null;
 }
 
 const COMMON_ROUNDS = [16, 32, 64, 128];
@@ -29,22 +34,77 @@ const TournamentCompleteModal = ({
   orgSlug,
   isPastStartDate,
   onClose,
+  initialResult,
 }: TournamentCompleteModalProps) => {
   const { success, error: notifyError } = useNotify();
   const [pending, startTransition] = useTransition();
 
-  const [won, setWon] = useState(true);
+  const [won, setWon] = useState(() => {
+    if (initialResult) {
+      return initialResult.placement !== null;
+    }
+    return true;
+  });
 
   // Won fields
-  const [placement, setPlacement] = useState("");
-  const [prizeDisplay, setPrizeDisplay] = useState("");
-  const [prizeRaw, setPrizeRaw] = useState("");
+  const [placement, setPlacement] = useState(() => {
+    if (initialResult && initialResult.placement !== null) {
+      return String(initialResult.placement);
+    }
+    return "";
+  });
+  const [prizeRaw, setPrizeRaw] = useState(() => {
+    if (initialResult && initialResult.prize_earned) {
+      return initialResult.prize_earned;
+    }
+    return "";
+  });
+  const [prizeDisplay, setPrizeDisplay] = useState(() => {
+    if (initialResult && initialResult.prize_earned) {
+      return formatRupiah(initialResult.prize_earned);
+    }
+    return "";
+  });
 
   // Eliminated fields
-  const [eliminatedRound, setEliminatedRound] = useState<number | null>(null);
-  const [customRound, setCustomRound] = useState("");
+  const [eliminatedRound, setEliminatedRound] = useState<number | null>(() => {
+    if (initialResult && initialResult.placement === null && initialResult.notes) {
+      const match = initialResult.notes.match(/^Gugur babak (\d+)(?:\s*—\s*(.*))?$/);
+      if (match) {
+        const round = parseInt(match[1] || "", 10);
+        if (COMMON_ROUNDS.includes(round)) {
+          return round;
+        }
+      }
+    }
+    return null;
+  });
+  const [customRound, setCustomRound] = useState(() => {
+    if (initialResult && initialResult.placement === null && initialResult.notes) {
+      const match = initialResult.notes.match(/^Gugur babak (\d+)(?:\s*—\s*(.*))?$/);
+      if (match) {
+        const round = parseInt(match[1] || "", 10);
+        if (!COMMON_ROUNDS.includes(round)) {
+          return String(round);
+        }
+      }
+    }
+    return "";
+  });
 
-  const [notes, setNotes] = useState("");
+  const [notes, setNotes] = useState(() => {
+    if (initialResult) {
+      if (initialResult.placement === null && initialResult.notes) {
+        const match = initialResult.notes.match(/^Gugur babak (\d+)(?:\s*—\s*(.*))?$/);
+        if (match) {
+          return match[2] ?? "";
+        }
+      }
+      return initialResult.notes ?? "";
+    }
+    return "";
+  });
+
   const [confirmEarly, setConfirmEarly] = useState(false);
 
   function handlePrizeChange(val: string) {
