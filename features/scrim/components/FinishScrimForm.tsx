@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { NumberInput } from "@/components/ui/number-input";
 import { finishScrimAction } from "../actions/finishScrimAction";
 import { createClient } from "@/lib/supabase/client";
+import { ImagePreview } from "@/components/ui/image-preview";
 import {
   DraftSection,
   makeBlankDraft,
@@ -559,6 +560,7 @@ const FinishScrimForm = ({
               <NumberInput
                 min={0}
                 max={99}
+                hideSteppers={true}
                 value={String(game.durationSeconds ? Math.floor(game.durationSeconds / 60) : 0)}
                 onChange={(e) => {
                   const mins = parseInt(e.target.value || "0", 10);
@@ -572,6 +574,7 @@ const FinishScrimForm = ({
               <NumberInput
                 min={0}
                 max={59}
+                hideSteppers={true}
                 value={String(game.durationSeconds ? game.durationSeconds % 60 : 0)}
                 onChange={(e) => {
                   const secs = parseInt(e.target.value || "0", 10);
@@ -687,35 +690,47 @@ const FinishScrimForm = ({
         </div>
 
         {/* Screenshot */}
-        <div className="flex items-center gap-3">
-          <label className="inline-flex h-8 cursor-pointer items-center gap-2 rounded-lg border border-ui-border px-3 text-xs text-ui-text-2 transition-colors hover:bg-ui-elevated">
-            {game.uploading ? (
-              <Loader2 className="h-3.5 w-3.5 animate-spin" />
-            ) : (
-              <Upload className="h-3.5 w-3.5" />
+        <div className="space-y-2">
+          <div className="flex items-center gap-3">
+            <label className="inline-flex h-8 cursor-pointer items-center gap-2 rounded-lg border border-ui-border px-3 text-xs text-ui-text-2 transition-colors hover:bg-ui-elevated">
+              {game.uploading ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <Upload className="h-3.5 w-3.5" />
+              )}
+              Upload screenshot
+              <input
+                type="file"
+                accept="image/*"
+                className="sr-only"
+                disabled={game.uploading}
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) handleImageUpload(activeGame, f);
+                }}
+              />
+            </label>
+            {game.imageUrl && (
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-medium text-emerald-400">✓ Uploaded</span>
+                <button
+                  type="button"
+                  onClick={() => updateGame(activeGame, { imageUrl: null })}
+                  className="text-xs text-rose-400 hover:underline cursor-pointer"
+                >
+                  Hapus
+                </button>
+              </div>
             )}
-            Upload screenshot
-            <input
-              type="file"
-              accept="image/*"
-              className="sr-only"
-              disabled={game.uploading}
-              onChange={(e) => {
-                const f = e.target.files?.[0];
-                if (f) handleImageUpload(activeGame, f);
-              }}
-            />
-          </label>
+          </div>
+
           {game.imageUrl && (
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-medium text-emerald-400">✓ Uploaded</span>
-              <button
-                type="button"
-                onClick={() => updateGame(activeGame, { imageUrl: null })}
-                className="text-xs text-rose-400 hover:underline cursor-pointer"
-              >
-                Hapus
-              </button>
+            <div className="mt-2 w-48 overflow-hidden rounded-lg border border-ui-border bg-black/20">
+              <ImagePreview
+                storagePath={game.imageUrl}
+                alt={`Screenshot Preview Game ${activeGame + 1}`}
+                className="w-full max-h-[120px] object-contain mx-auto"
+              />
             </div>
           )}
         </div>

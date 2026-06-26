@@ -21,6 +21,7 @@ import {
 import { findOpponentByName } from "@/features/scouting/queries";
 import { ScoutingCard } from "@/features/scouting/components/ScoutingCard";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { ImagePreview } from "@/components/ui/image-preview";
 
 export const dynamic = "force-dynamic";
 
@@ -255,8 +256,7 @@ export default async function ScrimDetailPage({
                     {/* Screenshot image */}
                     <div className="flex-1 flex items-center justify-center p-3 min-h-[160px] bg-black/10">
                       {game.signedUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
+                        <ImagePreview
                           src={game.signedUrl}
                           alt={`Screenshot Game ${game.game_number}`}
                           className="max-w-full max-h-[180px] object-contain rounded border border-ui-border"

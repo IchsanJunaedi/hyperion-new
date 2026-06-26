@@ -10,6 +10,7 @@ import { VodReviewSection } from "@/features/scrim/components/VodReviewSection";
 import type { VodTimestampRow } from "@/features/scrim/actions/vodTimestampsAction";
 import { getScrimAiReviews } from "@/features/scrim/queries/aiReviews";
 import { AiTacticalReviewCard } from "@/features/scrim/components/AiTacticalReviewCard";
+import { ImagePreview } from "@/components/ui/image-preview";
 
 export const dynamic = "force-dynamic";
 
@@ -428,8 +429,7 @@ export default async function ScrimResultsPage({ params }: ScrimResultsPageProps
                     Screenshot Scoreboard
                   </h4>
                   <div className="overflow-hidden rounded-lg border border-ui-border bg-black/20">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+                    <ImagePreview
                       src={game.signedUrl}
                       alt={`Screenshot Game ${game.game_number}`}
                       className="w-full max-h-[400px] object-contain mx-auto"
