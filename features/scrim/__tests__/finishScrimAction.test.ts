@@ -49,7 +49,12 @@ function makeAdmin(membershipRole: string | null) {
           }),
         };
       }
-      return { upsert: async () => ({ error: null }) };
+      return {
+        upsert: async () => ({ error: null }),
+        delete: () => ({
+          eq: async () => ({ error: null }),
+        }),
+      };
     },
   } as any;
 }
