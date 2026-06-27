@@ -179,17 +179,21 @@ async function fanOutScrimNotifications(
     scrimUrl,
   });
 
-  const rows = members.map((m) => ({
-    organization_id: scrim.organization_id,
-    user_id: m.user_id,
-    type: "scrim_invite" as const,
-    title,
-    body,
-    ref_id: scrim.id,
-    ref_type: "scrim",
-    wa_number: phoneMap.get(m.user_id) ?? null,
-    wa_message: phoneMap.get(m.user_id) ? waMessage : null,
-  }));
+  const rows = members.map((m) => {
+    const phone = phoneMap.get(m.user_id);
+    return {
+      organization_id: scrim.organization_id,
+      user_id: m.user_id,
+      type: "scrim_invite" as const,
+      title,
+      body,
+      ref_id: scrim.id,
+      ref_type: "scrim",
+      wa_number: phone ?? null,
+      wa_message: phone ? waMessage : null,
+      status: phone ? ("sent" as const) : ("pending" as const),
+    };
+  });
 
   // Best-effort: the scrim insert is the source of truth; notification
   // failures shouldn't block the captain.
@@ -599,17 +603,21 @@ async function fanOutScrimCancelNotification(
     .filter((line) => line !== null)
     .join("\n");
 
-  const rows = members.map((m) => ({
-    organization_id: organizationId,
-    user_id: m.user_id,
-    type: "scrim_invite" as const,
-    title,
-    body,
-    ref_id: scrimId,
-    ref_type: "scrim",
-    wa_number: phoneMap.get(m.user_id) ?? null,
-    wa_message: phoneMap.get(m.user_id) ? waMessage : null,
-  }));
+  const rows = members.map((m) => {
+    const phone = phoneMap.get(m.user_id);
+    return {
+      organization_id: organizationId,
+      user_id: m.user_id,
+      type: "scrim_invite" as const,
+      title,
+      body,
+      ref_id: scrimId,
+      ref_type: "scrim",
+      wa_number: phone ?? null,
+      wa_message: phone ? waMessage : null,
+      status: phone ? ("sent" as const) : ("pending" as const),
+    };
+  });
 
   await admin.from("notifications").insert(rows);
 
