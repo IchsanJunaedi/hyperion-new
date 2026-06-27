@@ -49,7 +49,7 @@ export default async function ScrimDetailPage({
     getOpponentHistory(scrim.organization_id, scrim.opponent_name, id),
     createAdminClient()
       .from("scrim_game_results")
-      .select("game_number, is_win, image_url")
+      .select("game_number, is_win, image_url, duration_seconds")
       .eq("scrim_id", id)
       .order("game_number", { ascending: true }),
   ]);
@@ -243,9 +243,16 @@ export default async function ScrimDetailPage({
                   >
                     {/* Game header */}
                     <div className="flex items-center justify-between px-4 py-2 bg-ui-surface/60 border-b border-ui-border">
-                      <span className="text-xs font-semibold text-ui-text">
-                        Game {game.game_number}
-                      </span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-xs font-semibold text-ui-text">
+                          Game {game.game_number}
+                        </span>
+                        {game.signedUrl && game.duration_seconds ? (
+                          <span className="text-[10px] text-ui-text-muted font-normal">
+                            ({Math.floor(game.duration_seconds / 60)}m {game.duration_seconds % 60}s)
+                          </span>
+                        ) : null}
+                      </div>
                       <span className={`text-[10px] font-bold uppercase tracking-wider ${
                         game.is_win ? "text-green-400" : "text-red-400"
                       }`}>
