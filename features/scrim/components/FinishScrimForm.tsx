@@ -67,10 +67,22 @@ interface GameResult {
   draft: DraftPicks;
   scoreboard: ScoreboardResult | null; // AI-scanned, editable, persisted to scrim_ai_reviews
   durationSeconds: number | null;
+  draftScanned?: boolean;
+  scoreboardScanned?: boolean;
 }
 
 function makeBlankGame(): GameResult {
-  return { isWin: null, notes: "", imageUrl: null, uploading: false, draft: makeBlankDraft(), scoreboard: null, durationSeconds: null };
+  return { 
+    isWin: null, 
+    notes: "", 
+    imageUrl: null, 
+    uploading: false, 
+    draft: makeBlankDraft(), 
+    scoreboard: null, 
+    durationSeconds: null,
+    draftScanned: false,
+    scoreboardScanned: false
+  };
 }
 
 function extractDraftResult(draft: DraftPicks): DraftResult | null {
@@ -117,7 +129,13 @@ const FinishScrimForm = ({
 
   const config = getConfig(format);
   const [games, setGames] = useState<GameResult[]>(() => {
-    if (initialGames && initialGames.length > 0) return initialGames;
+    if (initialGames && initialGames.length > 0) {
+      return initialGames.map((g) => ({
+        ...g,
+        draftScanned: g.draftScanned ?? ((g.draft.bans?.our ?? []).some(Boolean) || (g.draft.bans?.enemy ?? []).some(Boolean)),
+        scoreboardScanned: g.scoreboardScanned ?? (!!g.scoreboard),
+      }));
+    }
     return Array.from({ length: config.minGames }, makeBlankGame);
   });
   const [activeGame, setActiveGame] = useState(0);
@@ -225,6 +243,7 @@ const FinishScrimForm = ({
       if (idx !== i) return g;
       return {
         ...g,
+        draftScanned: true,
         draft: {
           ...g.draft,
           bans: {
@@ -276,6 +295,7 @@ const FinishScrimForm = ({
         ...g,
         isWin: s.isWin,
         scoreboard: s,
+        scoreboardScanned: true,
         durationSeconds: s.durationSeconds || g.durationSeconds,
         draft: {
           ...g.draft,
@@ -602,7 +622,7 @@ const FinishScrimForm = ({
             orgId={orgId}
             scrimId={scrimId}
             gameIndex={activeGame}
-            isDone={Object.values(game.draft.our).some(s => s.hero) || Object.values(game.draft.enemy).some(h => h) || (game.draft.bans?.our ?? []).some(Boolean) || (game.draft.bans?.enemy ?? []).some(Boolean)}
+            isDone={game.draftScanned}
             onAnalyzed={(p) => handleAnalyzed(activeGame, p)}
           />
           <ScreenshotDropzone
@@ -612,7 +632,7 @@ const FinishScrimForm = ({
             orgId={orgId}
             scrimId={scrimId}
             gameIndex={activeGame}
-            isDone={!!game.scoreboard}
+            isDone={game.scoreboardScanned}
             onAnalyzed={(p) => handleAnalyzed(activeGame, p)}
           />
         </div>
