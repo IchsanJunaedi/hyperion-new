@@ -11,6 +11,7 @@ import { DashboardSidebarNav } from "@/components/layout/DashboardSidebarNav";
 import { DashboardHeader } from "@/components/layout/DashboardHeader";
 import { DashboardMobileNav } from "@/components/layout/DashboardMobileNav";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { QueryProvider } from "@/components/providers/QueryProvider";
 
 export const dynamic = "force-dynamic";
 
@@ -64,110 +65,112 @@ export default async function DashboardLayout({
   const workspaceName = profile?.full_name ?? profile?.display_name ?? orgName;
 
   return (
-    <NotifyProvider>
-      <div className="flex min-h-screen bg-ui-bg text-ui-text">
-        {/* Sidebar — desktop only */}
-        <aside className="hidden md:flex w-[280px] h-screen fixed left-0 top-0 bg-ui-surface flex-col border-r border-ui-border text-sm">
-          {/* Org header */}
-          <div className="flex h-12 shrink-0 items-center border-b border-ui-border">
-            {orgSlug ? (
-              <Link
-                href={`/${orgSlug}`}
-                className="flex h-full min-w-0 flex-1 items-center gap-3 px-4 transition hover:bg-ui-hover"
-                title="Buka Workspace"
-              >
-                {orgLogoUrl ? (
-                  <img src={orgLogoUrl} alt="Logo" className="h-5 w-5 rounded object-cover" />
-                ) : (
-                  <div className="grid h-5 w-5 place-items-center rounded bg-ui-hover-strong text-xs font-semibold text-ui-text">
-                    {workspaceName.slice(0, 1).toUpperCase()}
-                  </div>
-                )}
-                <p className="min-w-0 flex-1 truncate text-sm font-medium text-ui-text-dim">
-                  {workspaceName}
-                </p>
-                <span className="shrink-0 text-[10px] font-bold uppercase tracking-widest text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.5)]">
-                  owner
-                </span>
-              </Link>
-            ) : (
-              <div className="flex h-full min-w-0 flex-1 items-center gap-3 px-4">
-                {orgLogoUrl ? (
-                  <img src={orgLogoUrl} alt="Logo" className="h-5 w-5 rounded object-cover" />
-                ) : (
-                  <div className="grid h-5 w-5 place-items-center rounded bg-ui-hover-strong text-xs font-semibold text-ui-text">
-                    {workspaceName.slice(0, 1).toUpperCase()}
-                  </div>
-                )}
-                <p className="min-w-0 flex-1 truncate text-sm font-medium text-ui-text-dim">
-                  {workspaceName}
-                </p>
-                <span className="shrink-0 text-[10px] font-bold uppercase tracking-widest text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.5)]">
-                  owner
-                </span>
-              </div>
-            )}
-          </div>
-
-          {/* Nav groups */}
-          <DashboardSidebarNav orgId={dashboardOrgId} />
-
-          {/* Settings */}
-          <div className="border-t border-ui-border px-2 py-3 shrink-0">
-            {user && (
-              <DashboardSettingsButton userId={user.id} orgId={dashboardOrgId} />
-            )}
-            <div className="mt-1 flex items-center justify-between rounded px-3 py-1.5">
-              <span className="text-sm text-ui-text-2">Tema</span>
-              <ThemeToggle />
-            </div>
-          </div>
-
-          {/* User footer */}
-          <div className="border-t border-ui-border px-3 py-3 shrink-0">
-            <div className="flex items-center gap-3 rounded px-2 py-2">
-              {avatarUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={avatarUrl}
-                  alt={displayName}
-                  className="h-5 w-5 rounded-full object-cover"
-                />
+    <QueryProvider>
+      <NotifyProvider>
+        <div className="flex min-h-screen bg-ui-bg text-ui-text">
+          {/* Sidebar — desktop only */}
+          <aside className="hidden md:flex w-[280px] h-screen fixed left-0 top-0 bg-ui-surface flex-col border-r border-ui-border text-sm">
+            {/* Org header */}
+            <div className="flex h-12 shrink-0 items-center border-b border-ui-border">
+              {orgSlug ? (
+                <Link
+                  href={`/${orgSlug}`}
+                  className="flex h-full min-w-0 flex-1 items-center gap-3 px-4 transition hover:bg-ui-hover"
+                  title="Buka Workspace"
+                >
+                  {orgLogoUrl ? (
+                    <img src={orgLogoUrl} alt="Logo" className="h-5 w-5 rounded object-cover" />
+                  ) : (
+                    <div className="grid h-5 w-5 place-items-center rounded bg-ui-hover-strong text-xs font-semibold text-ui-text">
+                      {workspaceName.slice(0, 1).toUpperCase()}
+                    </div>
+                  )}
+                  <p className="min-w-0 flex-1 truncate text-sm font-medium text-ui-text-dim">
+                    {workspaceName}
+                  </p>
+                  <span className="shrink-0 text-[10px] font-bold uppercase tracking-widest text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.5)]">
+                    owner
+                  </span>
+                </Link>
               ) : (
-                <div className="grid h-5 w-5 place-items-center rounded-full bg-ui-hover-strong text-[10px] font-semibold text-ui-text-dim">
-                  {displayName.slice(0, 2).toUpperCase()}
+                <div className="flex h-full min-w-0 flex-1 items-center gap-3 px-4">
+                  {orgLogoUrl ? (
+                    <img src={orgLogoUrl} alt="Logo" className="h-5 w-5 rounded object-cover" />
+                  ) : (
+                    <div className="grid h-5 w-5 place-items-center rounded bg-ui-hover-strong text-xs font-semibold text-ui-text">
+                      {workspaceName.slice(0, 1).toUpperCase()}
+                    </div>
+                  )}
+                  <p className="min-w-0 flex-1 truncate text-sm font-medium text-ui-text-dim">
+                    {workspaceName}
+                  </p>
+                  <span className="shrink-0 text-[10px] font-bold uppercase tracking-widest text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.5)]">
+                    owner
+                  </span>
                 </div>
               )}
-              <p className="min-w-0 flex-1 truncate text-xs text-ui-text-2">
-                {user?.email ?? displayName}
-              </p>
-              <form action={dashboardLogoutAction}>
-                <button
-                  type="submit"
-                  aria-label="Logout"
-                  className="rounded p-1.5 text-ui-text-2 transition hover:bg-ui-hover hover:text-ui-text-dim"
-                  title="Logout"
-                >
-                  <LogOut className="h-4 w-4" />
-                </button>
-              </form>
             </div>
-          </div>
-        </aside>
 
-        {/* Main content */}
-        <div className="flex-1 md:ml-[280px] flex flex-col min-h-screen">
-          <NotificationRealtimeProvider userId={user?.id ?? ""}>
-            <DashboardHeader
-              workspaceName={workspaceName}
-              userId={user.id}
-              orgSlug={orgSlug}
-              mobileNav={<DashboardMobileNav orgId={dashboardOrgId} />}
-            />
-            {children}
-          </NotificationRealtimeProvider>
+            {/* Nav groups */}
+            <DashboardSidebarNav orgId={dashboardOrgId} />
+
+            {/* Settings */}
+            <div className="border-t border-ui-border px-2 py-3 shrink-0">
+              {user && (
+                <DashboardSettingsButton userId={user.id} orgId={dashboardOrgId} />
+              )}
+              <div className="mt-1 flex items-center justify-between rounded px-3 py-1.5">
+                <span className="text-sm text-ui-text-2">Tema</span>
+                <ThemeToggle />
+              </div>
+            </div>
+
+            {/* User footer */}
+            <div className="border-t border-ui-border px-3 py-3 shrink-0">
+              <div className="flex items-center gap-3 rounded px-2 py-2">
+                {avatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={avatarUrl}
+                    alt={displayName}
+                    className="h-5 w-5 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="grid h-5 w-5 place-items-center rounded-full bg-ui-hover-strong text-[10px] font-semibold text-ui-text-dim">
+                    {displayName.slice(0, 2).toUpperCase()}
+                  </div>
+                )}
+                <p className="min-w-0 flex-1 truncate text-xs text-ui-text-2">
+                  {user?.email ?? displayName}
+                </p>
+                <form action={dashboardLogoutAction}>
+                  <button
+                    type="submit"
+                    aria-label="Logout"
+                    className="rounded p-1.5 text-ui-text-2 transition hover:bg-ui-hover hover:text-ui-text-dim"
+                    title="Logout"
+                  >
+                    <LogOut className="h-4 w-4" />
+                  </button>
+                </form>
+              </div>
+            </div>
+          </aside>
+
+          {/* Main content */}
+          <div className="flex-1 md:ml-[280px] flex flex-col min-h-screen">
+            <NotificationRealtimeProvider userId={user?.id ?? ""}>
+              <DashboardHeader
+                workspaceName={workspaceName}
+                userId={user.id}
+                orgSlug={orgSlug}
+                mobileNav={<DashboardMobileNav orgId={dashboardOrgId} />}
+              />
+              {children}
+            </NotificationRealtimeProvider>
+          </div>
         </div>
-      </div>
-    </NotifyProvider>
+      </NotifyProvider>
+    </QueryProvider>
   );
 }

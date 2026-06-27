@@ -182,6 +182,7 @@ export interface HeroStatRow {
 
 export interface HeroDetailPlayerRow {
   display_name: string;
+  role: string;
   total: number;
   wins: number;
   losses: number;
@@ -460,23 +461,24 @@ export async function getOpponentSummary(orgId: string): Promise<OpponentSummary
     return [];
   }
 
-  const map = new Map<string, { wins: number; losses: number; draws: number }>();
+  const map = new Map<string, { wins: number; losses: number; draws: number; originalName: string }>();
   for (const s of data ?? []) {
     const name = (s.opponent_name ?? "").trim();
     if (!name) continue;
+    const lowerName = name.toLowerCase();
     const isWin = extractIsWin(s.scrim_results);
-    const entry = map.get(name) ?? { wins: 0, losses: 0, draws: 0 };
+    const entry = map.get(lowerName) ?? { wins: 0, losses: 0, draws: 0, originalName: name };
     if (isWin === true) entry.wins++;
     else if (isWin === false) entry.losses++;
     else entry.draws++;
-    map.set(name, entry);
+    map.set(lowerName, entry);
   }
 
-  return Array.from(map.entries())
-    .map(([opponent_name, { wins, losses, draws }]) => {
+  return Array.from(map.values())
+    .map(({ wins, losses, draws, originalName }) => {
       const decided = wins + losses;
       return {
-        opponent_name,
+        opponent_name: originalName,
         total: wins + losses + draws,
         wins,
         losses,

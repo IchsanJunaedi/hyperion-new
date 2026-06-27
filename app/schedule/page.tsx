@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { CalendarRange } from "lucide-react";
 
 import { Header } from "@/components/landing/Header";
@@ -144,25 +143,14 @@ const SchedulePage = async () => {
                               {t.game && t.division_name && <span>·</span>}
                               {t.division_name && <span>{t.division_name}</span>}
                               {t.organizer && <><span>·</span><span>{t.organizer}</span></>}
-                              {t.prize_pool && <><span>·</span><span className="text-[#F5C400] font-medium">{t.prize_pool}</span></>}
                             </div>
                           </div>
 
-                          {/* Sisi Kanan: Status Badge & Registrasi */}
+                          {/* Sisi Kanan: Status Badge */}
                           <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-3 shrink-0">
                             <span className={`rounded-full border px-3.5 py-1 text-[10px] font-bold uppercase tracking-wider ${STATUS_COLOR[t.status] ?? STATUS_COLOR.upcoming}`}>
                               {STATUS_LABEL[t.status] ?? t.status.toUpperCase()}
                             </span>
-                            {t.registration_url && (
-                              <Link
-                                href={t.registration_url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex h-9 items-center justify-center bg-[#F5C400] hover:bg-white text-black font-bebas text-xs font-bold uppercase tracking-[0.1em] px-4 transition-colors duration-200 clip-cyber-btn"
-                              >
-                                Daftar →
-                              </Link>
-                            )}
                           </div>
                         </div>
                       ))}

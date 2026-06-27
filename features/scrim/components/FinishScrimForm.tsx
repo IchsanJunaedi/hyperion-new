@@ -352,6 +352,10 @@ const FinishScrimForm = ({
       setError("Pilih Menang atau Kalah untuk semua game");
       return;
     }
+    const roleToPlayer = new Map(
+      attendingPlayers.filter((p) => p.mainRole).map((p) => [p.mainRole!, p]),
+    );
+
     startTransition(async () => {
       setError(null);
       const res = await finishScrimAction({
@@ -374,7 +378,7 @@ const FinishScrimForm = ({
                 side: "our" as const,
                 role,
                 hero_name: slot.hero,
-                player_id: slot.playerId,
+                player_id: roleToPlayer.get(role)?.userId ?? null,
               })),
             ...Object.entries(g.draft.enemy)
               .filter(([, hero]) => hero)

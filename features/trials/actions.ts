@@ -66,11 +66,25 @@ async function getManagerOrCoach() {
   if (!user) return null;
 
   const admin = createAdminClient();
+
+  // Owner is not in team_members — detect via OWNER_EMAIL env
+  const ownerEmail = process.env.OWNER_EMAIL;
+  if (ownerEmail && user.email === ownerEmail) {
+    const { data: org } = await admin
+      .from("organizations")
+      .select("id")
+      .eq("owner_id", user.id)
+      .limit(1)
+      .maybeSingle();
+    if (!org) return null;
+    return { user, orgId: org.id, role: "owner" };
+  }
+
   const { data } = await admin
     .from("team_members")
     .select("organization_id, role")
     .eq("user_id", user.id)
-    .in("role", ["manager", "coach", "owner"])
+    .in("role", ["manager", "coach"])
     .eq("is_active", true)
     .limit(1)
     .maybeSingle();

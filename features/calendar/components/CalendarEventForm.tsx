@@ -25,7 +25,7 @@ const VISIBILITY_OPTIONS = [
 ];
 
 const inputCls =
-  "h-10 w-full rounded-md border border-ui-border bg-ui-surface px-3 text-sm text-ui-text focus:border-yellow-400 focus:outline-none [color-scheme:dark]";
+  "h-10 w-full rounded-md border border-ui-border bg-ui-surface px-3 text-sm text-ui-text focus:border-yellow-400 focus:outline-none";
 
 interface PremiumSelectProps {
   id: string;

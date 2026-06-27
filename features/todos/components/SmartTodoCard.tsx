@@ -50,7 +50,7 @@ const SmartTodoCard = ({ todo, orgId, revalidatePaths }: Props) => {
   };
 
   const Icon = TYPE_ICON[todo.smart_type];
-  const isNavigable = todo.navigate_to && !todo.navigate_to.startsWith("#");
+  const isNavigable = !!todo.navigate_to;
 
   return (
     <div

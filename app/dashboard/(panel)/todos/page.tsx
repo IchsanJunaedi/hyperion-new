@@ -1,4 +1,4 @@
-﻿import { redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { computeSmartTodos, getManualTodos, getAssignedOutTodos } from "@/features/todos/queries";
@@ -27,7 +27,7 @@ const DashboardTodosPage = async () => {
   if (!org) redirect("/dashboard");
 
   const [smartTodos, manualRows, assignedOut] = await Promise.all([
-    computeSmartTodos(org.id, user.id),
+    computeSmartTodos(org.id, user.id, org.slug),
     getManualTodos(org.id, user.id),
     getAssignedOutTodos(org.id, user.id),
   ]);

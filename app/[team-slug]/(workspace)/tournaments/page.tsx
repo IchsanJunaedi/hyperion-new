@@ -131,7 +131,8 @@ export default async function TournamentsPage({ params, searchParams }: Tourname
               <TournamentCard
                 tournament={t}
                 orgSlug={slug}
-                placement={placementMap.get(t.id)}
+                placement={placementMap.get(t.id)?.placement}
+                notes={placementMap.get(t.id)?.notes}
               />
             </li>
           ))}

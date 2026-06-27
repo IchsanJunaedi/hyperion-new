@@ -29,7 +29,7 @@ const ManageTodosPage = async ({ params }: Props) => {
   const admin = createAdminClient();
   const { data: org } = await admin
     .from("organizations")
-    .select("id")
+    .select("id, slug")
     .eq("slug", orgSlug)
     .maybeSingle();
 
@@ -47,7 +47,7 @@ const ManageTodosPage = async ({ params }: Props) => {
   if (!membership) redirect("/manage");
 
   const [smartTodos, myManualRows, assignedToMeRows] = await Promise.all([
-    computeSmartTodos(org.id, user.id),
+    computeSmartTodos(org.id, user.id, orgSlug),
     getManualTodos(org.id, user.id),
     getAssignedToMeTodos(org.id, user.id),
   ]);

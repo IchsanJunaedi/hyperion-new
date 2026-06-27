@@ -15,6 +15,9 @@ interface TournamentCardProps {
   tournament: Tournament;
   orgSlug: string;
   placement?: number | null;
+  notes?: string | null;
+  /** Optional team/org name shown on cross-team views (e.g. owner dashboard). */
+  orgName?: string | null;
 }
 
 const STATUS_COLORS: Record<string, string> = {
@@ -33,7 +36,7 @@ const STATUS_LABELS: Record<string, string> = {
   cancelled: "Dibatalkan",
 };
 
-const TournamentCard = ({ tournament, orgSlug, placement }: TournamentCardProps) => {
+const TournamentCard = ({ tournament, orgSlug, placement, notes, orgName }: TournamentCardProps) => {
   const startDate = new Date(tournament.start_date).toLocaleDateString("id-ID", {
     day: "numeric",
     month: "short",
@@ -65,6 +68,9 @@ const TournamentCard = ({ tournament, orgSlug, placement }: TournamentCardProps)
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
           <h3 className="text-sm font-medium text-ui-text truncate">{tournament.name}</h3>
+          {orgName && (
+            <p className="text-[11px] text-ui-text-2 mt-0.5 truncate">{orgName}</p>
+          )}
           {tournament.organizer && (
             <p className="text-xs text-ui-text-muted mt-0.5 truncate">{tournament.organizer}</p>
           )}
@@ -87,17 +93,24 @@ const TournamentCard = ({ tournament, orgSlug, placement }: TournamentCardProps)
         )}
       </div>
 
-      {tournament.status === "completed" && placement != null && (
+      {tournament.status === "completed" && (
         <div className="mt-2">
-          {PLACEMENT_BADGE[placement] ? (
-            <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-bold ${PLACEMENT_BADGE[placement].color}`}>
-              <Trophy className="h-2.5 w-2.5" />
-              {PLACEMENT_BADGE[placement].label}
-            </span>
+          {placement != null ? (
+            PLACEMENT_BADGE[placement] ? (
+              <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-bold ${PLACEMENT_BADGE[placement].color}`}>
+                <Trophy className="h-2.5 w-2.5" />
+                {PLACEMENT_BADGE[placement].label}
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1 rounded-full border border-white/15 px-2 py-0.5 text-[10px] font-medium text-ui-text-2">
+                <Trophy className="h-2.5 w-2.5" />
+                Juara {placement}
+              </span>
+            )
           ) : (
-            <span className="inline-flex items-center gap-1 rounded-full border border-white/15 px-2 py-0.5 text-[10px] font-medium text-ui-text-2">
+            <span className="inline-flex items-center gap-1 rounded-full border border-red-500/20 bg-red-500/10 px-2.5 py-0.5 text-[10px] font-bold text-red-400">
               <Trophy className="h-2.5 w-2.5" />
-              Juara {placement}
+              {notes && notes.toLowerCase().includes("gugur") ? notes.split(" — ")[0] : "Gugur"}
             </span>
           )}
         </div>

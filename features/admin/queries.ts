@@ -292,7 +292,9 @@ export async function getTournamentsForAdmin(): Promise<AdminTournament[]> {
     .from("tournaments")
     .select("id, name, start_date, start_time, show_in_hero, show_on_schedule, status, division_id")
     .eq("is_registered", true)
-    .order("start_date", { ascending: false })
+    .in("status", ["upcoming", "ongoing"])
+    .gte("start_date", todayISO())
+    .order("start_date", { ascending: true })
     .limit(50);
   if (error) console.error("getTournamentsForAdmin:", error);
   return (data ?? []) as AdminTournament[];
@@ -347,6 +349,8 @@ export async function getScheduleTournaments(): Promise<PublicTournament[]> {
     .from("tournaments")
     .select("id, name, start_date, start_time, status, organizer, prize_pool, registration_url, divisions(name, game)")
     .eq("show_on_schedule", true)
+    .eq("is_registered", true)
+    .in("status", ["upcoming", "ongoing"])
     .gte("start_date", todayISO())
     .order("start_date", { ascending: true })
     .limit(50);
@@ -360,6 +364,8 @@ export async function getUpcomingPublicTournaments(limit = 3): Promise<PublicTou
     .from("tournaments")
     .select("id, name, start_date, start_time, status, organizer, prize_pool, registration_url, divisions(name, game)")
     .eq("show_on_schedule", true)
+    .eq("is_registered", true)
+    .in("status", ["upcoming", "ongoing"])
     .gte("start_date", todayISO())
     .order("start_date", { ascending: true })
     .limit(limit);
@@ -373,6 +379,8 @@ export async function getNearestPublicTournament(): Promise<PublicTournament | n
     .from("tournaments")
     .select("id, name, start_date, start_time, status, organizer, prize_pool, registration_url, divisions(name, game)")
     .eq("show_on_schedule", true)
+    .eq("is_registered", true)
+    .in("status", ["upcoming", "ongoing"])
     .gte("start_date", todayISO())
     .order("start_date", { ascending: true })
     .limit(1)

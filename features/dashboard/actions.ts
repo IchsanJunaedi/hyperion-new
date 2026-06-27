@@ -122,6 +122,7 @@ export async function assignRoleAction(input: {
   organizationId: string;
   divisionId: string | null;
   role: MemberRole;
+  mainRole?: string | null;
 }): Promise<ActionError | { ok: true }> {
   const supabase = await createClient();
   const {
@@ -160,6 +161,25 @@ export async function assignRoleAction(input: {
     }
   }
 
+  // Enforce: only 1 player per main_role per team
+  if (input.mainRole) {
+    const { data: existingMainRole } = await adminForCheck
+      .from("team_members")
+      .select("id, user_id")
+      .eq("organization_id", input.organizationId)
+      .eq("main_role", input.mainRole)
+      .eq("is_active", true)
+      .maybeSingle();
+
+    if (existingMainRole && existingMainRole.user_id !== input.userId) {
+      // Set the main_role of the other user to NULL since this user is taking it
+      await adminForCheck
+        .from("team_members")
+        .update({ main_role: null })
+        .eq("id", existingMainRole.id);
+    }
+  }
+
   const admin = createAdminClient();
 
   // Check if user already has a membership in this org
@@ -178,6 +198,7 @@ export async function assignRoleAction(input: {
         role: input.role,
         division_id: input.divisionId,
         is_active: true,
+        main_role: input.mainRole || null,
       })
       .eq("id", existing.id);
 
@@ -192,6 +213,7 @@ export async function assignRoleAction(input: {
         division_id: input.divisionId,
         role: input.role,
         is_active: true,
+        main_role: input.mainRole || null,
       });
 
     if (error) return { ok: false, message: error.message };

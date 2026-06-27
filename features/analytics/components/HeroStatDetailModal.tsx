@@ -17,6 +17,14 @@ interface HeroStatDetailModalProps {
   onClose: () => void;
 }
 
+const ROLE_LABELS: Record<string, string> = {
+  exp_lane: "EXP Lane",
+  jungler: "Jungler",
+  mid_lane: "Mid Lane",
+  gold_lane: "Gold Lane",
+  roamer: "Roamer",
+};
+
 function WrBadge({ wr }: { wr: number }) {
   return (
     <span
@@ -64,11 +72,17 @@ function ColSubHeader() {
 }
 
 function PlayerRow({ row }: { row: HeroDetailPlayerRow }) {
+  const roleLabel = ROLE_LABELS[row.role] ?? row.role;
   return (
     <div className="grid grid-cols-[1fr_32px_32px_32px_40px] items-center gap-1 px-4 py-2.5 text-center transition-colors hover:bg-ui-surface">
-      <span className="truncate text-left text-xs font-medium text-ui-text">
-        {row.display_name}
-      </span>
+      <div className="flex flex-col items-start min-w-0">
+        <span className="truncate w-full text-left text-xs font-medium text-ui-text">
+          {row.display_name}
+        </span>
+        <span className="text-[9px] font-semibold uppercase text-ui-text-muted">
+          {roleLabel}
+        </span>
+      </div>
       <span className="text-xs font-semibold text-ui-text">{row.total}</span>
       <span className="text-xs font-semibold text-emerald-400">{row.wins}</span>
       <span className="text-xs font-semibold text-rose-400">{row.losses}</span>
