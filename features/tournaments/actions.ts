@@ -900,17 +900,21 @@ async function fanOutRegistrationNotification(
   const title = `Terdaftar: ${data.name}`;
   const body = `${orgName} sudah resmi terdaftar di turnamen ${data.name}.`;
 
-  const rows = members.map((m) => ({
-    organization_id: data.orgId,
-    user_id: m.user_id,
-    type: "system" as const,
-    title,
-    body,
-    ref_id: data.tournamentId,
-    ref_type: "tournament",
-    wa_number: phoneMap.get(m.user_id) ?? null,
-    wa_message: phoneMap.get(m.user_id) ? waMessage : null,
-  }));
+  const rows = members.map((m) => {
+    const phone = phoneMap.get(m.user_id);
+    return {
+      organization_id: data.orgId,
+      user_id: m.user_id,
+      type: "system" as const,
+      title,
+      body,
+      ref_id: data.tournamentId,
+      ref_type: "tournament",
+      wa_number: phone ?? null,
+      wa_message: phone ? waMessage : null,
+      status: phone ? ("sent" as const) : ("pending" as const),
+    };
+  });
 
   await admin.from("notifications").insert(rows);
 
@@ -995,6 +999,7 @@ async function fanOutWinNotification(
       ref_type: "tournament",
       wa_number: phone,
       wa_message: waMessage,
+      status: phone ? ("sent" as const) : ("pending" as const),
     };
   });
 
@@ -1094,17 +1099,21 @@ export async function blastTournamentTimelineAction(
     "Persiapkan tim Anda dan cek info selengkapnya di aplikasi.",
   ].join("\n");
 
-  const rows = members.map((m) => ({
-    organization_id: org.id,
-    user_id: m.user_id,
-    type: "system" as const,
-    title,
-    body: `Timeline Turnamen: ${tournament.name}`,
-    ref_id: tournament.id,
-    ref_type: "tournament",
-    wa_number: phoneMap.get(m.user_id) ?? null,
-    wa_message: phoneMap.get(m.user_id) ? waMessage : null,
-  }));
+  const rows = members.map((m) => {
+    const phone = phoneMap.get(m.user_id);
+    return {
+      organization_id: org.id,
+      user_id: m.user_id,
+      type: "system" as const,
+      title,
+      body: `Timeline Turnamen: ${tournament.name}`,
+      ref_id: tournament.id,
+      ref_type: "tournament",
+      wa_number: phone ?? null,
+      wa_message: phone ? waMessage : null,
+      status: phone ? ("sent" as const) : ("pending" as const),
+    };
+  });
 
   const { error: notifError } = await admin.from("notifications").insert(rows);
   if (notifError) return { ok: false, message: notifError.message };
