@@ -103,6 +103,16 @@ DRAFT_CFG = {
     "enemy_bans": [(0.7245 + i * 0.0471, 0.0079, 0.0313, 0.0678) for i in range(5)],
 }
 
+# Match duration timer — "Durasi Pertandingan MM:SS" appears on the right
+# side of the top banner. Multiple fallback boxes cover aspect-ratio shifts.
+TIMER_BOXES = [
+    (0.70, 0.10, 0.20, 0.06),   # primary: tight around timer value (21:9)
+    (0.65, 0.10, 0.25, 0.06),   # slightly wider right side
+    (0.20, 0.0, 0.60, 0.16),    # fallback: full top banner
+]
+TIMER_CFG = TIMER_BOXES[0]   # kept for debug overlay
+TIMER_RE = re.compile(r"(?<!\d)(\d{1,2})[:.](\d{2})(?!\d)")
+
 SCORE_CFG = {
     "banner": (0.250, 0.000, 0.500, 0.200),
     "rows": {
@@ -387,6 +397,44 @@ def detect_result(canvas: np.ndarray) -> str:
     return "win" if gold_ratio > 0.05 else "loss"
 
 
+def _read_timer_crop(canvas: np.ndarray, box) -> int:
+    """OCR a single timer crop with thresholding; return seconds or 0."""
+    crop = crop_norm(canvas, box)
+    if crop is None or crop.size == 0:
+        return 0
+    big = cv2.resize(crop, None, fx=4, fy=4, interpolation=cv2.INTER_CUBIC)
+    gray = cv2.cvtColor(big, cv2.COLOR_BGR2GRAY)
+    _, thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    for img in (thresh, big):
+        texts = get_state()["reader"].readtext(
+            img, detail=0, allowlist="0123456789:",
+            text_threshold=0.3, low_text=0.2, link_threshold=0.2,
+        )
+        combined = " ".join(texts)
+        m = TIMER_RE.search(combined)
+        if m:
+            mins, secs = int(m.group(1)), int(m.group(2))
+            if 0 <= mins <= 90 and 0 <= secs <= 59:
+                return mins * 60 + secs
+        # fallback: two adjacent numbers (EasyOCR sometimes drops the colon)
+        nums = re.findall(r"\d{1,2}", combined)
+        if len(nums) >= 2:
+            mins, secs = int(nums[0]), int(nums[1])
+            if 0 <= mins <= 90 and 0 <= secs <= 59:
+                return mins * 60 + secs
+    return 0
+
+
+def detect_duration(canvas: np.ndarray) -> int:
+    """OCR the match timer (MM:SS) from the scoreboard top banner and
+    return total seconds. Returns 0 when the timer cannot be read."""
+    for box in TIMER_BOXES:
+        secs = _read_timer_crop(canvas, box)
+        if secs > 0:
+            return secs
+    return 0
+
+
 def parse_kda_gold_anchor(tokens, side: str):
     """KDA from OCR tokens anchored on the gold value (>= 1000).
     Our side layout: [item-icon noise...] K D A GOLD [rating...]
@@ -491,7 +539,13 @@ def analyze_scoreboard_canvas(canvas: np.ndarray):
                 "hero": hero, "kills": k, "deaths": d, "assists": a,
             }
 
-    result = {"result": detect_result(canvas), "players": players, "enemyPlayers": enemy}
+    debug_boxes.append(TIMER_CFG)
+    result = {
+        "result": detect_result(canvas),
+        "players": players,
+        "enemyPlayers": enemy,
+        "durationSeconds": detect_duration(canvas),
+    }
     _debug_dump("scoreboard", canvas, debug_boxes, mode)
     return result
 

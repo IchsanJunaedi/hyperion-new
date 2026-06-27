@@ -40,6 +40,7 @@ interface ScoreboardServerResponse {
   result: "win" | "loss";
   players: ScoreboardServerPlayer[];
   enemyPlayers: ScoreboardServerPlayer[];
+  durationSeconds: number;
 }
 
 async function callVisionServer<T>(path: string, base64: string): Promise<T> {
@@ -150,7 +151,7 @@ export async function analyzeScreenshotAction(input: {
         isWin: raw.result === "win",
         ourScore: players.reduce((sum, p) => sum + p.kills, 0),
         opponentScore: enemyPlayers.reduce((sum, p) => sum + p.kills, 0),
-        durationSeconds: 0,
+        durationSeconds: raw.durationSeconds ?? 0,
         players,
         enemyPlayers,
       }),

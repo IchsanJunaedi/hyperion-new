@@ -667,7 +667,9 @@ const FinishScrimForm = ({
                 onClick={() => {
                   updateGame(activeGame, { 
                     scoreboard: null,
-                    draft: makeBlankDraft()
+                    draft: makeBlankDraft(),
+                    draftScanned: false,
+                    scoreboardScanned: false
                   });
                 }}
                 className="text-[10px] font-medium text-rose-400 hover:text-rose-300 transition-colors cursor-pointer"
