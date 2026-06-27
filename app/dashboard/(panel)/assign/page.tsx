@@ -24,12 +24,18 @@ export default async function AssignRolePage() {
 
   const { data: allActiveMembers } = await admin
     .from("team_members")
-    .select("user_id, organization_id, role")
+    .select("user_id, organization_id, role, main_role")
     .eq("is_active", true);
 
-  // Exclude only the owner — everyone else can be assigned to any org they're not yet in
+  const activePlayerOrCaptainUserIds = new Set(
+    (allActiveMembers ?? [])
+      .filter((m) => m.role === "member" || m.role === "captain")
+      .map((m) => m.user_id)
+  );
+
+  // Exclude owner & anyone who is already a member/captain in any team
   const filteredProfiles = (profiles ?? []).filter(
-    (p) => p.email !== ownerEmail,
+    (p) => p.email !== ownerEmail && !activePlayerOrCaptainUserIds.has(p.id),
   );
 
   // org_id → user_ids already active in that org (for per-org filtering in the form)
@@ -38,6 +44,14 @@ export default async function AssignRolePage() {
     if (!m.organization_id) continue;
     if (!orgAssignedUserIds[m.organization_id]) orgAssignedUserIds[m.organization_id] = [];
     orgAssignedUserIds[m.organization_id]!.push(m.user_id);
+  }
+
+  // org_id → Array<{ userId, mainRole }>
+  const orgUserMainRoles: Record<string, Array<{ userId: string; mainRole: string }>> = {};
+  for (const m of allActiveMembers ?? []) {
+    if (!m.organization_id || !m.main_role) continue;
+    if (!orgUserMainRoles[m.organization_id]) orgUserMainRoles[m.organization_id] = [];
+    orgUserMainRoles[m.organization_id]!.push({ userId: m.user_id, mainRole: m.main_role });
   }
 
   const { data: orgs } = await admin
@@ -94,6 +108,7 @@ export default async function AssignRolePage() {
             }))}
           orgRoleHolders={orgRoleHolders}
           orgAssignedUserIds={orgAssignedUserIds}
+          orgUserMainRoles={orgUserMainRoles}
         />
       </main>
     </>

@@ -244,7 +244,8 @@ export default async function DashboardPage({
               const nameA = (a.cols[0] ?? "").toLowerCase();
               const nameB = (b.cols[0] ?? "").toLowerCase();
               return nameA.localeCompare(nameB);
-            })}
+            })
+            .slice(0, 15)}
         />
 
         {/* Team Health Score */}

@@ -691,6 +691,25 @@ describe("getOpponentSummary", () => {
     const result = await getOpponentSummary("org-1");
     expect(result).toEqual([]);
   });
+
+  it("groups opponent names case-insensitively", async () => {
+    const scrims = [
+      { opponent_name: "Alpha", scrim_results: [{ is_win: true }] },
+      { opponent_name: "ALPHA", scrim_results: [{ is_win: false }] },
+      { opponent_name: "alpha", scrim_results: [{ is_win: null }] },
+    ];
+    vi.mocked(createClient).mockResolvedValue({
+      from: vi.fn().mockReturnValue(makeThenable(scrims)),
+    } as any);
+
+    const result = await getOpponentSummary("org-1");
+    expect(result).toHaveLength(1);
+    expect(result[0]!.opponent_name).toBe("Alpha");
+    expect(result[0]!.total).toBe(3);
+    expect(result[0]!.wins).toBe(1);
+    expect(result[0]!.losses).toBe(1);
+    expect(result[0]!.draws).toBe(1);
+  });
 });
 
 describe("getPlayerTrendByMonth", () => {

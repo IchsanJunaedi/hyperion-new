@@ -120,17 +120,20 @@ export async function getTournamentDetail(
  */
 export async function listTournamentPlacements(
   tournamentIds: string[],
-): Promise<Map<string, number | null>> {
+): Promise<Map<string, { placement: number | null; notes: string | null }>> {
   if (tournamentIds.length === 0) return new Map();
   const supabase = await createClient();
   const { data } = await supabase
     .from("tournament_results")
-    .select("tournament_id, placement")
+    .select("tournament_id, placement, notes")
     .in("tournament_id", tournamentIds)
     .limit(200);
-  const map = new Map<string, number | null>();
+  const map = new Map<string, { placement: number | null; notes: string | null }>();
   for (const row of data ?? []) {
-    map.set(row.tournament_id, row.placement);
+    map.set(row.tournament_id, {
+      placement: row.placement,
+      notes: row.notes,
+    });
   }
   return map;
 }

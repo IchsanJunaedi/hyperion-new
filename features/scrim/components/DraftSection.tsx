@@ -222,7 +222,6 @@ const DraftSection = ({ draft, attendingPlayers, onOurChange, onEnemyChange, onB
     onOurChange(role, newHero, newPlayerId);
   }
 
-  const playerById = new Map(attendingPlayers.map((p) => [p.userId, p]));
   const bansOur = draft.bans?.our ?? Array(BAN_COUNT).fill("");
   const bansEnemy = draft.bans?.enemy ?? Array(BAN_COUNT).fill("");
 
@@ -304,10 +303,7 @@ const DraftSection = ({ draft, attendingPlayers, onOurChange, onEnemyChange, onB
           {/* Pick rows */}
           {ROLES.map((role) => {
             const slot = draft.our[role];
-            const assignedPlayer = slot.playerId ? playerById.get(slot.playerId) : null;
-            const slotLabel = assignedPlayer?.displayName
-              ? `${assignedPlayer.displayName} - ${ROLE_LABELS[role]}`
-              : ROLE_LABELS[role];
+            const slotLabel = ROLE_LABELS[role];
             const isDragging = draggedSlot?.side === "our" && draggedSlot?.role === role;
             const isDragOver = dragOverSlot?.side === "our" && dragOverSlot?.role === role;
 
@@ -344,8 +340,6 @@ const DraftSection = ({ draft, attendingPlayers, onOurChange, onEnemyChange, onB
                     />
                   </div>
                 </div>
-
-
               </div>
             );
           })}

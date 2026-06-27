@@ -234,7 +234,6 @@ const TournamentForm = ({ orgSlug, divisionId, tournament, onSuccess }: Tourname
           <input
             value={location}
             onChange={(e) => setLocation(e.target.value)}
-            placeholder={locationType === "hybrid" ? "mis. Jakarta Convention Center" : ""}
             className="h-9 w-full rounded-md border border-ui-border bg-ui-surface px-3 text-sm text-ui-text focus:border-yellow-400/50 focus:outline-none"
           />
         </div>
@@ -246,7 +245,6 @@ const TournamentForm = ({ orgSlug, divisionId, tournament, onSuccess }: Tourname
           <input
             value={onlinePlatform}
             onChange={(e) => setOnlinePlatform(e.target.value)}
-            placeholder="mis. Discord, Zoom, https://meet.google.com/..."
             className="h-9 w-full rounded-md border border-ui-border bg-ui-surface px-3 text-sm text-ui-text focus:border-yellow-400/50 focus:outline-none"
           />
         </div>

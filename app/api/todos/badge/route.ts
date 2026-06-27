@@ -23,10 +23,11 @@ export async function GET(req: Request) {
     return NextResponse.json({ count: 0 }, { status: 401 });
   }
 
+  const admin = createAdminClient();
+
   // Same gate as the todos pages: global owner, or active owner/manager of the org.
   const isGlobalOwner = user.email === process.env.OWNER_EMAIL;
   if (!isGlobalOwner) {
-    const admin = createAdminClient();
     const { data: membership, error } = await admin
       .from("team_members")
       .select("role")
@@ -43,8 +44,17 @@ export async function GET(req: Request) {
     }
   }
 
+  // Fetch org slug for building scrim navigate_to URLs
+  const { data: org } = await admin
+    .from("organizations")
+    .select("slug")
+    .eq("id", orgId)
+    .limit(1)
+    .maybeSingle();
+  const orgSlug = org?.slug ?? "";
+
   try {
-    const count = await getTodoBadgeCount(orgId, user.id);
+    const count = await getTodoBadgeCount(orgId, user.id, orgSlug);
     return NextResponse.json({ count });
   } catch (err) {
     console.error("[api/todos/badge] getTodoBadgeCount:", err);

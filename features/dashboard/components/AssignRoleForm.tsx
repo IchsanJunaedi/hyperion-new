@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 
 import { assignRoleAction } from "../actions";
 import type { MemberRole } from "@/types/database";
+import { CustomSelect } from "@/features/dashboard/components/CustomSelect";
 
 interface AssignRoleFormProps {
   users: Array<{ id: string; label: string }>;
@@ -14,6 +15,7 @@ interface AssignRoleFormProps {
   divisions: Array<{ id: string; organizationId: string; name: string }>;
   orgRoleHolders: Record<string, Record<string, string>>; // org_id → role → holder name
   orgAssignedUserIds: Record<string, string[]>; // org_id → user_ids already in that org
+  orgUserMainRoles: Record<string, Array<{ userId: string; mainRole: string }>>; // org_id → Array<{ userId, mainRole }>
 }
 
 const ALL_ROLES: Array<{ value: MemberRole; label: string }> = [
@@ -23,12 +25,21 @@ const ALL_ROLES: Array<{ value: MemberRole; label: string }> = [
   { value: "member", label: "Member" },
 ];
 
+const IN_GAME_ROLES = [
+  { value: "exp_lane", label: "EXP Lane" },
+  { value: "jungler", label: "Jungler" },
+  { value: "mid_lane", label: "Mid Lane" },
+  { value: "gold_lane", label: "Gold Lane" },
+  { value: "roamer", label: "Roamer" },
+];
+
 const AssignRoleForm = ({
   users,
   organizations,
   divisions,
   orgRoleHolders,
   orgAssignedUserIds,
+  orgUserMainRoles,
 }: AssignRoleFormProps) => {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -36,6 +47,7 @@ const AssignRoleForm = ({
   const [selectedOrg, setSelectedOrg] = useState("");
   const [selectedDiv, setSelectedDiv] = useState("");
   const [selectedRole, setSelectedRole] = useState<MemberRole | "">("");
+  const [selectedInGameRole, setSelectedInGameRole] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
 
   const sortedUsers = useMemo(
@@ -56,6 +68,15 @@ const AssignRoleForm = ({
   // All roles always available — action will demote old holder if needed
   const availableRoles = ALL_ROLES;
 
+  // Filter in-game roles by excluding those already taken by other players in the same organization
+  const availableInGameRoles = useMemo(() => {
+    if (!selectedOrg) return IN_GAME_ROLES;
+    const takenRoles = (orgUserMainRoles[selectedOrg] ?? [])
+      .filter((item) => item.userId !== selectedUser)
+      .map((item) => item.mainRole);
+    return IN_GAME_ROLES.filter((r) => !takenRoles.includes(r.value));
+  }, [selectedOrg, selectedUser, orgUserMainRoles]);
+
   // Warning: role already held by someone else in selected org + selected user isn't that person
   const replaceWarning = useMemo(() => {
     if (!selectedOrg || !selectedRole || !selectedUser) return null;
@@ -73,11 +94,17 @@ const AssignRoleForm = ({
     setSelectedOrg("");
     setSelectedDiv("");
     setSelectedRole("");
+    setSelectedInGameRole("");
   }
   function handleOrgChange(v: string) {
     setSelectedOrg(v);
     setSelectedDiv("");
     setSelectedRole("");
+    setSelectedInGameRole("");
+  }
+  function handleRoleChange(v: string) {
+    setSelectedRole(v as MemberRole);
+    setSelectedInGameRole("");
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -95,6 +122,7 @@ const AssignRoleForm = ({
         organizationId: selectedOrg,
         divisionId: selectedDiv || null,
         role: selectedRole as MemberRole,
+        mainRole: selectedInGameRole || null,
       });
       if (res.ok) {
         notify.success("Role berhasil di-assign");
@@ -102,6 +130,7 @@ const AssignRoleForm = ({
         setSelectedOrg("");
         setSelectedDiv("");
         setSelectedRole("");
+        setSelectedInGameRole("");
         router.refresh();
       } else {
         setError(res.message);
@@ -109,40 +138,41 @@ const AssignRoleForm = ({
     });
   }
 
-  const selectCls =
-    "h-10 w-full rounded border border-ui-border bg-ui-bg px-3 text-sm text-ui-text focus:outline-none focus:border-[#4D4D4D] transition appearance-none cursor-pointer";
+  // Dynamic field indices
+  let fieldIndex = 1;
+  const userNum = fieldIndex++;
+  const orgNum = selectedUser ? fieldIndex++ : 0;
+  const divNum = selectedOrg && filteredDivisions.length > 0 ? fieldIndex++ : 0;
+  const roleNum = selectedOrg ? fieldIndex++ : 0;
+  const inGameRoleNum = selectedOrg && (selectedRole === "captain" || selectedRole === "member") ? fieldIndex++ : 0;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <Field label="1. Pilih User" name="user_id">
-        <select
-          name="user_id"
-          required
+      <Field label={`${userNum}. Pilih User`} name="user_id">
+        <CustomSelect
           value={selectedUser}
-          onChange={(e) => handleUserChange(e.target.value)}
-          className={selectCls}
-        >
-          <option value="" disabled>Pilih user...</option>
-          {sortedUsers.map((u) => (
-            <option key={u.id} value={u.id}>{u.label}</option>
-          ))}
-        </select>
+          onChange={handleUserChange}
+          fullWidth
+          placeholder="Pilih user..."
+          options={sortedUsers.map((u) => ({
+            value: u.id,
+            label: u.label,
+          }))}
+        />
       </Field>
 
       {selectedUser && (
-        <Field label="2. Pilih Tim" name="organization_id">
-          <select
-            name="organization_id"
-            required
+        <Field label={`${orgNum}. Pilih Tim`} name="organization_id">
+          <CustomSelect
             value={selectedOrg}
-            onChange={(e) => handleOrgChange(e.target.value)}
-            className={selectCls}
-          >
-            <option value="" disabled>Pilih tim...</option>
-            {availableOrgs.map((o) => (
-              <option key={o.id} value={o.id}>{o.name}</option>
-            ))}
-          </select>
+            onChange={handleOrgChange}
+            fullWidth
+            placeholder="Pilih tim..."
+            options={availableOrgs.map((o) => ({
+              value: o.id,
+              label: o.name,
+            }))}
+          />
           {availableOrgs.length === 0 && (
             <p className="mt-1 text-xs text-ui-text-muted">User ini sudah ada di semua tim.</p>
           )}
@@ -150,40 +180,58 @@ const AssignRoleForm = ({
       )}
 
       {selectedOrg && filteredDivisions.length > 0 && (
-        <Field label="3. Pilih Divisi (opsional)" name="division_id">
-          <select
-            name="division_id"
+        <Field label={`${divNum}. Pilih Divisi (opsional)`} name="division_id">
+          <CustomSelect
             value={selectedDiv}
-            onChange={(e) => setSelectedDiv(e.target.value)}
-            className={selectCls}
-          >
-            <option value="">Tanpa divisi</option>
-            {filteredDivisions.map((d) => (
-              <option key={d.id} value={d.id}>{d.name}</option>
-            ))}
-          </select>
+            onChange={setSelectedDiv}
+            fullWidth
+            placeholder="Tanpa divisi"
+            options={[
+              { value: "", label: "Tanpa divisi" },
+              ...filteredDivisions.map((d) => ({
+                value: d.id,
+                label: d.name,
+              })),
+            ]}
+          />
         </Field>
       )}
 
       {selectedOrg && (
-        <Field label={`${filteredDivisions.length > 0 ? "4" : "3"}. Pilih Role`} name="role">
-          <select
-            name="role"
-            required
+        <Field label={`${roleNum}. Pilih Role`} name="role">
+          <CustomSelect
             value={selectedRole}
-            onChange={(e) => setSelectedRole(e.target.value as MemberRole)}
-            className={selectCls}
-          >
-            <option value="" disabled>Pilih role...</option>
-            {availableRoles.map((r) => (
-              <option key={r.value} value={r.value}>{r.label}</option>
-            ))}
-          </select>
+            onChange={handleRoleChange}
+            fullWidth
+            placeholder="Pilih role..."
+            options={availableRoles.map((r) => ({
+              value: r.value,
+              label: r.label,
+            }))}
+          />
           {replaceWarning && (
             <p className="mt-1 text-xs text-amber-400/80">
               ⚠ {selectedRole} tim ini sudah diisi oleh <strong>{replaceWarning}</strong> — akses mereka akan dicabut.
             </p>
           )}
+        </Field>
+      )}
+
+      {selectedOrg && (selectedRole === "captain" || selectedRole === "member") && (
+        <Field label={`${inGameRoleNum}. Pilih Role In-Game (opsional)`} name="main_role">
+          <CustomSelect
+            value={selectedInGameRole}
+            onChange={setSelectedInGameRole}
+            fullWidth
+            placeholder="Tanpa role in-game"
+            options={[
+              { value: "", label: "Tanpa role in-game" },
+              ...availableInGameRoles.map((r) => ({
+                value: r.value,
+                label: r.label,
+              })),
+            ]}
+          />
         </Field>
       )}
 

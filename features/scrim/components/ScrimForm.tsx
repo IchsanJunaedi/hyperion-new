@@ -35,14 +35,6 @@ const ScrimForm = ({ orgSlug, divisions }: ScrimFormProps) => {
         e.preventDefault();
         if (pending) return;
         const fd = new FormData(e.currentTarget);
-        const roomId = (fd.get("room_id") as string) || "";
-        const roomPass = (fd.get("room_password") as string) || "";
-        const roomInfo = [
-          roomId && `ID: ${roomId}`,
-          roomPass && `Pass: ${roomPass}`,
-        ]
-          .filter(Boolean)
-          .join(" | ");
         startTransition(async () => {
           setGlobalError(null);
           setFieldErrors({});
@@ -53,7 +45,6 @@ const ScrimForm = ({ orgSlug, divisions }: ScrimFormProps) => {
             scheduled_at: fd.get("scheduled_at"),
             format: fd.get("format"),
             server_region: fd.get("server_region"),
-            room_info: roomInfo || undefined,
             notes: fd.get("notes"),
             patch: fd.get("patch"),
           });
@@ -134,7 +125,7 @@ const ScrimForm = ({ orgSlug, divisions }: ScrimFormProps) => {
           type="datetime-local"
           name="scheduled_at"
           required
-          className="h-10 w-full rounded-lg border border-ui-border bg-ui-bg/40 px-3 text-sm text-ui-text focus:border-yellow-400 focus:outline-none [&::-webkit-calendar-picker-indicator]:invert"
+          className="h-10 w-full rounded-lg border border-ui-border bg-ui-bg/40 px-3 text-sm text-ui-text focus:border-yellow-400 focus:outline-none"
         />
       </Field>
 
@@ -144,7 +135,7 @@ const ScrimForm = ({ orgSlug, divisions }: ScrimFormProps) => {
           {FORMATS.map((f, i) => (
             <label
               key={f.value}
-              className="inline-flex cursor-pointer items-center justify-center rounded-lg border border-ui-border bg-ui-elevated/40 px-4 py-2 text-xs font-semibold text-white/80 transition-all duration-300 hover:bg-zinc-700/40 has-[input:checked]:bg-yellow-400 has-[input:checked]:text-black has-[input:checked]:border-yellow-400"
+              className="inline-flex cursor-pointer items-center justify-center rounded-lg border border-ui-border bg-ui-elevated/40 px-4 py-2 text-xs font-semibold text-ui-text-2 transition-all duration-300 hover:bg-zinc-700/40 has-[input:checked]:bg-yellow-400 has-[input:checked]:text-black has-[input:checked]:border-yellow-400"
             >
               <input
                 type="radio"
@@ -172,27 +163,6 @@ const ScrimForm = ({ orgSlug, divisions }: ScrimFormProps) => {
           className="h-10 w-full rounded-lg border border-ui-border bg-ui-bg/40 px-3 text-sm text-ui-text focus:border-yellow-400 focus:outline-none"
         />
       </Field>
-
-      {/* Room ID & Room Password - Side by Side */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <Field label="Room ID (opsional)" name="room_id" errors={fieldErrors["room_info"]}>
-          <input
-            name="room_id"
-            maxLength={100}
-            placeholder="mis. 123456"
-            className="h-10 w-full rounded-lg border border-ui-border bg-ui-bg/40 px-3 text-sm text-ui-text focus:border-yellow-400 focus:outline-none"
-          />
-        </Field>
-
-        <Field label="Room Password (opsional)" name="room_password" errors={undefined}>
-          <input
-            name="room_password"
-            maxLength={100}
-            placeholder="mis. hyperion"
-            className="h-10 w-full rounded-lg border border-ui-border bg-ui-bg/40 px-3 text-sm text-ui-text focus:border-yellow-400 focus:outline-none"
-          />
-        </Field>
-      </div>
 
       {/* Catatan - Full Width */}
       <Field label="Catatan (opsional)" name="notes" errors={fieldErrors["notes"]}>

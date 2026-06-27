@@ -168,7 +168,7 @@ async function getTrialPendingTodos(orgId: string, dismissed: Set<string>): Prom
   }];
 }
 
-async function getScrimNoResultTodos(orgId: string, dismissed: Set<string>): Promise<SmartTodo[]> {
+async function getScrimNoResultTodos(orgId: string, orgSlug: string, dismissed: Set<string>): Promise<SmartTodo[]> {
   const admin = createAdminClient();
 
   const { data: scrims, error: scrimsError } = await admin
@@ -191,6 +191,19 @@ async function getScrimNoResultTodos(orgId: string, dismissed: Set<string>): Pro
 
   const hasResult = new Set((results ?? []).map((r) => r.scrim_id));
 
+  // Use days-since-scrim for urgency: today (0d) → "today", ≤7d → "this_week", >7d → "overdue"
+  // This avoids marking results as "TERLAMBAT" just because the scrim was yesterday.
+  function scrimResultUrgency(scheduledAt: string): import("./types").TodoUrgency {
+    const now = new Date();
+    const today = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+    const scrimDate = new Date(scheduledAt);
+    const due = new Date(Date.UTC(scrimDate.getUTCFullYear(), scrimDate.getUTCMonth(), scrimDate.getUTCDate()));
+    const daysPast = Math.round((today.getTime() - due.getTime()) / 86400000);
+    if (daysPast <= 0) return "today";
+    if (daysPast <= 7) return "this_week";
+    return "overdue";
+  }
+
   return scrims
     .filter((s) => !hasResult.has(s.id) && !dismissed.has(makeSmartId("scrim_no_result", s.id)))
     .map((s) => ({
@@ -198,9 +211,9 @@ async function getScrimNoResultTodos(orgId: string, dismissed: Set<string>): Pro
       source: "smart" as const,
       smart_type: "scrim_no_result" as const,
       title: `Input hasil scrim vs ${s.opponent_name}`,
-      urgency: computeUrgency(new Date(s.scheduled_at)),
+      urgency: scrimResultUrgency(s.scheduled_at),
       entity_id: s.id,
-      navigate_to: `#scrim-${s.id}`,
+      navigate_to: `/${orgSlug}/scrim/${s.id}`,
     }));
 }
 
@@ -243,6 +256,7 @@ async function getTournamentNoBracketTodos(orgId: string, dismissed: Set<string>
     .from("tournaments")
     .select("id, name, start_date")
     .eq("organization_id", orgId)
+    .in("status", ["upcoming", "ongoing"])
     .gte("start_date", today)
     .lte("start_date", in7.toISOString().slice(0, 10))
     .is("bracket_link", null)
@@ -265,7 +279,7 @@ async function getTournamentNoBracketTodos(orgId: string, dismissed: Set<string>
     }));
 }
 
-export async function computeSmartTodos(orgId: string, userId: string): Promise<SmartTodo[]> {
+export async function computeSmartTodos(orgId: string, userId: string, orgSlug: string): Promise<SmartTodo[]> {
   const admin = createAdminClient();
 
   const { data: dismissals, error: dismissalsError } = await admin
@@ -285,7 +299,7 @@ export async function computeSmartTodos(orgId: string, userId: string): Promise<
     getSalaryDueTodos(orgId, dismissed),
     getMemberUnassignedTodos(orgId, dismissed),
     getTrialPendingTodos(orgId, dismissed),
-    getScrimNoResultTodos(orgId, dismissed),
+    getScrimNoResultTodos(orgId, orgSlug, dismissed),
     getSponsorStaleTodos(orgId, dismissed),
     getTournamentNoBracketTodos(orgId, dismissed),
   ]);
@@ -353,9 +367,9 @@ export async function getAssignedOutTodos(orgId: string, ownerId: string) {
   }));
 }
 
-export async function getTodoBadgeCount(orgId: string, userId: string): Promise<number> {
+export async function getTodoBadgeCount(orgId: string, userId: string, orgSlug: string): Promise<number> {
   const [smart, manual] = await Promise.all([
-    computeSmartTodos(orgId, userId),
+    computeSmartTodos(orgId, userId, orgSlug),
     getManualTodos(orgId, userId),
   ]);
 

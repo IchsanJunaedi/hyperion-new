@@ -12,6 +12,7 @@ import {
   isCurrentUserMember,
 } from "@/features/teams/queries";
 import { createClient } from "@/lib/supabase/server";
+import { QueryProvider } from "@/components/providers/QueryProvider";
 
 export const dynamic = "force-dynamic";
 
@@ -102,40 +103,42 @@ export default async function WorkspaceLayout({
   }
 
   return (
-    <div className="flex min-h-screen flex-1">
-      <WorkspaceSidebar
-        orgSlug={organization.slug}
-        orgId={organization.id}
-        orgName={organization.name}
-        orgLogoUrl={organization.logo_url}
-        divisions={divisions.map((d) => ({ id: d.id, name: d.name }))}
-        managedTeams={managedTeams.length > 1 ? managedTeams : undefined}
-        user={{
-          displayName:
-            (user.user_metadata?.["display_name"] as string | undefined) ??
-            user.email ??
-            "Akun saya",
-          avatarUrl: null,
-          userId: user.id,
-          email: user.email ?? undefined,
-          role: userRole,
-        }}
-      />
-      <div className="print-main flex min-w-0 flex-1 flex-col bg-ui-bg min-h-screen pb-20 md:pb-0">
-        <WorkspaceTopbar organization={organization} userId={user.id} />
-        <WorkspaceBreadcrumb
-          orgName={organization.name}
+    <QueryProvider>
+      <div className="flex min-h-screen flex-1">
+        <WorkspaceSidebar
           orgSlug={organization.slug}
-          userId={user.id}
-          className="hidden md:flex"
+          orgId={organization.id}
+          orgName={organization.name}
+          orgLogoUrl={organization.logo_url}
+          divisions={divisions.map((d) => ({ id: d.id, name: d.name }))}
+          managedTeams={managedTeams.length > 1 ? managedTeams : undefined}
+          user={{
+            displayName:
+              (user.user_metadata?.["display_name"] as string | undefined) ??
+              user.email ??
+              "Akun saya",
+            avatarUrl: null,
+            userId: user.id,
+            email: user.email ?? undefined,
+            role: userRole,
+          }}
         />
-        <NotificationRealtimeProvider userId={user.id}>
-          <NotifyProvider>
-            <main className="flex-1">{children}</main>
-          </NotifyProvider>
-        </NotificationRealtimeProvider>
-        <MobileBottomNav orgSlug={organization.slug} />
+        <div className="print-main flex min-w-0 flex-1 flex-col bg-ui-bg min-h-screen pb-20 md:pb-0">
+          <WorkspaceTopbar organization={organization} userId={user.id} />
+          <WorkspaceBreadcrumb
+            orgName={organization.name}
+            orgSlug={organization.slug}
+            userId={user.id}
+            className="hidden md:flex"
+          />
+          <NotificationRealtimeProvider userId={user.id}>
+            <NotifyProvider>
+              <main className="flex-1">{children}</main>
+            </NotifyProvider>
+          </NotificationRealtimeProvider>
+          <MobileBottomNav orgSlug={organization.slug} />
+        </div>
       </div>
-    </div>
+    </QueryProvider>
   );
 }
