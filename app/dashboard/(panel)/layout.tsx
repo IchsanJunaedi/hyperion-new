@@ -158,13 +158,21 @@ export default async function DashboardLayout({
           </aside>
 
           {/* Main content */}
-          <div className="flex-1 md:ml-[280px] flex flex-col min-h-screen">
+          <div className="flex-1 md:ml-[280px] flex flex-col min-h-screen min-w-0">
             <NotificationRealtimeProvider userId={user?.id ?? ""}>
               <DashboardHeader
                 workspaceName={workspaceName}
                 userId={user.id}
                 orgSlug={orgSlug}
-                mobileNav={<DashboardMobileNav orgId={dashboardOrgId} />}
+                mobileNav={
+                  <DashboardMobileNav
+                    orgId={dashboardOrgId}
+                    userId={user.id}
+                    displayName={displayName}
+                    avatarUrl={avatarUrl}
+                    email={user.email ?? null}
+                  />
+                }
               />
               {children}
             </NotificationRealtimeProvider>

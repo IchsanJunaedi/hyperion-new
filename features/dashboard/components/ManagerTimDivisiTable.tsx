@@ -135,7 +135,7 @@ const ManagerTimDivisiTable = ({ rows, allDivisions = [] }: ManagerTimDivisiTabl
 
   return (
     <>
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto w-full">
       <div className="flex flex-col min-w-[480px]">
         {rows.map((r) => (
           <div

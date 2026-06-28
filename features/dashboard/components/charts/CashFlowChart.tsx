@@ -49,7 +49,7 @@ const CashFlowTooltip = ({ active, payload }: TipProps) => {
 
 const CashFlowChart = ({ months }: { months: MonthPoint[] }) => {
   return (
-    <ResponsiveContainer width="100%" height={200}>
+    <ResponsiveContainer width="100%" height={200} minWidth={0} minHeight={0}>
       <ComposedChart data={months} margin={{ top: 4, right: 4, left: -12, bottom: 0 }}>
         <CartesianGrid strokeDasharray="3 3" stroke="var(--ui-border)" vertical={false} />
         <XAxis dataKey="monthLabel" tick={{ fontSize: 11, fill: "var(--ui-text-muted)" }} axisLine={false} tickLine={false} />

@@ -23,6 +23,7 @@ import {
   Trophy,
   UserPlus,
   Users,
+  X,
   Zap,
 } from "lucide-react";
 import Image from "next/image";
@@ -33,6 +34,7 @@ import { useEffect, useState } from "react";
 import { SettingsModal } from "@/features/settings/components/SettingsModal";
 import { TodoBadge } from "@/features/todos/components/TodoBadge";
 import { useWorkspaceStore } from "@/stores/useWorkspaceStore";
+import { useUiStore } from "@/stores/useUiStore";
 import { TeamSwitcher } from "@/components/layout/TeamSwitcher";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
@@ -266,6 +268,25 @@ const WorkspaceSidebar = ({
   const [divisionOpen, setDivisionOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
 
+  const mobileSidebarOpen = useUiStore((s) => s.mobileSidebarOpen);
+  const setMobileSidebarOpen = useUiStore((s) => s.setMobileSidebarOpen);
+
+  useEffect(() => {
+    setMobileSidebarOpen(false);
+  }, [pathname, setMobileSidebarOpen]);
+
+  // Lock body scroll when mobile sidebar is open
+  useEffect(() => {
+    if (mobileSidebarOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileSidebarOpen]);
+
   useEffect(() => {
     if (
       !activeDivisionId ||
@@ -326,10 +347,10 @@ const WorkspaceSidebar = ({
       }),
     }));
 
-  return (
-    <aside className="print-hide hidden md:flex md:w-[280px] md:flex-col md:border-r md:border-ui-border md:bg-ui-surface h-screen sticky top-0">
+  const renderSidebarContent = (isMobile = false) => (
+    <>
       {/* Org header */}
-      <div className="flex h-12 shrink-0 items-center border-b border-ui-border">
+      <div className="flex h-12 shrink-0 items-center justify-between border-b border-ui-border">
         <Link
           href={`/${orgSlug}`}
           className="flex h-full min-w-0 flex-1 items-center gap-3 px-4 transition hover:bg-ui-hover"
@@ -359,6 +380,16 @@ const WorkspaceSidebar = ({
             </span>
           )}
         </Link>
+        {isMobile && (
+          <button
+            type="button"
+            aria-label="Tutup menu"
+            onClick={() => setMobileSidebarOpen(false)}
+            className="flex h-12 w-12 cursor-pointer items-center justify-center text-ui-text-muted hover:text-ui-text transition-colors border-l border-ui-border"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        )}
       </div>
 
       {/* Team switcher — only for managers with multiple teams */}
@@ -469,14 +500,6 @@ const WorkspaceSidebar = ({
         </div>
       </div>
 
-      <SettingsModal
-        open={settingsOpen}
-        onClose={() => setSettingsOpen(false)}
-        userId={user.userId}
-        orgId={orgId}
-        role={user.role ?? "member"}
-      />
-
       {/* User footer */}
       <div className="border-t border-ui-border px-3 py-3">
         <div className="flex items-center gap-3 rounded px-2 py-2">
@@ -498,7 +521,41 @@ const WorkspaceSidebar = ({
           </p>
         </div>
       </div>
-    </aside>
+    </>
+  );
+
+  return (
+    <>
+      {/* Desktop Sidebar */}
+      <aside className="print-hide hidden md:flex md:w-[280px] md:flex-col md:border-r md:border-ui-border md:bg-ui-surface h-screen sticky top-0">
+        {renderSidebarContent(false)}
+      </aside>
+
+      {/* Mobile Drawer Overlay */}
+      {mobileSidebarOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/60 md:hidden print-hide"
+          onClick={() => setMobileSidebarOpen(false)}
+        />
+      )}
+
+      {/* Mobile Drawer */}
+      <div
+        className={`print-hide fixed inset-y-0 left-0 z-50 w-[280px] flex flex-col bg-ui-surface border-r border-ui-border text-sm transition-transform duration-200 md:hidden ${
+          mobileSidebarOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        {renderSidebarContent(true)}
+      </div>
+
+      <SettingsModal
+        open={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+        userId={user.userId}
+        orgId={orgId}
+        role={user.role ?? "member"}
+      />
+    </>
   );
 };
 export { WorkspaceSidebar, getManagerNavGroup };
