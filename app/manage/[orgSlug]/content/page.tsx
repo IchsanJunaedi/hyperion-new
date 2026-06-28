@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
 import { listContent } from "@/features/content/queries";
 import { ContentList } from "@/features/content/components/ContentList";
 
@@ -18,8 +17,7 @@ const ManageContentPage = async ({ params }: Props) => {
   } = await supabase.auth.getUser();
   if (!user) redirect(`/login?next=/manage/${orgSlug}/content`);
 
-  const admin = createAdminClient();
-  const { data: org } = await admin
+  const { data: org } = await supabase
     .from("organizations")
     .select("id")
     .eq("slug", orgSlug)

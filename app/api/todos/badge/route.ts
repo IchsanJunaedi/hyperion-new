@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { getTodoBadgeCount } from "@/features/todos/queries";
+import { checkRateLimit, ipKey } from "@/lib/rate-limit";
 
 /**
  * Lightweight todo badge count endpoint. Fetched client-side by TodoBadge so
@@ -21,6 +22,16 @@ export async function GET(req: Request) {
   } = await supabase.auth.getUser();
   if (!user) {
     return NextResponse.json({ count: 0 }, { status: 401 });
+  }
+
+  // Rate limit: 30 requests per minute per IP
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  const rl = await checkRateLimit(ipKey(ip, "todos-badge"), {
+    maxAttempts: 30,
+    windowMs: 60 * 1000,
+  });
+  if (!rl.allowed) {
+    return NextResponse.json({ count: 0 }, { status: 429 });
   }
 
   const admin = createAdminClient();

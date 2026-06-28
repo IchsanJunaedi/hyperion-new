@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 
+import { encrypt } from "@/lib/encryption";
 import { createClient } from "@/lib/supabase/server";
 import {
   profileSetupSchema,
@@ -80,17 +81,32 @@ export async function saveProfileAction(
   const cleanGameIds = stripEmpty(parsed.data.game_ids ?? {});
   const cleanSocialLinks = stripEmpty(parsed.data.social_links ?? {});
 
+  // Encrypt PII fields before saving
+  let encryptedGameIds: string | undefined;
+  let encryptedSocialLinks: string | undefined;
+  try {
+    encryptedGameIds = encrypt(JSON.stringify(cleanGameIds));
+    encryptedSocialLinks = encrypt(JSON.stringify(cleanSocialLinks));
+  } catch {
+    console.warn("[saveProfile] ENCRYPTION_KEY not set, skipping encryption");
+  }
+
+  const updatePayload: Record<string, unknown> = {
+    full_name: parsed.data.full_name,
+    username: username,
+    display_name: finalDisplayName,
+    phone_wa: parsed.data.phone_wa,
+    date_of_birth: parsed.data.date_of_birth,
+    social_links: cleanSocialLinks,
+    game_ids: cleanGameIds,
+  };
+  if (encryptedGameIds !== undefined) updatePayload.encrypted_game_ids = encryptedGameIds;
+  if (encryptedSocialLinks !== undefined) updatePayload.encrypted_social_links = encryptedSocialLinks;
+
   const { error } = await supabase
     .from("profiles")
-    .update({
-      full_name: parsed.data.full_name,
-      username: username,
-      display_name: finalDisplayName,
-      phone_wa: parsed.data.phone_wa,
-      date_of_birth: parsed.data.date_of_birth,
-      social_links: cleanSocialLinks,
-      game_ids: cleanGameIds,
-    })
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    .update(updatePayload as any)
     .eq("id", user.id);
 
   if (error) {

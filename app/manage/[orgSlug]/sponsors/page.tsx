@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createClient } from "@/lib/supabase/server";
 import { getSponsors } from "@/features/sponsors/queries";
 import { SponsorListClient } from "@/features/sponsors/components/SponsorListClient";
 
@@ -11,9 +11,9 @@ interface Props {
 
 const ManageSponsorsPage = async ({ params }: Props) => {
   const { orgSlug } = await params;
-  const admin = createAdminClient();
+  const supabase = await createClient();
 
-  const { data: org } = await admin
+  const { data: org } = await supabase
     .from("organizations")
     .select("id, name")
     .eq("slug", orgSlug)

@@ -4,7 +4,9 @@ import { redirect } from "next/navigation";
 
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
+import { logAudit } from "@/lib/audit";
 import { loginSchema, type LoginInput } from "@/lib/validations/auth";
+import type { Database } from "@/types/database";
 
 export interface SignInResult {
   error?: string;
@@ -13,13 +15,15 @@ export interface SignInResult {
 const MAX_ATTEMPTS = 3;
 const LOCK_DURATION_MS = 60 * 60 * 1000; // 1 hour
 
-type RateLimitRow = { attempts: number; locked_until: string | null };
+type RateLimitRow = {
+  attempts: number;
+  locked_until: string | null;
+};
+type RateLimitInsert = Database["public"]["Tables"]["login_rate_limits"]["Insert"];
 
 async function getRateLimit(email: string): Promise<RateLimitRow | null> {
   const admin = createAdminClient();
-  // Table not yet in generated types — cast required
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data } = await (admin as any)
+  const { data } = await admin
     .from("login_rate_limits")
     .select("attempts, locked_until")
     .eq("identifier", email)
@@ -41,19 +45,17 @@ async function recordFailedAttempt(email: string, current: RateLimitRow | null):
       ? new Date(now.getTime() + LOCK_DURATION_MS).toISOString()
       : null;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  await (admin as any).from("login_rate_limits").upsert({
+  await admin.from("login_rate_limits").upsert({
     identifier: email,
     attempts: newAttempts,
     locked_until: lockedUntil,
     updated_at: now.toISOString(),
-  });
+  } as RateLimitInsert);
 }
 
 async function clearRateLimit(email: string): Promise<void> {
   const admin = createAdminClient();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  await (admin as any)
+  await admin
     .from("login_rate_limits")
     .delete()
     .eq("identifier", email);
@@ -94,6 +96,14 @@ export async function signInAction(
   if (error) {
     // Record failed attempt (fire-and-forget, don't block response)
     await recordFailedAttempt(email, rateLimit);
+
+    // Audit log the failed login attempt
+    logAudit({
+      actorId: null as unknown as string, // unknown — not authenticated yet
+      action: "login.failed",
+      entityType: "auth",
+      metadata: { email, reason: error.message },
+    });
 
     // Check if this attempt just triggered a lock
     const prevAttempts = rateLimit?.attempts ?? 0;

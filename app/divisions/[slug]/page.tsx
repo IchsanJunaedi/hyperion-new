@@ -4,7 +4,7 @@ import { ArrowLeft } from "lucide-react";
 
 import { Footer } from "@/components/landing/Footer";
 import { Header } from "@/components/landing/Header";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createClient } from "@/lib/supabase/server";
 import { PlayerRosterCard } from "./PlayerRosterCard";
 
 const GAME_META: Record<string, { color: string; abbr: string }> = {
@@ -27,9 +27,9 @@ export const dynamic = "force-dynamic";
 
 export default async function DivisionDetailPage({ params }: Props) {
   const { slug } = await params;
-  const admin = createAdminClient();
+  const supabase = await createClient();
 
-  const { data: divisionRows, error: divErr } = await admin
+  const { data: divisionRows, error: divErr } = await supabase
     .from("divisions")
     .select("id, name, slug, game, description, is_active")
     .eq("slug", slug)
@@ -43,7 +43,7 @@ export default async function DivisionDetailPage({ params }: Props) {
   const meta = getMeta(division.game ?? "");
 
   // Only orgs whose division row is public should surface on the public site.
-  const subQuery = await admin
+  const subQuery = await supabase
     .from("divisions")
     .select("id, organization_id")
     .eq("slug", slug)
@@ -57,7 +57,7 @@ export default async function DivisionDetailPage({ params }: Props) {
 
   let teams: { id: string; name: string; slug: string; logo_url: string | null; description: string | null }[] = [];
   if (orgIds.length > 0) {
-    const { data } = await admin
+    const { data } = await supabase
       .from("organizations")
       .select("id, name, slug, logo_url, description")
       .in("id", orgIds)
@@ -82,7 +82,7 @@ export default async function DivisionDetailPage({ params }: Props) {
   if (teams.length > 0) {
     const allOrgIds = teams.map((t) => t.id);
 
-    const { data: membersData, error: mErr } = await admin
+    const { data: membersData, error: mErr } = await supabase
       .from("team_members")
       .select("organization_id, role, user_id, organizations(name)")
       .in("organization_id", allOrgIds)
@@ -97,7 +97,7 @@ export default async function DivisionDetailPage({ params }: Props) {
     let profileMap = new Map<string, { display_name: string | null; avatar_url: string | null; username: string | null; social_links: unknown }>();
 
     if (userIds.length > 0) {
-      const { data: profilesData, error: pErr } = await admin
+      const { data: profilesData, error: pErr } = await supabase
         .from("profiles")
         .select("id, display_name, avatar_url, username, social_links")
         .in("id", userIds)

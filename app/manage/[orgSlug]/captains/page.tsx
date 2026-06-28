@@ -1,4 +1,4 @@
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createClient } from "@/lib/supabase/server";
 import { CaptainList } from "@/features/dashboard/components/CaptainList";
 
 export const dynamic = "force-dynamic";
@@ -9,9 +9,9 @@ interface Props {
 
 const ManageCaptainsPage = async ({ params }: Props) => {
   const { orgSlug } = await params;
-  const admin = createAdminClient();
+  const supabase = await createClient();
 
-  const { data: org } = await admin
+  const { data: org } = await supabase
     .from("organizations")
     .select("id")
     .eq("slug", orgSlug)
@@ -20,14 +20,14 @@ const ManageCaptainsPage = async ({ params }: Props) => {
   if (!org) return null;
 
   const [captainsRes, divsRes] = await Promise.all([
-    admin
+    supabase
       .from("team_members")
       .select("id, user_id, division_id, role")
       .eq("organization_id", org.id)
       .eq("role", "captain")
       .eq("is_active", true)
       .limit(50),
-    admin
+    supabase
       .from("divisions")
       .select("id, name")
       .eq("organization_id", org.id)
@@ -37,7 +37,7 @@ const ManageCaptainsPage = async ({ params }: Props) => {
   const captains = captainsRes.data ?? [];
   const captainUserIds = [...new Set(captains.map((c) => c.user_id))];
   const { data: profiles } = captainUserIds.length > 0
-    ? await admin
+    ? await supabase
         .from("profiles")
         .select("id, full_name, username, display_name")
         .in("id", captainUserIds)

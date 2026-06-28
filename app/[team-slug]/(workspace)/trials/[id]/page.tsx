@@ -3,7 +3,6 @@ import { redirect } from "next/navigation";
 import { TrialDetailClient } from "@/features/trials/components/TrialDetailClient";
 import { getTrialById, listApplicants } from "@/features/trials/queries";
 import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
 
@@ -18,15 +17,14 @@ export default async function TrialDetailPage({ params }: Props) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect(`/login?next=/${slug}/trials/${id}`);
 
-  const admin = createAdminClient();
-  const { data: org } = await admin
+  const { data: org } = await supabase
     .from("organizations")
     .select("id")
     .eq("slug", slug)
     .maybeSingle();
   if (!org) redirect("/");
 
-  const { data: membership } = await admin
+  const { data: membership } = await supabase
     .from("team_members")
     .select("role")
     .eq("user_id", user.id)
@@ -34,6 +32,11 @@ export default async function TrialDetailPage({ params }: Props) {
     .eq("is_active", true)
     .maybeSingle();
   if (!membership) redirect("/");
+
+  // Only manager, coach, and owner can access trials
+  if (!["manager", "coach", "owner"].includes(membership.role ?? "")) {
+    redirect(`/${slug}`);
+  }
 
   const [trial, applicants] = await Promise.all([
     getTrialById(id),

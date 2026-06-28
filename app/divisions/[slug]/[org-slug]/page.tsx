@@ -4,7 +4,7 @@ import { ArrowLeft, Trophy } from "lucide-react";
 
 import { Footer } from "@/components/landing/Footer";
 import { Header } from "@/components/landing/Header";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createClient } from "@/lib/supabase/server";
 import { PlayerRosterCard } from "../PlayerRosterCard";
 
 const GAME_META: Record<string, { color: string; abbr: string }> = {
@@ -34,8 +34,8 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: Props) {
   const { "org-slug": orgSlug } = await params;
-  const admin = createAdminClient();
-  const { data } = await admin
+  const supabase = await createClient();
+  const { data } = await supabase
     .from("organizations")
     .select("name")
     .eq("slug", orgSlug)
@@ -49,9 +49,9 @@ export async function generateMetadata({ params }: Props) {
 
 const TeamDetailPage = async ({ params }: Props) => {
   const { slug: divisionSlug, "org-slug": orgSlug } = await params;
-  const admin = createAdminClient();
+  const supabase = await createClient();
 
-  const { data: org, error: orgErr } = await admin
+  const { data: org, error: orgErr } = await supabase
     .from("organizations")
     .select("id, name, slug, logo_url, description")
     .eq("slug", orgSlug)
@@ -60,7 +60,7 @@ const TeamDetailPage = async ({ params }: Props) => {
   if (!org) notFound();
 
   // Fetch the division details for this organization to get the game and division name
-  const { data: division, error: divErr } = await admin
+  const { data: division, error: divErr } = await supabase
     .from("divisions")
     .select("id, name, slug, game, description")
     .eq("slug", divisionSlug)
@@ -71,7 +71,7 @@ const TeamDetailPage = async ({ params }: Props) => {
 
   const meta = getMeta(division.game ?? "");
 
-  const { data: membersData, error: mErr } = await admin
+  const { data: membersData, error: mErr } = await supabase
     .from("team_members")
     .select("user_id, role, jersey_number, position, main_role")
     .eq("organization_id", org.id)
@@ -86,7 +86,7 @@ const TeamDetailPage = async ({ params }: Props) => {
   let profileMap = new Map<string, { display_name: string | null; avatar_url: string | null; username: string | null; social_links: unknown }>();
 
   if (userIds.length > 0) {
-    const { data: profilesData, error: pErr } = await admin
+    const { data: profilesData, error: pErr } = await supabase
       .from("profiles")
       .select("id, display_name, avatar_url, username, social_links")
       .in("id", userIds)
@@ -95,7 +95,7 @@ const TeamDetailPage = async ({ params }: Props) => {
     profileMap = new Map((profilesData ?? []).map((p) => [p.id, p]));
   }
 
-  const { data: achievements, error: aErr } = await admin
+  const { data: achievements, error: aErr } = await supabase
     .from("gallery_entries")
     .select("id, title, placement, achieved_at:tournament_date")
     .eq("organization_id", org.id)

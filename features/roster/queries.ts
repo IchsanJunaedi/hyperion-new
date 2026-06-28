@@ -1,5 +1,6 @@
 import "server-only";
 
+import { decrypt } from "@/lib/encryption";
 import { createClient } from "@/lib/supabase/server";
 import type { Json, MemberAvailability, MemberRole } from "@/types/database";
 
@@ -22,6 +23,20 @@ export type RosterMember = {
   /** Confirmed-attendance percentage over the org's recent scrims, or null when no data. */
   attendance_rate: number | null;
 };
+
+/**
+ * Try to decrypt an encrypted_* field, falling back to the plaintext value.
+ */
+function tryDecryptJson(encrypted: string | null, fallback: Json): Json {
+  if (!encrypted) return fallback;
+  try {
+    const decrypted = decrypt(encrypted);
+    return JSON.parse(decrypted) as Json;
+  } catch {
+    // If ENCRYPTION_KEY not set or decryption fails, return plaintext
+    return fallback;
+  }
+}
 
 export async function getRosterMembers(orgId: string): Promise<RosterMember[]> {
   const supabase = await createClient();
@@ -83,7 +98,7 @@ export async function getRosterMembers(orgId: string): Promise<RosterMember[]> {
       .limit(2000);
     if (attErr) console.error("getRosterMembers attendances:", attErr);
 
-    const tally = new Map<string, { present: number; total: number }>();
+    const tally: Map<string, { present: number; total: number }> = new Map();
     for (const a of attendances ?? []) {
       const t = tally.get(a.user_id) ?? { present: 0, total: 0 };
       t.total += 1;
@@ -100,6 +115,18 @@ export async function getRosterMembers(orgId: string): Promise<RosterMember[]> {
   return members.map((m) => {
     const profile = profileMap.get(m.user_id);
     const division = m.division_id ? divisionMap.get(m.division_id) : null;
+
+    // Decrypt game_ids from encrypted_game_ids, falling back to plaintext
+    const rawProfile = profile as Record<string, unknown> | undefined;
+    const encryptedGameIds: string | null | undefined = rawProfile?.encrypted_game_ids as
+      | string
+      | null
+      | undefined;
+    const decryptedGameIds = tryDecryptJson(
+      encryptedGameIds ?? null,
+      profile?.game_ids ?? {},
+    );
+
     return {
       id: m.id,
       user_id: m.user_id,
@@ -115,7 +142,7 @@ export async function getRosterMembers(orgId: string): Promise<RosterMember[]> {
       username: profile?.username ?? null,
       avatar_url: profile?.avatar_url ?? null,
       phone_wa: profile?.phone_wa ?? null,
-      game_ids: profile?.game_ids ?? {},
+      game_ids: decryptedGameIds,
       attendance_rate: attendanceRateMap.get(m.user_id) ?? null,
     };
   });
@@ -153,7 +180,5 @@ export async function getCurrentUserRole(
     .eq("user_id", user.id)
     .eq("is_active", true)
     .limit(1)
-    .maybeSingle();
-
-  return (data?.role as MemberRole | null) ?? null;
+    .maybeSingle();    return (data?.role as MemberRole | null | undefined) ?? null;
 }

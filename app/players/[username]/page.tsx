@@ -5,7 +5,7 @@ import Image from "next/image";
 
 import { Footer } from "@/components/landing/Footer";
 import { Header } from "@/components/landing/Header";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createClient } from "@/lib/supabase/server";
 
 const ROLE_LABEL: Record<string, string> = {
   captain: "Captain",
@@ -31,8 +31,8 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: Props) {
   const { username } = await params;
-  const admin = createAdminClient();
-  const { data } = await admin
+  const supabase = await createClient();
+  const { data } = await supabase
     .from("profiles")
     .select("display_name, username")
     .eq("username", username)
@@ -46,9 +46,9 @@ export async function generateMetadata({ params }: Props) {
 
 export default async function PlayerProfilePage({ params }: Props) {
   const { username } = await params;
-  const admin = createAdminClient();
+  const supabase = await createClient();
 
-  const { data: profile, error: pErr } = await admin
+  const { data: profile, error: pErr } = await supabase
     .from("profiles")
     .select("id, display_name, username, avatar_url")
     .eq("username", username)
@@ -56,7 +56,7 @@ export default async function PlayerProfilePage({ params }: Props) {
   if (pErr) console.error("PlayerProfilePage: profile fetch:", pErr);
   if (!profile) notFound();
 
-  const { data: memberships, error: mErr } = await admin
+  const { data: memberships, error: mErr } = await supabase
     .from("team_members")
     .select("organization_id, role")
     .eq("user_id", profile.id)
@@ -68,7 +68,7 @@ export default async function PlayerProfilePage({ params }: Props) {
 
   let orgMap = new Map<string, { name: string; slug: string }>();
   if (orgIds.length > 0) {
-    const { data: orgs, error: oErr } = await admin
+    const { data: orgs, error: oErr } = await supabase
       .from("organizations")
       .select("id, name, slug")
       .in("id", orgIds)
@@ -80,7 +80,7 @@ export default async function PlayerProfilePage({ params }: Props) {
   type AchievementRow = { id: string; title: string; placement: number | null; achieved_at: string | null; organization_id: string };
   let achievements: AchievementRow[] = [];
   if (orgIds.length > 0) {
-    const { data, error: aErr } = await admin
+    const { data, error: aErr } = await supabase
       .from("gallery_entries")
       .select("id, title, placement, achieved_at:tournament_date, organization_id")
       .in("organization_id", orgIds)

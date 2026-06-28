@@ -346,8 +346,11 @@ export async function addEventCommentAction(
   const { user, db } = await getAuthContext();
   if (!user) return { ok: false, message: "Anda harus login" };
 
+  // calendar_event_comments is not yet in generated types — inline type
+  type CecError = { code?: string; message?: string };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: comment, error } = await (db as any)
+  const db2 = db as any;
+  const { data: comment, error } = await db2
     .from("calendar_event_comments")
     .insert({
       event_id: eventId,
@@ -355,15 +358,16 @@ export async function addEventCommentAction(
       body: body.trim(),
     })
     .select("id")
-    .single();
+    .single() as { data: { id: string } | null; error: CecError | null };
 
   if (error || !comment) {
+    const cecErr = error as CecError | null;
     return {
       ok: false,
       message:
-        error?.code === "42501"
+        cecErr?.code === "42501"
           ? "Anda tidak punya akses untuk menambah komentar"
-          : (error?.message ?? "Gagal menambah komentar"),
+          : (cecErr?.message ?? "Gagal menambah komentar"),
     };
   }
 
@@ -382,8 +386,11 @@ export async function deleteEventCommentAction(
   const { user, db, isOwner } = await getAuthContext();
   if (!user) return { ok: false, message: "Anda harus login" };
 
+  // calendar_event_comments not in types — cast at call site
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const query = (db as any).from("calendar_event_comments").delete().eq("id", commentId);
+  const db2 = db as any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const query: any = db2.from("calendar_event_comments").delete().eq("id", commentId);
 
   // Non-owner can only delete their own comments
   const { error } = isOwner ? await query : await query.eq("user_id", user.id);
@@ -413,8 +420,7 @@ export async function upsertCalendarRsvpAction(
   const { user, db } = await getAuthContext();
   if (!user) return { ok: false, message: "Anda harus login" };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { error } = await (db as any)
+  const { error } = await db
     .from("calendar_event_rsvps")
     .upsert(
       { event_id: eventId, user_id: user.id, status },

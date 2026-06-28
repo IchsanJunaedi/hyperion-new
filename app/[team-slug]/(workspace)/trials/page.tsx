@@ -3,7 +3,6 @@ import { redirect } from "next/navigation";
 import { TrialListClient } from "@/features/trials/components/TrialListClient";
 import { listTrials } from "@/features/trials/queries";
 import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
 
@@ -18,15 +17,14 @@ export default async function TrialsPage({ params }: Props) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect(`/login?next=/${slug}/trials`);
 
-  const admin = createAdminClient();
-  const { data: org } = await admin
+  const { data: org } = await supabase
     .from("organizations")
     .select("id")
     .eq("slug", slug)
     .maybeSingle();
   if (!org) redirect("/");
 
-  const { data: membership } = await admin
+  const { data: membership } = await supabase
     .from("team_members")
     .select("role")
     .eq("user_id", user.id)
@@ -35,11 +33,17 @@ export default async function TrialsPage({ params }: Props) {
     .maybeSingle();
   if (!membership) redirect("/");
 
+  // Only manager, coach, and owner can access trials — captain and member
+  // are redirected to the team home page.
+  if (!["manager", "coach", "owner"].includes(membership.role ?? "")) {
+    redirect(`/${slug}`);
+  }
+
   const canManage = ["manager", "coach", "owner"].includes(membership.role ?? "");
 
   const [trials, divisionRes] = await Promise.all([
     listTrials(org.id),
-    admin.from("divisions").select("id").eq("organization_id", org.id).eq("is_active", true).order("created_at", { ascending: true }).limit(1).maybeSingle(),
+    supabase.from("divisions").select("id").eq("organization_id", org.id).eq("is_active", true).order("created_at", { ascending: true }).limit(1).maybeSingle(),
   ]);
   const divisionId = divisionRes.data?.id ?? null;
 

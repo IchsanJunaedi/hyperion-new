@@ -72,8 +72,7 @@ export async function finishScrimAction(
   // Delete existing records to prevent orphans when editing
   await admin.from("scrim_game_results").delete().eq("scrim_id", input.scrimId);
   await admin.from("scrim_draft_picks").delete().eq("scrim_id", input.scrimId);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  await admin.from("scrim_draft_bans" as any).delete().eq("scrim_id", input.scrimId);
+  await admin.from("scrim_draft_bans").delete().eq("scrim_id", input.scrimId);
 
   const wins = input.games.filter((g) => g.isWin).length;
   const losses = input.games.filter((g) => !g.isWin).length;
@@ -175,8 +174,7 @@ export async function finishScrimAction(
   });
   if (banRows.length > 0) {
     const { error: banErr } = await admin
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .from("scrim_draft_bans" as any)
+      .from("scrim_draft_bans")
       .upsert(banRows, { onConflict: "scrim_id,game_number,side,ban_order" });
     if (banErr) return { ok: false, message: banErr.message };
   }

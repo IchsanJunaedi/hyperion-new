@@ -560,8 +560,7 @@ export async function addTournamentMatchAction(
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, message: "Anda harus login" };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { error } = await (supabase as any).from("tournament_matches").insert({
+  const { error } = await supabase.from("tournament_matches").insert({
     stage_id: raw.stage_id,
     round_label: raw.round_label.trim(),
     opponent_name: raw.opponent_name?.trim() || null,
@@ -600,8 +599,7 @@ export async function updateTournamentMatchAction(
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, message: "Anda harus login" };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { error } = await (supabase as any)
+  const { error } = await supabase
     .from("tournament_matches")
     .update({
       round_label: raw.round_label.trim(),
@@ -629,8 +627,7 @@ export async function deleteTournamentMatchAction(
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, message: "Anda harus login" };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { error } = await (supabase as any)
+  const { error } = await supabase
     .from("tournament_matches")
     .delete()
     .eq("id", matchId);

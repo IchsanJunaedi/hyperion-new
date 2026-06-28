@@ -1,5 +1,5 @@
 import "server-only";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createClient } from "@/lib/supabase/server";
 import type { ContentCalendarRow, ContentStatus } from "@/types/database";
 
 export type { ContentCalendarRow };
@@ -8,8 +8,8 @@ export async function listContent(
   orgId: string,
   status?: ContentStatus | "all",
 ): Promise<(ContentCalendarRow & { creator_name: string | null })[]> {
-  const admin = createAdminClient();
-  let q = admin
+  const supabase = await createClient();
+  let q = supabase
     .from("content_calendar")
     .select(
       "id, organization_id, title, description, platform, status, scheduled_at, approved_at, approved_by, created_by, created_at",
@@ -25,7 +25,7 @@ export async function listContent(
   if (!rows || rows.length === 0) return [];
 
   const creatorIds = [...new Set(rows.map((r) => r.created_by))];
-  const { data: profiles } = await admin
+  const { data: profiles } = await supabase
     .from("profiles")
     .select("id, display_name, username")
     .in("id", creatorIds);
@@ -40,8 +40,8 @@ export async function listContent(
 export async function listPendingApproval(
   orgId: string,
 ): Promise<ContentCalendarRow[]> {
-  const admin = createAdminClient();
-  const { data } = await admin
+  const supabase = await createClient();
+  const { data } = await supabase
     .from("content_calendar")
     .select(
       "id, organization_id, title, description, platform, status, scheduled_at, approved_at, approved_by, created_by, created_at",

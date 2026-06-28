@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { hashPhone } from "@/lib/encryption";
 import { logAudit } from "@/lib/audit";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
@@ -29,8 +30,7 @@ async function checkTrialRateLimit(email: string): Promise<boolean> {
   const admin = createAdminClient();
   const identifier = `trial:${email}`;
   const now = new Date();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data } = await (admin as any)
+  const { data } = await admin
     .from("login_rate_limits")
     .select("attempts, locked_until")
     .eq("identifier", identifier)
@@ -45,8 +45,7 @@ async function checkTrialRateLimit(email: string): Promise<boolean> {
     ? new Date(now.getTime() + TRIAL_RATE_LIMIT_WINDOW_MS).toISOString()
     : null;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  await (admin as any).from("login_rate_limits").upsert({
+  await admin.from("login_rate_limits").upsert({
     identifier,
     attempts: newAttempts,
     locked_until: lockedUntil,
@@ -361,6 +360,9 @@ export async function registerApplicantAction(raw: {
   if (existing)
     return { ok: false, message: "Nomor WhatsApp sudah terdaftar di trial ini" };
 
+  // Hash the phone for future lookup (WA webhook uses phone_hash)
+  const phoneHash = hashPhone(phone);
+
   const { error } = await admin.from("trial_applicants").insert({
     trial_id: trialId,
     name,
@@ -384,6 +386,14 @@ export async function registerApplicantAction(raw: {
     screenshot_url: screenshotUrl,
     cv_url: cvUrl,
   });
+
+  // Also update the profile's phone_hash if the applicant has a matching profile
+  // (this handles the case where an existing member is applying)
+  await admin
+    .from("profiles")
+    .update({ phone_hash: phoneHash })
+    .eq("phone_wa", phone)
+    .maybeSingle();
 
   if (error) return { ok: false, message: error.message };
 

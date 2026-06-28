@@ -1,6 +1,5 @@
 import { Calendar } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
 import { redirect } from "next/navigation";
 import { format, startOfMonth, endOfMonth, addMonths } from "date-fns";
 import { id as localeId } from "date-fns/locale";
@@ -33,9 +32,8 @@ const ManageCalendarPage = async ({ searchParams }: Props) => {
   const month = sp.month ? parseInt(sp.month) : now.getMonth() + 1;
   const targetDate = new Date(year, month - 1, 1);
 
-  const admin = createAdminClient();
-
-  const { data: memberships } = await admin
+  // Use regular supabase client — RLS enforces per-org access for managers
+  const { data: memberships } = await supabase
     .from("team_members")
     .select("organization_id")
     .eq("user_id", user.id)
@@ -59,8 +57,8 @@ const ManageCalendarPage = async ({ searchParams }: Props) => {
   const monthEnd = endOfMonth(targetDate).toISOString();
 
   const [orgsRes, eventsRes, tournamentsRes, scrimsRes] = await Promise.all([
-    admin.from("organizations").select("id, slug, name").in("id", orgIds).limit(20),
-    admin
+    supabase.from("organizations").select("id, slug, name").in("id", orgIds).limit(20),
+    supabase
       .from("calendar_events")
       .select("id, title, starts_at, ends_at, event_type, organization_id")
       .in("organization_id", orgIds)
@@ -68,14 +66,14 @@ const ManageCalendarPage = async ({ searchParams }: Props) => {
       .lte("starts_at", monthEnd)
       .order("starts_at", { ascending: true })
       .limit(200),
-    admin
+    supabase
       .from("tournaments")
       .select("id, name, start_date, organization_id")
       .in("organization_id", orgIds)
       .gte("start_date", monthStart.slice(0, 10))
       .lte("start_date", monthEnd.slice(0, 10))
       .limit(100),
-    admin
+    supabase
       .from("scrims")
       .select("id, opponent_name, scheduled_at, organization_id")
       .in("organization_id", orgIds)

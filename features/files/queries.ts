@@ -1,6 +1,6 @@
 import "server-only";
 
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createClient } from "@/lib/supabase/server";
 import type { Database } from "@/types/database";
 
 export type FileRow = Database["public"]["Tables"]["files"]["Row"];
@@ -10,8 +10,8 @@ export async function getLinkedFiles(
   refType: string,
   refId: string,
 ): Promise<FileRow[]> {
-  const admin = createAdminClient();
-  const { data } = await admin
+  const supabase = await createClient();
+  const { data } = await supabase
     .from("files")
     .select("*")
     .eq("organization_id", orgId)
