@@ -106,7 +106,7 @@ export default async function DashboardPage({
 
   return (
     <>
-      <main className="flex-1 max-w-[900px] w-full mx-auto px-4 sm:px-8 py-12 flex flex-col gap-10">
+      <main className="flex-1 min-w-0 max-w-[900px] w-full mx-auto px-4 sm:px-8 py-12 flex flex-col gap-10">
         {/* Title + Stats */}
         <div>
           <div className="flex items-center gap-2">
@@ -114,7 +114,7 @@ export default async function DashboardPage({
             <h1 className="font-bold text-[36px] leading-tight text-ui-text">Home</h1>
           </div>
           <p className="text-ui-text-2 mt-1 mb-6">Workspace owner overview and controls.</p>
-          <div className="flex flex-wrap gap-x-12 gap-y-4 border-b border-ui-border pb-6">
+          <div className="flex flex-wrap gap-x-6 sm:gap-x-12 gap-y-4 border-b border-ui-border pb-6">
             <Stat label="Total User" value={totalUsers ?? 0} />
             <Stat label="Total Tim" value={orgs?.length ?? 0} />
             <Stat label="Member Aktif" value={members?.length ?? 0} />

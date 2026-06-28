@@ -26,20 +26,22 @@ interface MetricCardProps {
 
 function MetricCard({ icon, label, value, sub, accent, trend, trendColor, sparkId }: MetricCardProps) {
   return (
-    <div className="rounded-xl border border-ui-border bg-ui-surface p-3 sm:p-4 flex flex-col justify-between items-center text-center min-h-[100px]">
-      <div className="flex items-center justify-center gap-1.5 text-[10px] text-ui-text-muted font-semibold uppercase tracking-wider whitespace-nowrap w-full">
+    <div className="rounded-xl border border-ui-border bg-ui-surface p-3 sm:p-4 flex flex-col justify-between items-center text-center min-h-[100px] min-w-0 w-full">
+      <div className="flex items-center justify-center gap-1.5 text-[10px] text-ui-text-muted font-semibold uppercase tracking-wider w-full min-w-0">
         <span className="shrink-0 flex items-center justify-center">{icon}</span>
-        {label}
+        <span className="truncate">{label}</span>
       </div>
-      <div className="flex-1 flex items-center justify-center my-1 w-full">
-        <p className={`text-lg sm:text-2xl font-bold tracking-tight whitespace-nowrap ${accent ?? "text-ui-text"} text-center`}>
+      <div className="flex-1 flex items-center justify-center my-1 w-full min-w-0">
+        <p className={`text-lg sm:text-2xl font-bold tracking-tight truncate ${accent ?? "text-ui-text"} text-center w-full`}>
           {value}
         </p>
       </div>
       {trend && sparkId && (
-        <Sparkline data={trend} color={trendColor ?? "#22c55e"} id={sparkId} />
+        <div className="w-full flex justify-center overflow-hidden">
+          <Sparkline data={trend} color={trendColor ?? "#22c55e"} id={sparkId} />
+        </div>
       )}
-      {sub && <p className="text-[10px] text-ui-text-muted whitespace-nowrap text-center w-full">{sub}</p>}
+      {sub && <p className="text-[10px] text-ui-text-muted text-center w-full min-w-0 mt-0.5 line-clamp-2">{sub}</p>}
     </div>
   );
 }

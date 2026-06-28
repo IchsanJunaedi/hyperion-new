@@ -47,7 +47,7 @@ const AuditActivityChart = ({ data7, data30 }: AuditActivityChartProps) => {
           ))}
         </div>
       </div>
-      <ResponsiveContainer width="100%" height={120}>
+      <ResponsiveContainer width="100%" height={120} minWidth={0} minHeight={0}>
         <BarChart data={data} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
           <XAxis
             dataKey="day"

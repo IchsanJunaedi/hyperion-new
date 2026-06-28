@@ -184,47 +184,55 @@ const RosterTable = ({
               </div>
 
               {/* Grid-aligned Actions Segment */}
-              <div className="flex flex-wrap items-center gap-4 sm:flex-nowrap">
+              <div className="flex flex-wrap items-start sm:items-center gap-4 sm:flex-nowrap">
                 {/* Attendance rate */}
                 <div className="flex shrink-0 flex-col items-start justify-center sm:w-16">
                   <span className="text-[10px] uppercase tracking-wide text-ui-text-muted">Hadir</span>
-                  <span
-                    className={cn(
-                      "text-sm font-semibold tabular-nums",
-                      ATTENDANCE_COLORS[attendanceBucket(m.attendance_rate)],
-                    )}
-                  >
-                    {m.attendance_rate === null ? "—" : `${m.attendance_rate}%`}
-                  </span>
+                  <div className="flex items-center min-h-8 sm:min-h-0 mt-0.5 sm:mt-0">
+                    <span
+                      className={cn(
+                        "text-sm font-semibold tabular-nums",
+                        ATTENDANCE_COLORS[attendanceBucket(m.attendance_rate)],
+                      )}
+                    >
+                      {m.attendance_rate === null ? "—" : `${m.attendance_rate}%`}
+                    </span>
+                  </div>
                 </div>
 
                 {/* Role */}
-                <div className="flex shrink-0 items-center justify-start sm:w-24">
-                  {canEditRole ? (
-                    <RoleSelector
-                      orgSlug={orgSlug}
-                      memberId={m.id}
-                      currentRole={m.role}
-                      direction={idx >= sortedMembers.length - 2 && idx > 0 ? "up" : "down"}
-                    />
-                  ) : (
-                    <RoleBadge role={m.role} />
-                  )}
+                <div className="flex shrink-0 flex-col items-start justify-center sm:w-24">
+                  <span className="text-[10px] uppercase tracking-wide text-ui-text-muted sm:hidden">Role</span>
+                  <div className="flex items-center min-h-8 sm:min-h-0 mt-0.5 sm:mt-0 -ml-2 sm:ml-0">
+                    {canEditRole ? (
+                      <RoleSelector
+                        orgSlug={orgSlug}
+                        memberId={m.id}
+                        currentRole={m.role}
+                        direction={idx >= sortedMembers.length - 2 && idx > 0 ? "up" : "down"}
+                      />
+                    ) : (
+                      <RoleBadge role={m.role} />
+                    )}
+                  </div>
                 </div>
 
                 {/* In-game role (only for captain/member) */}
                 {(m.role === "captain" || m.role === "member") && (
-                  <div className="flex shrink-0 items-center justify-start sm:w-28">
-                    {canAssignMainRole ? (
-                      <MainRoleSelector
-                        orgSlug={orgSlug}
-                        memberId={m.id}
-                        currentMainRole={m.main_role as MainRole}
-                        direction={idx >= sortedMembers.length - 2 && idx > 0 ? "up" : "down"}
-                      />
-                    ) : (
-                      <MainRoleBadge mainRole={m.main_role as MainRole} />
-                    )}
+                  <div className="flex shrink-0 flex-col items-start justify-center sm:w-28">
+                    <span className="text-[10px] uppercase tracking-wide text-ui-text-muted sm:hidden">Posisi</span>
+                    <div className="flex items-center min-h-8 sm:min-h-0 mt-0.5 sm:mt-0 -ml-2.5 sm:ml-0">
+                      {canAssignMainRole ? (
+                        <MainRoleSelector
+                          orgSlug={orgSlug}
+                          memberId={m.id}
+                          currentMainRole={m.main_role as MainRole}
+                          direction={idx >= sortedMembers.length - 2 && idx > 0 ? "up" : "down"}
+                        />
+                      ) : (
+                        <MainRoleBadge mainRole={m.main_role as MainRole} />
+                      )}
+                    </div>
                   </div>
                 )}
                 {m.role !== "captain" && m.role !== "member" && (
@@ -232,32 +240,38 @@ const RosterTable = ({
                 )}
 
                 {/* Availability */}
-                <div className="flex shrink-0 justify-start sm:w-36">
-                  {canChangeAvailability ? (
-                    <AvailabilitySelector
-                      orgSlug={orgSlug}
-                      memberId={m.id}
-                      currentAvailability={m.availability}
-                      direction={idx >= sortedMembers.length - 2 && idx > 0 ? "up" : "down"}
-                    />
-                  ) : (
-                    <AvailabilityBadge availability={m.availability} />
-                  )}
+                <div className="flex shrink-0 flex-col items-start justify-center sm:w-36">
+                  <span className="text-[10px] uppercase tracking-wide text-ui-text-muted sm:hidden">Status</span>
+                  <div className="flex items-center min-h-8 sm:min-h-0 mt-0.5 sm:mt-0 -ml-3 sm:ml-0">
+                    {canChangeAvailability ? (
+                      <AvailabilitySelector
+                        orgSlug={orgSlug}
+                        memberId={m.id}
+                        currentAvailability={m.availability}
+                        direction={idx >= sortedMembers.length - 2 && idx > 0 ? "up" : "down"}
+                      />
+                    ) : (
+                      <AvailabilityBadge availability={m.availability} />
+                    )}
+                  </div>
                 </div>
 
                 {/* Kick / Leave */}
-                <div className="flex shrink-0 justify-end sm:w-28">
-                  {canKick ? (
-                    <KickMemberButton
-                      orgSlug={orgSlug}
-                      memberId={m.id}
-                      memberName={m.display_name ?? m.username ?? "member ini"}
-                      isSelf={isSelf}
-                    />
-                  ) : (
-                    // Elegant layout spacer to align grid perfectly
-                    <div className="h-7 w-20" />
-                  )}
+                <div className="flex shrink-0 flex-col items-start justify-center sm:w-28">
+                  <span className="text-[10px] uppercase tracking-wide text-transparent select-none sm:hidden">Aksi</span>
+                  <div className="flex items-center min-h-8 sm:min-h-0 mt-0.5 sm:mt-0 -ml-2.5 sm:ml-0">
+                    {canKick ? (
+                      <KickMemberButton
+                        orgSlug={orgSlug}
+                        memberId={m.id}
+                        memberName={m.display_name ?? m.username ?? "member ini"}
+                        isSelf={isSelf}
+                      />
+                    ) : (
+                      // Elegant layout spacer to align grid perfectly
+                      <div className="h-7 w-20" />
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
