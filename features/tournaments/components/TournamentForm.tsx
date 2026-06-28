@@ -144,7 +144,7 @@ const TournamentForm = ({ orgSlug, divisionId, tournament, onSuccess }: Tourname
           />
         </div>
         <div>
-          <label className="text-xs text-ui-text-2 mb-1 block">Jam Mulai <span className="text-ui-text-muted">(opsional, untuk reminder H-1)</span></label>
+          <label className="text-xs text-ui-text-2 mb-1 block">Jam Mulai <span className="text-ui-text-muted">(WIB, opsional)</span></label>
           <input
             type="time"
             value={startTime}

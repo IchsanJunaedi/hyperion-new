@@ -110,8 +110,8 @@ export async function createTournamentAction(
     entityId: tournament.id,
   });
 
-  // Skip WA blast for historical tournaments
-  if (!isHistorical && parsed.data.send_wa_blast) {
+  // WA blast otomatis untuk semua turnamen non-historical
+  if (!isHistorical) {
     await fanOutTournamentNotifications(
       supabase,
       {

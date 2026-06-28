@@ -19,6 +19,7 @@ const eslintConfig = [
       "next-env.d.ts",
       "node_modules/**",
       "supabase/functions/**",
+      "services/vision/venv/**",
       "scratch/**",
     ],
   },
