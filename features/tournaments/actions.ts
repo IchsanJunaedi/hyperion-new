@@ -70,6 +70,13 @@ export async function createTournamentAction(
   const endOfStartDay = new Date(parsed.data.start_date + "T23:59:59+07:00");
   const isHistorical = endOfStartDay < new Date();
 
+  const { data: activePatch } = await admin
+    .from("meta_patches")
+    .select("id")
+    .eq("organization_id", org.id)
+    .eq("is_active", true)
+    .maybeSingle();
+
   const { data: tournament, error } = await admin
     .from("tournaments")
     .insert({
@@ -87,6 +94,7 @@ export async function createTournamentAction(
       registration_deadline: parsed.data.registration_deadline ?? null,
       location_type: parsed.data.location_type ?? null,
       location: parsed.data.location ?? null,
+      patch_id: activePatch ? activePatch.id : null,
       status: isHistorical ? "completed" : "upcoming",
       // Mark all reminders as sent for historical entries so they don't trigger
       h30_reminder_sent_at: isHistorical ? new Date().toISOString() : null,

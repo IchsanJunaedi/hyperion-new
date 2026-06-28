@@ -39,7 +39,10 @@ describe("getHeroStatistics", () => {
     const result = await getHeroStatistics("org-1");
 
     expect(result).toEqual(mockRows);
-    expect(mockSupabase.rpc).toHaveBeenCalledWith("get_hero_statistics", { p_org_id: "org-1" });
+    expect(mockSupabase.rpc).toHaveBeenCalledWith("get_hero_statistics_v2", {
+      p_org_id: "org-1",
+      p_patch_id: null,
+    });
   });
 
   it("returns empty array when rpc returns null data", async () => {
@@ -123,9 +126,10 @@ describe("getHeroDetail", () => {
     const result = await getHeroDetail("org-1", "Layla");
 
     expect(result).toEqual(mockData);
-    expect(mockSupabase.rpc).toHaveBeenCalledWith("get_hero_detail", {
+    expect(mockSupabase.rpc).toHaveBeenCalledWith("get_hero_detail_v2", {
       p_org_id: "org-1",
       p_hero_name: "Layla",
+      p_patch_id: null,
     });
   });
 
@@ -160,9 +164,10 @@ describe("getHeroDetail", () => {
 
     await getHeroDetail("org-5", "Karina");
 
-    expect(mockSupabase.rpc).toHaveBeenCalledWith("get_hero_detail", {
+    expect(mockSupabase.rpc).toHaveBeenCalledWith("get_hero_detail_v2", {
       p_org_id: "org-5",
       p_hero_name: "Karina",
+      p_patch_id: null,
     });
   });
 });

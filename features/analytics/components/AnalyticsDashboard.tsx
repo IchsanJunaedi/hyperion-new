@@ -34,8 +34,9 @@ interface AnalyticsDashboardProps {
   draftData: DraftAnalyticsData;
   orgId: string;
   slug: string;
+  patchId?: string | null;
 }
-
+ 
 const AnalyticsDashboard = ({
   overviewStats,
   formatBreakdown,
@@ -44,6 +45,7 @@ const AnalyticsDashboard = ({
   draftData,
   orgId,
   slug,
+  patchId,
 }: AnalyticsDashboardProps) => {
   const [activeTab, setActiveTab] = useState<TabKey>("overview");
 
@@ -87,10 +89,10 @@ const AnalyticsDashboard = ({
           slug={slug}
         />
       )}
-      {activeTab === "statistics" && <StatisticsTab orgId={orgId} />}
+      {activeTab === "statistics" && <StatisticsTab orgId={orgId} patchId={patchId} />}
       {activeTab === "draft" && <DraftAnalyticsTab data={draftData} />}
       {activeTab === "players" && <PlayerStatsTab playerStats={playerStats} orgId={orgId} />}
-      {activeTab === "opponents" && <OpponentTab orgId={orgId} />}
+      {activeTab === "opponents" && <OpponentTab orgId={orgId} patchId={patchId} />}
     </div>
   );
 };

@@ -15,6 +15,7 @@ interface HeroStatDetailModalProps {
   orgId: string;
   heroName: string | null;
   onClose: () => void;
+  patchId?: string | null;
 }
 
 const ROLE_LABELS: Record<string, string> = {
@@ -125,6 +126,7 @@ const HeroStatDetailModal = ({
   orgId,
   heroName,
   onClose,
+  patchId,
 }: HeroStatDetailModalProps) => {
   const [data, setData] = useState<HeroDetailData | null>(null);
   const [loading, setLoading] = useState(false);
@@ -137,13 +139,13 @@ const HeroStatDetailModal = ({
     setLoading(true);
     setData(null);
     let mounted = true;
-    getHeroDetailAction(orgId, heroName).then((res) => {
+    getHeroDetailAction(orgId, heroName, patchId).then((res) => {
       if (!mounted) return;
       if (res.ok) setData(res.data);
       setLoading(false);
     });
     return () => { mounted = false; };
-  }, [orgId, heroName]);
+  }, [orgId, heroName, patchId]);
 
   useEffect(() => {
     if (!heroName) return;

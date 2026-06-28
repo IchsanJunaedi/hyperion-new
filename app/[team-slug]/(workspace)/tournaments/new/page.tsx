@@ -5,6 +5,7 @@ import { notFound, redirect } from "next/navigation";
 import { getCurrentUserRole } from "@/features/roster/queries";
 import { getOrgBySlug, getPublicTeamData } from "@/features/teams/queries";
 import { TournamentForm } from "@/features/tournaments/components/TournamentForm";
+import { getActivePatch } from "@/features/meta/queries";
 
 export const dynamic = "force-dynamic";
 
@@ -23,6 +24,7 @@ export default async function NewTournamentPage({ params }: NewTournamentPagePro
 
   const { divisions } = await getPublicTeamData(organization);
   const divisionId = divisions[0]?.id;
+  const activePatch = await getActivePatch(organization.id);
 
   return (
     <div className="space-y-6 px-4 py-6 sm:px-8 w-full">
@@ -50,6 +52,7 @@ export default async function NewTournamentPage({ params }: NewTournamentPagePro
             <TournamentForm
               orgSlug={slug}
               divisionId={divisionId}
+              activePatchVersion={activePatch?.patch_version}
             />
           )}
         </div>

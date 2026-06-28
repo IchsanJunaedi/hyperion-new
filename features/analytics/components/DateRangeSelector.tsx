@@ -23,14 +23,14 @@ const DateRangeSelector = ({ activeRange }: { activeRange: RangeValue }) => {
   }
 
   return (
-    <div className="flex rounded-lg border border-ui-border bg-ui-surface p-0.5">
+    <div className="flex w-full rounded-lg border border-ui-border bg-ui-surface p-0.5">
       {RANGES.map((r) => (
         <button
           key={r.value}
           type="button"
           onClick={() => setRange(r.value)}
           className={cn(
-            "rounded-md px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer",
+            "flex-1 text-center rounded-md px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer",
             activeRange === r.value
               ? "bg-yellow-400 text-black"
               : "text-ui-text-2 hover:text-ui-text",

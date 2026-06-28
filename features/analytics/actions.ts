@@ -208,32 +208,35 @@ export async function fetchPlayerHeroHistory(
 
 export async function getHeroStatisticsAction(
   orgId: string,
+  patchId?: string | null,
 ): Promise<{ ok: true; data: HeroStatRow[] } | { ok: false; message: string }> {
   try {
-    const data = await getHeroStatistics(orgId);
+    const data = await getHeroStatistics(orgId, patchId);
     return { ok: true, data };
   } catch (e) {
     return { ok: false, message: e instanceof Error ? e.message : "Gagal memuat statistik hero" };
   }
 }
-
+ 
 export async function getHeroDetailAction(
   orgId: string,
   heroName: string,
+  patchId?: string | null,
 ): Promise<{ ok: true; data: HeroDetailData } | { ok: false; message: string }> {
   try {
-    const data = await getHeroDetail(orgId, heroName);
+    const data = await getHeroDetail(orgId, heroName, patchId);
     return { ok: true, data };
   } catch (e) {
     return { ok: false, message: e instanceof Error ? e.message : "Gagal memuat detail hero" };
   }
 }
-
+ 
 export async function getOpponentSummaryAction(
   orgId: string,
+  patchId?: string | null,
 ): Promise<{ ok: true; data: OpponentSummary[] } | { ok: false; message: string }> {
   try {
-    const data = await getOpponentSummary(orgId);
+    const data = await getOpponentSummary(orgId, patchId);
     return { ok: true, data };
   } catch (e) {
     return { ok: false, message: e instanceof Error ? e.message : "Gagal memuat data lawan" };

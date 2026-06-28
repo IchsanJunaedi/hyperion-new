@@ -9,7 +9,7 @@ export interface PatchWithHeroes extends MetaPatch {
 }
 
 const META_PATCH_COLS =
-  "id, organization_id, patch_version, notes, tier_descriptions, created_by, created_at, updated_at";
+  "id, organization_id, patch_version, notes, tier_descriptions, created_by, created_at, updated_at, season, is_active";
 
 const META_HERO_COLS =
   "id, patch_id, hero_name, hero_class, role_tag, tier, is_ban_priority, priority_to_learn, counters, synergies, draft_notes, notes, created_at, updated_at";
@@ -83,4 +83,16 @@ export async function getLatestPatchWithHeroes(orgId: string): Promise<PatchWith
     .order("hero_name");
 
   return { ...patch, heroes: heroes ?? [] };
+}
+ 
+export async function getActivePatch(orgId: string): Promise<MetaPatch | null> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("meta_patches")
+    .select(META_PATCH_COLS)
+    .eq("organization_id", orgId)
+    .eq("is_active", true)
+    .limit(1)
+    .maybeSingle();
+  return data;
 }

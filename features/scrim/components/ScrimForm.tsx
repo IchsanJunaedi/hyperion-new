@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 interface ScrimFormProps {
   orgSlug: string;
   divisions: Array<{ id: string; name: string }>;
+  activePatchVersion?: string | null;
 }
 
 const FORMATS: Array<{ value: MatchFormat; label: string }> = [
@@ -21,7 +22,7 @@ const FORMATS: Array<{ value: MatchFormat; label: string }> = [
   { value: "4match", label: "4 Match" },
 ];
 
-const ScrimForm = ({ orgSlug, divisions }: ScrimFormProps) => {
+const ScrimForm = ({ orgSlug, divisions, activePatchVersion }: ScrimFormProps) => {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [globalError, setGlobalError] = useState<string | null>(null);
@@ -175,13 +176,15 @@ const ScrimForm = ({ orgSlug, divisions }: ScrimFormProps) => {
       </Field>
 
       {/* Patch - Full Width */}
-      <Field label="Versi patch (opsional)" name="patch" errors={fieldErrors["patch"]}>
+      <Field label="Versi patch" name="patch" errors={fieldErrors["patch"]}>
         <input
           name="patch"
-          maxLength={30}
-          placeholder="mis. 1.8.44, Patch Juni 2026"
-          className="h-10 w-full rounded-lg border border-ui-border bg-ui-bg/40 px-3 text-sm text-ui-text focus:border-yellow-400 focus:outline-none"
+          value={activePatchVersion ?? "Tidak ada patch aktif"}
+          readOnly
+          disabled
+          className="h-10 w-full rounded-lg border border-ui-border bg-ui-bg/20 px-3 text-sm text-ui-text-muted cursor-not-allowed"
         />
+        <input type="hidden" name="patch" value={activePatchVersion ?? ""} />
       </Field>
 
       {globalError ? (

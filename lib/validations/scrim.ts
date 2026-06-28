@@ -57,6 +57,7 @@ export const createScrimSchema = z.object({
     .max(30)
     .optional()
     .transform((v) => (v && v.length > 0 ? v : null)),
+  patch_id: z.string().uuid().optional().nullable(),
 });
 
 export type CreateScrimInput = z.infer<typeof createScrimSchema>;

@@ -70,6 +70,13 @@ export async function createScrimAction(
   const scheduledAtUtc = new Date(parsed.data.scheduled_at + ":00+07:00").toISOString();
   const isPast = new Date(scheduledAtUtc) < new Date();
 
+  const { data: activePatch } = await supabase
+    .from("meta_patches")
+    .select("id, patch_version")
+    .eq("organization_id", org.id)
+    .eq("is_active", true)
+    .maybeSingle();
+
   const { data: scrim, error } = await supabase
     .from("scrims")
     .insert({
@@ -83,7 +90,8 @@ export async function createScrimAction(
       server_region: parsed.data.server_region,
       room_info: parsed.data.room_info,
       notes: parsed.data.notes,
-      patch: parsed.data.patch ?? null,
+      patch: activePatch ? activePatch.patch_version : (parsed.data.patch ?? null),
+      patch_id: activePatch ? activePatch.id : null,
       // Historical scrims are created as completed immediately
       status: isPast ? "completed" : "scheduled",
       reminder_sent_at: isPast ? new Date().toISOString() : null,

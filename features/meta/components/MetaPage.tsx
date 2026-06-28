@@ -488,7 +488,15 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
   const [confirmDeleteHeroId, setConfirmDeleteHeroId] = useState<string | null>(null);
   const [confirmDeletePatch, setConfirmDeletePatch] = useState(false);
   const [dragOverTier, setDragOverTier] = useState<Tier | null>(null);
-
+ 
+  useEffect(() => {
+    setActivePatch(initialPatch);
+  }, [initialPatch]);
+ 
+  useEffect(() => {
+    setPatchList(patches);
+  }, [patches]);
+ 
   // Close picker when edit mode is turned off
   useEffect(() => {
     if (!editMode) setExpandedTier(null);
@@ -583,6 +591,8 @@ const MetaPage = ({ orgSlug, orgId, patches, initialPatch, previousPatchHeroes =
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
           tier_descriptions: null,
+          is_active: true,
+          season: "Season 41",
           heroes: [],
         };
         setPatchList((prev) => [newPatch, ...prev]);

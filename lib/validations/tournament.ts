@@ -22,6 +22,7 @@ export const createTournamentSchema = z
     // Online platform/link for hybrid tournaments
     online_platform: z.string().trim().max(500).optional().nullable().transform((v) => (v && v.length > 0 ? v : null)),
     send_wa_blast: z.coerce.boolean().default(false),
+    patch_id: z.string().uuid().optional().nullable(),
   })
   .refine(
     (data) => {

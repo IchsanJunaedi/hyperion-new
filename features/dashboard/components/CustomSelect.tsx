@@ -10,8 +10,9 @@ interface CustomSelectProps {
   disabled?: boolean;
   fullWidth?: boolean;
   placeholder?: string;
+  className?: string;
 }
-
+ 
 const CustomSelect = ({
   value,
   options,
@@ -19,6 +20,7 @@ const CustomSelect = ({
   disabled,
   fullWidth,
   placeholder,
+  className,
 }: CustomSelectProps) => {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -43,7 +45,9 @@ const CustomSelect = ({
         disabled={disabled}
         onClick={() => setOpen((v) => !v)}
         className={
-          fullWidth
+          className
+            ? className
+            : fullWidth
             ? `flex h-10 w-full items-center justify-between rounded border border-ui-border bg-ui-bg px-3 text-sm text-ui-text focus:outline-none focus:border-[#4D4D4D] transition disabled:opacity-50 ${selected?.color ?? "text-ui-text"}`
             : `inline-flex items-center gap-1.5 rounded px-2.5 py-1 text-xs font-medium transition border border-ui-border bg-ui-surface hover:bg-ui-hover disabled:opacity-50 ${selected?.color ?? "text-ui-text-dim"}`
         }

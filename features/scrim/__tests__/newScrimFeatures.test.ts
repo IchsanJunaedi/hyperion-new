@@ -43,6 +43,17 @@ describe("New Scrim Features Action Tests", () => {
             }),
           };
         }
+        if (table === "meta_patches") {
+          return {
+            select: () => ({
+              eq: () => ({
+                eq: () => ({
+                  maybeSingle: async () => ({ data: { id: "patch-1", patch_version: "1.8.44" } }),
+                }),
+              }),
+            }),
+          };
+        }
         if (table === "scrims") {
           return {
             insert: (data: any) => ({
@@ -137,6 +148,17 @@ describe("New Scrim Features Action Tests", () => {
             }),
           };
         }
+        if (table === "meta_patches") {
+          return {
+            select: () => ({
+              eq: () => ({
+                eq: () => ({
+                  maybeSingle: async () => ({ data: { id: "patch-1", patch_version: "1.8.44" } }),
+                }),
+              }),
+            }),
+          };
+        }
         if (table === "scrims") {
           return {
             insert: (data: any) => ({
@@ -190,6 +212,17 @@ describe("New Scrim Features Action Tests", () => {
             select: () => ({
               eq: () => ({
                 maybeSingle: async () => ({ data: { id: "org-1", name: "Team Test" } }),
+              }),
+            }),
+          };
+        }
+        if (table === "meta_patches") {
+          return {
+            select: () => ({
+              eq: () => ({
+                eq: () => ({
+                  maybeSingle: async () => ({ data: { id: "patch-1", patch_version: "1.8.44" } }),
+                }),
               }),
             }),
           };
@@ -538,6 +571,17 @@ describe("New Scrim Features Action Tests", () => {
             select: () => ({
               eq: () => ({
                 maybeSingle: async () => ({ data: { id: "org-1", name: "Team Test" } }),
+              }),
+            }),
+          };
+        }
+        if (table === "meta_patches") {
+          return {
+            select: () => ({
+              eq: () => ({
+                eq: () => ({
+                  maybeSingle: async () => ({ data: { id: "patch-1", patch_version: "1.8.44" } }),
+                }),
               }),
             }),
           };

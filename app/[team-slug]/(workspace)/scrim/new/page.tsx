@@ -5,6 +5,7 @@ import { notFound, redirect } from "next/navigation";
 import { ScrimForm } from "@/features/scrim/components/ScrimForm";
 import { getCurrentUserRole } from "@/features/roster/queries";
 import { getPublicTeamData, getOrgBySlug } from "@/features/teams/queries";
+import { getActivePatch } from "@/features/meta/queries";
 
 export const dynamic = "force-dynamic";
 
@@ -22,6 +23,7 @@ export default async function NewScrimPage({ params }: NewScrimPageProps) {
   if (!canManageScrims) redirect(`/${slug}/scrim`);
 
   const { divisions } = await getPublicTeamData(organization);
+  const activePatch = await getActivePatch(organization.id);
 
   return (
     <div className="space-y-6 px-4 py-6 sm:px-8 w-full">
@@ -52,6 +54,7 @@ export default async function NewScrimPage({ params }: NewScrimPageProps) {
             <ScrimForm
               orgSlug={slug}
               divisions={divisions.map((d) => ({ id: d.id, name: d.name }))}
+              activePatchVersion={activePatch?.patch_version}
             />
           )}
         </div>

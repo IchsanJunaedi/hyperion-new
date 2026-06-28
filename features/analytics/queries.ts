@@ -87,7 +87,11 @@ function toHeroStats(
 
 // ─── Overview ─────────────────────────────────────────────────────────────────
 
-export async function getOverviewStats(orgId: string, startDate?: string | null): Promise<{
+export async function getOverviewStats(
+  orgId: string,
+  startDate?: string | null,
+  patchId?: string | null,
+): Promise<{
   stats: ReturnType<typeof computeOverviewStats>;
   formatBreakdown: ReturnType<typeof computeFormatBreakdown>;
 }> {
@@ -98,8 +102,10 @@ export async function getOverviewStats(orgId: string, startDate?: string | null)
     .eq("organization_id", orgId)
     .eq("status", "completed")
     .limit(200);
-
-  if (startDate) {
+ 
+  if (patchId) {
+    q = q.eq("patch_id", patchId);
+  } else if (startDate) {
     q = q.gte("scheduled_at", startDate);
   }
 
@@ -119,7 +125,11 @@ export async function getOverviewStats(orgId: string, startDate?: string | null)
 
 // ─── Recent scrims ────────────────────────────────────────────────────────────
 
-export async function getRecentScrims(orgId: string, startDate?: string | null): Promise<RecentScrim[]> {
+export async function getRecentScrims(
+  orgId: string,
+  startDate?: string | null,
+  patchId?: string | null,
+): Promise<RecentScrim[]> {
   const supabase = await createClient();
   let q = supabase
     .from("scrims")
@@ -128,8 +138,10 @@ export async function getRecentScrims(orgId: string, startDate?: string | null):
     .eq("status", "completed")
     .order("scheduled_at", { ascending: false })
     .limit(20);
-
-  if (startDate) {
+ 
+  if (patchId) {
+    q = q.eq("patch_id", patchId);
+  } else if (startDate) {
     q = q.gte("scheduled_at", startDate);
   }
 
@@ -203,20 +215,31 @@ export interface HeroDetailData {
   played_against: HeroDetailHeroRow[];
 }
 
-export async function getHeroStatistics(orgId: string): Promise<HeroStatRow[]> {
+export async function getHeroStatistics(
+  orgId: string,
+  patchId?: string | null,
+): Promise<HeroStatRow[]> {
   const supabase = await createClient();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data, error } = await (supabase as any).rpc("get_hero_statistics", { p_org_id: orgId });
+  const { data, error } = await (supabase as any).rpc("get_hero_statistics_v2", {
+    p_org_id: orgId,
+    p_patch_id: patchId || null,
+  });
   if (error) throw new Error(error.message);
   return (data ?? []) as HeroStatRow[];
 }
-
-export async function getHeroDetail(orgId: string, heroName: string): Promise<HeroDetailData> {
+ 
+export async function getHeroDetail(
+  orgId: string,
+  heroName: string,
+  patchId?: string | null,
+): Promise<HeroDetailData> {
   const supabase = await createClient();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data, error } = await (supabase as any).rpc("get_hero_detail", {
+  const { data, error } = await (supabase as any).rpc("get_hero_detail_v2", {
     p_org_id: orgId,
     p_hero_name: heroName,
+    p_patch_id: patchId || null,
   });
   if (error) throw new Error(error.message);
   const result = data as HeroDetailData | null;
@@ -229,17 +252,26 @@ export async function getHeroDetail(orgId: string, heroName: string): Promise<He
 
 // ─── Draft Analytics (per-game win rate — more accurate for BO formats) ───────
 
-export async function getDraftAnalytics(orgId: string): Promise<DraftAnalyticsData> {
+export async function getDraftAnalytics(
+  orgId: string,
+  patchId?: string | null,
+): Promise<DraftAnalyticsData> {
   const supabase = await createClient();
-
-  const { data: scrims } = await supabase
+ 
+  let q = supabase
     .from("scrims")
     .select("id")
     .eq("organization_id", orgId)
     .eq("status", "completed")
     .order("scheduled_at", { ascending: false })
     .limit(200);
-
+ 
+  if (patchId) {
+    q = q.eq("patch_id", patchId);
+  }
+ 
+  const { data: scrims } = await q;
+ 
   if (!scrims?.length) return { byRole: {}, topOverall: [] };
 
   const scrimIds = scrims.map((s) => s.id);
@@ -297,18 +329,27 @@ export async function getDraftAnalytics(orgId: string): Promise<DraftAnalyticsDa
 
 // ─── Enterprise Player Stats (rating + hero pool) ─────────────────────────────
 
-export async function getEnterprisePlayerStats(orgId: string): Promise<EnterprisePlayerStat[]> {
+export async function getEnterprisePlayerStats(
+  orgId: string,
+  patchId?: string | null,
+): Promise<EnterprisePlayerStat[]> {
   const supabase = await createClient();
-
+ 
   // All completed scrims, newest first (for streak)
-  const { data: scrims } = await supabase
+  let q = supabase
     .from("scrims")
     .select("id, format, scrim_results(is_win)")
     .eq("organization_id", orgId)
     .eq("status", "completed")
     .order("scheduled_at", { ascending: false })
     .limit(100);
-
+ 
+  if (patchId) {
+    q = q.eq("patch_id", patchId);
+  }
+ 
+  const { data: scrims } = await q;
+ 
   const results: RawScrimResult[] = (scrims ?? []).map((s) => ({
     scrim_id: s.id,
     format: s.format,
@@ -447,14 +488,23 @@ export interface OpponentSummary {
  * Aggregate record vs every opponent the team has played a completed scrim
  * against. Sorted by total matches descending.
  */
-export async function getOpponentSummary(orgId: string): Promise<OpponentSummary[]> {
+export async function getOpponentSummary(
+  orgId: string,
+  patchId?: string | null,
+): Promise<OpponentSummary[]> {
   const supabase = await createClient();
-  const { data, error } = await supabase
+  let q = supabase
     .from("scrims")
     .select("opponent_name, scrim_results(is_win)")
     .eq("organization_id", orgId)
     .eq("status", "completed")
     .limit(500);
+ 
+  if (patchId) {
+    q = q.eq("patch_id", patchId);
+  }
+ 
+  const { data, error } = await q;
 
   if (error) {
     console.error("[getOpponentSummary]", error);

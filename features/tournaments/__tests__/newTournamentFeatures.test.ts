@@ -77,6 +77,17 @@ describe("New Tournament Features Action Tests", () => {
             }),
           };
         }
+        if (table === "meta_patches") {
+          return {
+            select: () => ({
+              eq: () => ({
+                eq: () => ({
+                  maybeSingle: async () => ({ data: { id: "patch-1" } }),
+                }),
+              }),
+            }),
+          };
+        }
         if (table === "tournaments") {
           return {
             insert: (data: any) => ({
@@ -146,6 +157,17 @@ describe("New Tournament Features Action Tests", () => {
                   eq: () => ({
                     maybeSingle: async () => ({ data: { role: "captain" } }),
                   }),
+                }),
+              }),
+            }),
+          };
+        }
+        if (table === "meta_patches") {
+          return {
+            select: () => ({
+              eq: () => ({
+                eq: () => ({
+                  maybeSingle: async () => ({ data: { id: "patch-1" } }),
                 }),
               }),
             }),
@@ -230,6 +252,17 @@ describe("New Tournament Features Action Tests", () => {
                   eq: () => ({
                     maybeSingle: async () => ({ data: { role: "captain" } }),
                   }),
+                }),
+              }),
+            }),
+          };
+        }
+        if (table === "meta_patches") {
+          return {
+            select: () => ({
+              eq: () => ({
+                eq: () => ({
+                  maybeSingle: async () => ({ data: { id: "patch-1" } }),
                 }),
               }),
             }),

@@ -41,7 +41,6 @@ export type Database = {
         }
         Relationships: []
       }
-
       announcement_reads: {
         Row: {
           announcement_id: string
@@ -791,10 +790,13 @@ export type Database = {
           created_at: string | null
           description: string
           division: string
+          division_id: string | null
           id: string
           logo_url: string | null
           metric_label: string | null
           metric_value: string | null
+          organization_id: string | null
+          placement: number | null
           position: string
           preview_images: string[] | null
           slug: string
@@ -802,20 +804,20 @@ export type Database = {
           status: string
           title: string
           tournament_date: string
-          updated_at: string | null
-          organization_id: string | null
-          division_id: string | null
           tournament_id: string | null
-          placement: number | null
+          updated_at: string | null
         }
         Insert: {
           created_at?: string | null
           description: string
           division: string
+          division_id?: string | null
           id?: string
           logo_url?: string | null
           metric_label?: string | null
           metric_value?: string | null
+          organization_id?: string | null
+          placement?: number | null
           position: string
           preview_images?: string[] | null
           slug: string
@@ -823,20 +825,20 @@ export type Database = {
           status?: string
           title: string
           tournament_date: string
-          updated_at?: string | null
-          organization_id?: string | null
-          division_id?: string | null
           tournament_id?: string | null
-          placement?: number | null
+          updated_at?: string | null
         }
         Update: {
           created_at?: string | null
           description?: string
           division?: string
+          division_id?: string | null
           id?: string
           logo_url?: string | null
           metric_label?: string | null
           metric_value?: string | null
+          organization_id?: string | null
+          placement?: number | null
           position?: string
           preview_images?: string[] | null
           slug?: string
@@ -844,11 +846,8 @@ export type Database = {
           status?: string
           title?: string
           tournament_date?: string
-          updated_at?: string | null
-          organization_id?: string | null
-          division_id?: string | null
           tournament_id?: string | null
-          placement?: number | null
+          updated_at?: string | null
         }
         Relationships: [
           {
@@ -871,7 +870,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tournaments"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       login_rate_limits: {
@@ -1006,9 +1005,11 @@ export type Database = {
           created_at: string
           created_by: string | null
           id: string
+          is_active: boolean
           notes: string | null
           organization_id: string
           patch_version: string
+          season: string
           tier_descriptions: Json | null
           updated_at: string
         }
@@ -1016,9 +1017,11 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           id?: string
+          is_active?: boolean
           notes?: string | null
           organization_id: string
           patch_version: string
+          season: string
           tier_descriptions?: Json | null
           updated_at?: string
         }
@@ -1026,9 +1029,11 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           id?: string
+          is_active?: boolean
           notes?: string | null
           organization_id?: string
           patch_version?: string
+          season?: string
           tier_descriptions?: Json | null
           updated_at?: string
         }
@@ -1756,6 +1761,47 @@ export type Database = {
           },
         ]
       }
+      scrim_ai_reviews: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          draft: Json | null
+          game_number: number
+          id: string
+          narrative: string
+          scoreboard: Json | null
+          scrim_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          draft?: Json | null
+          game_number: number
+          id?: string
+          narrative: string
+          scoreboard?: Json | null
+          scrim_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          draft?: Json | null
+          game_number?: number
+          id?: string
+          narrative?: string
+          scoreboard?: Json | null
+          scrim_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scrim_ai_reviews_scrim_id_fkey"
+            columns: ["scrim_id"]
+            isOneToOne: false
+            referencedRelation: "scrims"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       scrim_attendances: {
         Row: {
           coach_notes: string | null
@@ -1796,39 +1842,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
-      }
-      scrim_ai_reviews: {
-        Row: {
-          created_at: string
-          created_by: string | null
-          draft: Json | null
-          game_number: number
-          id: string
-          narrative: string
-          scoreboard: Json | null
-          scrim_id: string
-        }
-        Insert: {
-          created_at?: string
-          created_by?: string | null
-          draft?: Json | null
-          game_number: number
-          id?: string
-          narrative: string
-          scoreboard?: Json | null
-          scrim_id: string
-        }
-        Update: {
-          created_at?: string
-          created_by?: string | null
-          draft?: Json | null
-          game_number?: number
-          id?: string
-          narrative?: string
-          scoreboard?: Json | null
-          scrim_id?: string
-        }
-        Relationships: []
       }
       scrim_draft_bans: {
         Row: {
@@ -1913,32 +1926,44 @@ export type Database = {
         Row: {
           created_at: string
           duration_seconds: number | null
+          enemy_score: number
           game_number: number
           id: string
           image_url: string | null
           is_win: boolean
           notes: string | null
+          our_score: number
+          result: string | null
           scrim_id: string
+          vod_timestamp: string | null
         }
         Insert: {
           created_at?: string
           duration_seconds?: number | null
+          enemy_score?: number
           game_number: number
           id?: string
           image_url?: string | null
           is_win: boolean
           notes?: string | null
+          our_score?: number
+          result?: string | null
           scrim_id: string
+          vod_timestamp?: string | null
         }
         Update: {
           created_at?: string
           duration_seconds?: number | null
+          enemy_score?: number
           game_number?: number
           id?: string
           image_url?: string | null
           is_win?: boolean
           notes?: string | null
+          our_score?: number
+          result?: string | null
           scrim_id?: string
+          vod_timestamp?: string | null
         }
         Relationships: [
           {
@@ -2170,6 +2195,7 @@ export type Database = {
           opponent_name: string
           organization_id: string
           patch: string | null
+          patch_id: string | null
           reminder_sent_at: string | null
           room_info: string | null
           scheduled_at: string
@@ -2195,6 +2221,7 @@ export type Database = {
           opponent_name: string
           organization_id: string
           patch?: string | null
+          patch_id?: string | null
           reminder_sent_at?: string | null
           room_info?: string | null
           scheduled_at: string
@@ -2220,6 +2247,7 @@ export type Database = {
           opponent_name?: string
           organization_id?: string
           patch?: string | null
+          patch_id?: string | null
           reminder_sent_at?: string | null
           room_info?: string | null
           scheduled_at?: string
@@ -2241,6 +2269,13 @@ export type Database = {
             columns: ["organization_id"]
             isOneToOne: false
             referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "scrims_patch_id_fkey"
+            columns: ["patch_id"]
+            isOneToOne: false
+            referencedRelation: "meta_patches"
             referencedColumns: ["id"]
           },
         ]
@@ -2834,10 +2869,13 @@ export type Database = {
           id: string
           is_registered: boolean
           link: string | null
+          location: string | null
+          location_type: string | null
           name: string
           notes: string | null
           organization_id: string
           organizer: string | null
+          patch_id: string | null
           prize_pool: string | null
           registration_deadline: string | null
           registration_fee: string | null
@@ -2850,8 +2888,6 @@ export type Database = {
           tech_meet_date: string | null
           tech_meet_link: string | null
           tech_meet_time: string | null
-          location: string | null
-          location_type: string | null
         }
         Insert: {
           bracket_file_path?: string | null
@@ -2866,10 +2902,13 @@ export type Database = {
           id?: string
           is_registered?: boolean
           link?: string | null
+          location?: string | null
+          location_type?: string | null
           name: string
           notes?: string | null
           organization_id: string
           organizer?: string | null
+          patch_id?: string | null
           prize_pool?: string | null
           registration_deadline?: string | null
           registration_fee?: string | null
@@ -2882,8 +2921,6 @@ export type Database = {
           tech_meet_date?: string | null
           tech_meet_link?: string | null
           tech_meet_time?: string | null
-          location?: string | null
-          location_type?: string | null
         }
         Update: {
           bracket_file_path?: string | null
@@ -2898,10 +2935,13 @@ export type Database = {
           id?: string
           is_registered?: boolean
           link?: string | null
+          location?: string | null
+          location_type?: string | null
           name?: string
           notes?: string | null
           organization_id?: string
           organizer?: string | null
+          patch_id?: string | null
           prize_pool?: string | null
           registration_deadline?: string | null
           registration_fee?: string | null
@@ -2914,8 +2954,6 @@ export type Database = {
           tech_meet_date?: string | null
           tech_meet_link?: string | null
           tech_meet_time?: string | null
-          location?: string | null
-          location_type?: string | null
         }
         Relationships: [
           {
@@ -2930,6 +2968,13 @@ export type Database = {
             columns: ["organization_id"]
             isOneToOne: false
             referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tournaments_patch_id_fkey"
+            columns: ["patch_id"]
+            isOneToOne: false
+            referencedRelation: "meta_patches"
             referencedColumns: ["id"]
           },
         ]
@@ -3026,6 +3071,44 @@ export type Database = {
           },
         ]
       }
+      wa_scrim_session_states: {
+        Row: {
+          current_game: number
+          phone_number: string
+          scrim_id: string
+          state: string
+          temp_draft_data: Json | null
+          temp_scoreboard_data: Json | null
+          updated_at: string
+        }
+        Insert: {
+          current_game?: number
+          phone_number: string
+          scrim_id: string
+          state?: string
+          temp_draft_data?: Json | null
+          temp_scoreboard_data?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          current_game?: number
+          phone_number?: string
+          scrim_id?: string
+          state?: string
+          temp_draft_data?: Json | null
+          temp_scoreboard_data?: Json | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wa_scrim_session_states_scrim_id_fkey"
+            columns: ["scrim_id"]
+            isOneToOne: false
+            referencedRelation: "scrims"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -3045,6 +3128,7 @@ export type Database = {
       enqueue_h30_scrim_reminders: { Args: never; Returns: number }
       enqueue_h30_tournament_reminders: { Args: never; Returns: number }
       enqueue_h60_scrim_reminders: { Args: never; Returns: number }
+      enqueue_h7_scrim_reminders: { Args: never; Returns: number }
       enqueue_scrim_h24_reminders: { Args: never; Returns: number }
       enqueue_scrim_reminders: { Args: never; Returns: number }
       get_audit_activity_by_day: {
@@ -3058,8 +3142,29 @@ export type Database = {
         Args: { p_hero_name: string; p_org_id: string }
         Returns: Json
       }
+      get_hero_detail_v2: {
+        Args: { p_hero_name: string; p_org_id: string; p_patch_id?: string }
+        Returns: Json
+      }
       get_hero_statistics: {
         Args: { p_org_id: string }
+        Returns: {
+          enemy_ban_pct: number
+          enemy_ban_total: number
+          hero_name: string
+          pb_pct: number
+          pb_total: number
+          pick_losses: number
+          pick_pct: number
+          pick_total: number
+          pick_wins: number
+          pick_wr: number
+          team_ban_pct: number
+          team_ban_total: number
+        }[]
+      }
+      get_hero_statistics_v2: {
+        Args: { p_org_id: string; p_patch_id?: string }
         Returns: {
           enemy_ban_pct: number
           enemy_ban_total: number
@@ -3097,6 +3202,7 @@ export type Database = {
         Returns: string
       }
       is_captain_or_above: { Args: { org_id: string }; Returns: boolean }
+      is_manager_or_above: { Args: { org_id: string }; Returns: boolean }
       is_member_of: { Args: { org_id: string }; Returns: boolean }
       is_user_in_team_with_role: {
         Args: {
@@ -3314,9 +3420,8 @@ export const Constants = {
       visibility: ["public", "division", "private"],
     },
   },
-} as const
+} as const;
 
-// Convenience type aliases (manually maintained — not auto-generated)
 export type ContentCalendarRow = Database["public"]["Tables"]["content_calendar"]["Row"];
 export type ContentStatus = Database["public"]["Enums"]["content_status"];
 export type SponsorRow = Database["public"]["Tables"]["sponsors"]["Row"];

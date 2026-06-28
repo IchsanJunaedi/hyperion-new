@@ -12,7 +12,7 @@ type SortKey = keyof Pick<OpponentSummary, "total" | "wins" | "losses" | "draws"
 
 const GRID = "grid-cols-[1fr_repeat(5,64px)]";
 
-const OpponentTab = ({ orgId }: { orgId: string }) => {
+const OpponentTab = ({ orgId, patchId }: { orgId: string; patchId?: string | null }) => {
   const [rows, setRows] = useState<OpponentSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [sortKey, setSortKey] = useState<SortKey>("total");
@@ -20,7 +20,8 @@ const OpponentTab = ({ orgId }: { orgId: string }) => {
 
   useEffect(() => {
     let mounted = true;
-    getOpponentSummaryAction(orgId).then((res) => {
+    setLoading(true);
+    getOpponentSummaryAction(orgId, patchId).then((res) => {
       if (!mounted) return;
       if (res.ok) setRows(res.data);
       else toast.error(res.message);
@@ -29,7 +30,7 @@ const OpponentTab = ({ orgId }: { orgId: string }) => {
     return () => {
       mounted = false;
     };
-  }, [orgId]);
+  }, [orgId, patchId]);
 
   function handleSort(key: SortKey) {
     if (key === sortKey) setSortDir((d) => (d === "desc" ? "asc" : "desc"));

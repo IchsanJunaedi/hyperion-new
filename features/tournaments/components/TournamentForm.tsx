@@ -13,6 +13,7 @@ interface TournamentFormProps {
   divisionId: string;
   tournament?: Tournament;
   onSuccess?: () => void;
+  activePatchVersion?: string | null;
 }
 
 function formatNumber(value: string): string {
@@ -33,7 +34,7 @@ function toDatetimeLocal(isoString?: string | null): string {
   return `${yyyy}-${mm}-${dd}T${hh}:${min}`;
 }
 
-const TournamentForm = ({ orgSlug, divisionId, tournament, onSuccess }: TournamentFormProps) => {
+const TournamentForm = ({ orgSlug, divisionId, tournament, onSuccess, activePatchVersion }: TournamentFormProps) => {
   const isEdit = !!tournament;
   const [pending, startTransition] = useTransition();
   const { success, error } = useNotify();
@@ -252,6 +253,18 @@ const TournamentForm = ({ orgSlug, divisionId, tournament, onSuccess }: Tourname
 
       {/* Stages timeline and WA blast removed from new tournament form */}
 
+      {!isEdit && (
+        <div>
+          <label className="text-xs text-ui-text-2 mb-1 block">Versi Patch</label>
+          <input
+            value={activePatchVersion ?? "Tidak ada patch aktif"}
+            disabled
+            readOnly
+            className="h-9 w-full rounded-md border border-ui-border bg-ui-bg/20 px-3 text-sm text-ui-text-muted cursor-not-allowed mb-4"
+          />
+        </div>
+      )}
+ 
       <div>
         <label className="text-xs text-ui-text-2 mb-1 block">Catatan</label>
         <textarea

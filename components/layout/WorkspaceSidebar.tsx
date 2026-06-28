@@ -25,6 +25,7 @@ import {
   Users,
   X,
   Zap,
+  GitCommit,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -199,6 +200,12 @@ const WORKSPACE_NAV_GROUPS: NavGroup[] = [
         label: "Open Trial",
         Icon: ClipboardList,
       },
+      {
+        key: "patch",
+        href: "/patch",
+        label: "Patch",
+        Icon: GitCommit,
+      },
     ],
   },
   {
@@ -332,6 +339,11 @@ const WorkspaceSidebar = ({
     user.role === "coach" ||
     user.role === "member";
 
+  const hasPatchAccess =
+    user.role === "owner" ||
+    user.role === "manager" ||
+    user.role === "coach";
+
   const allGroups: NavGroup[] = (isManager
     ? [getManagerNavGroup(orgSlug), ...WORKSPACE_NAV_GROUPS]
     : WORKSPACE_NAV_GROUPS)
@@ -342,6 +354,7 @@ const WorkspaceSidebar = ({
         if (item.key === "scouting") return hasScoutingAccess;
         if (item.key === "trials") return hasTrialsAccess;
         if (item.key === "salary") return hasSalaryAccess;
+        if (item.key === "patch") return hasPatchAccess;
         if (item.key === "development") return !isManager;
         return true;
       }),
