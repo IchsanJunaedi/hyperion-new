@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
 import { SalaryPageClient } from "@/features/salary/components/SalaryPageClient";
 import { listContracts, getPayrollSummary } from "@/features/salary/queries";
 
@@ -18,8 +17,7 @@ const ManageSalariesPage = async ({ params }: Props) => {
   } = await supabase.auth.getUser();
   if (!user) redirect(`/login?next=/manage/${orgSlug}/salaries`);
 
-  const admin = createAdminClient();
-  const { data: org } = await admin
+  const { data: org } = await supabase
     .from("organizations")
     .select("id, name")
     .eq("slug", orgSlug)
@@ -30,7 +28,7 @@ const ManageSalariesPage = async ({ params }: Props) => {
   const [contracts, summary, membersRes] = await Promise.all([
     listContracts(org.id),
     getPayrollSummary(org.id),
-    admin
+    supabase
       .from("team_members")
       .select("user_id, role")
       .eq("organization_id", org.id)
@@ -41,7 +39,7 @@ const ManageSalariesPage = async ({ params }: Props) => {
   const memberRows = membersRes.data ?? [];
   const userIds = memberRows.map((m) => m.user_id);
   const { data: profileRows } = userIds.length > 0
-    ? await admin
+    ? await supabase
         .from("profiles")
         .select("id, display_name")
         .in("id", userIds)

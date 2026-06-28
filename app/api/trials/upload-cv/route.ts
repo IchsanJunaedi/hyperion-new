@@ -9,22 +9,21 @@ async function checkUploadRateLimit(ip: string): Promise<boolean> {
   const identifier = `trial-upload:${ip}`;
   const admin = createAdminClient();
   const now = new Date();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data } = await (admin as any)
+  const { data } = await admin
     .from("login_rate_limits")
-    .select("attempts, updated_at")
+    .select("attempts, updated_at, locked_until")
     .eq("identifier", identifier)
     .maybeSingle();
   const lastUpdate = data?.updated_at ? new Date(data.updated_at) : null;
   const isExpired = !lastUpdate || now.getTime() - lastUpdate.getTime() > UPLOAD_WINDOW_MS;
-  const attempts = isExpired ? 1 : (data?.attempts ?? 0) + 1;
-  if (attempts > UPLOAD_RATE_LIMIT) return false;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  await (admin as any).from("login_rate_limits").upsert({
+  const prevAttempts = (isExpired || !data) ? 0 : data.attempts;
+  const newAttempts = prevAttempts + 1;
+  if (newAttempts > UPLOAD_RATE_LIMIT) return false;
+  await admin.from("login_rate_limits").upsert({
     identifier,
-    attempts,
-    updated_at: isExpired ? now.toISOString() : data.updated_at,
-    locked_until: isExpired ? null : data?.locked_until ?? null,
+    attempts: newAttempts,
+    updated_at: isExpired ? now.toISOString() : (data!.updated_at),
+    locked_until: isExpired ? null : (data!.locked_until ?? null),
   });
   return true;
 }

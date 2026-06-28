@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
 import {
   computeSmartTodos,
   getManualTodos,
@@ -26,8 +25,7 @@ const ManageTodosPage = async ({ params }: Props) => {
   const ownerEmail = process.env.OWNER_EMAIL;
   if (ownerEmail && user.email === ownerEmail) redirect("/dashboard/todos");
 
-  const admin = createAdminClient();
-  const { data: org } = await admin
+  const { data: org } = await supabase
     .from("organizations")
     .select("id, slug")
     .eq("slug", orgSlug)
@@ -35,7 +33,7 @@ const ManageTodosPage = async ({ params }: Props) => {
 
   if (!org) redirect("/manage");
 
-  const { data: membership } = await admin
+  const { data: membership } = await supabase
     .from("team_members")
     .select("role")
     .eq("organization_id", org.id)

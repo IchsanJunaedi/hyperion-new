@@ -1,3 +1,4 @@
+import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getStoragePathFromUrl } from "@/lib/utils/file";
 
@@ -55,8 +56,8 @@ const TRIAL_APPLICANT_COLS =
   "id, trial_id, name, ign, phone, email, role_applied, rank, server, main_game, secondary_game, is_free_agent, age, social_media, city, game_id, game_nickname, win_rate, hero_pool, competitive_exp, screenshot_url, cv_url, status, notes, created_at";
 
 export async function listTrials(orgId: string): Promise<TrialWithCount[]> {
-  const admin = createAdminClient();
-  const { data, error } = await admin
+  const supabase = await createClient();
+  const { data, error } = await supabase
     .from("open_trials")
     .select(`${OPEN_TRIAL_COLS}, divisions(name), trial_applicants(count)`)
     .eq("org_id", orgId)
@@ -77,8 +78,8 @@ export async function listTrials(orgId: string): Promise<TrialWithCount[]> {
 }
 
 export async function getTrialById(id: string): Promise<TrialRow | null> {
-  const admin = createAdminClient();
-  const { data } = await admin
+  const supabase = await createClient();
+  const { data } = await supabase
     .from("open_trials")
     .select(`${OPEN_TRIAL_COLS}, divisions(name)`)
     .eq("id", id)
@@ -89,8 +90,8 @@ export async function getTrialById(id: string): Promise<TrialRow | null> {
 }
 
 export async function getTrialByToken(token: string): Promise<(TrialRow & { org_name: string }) | null> {
-  const admin = createAdminClient();
-  const { data } = await admin
+  const supabase = await createClient();
+  const { data } = await supabase
     .from("open_trials")
     .select(`${OPEN_TRIAL_COLS}, organizations(name)`)
     .eq("public_token", token)
@@ -102,8 +103,8 @@ export async function getTrialByToken(token: string): Promise<(TrialRow & { org_
 }
 
 export async function listApplicants(trialId: string): Promise<ApplicantRow[]> {
-  const admin = createAdminClient();
-  const { data, error } = await admin
+  const supabase = await createClient();
+  const { data, error } = await supabase
     .from("trial_applicants")
     .select(TRIAL_APPLICANT_COLS)
     .eq("trial_id", trialId)
@@ -131,9 +132,10 @@ export async function listApplicants(trialId: string): Promise<ApplicantRow[]> {
   }
 
   try {
+    const admin = createAdminClient();
     const { data: signedData, error: signError } = await admin.storage
       .from("trial-screenshots")
-      .createSignedUrls(pathsToSign, 600); // 10 minutes expiry
+      .createSignedUrls(pathsToSign, 600);
 
     if (!signError && signedData) {
       const signedMap = new Map<string, string>();
@@ -141,8 +143,6 @@ export async function listApplicants(trialId: string): Promise<ApplicantRow[]> {
         if (item.error) {
           console.error("Signing error for path:", item.path, item.error);
         } else if (item.signedUrl && item.path) {
-          // Supabase createSignedUrls returns the relative path as item.path,
-          // but let's make sure it matches what we get from getStoragePathFromUrl.
           signedMap.set(item.path, item.signedUrl);
         }
       });
@@ -173,8 +173,8 @@ export interface PublicTrial extends TrialRow {
 }
 
 export async function getActivePublicTrials(): Promise<PublicTrial[]> {
-  const admin = createAdminClient();
-  const { data, error } = await admin
+  const supabase = await createClient();
+  const { data, error } = await supabase
     .from("open_trials")
     .select(`${OPEN_TRIAL_COLS}, organizations(name, slug, logo_url)`)
     .eq("status", "active")

@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import { Footer } from "@/components/landing/Footer";
 import { Header } from "@/components/landing/Header";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
@@ -20,9 +20,9 @@ function getMeta(game: string) {
 }
 
 async function DivisionsPage() {
-  const admin = createAdminClient();
+  const supabase = await createClient();
 
-  const { data: divisions, error } = await admin
+  const { data: divisions, error } = await supabase
     .from("divisions")
     .select("id, name, slug, game, description, is_active, organizations(name, slug)")
     .eq("is_public", true)

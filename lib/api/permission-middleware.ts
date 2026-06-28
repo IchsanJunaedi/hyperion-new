@@ -352,8 +352,7 @@ export async function applyRateLimit(
   try {
     const admin = createAdminClient();
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data } = await (admin as any)
+    const { data } = await admin
       .from("login_rate_limits")
       .select("attempts, updated_at, locked_until")
       .eq("identifier", identifier)
@@ -363,22 +362,17 @@ export async function applyRateLimit(
     const isWindowExpired =
       !lastUpdate || now.getTime() - lastUpdate.getTime() > windowMs;
 
-    let newAttempts = 1;
-    let resetAt = now.getTime() + windowMs;
-
-    if (!isWindowExpired && data) {
-      newAttempts = data.attempts + 1;
-      resetAt = lastUpdate.getTime() + windowMs;
-    }
+    const prevAttempts = (isWindowExpired || !data) ? 0 : data.attempts;
+    const newAttempts = prevAttempts + 1;
+    const resetAt = isWindowExpired ? now.getTime() + windowMs : lastUpdate!.getTime() + windowMs;
 
     if (newAttempts > limit) {
       // Upsert to record rate limit exceeded
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await (admin as any).from("login_rate_limits").upsert({
+      await admin.from("login_rate_limits").upsert({
         identifier,
         attempts: newAttempts,
         locked_until: new Date(resetAt).toISOString(),
-        updated_at: isWindowExpired ? now.toISOString() : data.updated_at,
+        updated_at: now.toISOString(),
       });
 
       return {
@@ -388,12 +382,11 @@ export async function applyRateLimit(
       };
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await (admin as any).from("login_rate_limits").upsert({
+    await admin.from("login_rate_limits").upsert({
       identifier,
       attempts: newAttempts,
       locked_until: null,
-      updated_at: isWindowExpired ? now.toISOString() : data.updated_at,
+      updated_at: now.toISOString(),
     });
 
     return {

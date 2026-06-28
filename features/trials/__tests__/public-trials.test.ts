@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { getActivePublicTrials } from "../queries";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createClient } from "@/lib/supabase/server";
 
 vi.mock("server-only", () => ({}));
-vi.mock("@/lib/supabase/admin");
+vi.mock("@/lib/supabase/server");
 
 const mockLimit = vi.fn();
 const mockOrder = vi.fn(() => ({ limit: mockLimit }));
@@ -13,7 +13,7 @@ const mockSelect = vi.fn(() => ({ eq: mockEq }));
 
 beforeEach(() => {
   vi.clearAllMocks();
-  vi.mocked(createAdminClient).mockReturnValue({
+  vi.mocked(createClient).mockResolvedValue({
     from: vi.fn().mockReturnValue({ select: mockSelect }),
   } as any);
 });

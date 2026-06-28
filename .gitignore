@@ -75,6 +75,16 @@ scratch/
 /*.webp
 /*.gif
 
+# ML models, cache, and embeddings (generated binaries, not source)
+cache/
+models/
+memory/
+
+# Python runtime artifacts (vision service)
+services/vision/venv/
+services/vision/__pycache__/
+services/vision/notebooks/
+
 # Tooling scratch — generated knowledge graph + superpowers brainstorm artifacts (not source)
 graphify-out/
 .superpowers/

@@ -1,5 +1,6 @@
 "use server";
 
+import { encrypt } from "@/lib/encryption";
 import { createClient } from "@/lib/supabase/server";
 
 export interface UpdateProfileData {
@@ -21,7 +22,20 @@ export async function updateProfileAction(
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, message: "Sesi berakhir. Silakan login kembali." };
 
-  const { error } = await supabase.from("profiles").update(data).eq("id", user.id);
+  const updatePayload: Record<string, unknown> = { ...data };
+
+  // Encrypt bio if provided
+  if (data.bio !== undefined) {
+    try {
+      updatePayload.encrypted_bio = encrypt(data.bio);
+    } catch {
+      // If ENCRYPTION_KEY not set, skip encryption silently
+      console.warn("[updateProfile] ENCRYPTION_KEY not set, skipping encryption");
+    }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await supabase.from("profiles").update(updatePayload as any).eq("id", user.id);
 
   if (error) return { ok: false, message: error.message };
   return { ok: true };

@@ -6,7 +6,6 @@ import { ManageBreadcrumb } from "@/components/layout/ManageBreadcrumb";
 import { NotifyProvider } from "@/features/dashboard/components/NotifyModal";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
 
@@ -28,10 +27,9 @@ const ManageTeamLayout = async ({ children, params }: ManageTeamLayoutProps) => 
   const isOwner = Boolean(ownerEmail && user.email === ownerEmail);
   if (isOwner) redirect("/dashboard");
 
-  const admin = createAdminClient();
-
   // Get ALL orgs this manager manages — used for team switcher + access check
-  const { data: allMemberships } = await admin
+  // Uses regular supabase client so RLS enforces per-org access
+  const { data: allMemberships } = await supabase
     .from("team_members")
     .select("organization_id")
     .eq("user_id", user.id)
@@ -46,7 +44,7 @@ const ManageTeamLayout = async ({ children, params }: ManageTeamLayoutProps) => 
   if (allOrgIds.length === 0) redirect("/");
 
   // Get target org by slug
-  const { data: org } = await admin
+  const { data: org } = await supabase
     .from("organizations")
     .select("id, slug, name, logo_url")
     .eq("slug", orgSlug)
@@ -59,11 +57,11 @@ const ManageTeamLayout = async ({ children, params }: ManageTeamLayoutProps) => 
 
   // Parallel: all managed orgs details + divisions for this org + user profile
   const [allOrgsRes, divsRes, profileRes] = await Promise.all([
-    admin
+    supabase
       .from("organizations")
       .select("id, slug, name, logo_url")
       .in("id", allOrgIds),
-    admin
+    supabase
       .from("divisions")
       .select("id, name")
       .eq("organization_id", org.id)

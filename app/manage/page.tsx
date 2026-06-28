@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
 
@@ -11,8 +10,7 @@ const ManagePage = async () => {
   } = await supabase.auth.getUser();
   if (!user) redirect("/login?next=/manage");
 
-  const admin = createAdminClient();
-  const { data: memberships } = await admin
+  const { data: memberships } = await supabase
     .from("team_members")
     .select("organization_id")
     .eq("user_id", user.id)
@@ -28,7 +26,7 @@ const ManagePage = async () => {
 
   const firstOrgId = orgIds[0]!;
 
-  const { data: firstOrg } = await admin
+  const { data: firstOrg } = await supabase
     .from("organizations")
     .select("slug")
     .eq("id", firstOrgId)

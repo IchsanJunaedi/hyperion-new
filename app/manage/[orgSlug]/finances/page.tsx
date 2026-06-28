@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createClient } from "@/lib/supabase/server";
 import { listFinances, getFinanceSummary } from "@/features/finances/queries";
 import { FinancePageClient } from "@/features/finances/components/FinancePageClient";
 
@@ -17,8 +17,8 @@ const ManageFinancesPage = async ({ params, searchParams }: Props) => {
   const year = Number(sp.year ?? now.getFullYear());
   const month = Number(sp.month ?? now.getMonth() + 1);
 
-  const admin = createAdminClient();
-  const { data: org } = await admin
+  const supabase = await createClient();
+  const { data: org } = await supabase
     .from("organizations")
     .select("id")
     .eq("slug", orgSlug)

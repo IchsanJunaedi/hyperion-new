@@ -50,8 +50,30 @@ const RESERVED_ROOT_SEGMENTS = new Set([
 /** Reserved segments that require an authenticated session. */
 const AUTH_REQUIRED_SEGMENTS = new Set(["onboarding", "manage"]);
 
+/**
+ * Inactive session timeout in hours.
+ * Users will be signed out after this period of inactivity.
+ * Set SESSION_TIMEOUT_HOURS env var to override (default: 72 = 3 days).
+ */
+const SESSION_TIMEOUT_MS =
+  (Number(process.env.SESSION_TIMEOUT_HOURS) || 72) * 60 * 60 * 1000;
+
 /** Reserved segments that should redirect away if user IS authenticated. */
 const AUTH_ONLY_VISITOR_SEGMENTS = new Set(["login", "register"]);
+
+/**
+ * Apply standard security headers to every response.
+ */
+function setSecurityHeaders(res: NextResponse): void {
+  res.headers.set("X-Content-Type-Options", "nosniff");
+  res.headers.set("X-Frame-Options", "DENY");
+  res.headers.set("X-XSS-Protection", "1; mode=block");
+  res.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  res.headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+  if (process.env.NODE_ENV === "production") {
+    res.headers.set("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload");
+  }
+}
 
 /**
  * Build a redirect response that carries forward any cookies the
@@ -66,6 +88,7 @@ function redirectWithCookies(url: URL, from: NextResponse): NextResponse {
   for (const cookie of from.cookies.getAll()) {
     redirect.cookies.set(cookie);
   }
+  setSecurityHeaders(redirect);
   return redirect;
 }
 
@@ -84,6 +107,7 @@ function rewriteWithCookies(
   for (const cookie of from.cookies.getAll()) {
     rewrite.cookies.set(cookie);
   }
+  setSecurityHeaders(rewrite);
   return rewrite;
 }
 
@@ -134,12 +158,40 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next({ request });
   }
 
-  const { supabase, response } = createMiddlewareClient(request);
+  const { supabase, response: mwRes } = createMiddlewareClient(request);
+  setSecurityHeaders(mwRes);
 
   // Always refresh the auth session so cookies stay valid.
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  // Session max age check — sign out if the session is older than
+  // the configured limit (default 72 hours from login). Uses the
+  // session's expires_at as a proxy; expires_at is the JWT expiry which
+  // gets refreshed by Supabase middleware on each request, so we
+  // approximate session age from a cookie timestamp we set on login.
+  if (user) {
+    const lastActivityCookie = request.cookies.get("last_activity")?.value;
+    if (lastActivityCookie) {
+      const idleMs = Date.now() - Number(lastActivityCookie);
+      if (idleMs > SESSION_TIMEOUT_MS) {
+        try {
+          await supabase.auth.signOut();
+        } catch (e) {
+          console.error("[Session] signOut failed:", e);
+        }
+        return redirectWithCookies(new URL("/login", request.url), mwRes);
+      }
+    }
+    // Update last_activity on every request
+    mwRes.cookies.set("last_activity", String(Date.now()), {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60, // 7 days
+    });
+  }
 
   // 2. Resolve hostname → orgSlug (custom domain support)
   let hostOrgSlug: string | null = null;
@@ -151,7 +203,7 @@ export async function middleware(request: NextRequest) {
       // must travel back so the next visit there isn't silently logged out.
       return redirectWithCookies(
         new URL("/", `https://${MAIN_DOMAIN}`),
-        response,
+        mwRes,
       );
     }
   }
@@ -186,21 +238,21 @@ export async function middleware(request: NextRequest) {
         if (section !== "login") {
           return redirectWithCookies(
             new URL("/dashboard/login", request.url),
-            response,
+            mwRes,
           );
         }
       } else {
         if (section === "login") {
           return redirectWithCookies(
             new URL("/dashboard", request.url),
-            response,
+            mwRes,
           );
         }
         if (!ownerEmail || user.email !== ownerEmail) {
-          return redirectWithCookies(new URL("/", request.url), response);
+          return redirectWithCookies(new URL("/", request.url), mwRes);
         }
       }
-      return response;
+      return mwRes;
     }
 
     // Special guard for /admin
@@ -209,20 +261,20 @@ export async function middleware(request: NextRequest) {
       const ownerEmail = process.env.OWNER_EMAIL || process.env.E2E_OWNER_EMAIL;
       if (!user) {
         if (section !== "login") {
-          return redirectWithCookies(new URL("/admin/login", request.url), response);
+          return redirectWithCookies(new URL("/admin/login", request.url), mwRes);
         }
       } else {
         if (section === "login") {
-          return redirectWithCookies(new URL("/admin", request.url), response);
+          return redirectWithCookies(new URL("/admin", request.url), mwRes);
         }
         if (
           (!adminEmail || user.email !== adminEmail) &&
           (!ownerEmail || user.email !== ownerEmail)
         ) {
-          return redirectWithCookies(new URL("/", request.url), response);
+          return redirectWithCookies(new URL("/", request.url), mwRes);
         }
       }
-      return response;
+      return mwRes;
     }
 
     // Special guard for /manage: platform owner/super-admin shouldn't access it
@@ -231,8 +283,24 @@ export async function middleware(request: NextRequest) {
       if (user && ownerEmail && user.email === ownerEmail) {
         return redirectWithCookies(
           new URL("/dashboard", request.url),
-          response,
+          mwRes,
         );
+      }
+
+      // P3: Enforce MFA for manage pages (opt-in via ENFORCE_MFA env var)
+      const enforceMfa = process.env.ENFORCE_MFA === "true";
+      if (enforceMfa && user) {
+        try {
+          const { data: aalData } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+          if (aalData?.currentLevel !== "aal2") {
+            return redirectWithCookies(
+              new URL("/auth/mfa-enroll", request.url),
+              mwRes,
+            );
+          }
+        } catch {
+          // If MFA check fails (not configured), skip silently
+        }
       }
     }
 
@@ -241,7 +309,7 @@ export async function middleware(request: NextRequest) {
     if (!user && AUTH_REQUIRED_SEGMENTS.has(firstSegment)) {
       const loginUrl = new URL("/login", request.url);
       loginUrl.searchParams.set("next", pathname);
-      return redirectWithCookies(loginUrl, response);
+      return redirectWithCookies(loginUrl, mwRes);
     }
     // Authenticated users shouldn't see /login or /register; send them
     // to their role-appropriate destination via DB query in the page/action.
@@ -254,20 +322,20 @@ export async function middleware(request: NextRequest) {
       // If there's an explicit next param, honor it; otherwise redirect to /
       // which will do the DB-based role redirect in the page component.
       const dest = safeNext ?? "/";
-      return redirectWithCookies(new URL(dest, request.url), response);
+      return redirectWithCookies(new URL(dest, request.url), mwRes);
     }
-    return response;
+    return mwRes;
   }
 
   // Logged-in user hitting the main-domain `/` → let the page component
   // handle role-based redirect via DB query.
   if (!hostOrgSlug && !firstSegment && user) {
-    return response;
+    return mwRes;
   }
 
   // No team-slug in the URL (root, marketing landing, etc.) → no auth gate.
   if (!firstSegment) {
-    return response;
+    return mwRes;
   }
 
   const resolvedSlug = hostOrgSlug ?? firstSegment;
@@ -285,14 +353,14 @@ export async function middleware(request: NextRequest) {
   if (!user && section) {
     return redirectWithCookies(
       new URL(publicHomePath, request.url),
-      response,
+      mwRes,
     );
   }
 
   // 5. Inject org context for downstream Server Components.
-  response.headers.set("x-org-slug", resolvedSlug);
+  mwRes.headers.set("x-org-slug", resolvedSlug);
   if (user) {
-    response.headers.set("x-user-id", user.id);
+    mwRes.headers.set("x-user-id", user.id);
   }
 
   // 6. On a custom domain, rewrite the URL internally so the Next.js
@@ -301,7 +369,7 @@ export async function middleware(request: NextRequest) {
   if (hostOrgSlug && internalPathname !== pathname) {
     const rewriteUrl = request.nextUrl.clone();
     rewriteUrl.pathname = internalPathname;
-    const rewritten = rewriteWithCookies(rewriteUrl, response, request);
+    const rewritten = rewriteWithCookies(rewriteUrl, mwRes, request);
     rewritten.headers.set("x-org-slug", resolvedSlug);
     if (user) {
       rewritten.headers.set("x-user-id", user.id);
@@ -309,7 +377,7 @@ export async function middleware(request: NextRequest) {
     return rewritten;
   }
 
-  return response;
+  return mwRes;
 }
 
 export const config = {

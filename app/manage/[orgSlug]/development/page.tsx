@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { TrendingUp } from "lucide-react";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createClient } from "@/lib/supabase/server";
 import { listPlayerTargets } from "@/features/player-development/queries";
 import { PlayerDevelopmentClient } from "@/features/player-development/components/PlayerDevelopmentClient";
 
@@ -12,9 +12,9 @@ interface Props {
 
 const ManagePlayerDevelopmentPage = async ({ params }: Props) => {
   const { orgSlug } = await params;
-  const admin = createAdminClient();
+  const supabase = await createClient();
 
-  const { data: org } = await admin
+  const { data: org } = await supabase
     .from("organizations")
     .select("id")
     .eq("slug", orgSlug)
@@ -24,7 +24,7 @@ const ManagePlayerDevelopmentPage = async ({ params }: Props) => {
 
   const [targets, membersRes] = await Promise.all([
     listPlayerTargets(org.id),
-    admin
+    supabase
       .from("team_members")
       .select("user_id")
       .eq("organization_id", org.id)
@@ -35,7 +35,7 @@ const ManagePlayerDevelopmentPage = async ({ params }: Props) => {
 
   const memberIds = (membersRes.data ?? []).map((m) => m.user_id);
   const { data: profiles } = memberIds.length > 0
-    ? await admin
+    ? await supabase
         .from("profiles")
         .select("id, display_name")
         .in("id", memberIds)

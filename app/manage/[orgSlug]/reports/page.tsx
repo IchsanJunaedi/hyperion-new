@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { FileText } from "lucide-react";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createClient } from "@/lib/supabase/server";
 import { generateMonthlyReport } from "@/features/reports/queries";
 import { ReportView } from "@/features/reports/components/ReportView";
 
@@ -14,9 +14,9 @@ interface Props {
 const ManageReportsPage = async ({ params, searchParams }: Props) => {
   const { orgSlug } = await params;
   const sp = await searchParams;
-  const admin = createAdminClient();
+  const supabase = await createClient();
 
-  const { data: org } = await admin
+  const { data: org } = await supabase
     .from("organizations")
     .select("id")
     .eq("slug", orgSlug)

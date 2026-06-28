@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendWaMessage } from "@/lib/utils/fonnte";
+import { checkRateLimit, ipKey } from "@/lib/rate-limit";
+import { hashPhone } from "@/lib/encryption";
 
 // Normalize phone to 62XXXXXXXXX format for comparison
 function normalizePhone(raw: string): string {
@@ -28,17 +30,30 @@ const STATUS_LABEL: Record<string, string> = {
 };
 
 export async function GET(): Promise<NextResponse> {
-  return NextResponse.json({ ok: true, service: "hyperion-wa-webhook" });
+  return NextResponse.json({ error: "Method not allowed" }, { status: 405 });
 }
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
-  // Verify secret from query param: /api/wa/webhook?secret=...
+  // Verify secret from header (preferred) or query param (fallback for legacy).
   // Fail closed: if the secret is not configured, reject all requests rather
   // than accepting unauthenticated webhook calls (which could spoof attendance).
-  const secret = req.nextUrl.searchParams.get("secret");
   const expectedSecret = process.env.FONNTE_WEBHOOK_SECRET;
+  const headerSecret = req.headers.get("x-webhook-secret");
+  const querySecret = req.nextUrl.searchParams.get("secret");
+  const secret = headerSecret ?? querySecret;
+
   if (!expectedSecret || secret !== expectedSecret) {
     return NextResponse.json({ ok: false }, { status: 401 });
+  }
+
+  // Rate limiting by IP to prevent brute-force of the secret
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  const rl = await checkRateLimit(ipKey(ip, "wa-webhook"), {
+    maxAttempts: 30, // 30 requests per minute per IP
+    windowMs: 60 * 1000,
+  });
+  if (!rl.allowed) {
+    return NextResponse.json({ ok: false }, { status: 429 });
   }
 
   let body: Record<string, string>;
@@ -73,12 +88,13 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
   const admin = createAdminClient();
 
-  // Step 1: get all profiles with matching phone
+  // Step 1: find profile by phone hash (encrypted lookup — PII protection)
+  const senderHash = hashPhone(senderRaw);
   const { data: candidates } = await admin
     .from("profiles")
     .select("id, display_name, phone_wa")
-    .not("phone_wa", "is", null)
-    .limit(500);
+    .eq("phone_hash", senderHash)
+    .limit(5);
 
   const matchingIds = (candidates ?? [])
     .filter((p) => !!p.phone_wa && normalizePhone(p.phone_wa) === senderNorm)
@@ -127,6 +143,13 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       "Tidak ada scrim mendatang yang perlu dikonfirmasi saat ini.",
     );
     return NextResponse.json({ ok: true });
+  }
+
+  // Validate that the membership's user_id matches the profile id
+  // to prevent profile-spoofing via the webhook
+  if (profile.id !== membership.user_id) {
+    console.error("[WA Webhook] profile/user mismatch — rejecting");
+    return NextResponse.json({ ok: false }, { status: 400 });
   }
 
   // Upsert attendance

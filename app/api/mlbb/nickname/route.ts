@@ -1,9 +1,20 @@
 import { NextResponse } from "next/server";
+import { checkRateLimit, ipKey } from "@/lib/rate-limit";
 
 // Same API used by the onboarding/profile nickname check
 const API_URL = "https://api.isan.eu.org/nickname/ml";
 
 export async function GET(req: Request) {
+  // Rate limiting: 20 requests per minute per IP
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  const rl = await checkRateLimit(ipKey(ip, "mlbb-nickname"), {
+    maxAttempts: 20,
+    windowMs: 60 * 1000,
+  });
+  if (!rl.allowed) {
+    return NextResponse.json({ error: "Terlalu banyak permintaan" }, { status: 429 });
+  }
+
   const { searchParams } = new URL(req.url);
   const userId = searchParams.get("userId")?.trim();
   const zoneId = searchParams.get("zoneId")?.trim();

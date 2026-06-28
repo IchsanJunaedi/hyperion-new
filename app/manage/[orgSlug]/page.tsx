@@ -1,7 +1,7 @@
 import { UserPlus } from "lucide-react";
 import Link from "next/link";
 
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createClient } from "@/lib/supabase/server";
 import { ManageMemberTable } from "@/features/dashboard/components/ManageMemberTable";
 import { InviteSection } from "@/features/manage/components/InviteSection";
 import { OrgSettingsCard } from "@/features/dashboard/components/OrgSettingsCard";
@@ -14,9 +14,9 @@ interface Props {
 
 const ManageTeamPage = async ({ params }: Props) => {
   const { orgSlug } = await params;
-  const admin = createAdminClient();
+  const supabase = await createClient();
 
-  const { data: org } = await admin
+  const { data: org } = await supabase
     .from("organizations")
     .select("id, name, slug, logo_url, banner_url, is_public")
     .eq("slug", orgSlug)
@@ -24,21 +24,21 @@ const ManageTeamPage = async ({ params }: Props) => {
 
   if (!org) return null;
 
-  const [membersRes, divsRes, invitesRes, totalRes] = await Promise.all([
-    admin
+  const [membersRes, divsRes, invitesRes] = await Promise.all([
+    supabase
       .from("team_members")
       .select("id, user_id, organization_id, division_id, role, is_active, availability, main_role")
       .eq("organization_id", org.id)
       .eq("is_active", true)
       .order("role", { ascending: true })
       .limit(100),
-    admin
+    supabase
       .from("divisions")
       .select("id, name, slug, game, is_active")
       .eq("organization_id", org.id)
       .eq("is_active", true)
       .order("name"),
-    admin
+    supabase
       .from("organization_invites")
       .select("id, organization_id, division_id, role, expires_at, created_at")
       .eq("organization_id", org.id)
@@ -46,7 +46,6 @@ const ManageTeamPage = async ({ params }: Props) => {
       .gt("expires_at", new Date().toISOString())
       .order("created_at", { ascending: false })
       .limit(50),
-    admin.from("profiles").select("id", { count: "exact", head: true }),
   ]);
 
   const members = membersRes.data ?? [];
@@ -55,7 +54,7 @@ const ManageTeamPage = async ({ params }: Props) => {
 
   const memberUserIds = [...new Set(members.map((m) => m.user_id))];
   const { data: profiles } = memberUserIds.length > 0
-    ? await admin
+    ? await supabase
         .from("profiles")
         .select("id, full_name, username, display_name, email, phone_wa, date_of_birth, bio, social_links, game_ids")
         .in("id", memberUserIds)
@@ -63,6 +62,11 @@ const ManageTeamPage = async ({ params }: Props) => {
 
   const profileMap = new Map((profiles ?? []).map((p) => [p.id, p]));
   const divisionMap = new Map(divisions.map((d) => [d.id, d]));
+
+  const { count: totalProfileCount } = await supabase
+    .from("profiles")
+    .select("*", { count: "exact", head: true })
+    .in("id", memberUserIds);
 
   const ROLE_ORDER: Record<string, number> = {
     owner: 0, manager: 1, coach: 2, captain: 3, member: 4,
@@ -91,7 +95,7 @@ const ManageTeamPage = async ({ params }: Props) => {
       <div className="grid gap-4 sm:grid-cols-3">
         <StatCard label="Total Member" value={members.length} />
         <StatCard label="Divisi Aktif" value={divisions.length} />
-        <StatCard label="User Terdaftar" value={totalRes.count ?? 0} />
+        <StatCard label="Member Terdaftar" value={totalProfileCount ?? members.length} />
       </div>
 
       <div className="flex flex-wrap gap-3">

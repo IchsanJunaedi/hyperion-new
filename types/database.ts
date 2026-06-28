@@ -1670,6 +1670,7 @@ export type Database = {
           full_name: string | null
           game_ids: Json
           id: string
+          phone_hash: string | null
           phone_wa: string | null
           social_links: Json
           updated_at: string
@@ -1685,6 +1686,7 @@ export type Database = {
           full_name?: string | null
           game_ids?: Json
           id: string
+          phone_hash?: string | null
           phone_wa?: string | null
           social_links?: Json
           updated_at?: string
@@ -1700,6 +1702,7 @@ export type Database = {
           full_name?: string | null
           game_ids?: Json
           id?: string
+          phone_hash?: string | null
           phone_wa?: string | null
           social_links?: Json
           updated_at?: string
@@ -3420,15 +3423,14 @@ export const Constants = {
       visibility: ["public", "division", "private"],
     },
   },
-} as const;
+} as const
 
-export type ContentCalendarRow = Database["public"]["Tables"]["content_calendar"]["Row"];
-export type ContentStatus = Database["public"]["Enums"]["content_status"];
-export type SponsorRow = Database["public"]["Tables"]["sponsors"]["Row"];
-export type SponsorStatus = "pending" | "active" | "inactive";
+// --- Re-exported helpers used across features ---
 export type MemberRole = Database["public"]["Enums"]["member_role"];
-export type MemberAvailability = Database["public"]["Enums"]["member_availability"];
 export type AttendanceStatus = Database["public"]["Enums"]["attendance_status"];
+export type ContentStatus = Database["public"]["Enums"]["content_status"];
 export type MatchFormat = Database["public"]["Enums"]["match_format"];
 export type ScrimStatus = Database["public"]["Enums"]["scrim_status"];
+export type MemberAvailability = Database["public"]["Enums"]["member_availability"];
 export type FinanceRow = Database["public"]["Tables"]["finances"]["Row"];
+export type ContentCalendarRow = Database["public"]["Tables"]["content_calendar"]["Row"];

@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
 import { WorkspaceSidebar } from "@/components/layout/WorkspaceSidebar";
 import { NotifyProvider } from "@/features/dashboard/components/NotifyModal";
 import { QueryProvider } from "@/components/providers/QueryProvider";
@@ -17,9 +16,8 @@ const ManageCalendarLayout = async ({ children }: { children: React.ReactNode })
   const ownerEmail = process.env.OWNER_EMAIL;
   if (Boolean(ownerEmail && user.email === ownerEmail)) redirect("/dashboard");
 
-  const admin = createAdminClient();
-
-  const { data: memberships } = await admin
+  // Use regular supabase client — RLS enforces per-org access for managers
+  const { data: memberships } = await supabase
     .from("team_members")
     .select("organization_id")
     .eq("user_id", user.id)
@@ -34,7 +32,7 @@ const ManageCalendarLayout = async ({ children }: { children: React.ReactNode })
   if (orgIds.length === 0) redirect("/");
 
   const [orgsRes, profileRes] = await Promise.all([
-    admin
+    supabase
       .from("organizations")
       .select("id, slug, name, logo_url")
       .in("id", orgIds)

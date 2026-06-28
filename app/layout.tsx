@@ -6,6 +6,9 @@ import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { ThemedToaster } from "@/components/providers/ThemedToaster";
 import { NotifyProvider } from "@/features/dashboard/components/NotifyModal";
 
+// Validate required env vars at build/startup time — fail fast, not silently.
+import "@/lib/env";
+
 import "./globals.css";
 
 const instrumentSans = Instrument_Sans({
