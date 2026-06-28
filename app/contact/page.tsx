@@ -26,7 +26,7 @@ export default async function ContactPage() {
   return (
     <>
       <Header />
-      <main className="flex-1 bg-[#070707]">
+      <main className="flex-1 bg-[#040D1C]">
         <section className="relative overflow-hidden border-b border-white/5 px-6 py-20 sm:px-10 lg:px-16">
           <div
             className="pointer-events-none absolute inset-0 opacity-10"

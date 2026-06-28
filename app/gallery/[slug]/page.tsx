@@ -35,7 +35,7 @@ export default async function GalleryShowPage({ params }: Props) {
   return (
     <>
       <Header />
-      <main className="flex-1 bg-[#070707]">
+      <main className="flex-1 bg-[#040D1C]">
         <section className="mx-auto max-w-3xl px-6 py-16 sm:px-10">
           {/* Back */}
           <Link

@@ -34,7 +34,7 @@ export default function PrivacyPage() {
   return (
     <>
       <Header />
-      <main className="flex-1 bg-[#070707]">
+      <main className="flex-1 bg-[#040D1C]">
         <section className="mx-auto max-w-3xl px-6 py-20 sm:px-10">
           {/* Header */}
           <div className="mb-12">

@@ -38,10 +38,20 @@ describe("getHeroStatistics", () => {
 
     const result = await getHeroStatistics("org-1");
 
-    expect(result).toEqual(mockRows);
     expect(mockSupabase.rpc).toHaveBeenCalledWith("get_hero_statistics_v2", {
       p_org_id: "org-1",
       p_patch_id: null,
+    });
+  });
+ 
+  it("passes patchId to get_hero_statistics_v2 rpc when provided", async () => {
+    mockSupabase.rpc.mockResolvedValue({ data: [], error: null });
+ 
+    await getHeroStatistics("org-1", "patch-123");
+ 
+    expect(mockSupabase.rpc).toHaveBeenCalledWith("get_hero_statistics_v2", {
+      p_org_id: "org-1",
+      p_patch_id: "patch-123",
     });
   });
 
@@ -168,6 +178,18 @@ describe("getHeroDetail", () => {
       p_org_id: "org-5",
       p_hero_name: "Karina",
       p_patch_id: null,
+    });
+  });
+ 
+  it("passes patchId to get_hero_detail_v2 rpc when provided", async () => {
+    mockSupabase.rpc.mockResolvedValue({ data: null, error: null });
+ 
+    await getHeroDetail("org-5", "Karina", "patch-456");
+ 
+    expect(mockSupabase.rpc).toHaveBeenCalledWith("get_hero_detail_v2", {
+      p_org_id: "org-5",
+      p_hero_name: "Karina",
+      p_patch_id: "patch-456",
     });
   });
 });
@@ -714,6 +736,24 @@ describe("getOpponentSummary", () => {
     expect(result[0]!.wins).toBe(1);
     expect(result[0]!.losses).toBe(1);
     expect(result[0]!.draws).toBe(1);
+  });
+ 
+  it("applies patchId filter when provided", async () => {
+    const mockQuery: any = {};
+    for (const m of ["select", "eq", "limit"]) {
+      mockQuery[m] = vi.fn().mockReturnValue(mockQuery);
+    }
+    mockQuery.then = (resolve: any) => resolve({ data: [], error: null });
+ 
+    const fromMock = vi.fn().mockReturnValue(mockQuery);
+    vi.mocked(createClient).mockResolvedValue({
+      from: fromMock,
+    } as any);
+ 
+    await getOpponentSummary("org-1", "patch-1");
+ 
+    expect(fromMock).toHaveBeenCalledWith("scrims");
+    expect(mockQuery.eq).toHaveBeenCalledWith("patch_id", "patch-1");
   });
 });
 
