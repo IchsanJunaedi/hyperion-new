@@ -5,6 +5,8 @@ import { z } from "zod";
 
 import { logAudit } from "@/lib/audit";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { blastWaMessage } from "@/lib/utils/fonnte";
 import {
   createAnnouncementSchema,
   updateAnnouncementSchema,
@@ -147,19 +149,38 @@ async function fanOutAnnouncementNotifications(
     "Buka workspace untuk detail lengkap.",
   ].join("\n");
 
-  const rows = members.map((m) => ({
-    organization_id: announcement.organization_id,
-    user_id: m.user_id,
-    type: "announcement" as const,
-    title,
-    body: bodyPreview,
-    ref_id: announcement.id,
-    ref_type: "announcement",
-    wa_number: phoneMap.get(m.user_id) ?? null,
-    wa_message: phoneMap.get(m.user_id) ? waMessage : null,
-  }));
+  const rows = members.map((m) => {
+    const phone = phoneMap.get(m.user_id);
+    return {
+      organization_id: announcement.organization_id,
+      user_id: m.user_id,
+      type: "announcement" as const,
+      title,
+      body: bodyPreview,
+      ref_id: announcement.id,
+      ref_type: "announcement",
+      wa_number: phone ?? null,
+      wa_message: phone ? waMessage : null,
+      status: phone ? ("sent" as const) : ("pending" as const),
+    };
+  });
 
-  await supabase.from("notifications").insert(rows);
+  const admin = createAdminClient();
+  const { error: insertErr } = await admin.from("notifications").insert(rows);
+  if (insertErr) {
+    console.error("[fanOutAnnouncementNotifications] insert error:", insertErr);
+  }
+
+  const recipients = members
+    .map((m) => ({ phone: phoneMap.get(m.user_id), message: waMessage }))
+    .filter((r): r is { phone: string; message: string } => Boolean(r.phone));
+
+  if (recipients.length > 0) {
+    // Fire-and-forget: don't await to avoid blocking the response
+    blastWaMessage(recipients).catch((err) =>
+      console.error("[WA Blast] Announcement notification error:", err),
+    );
+  }
 }
 
 /**
