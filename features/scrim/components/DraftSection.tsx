@@ -282,14 +282,14 @@ const DraftSection = ({ draft, attendingPlayers, onOurChange, onEnemyChange, onB
         <p className="text-[10px] font-semibold uppercase tracking-wider text-ui-text-muted">Ban Hero &amp; Draft</p>
       </div>
 
-      {/* ── 2-column grid: Our | Enemy ───────────────────────────────── */}
-      <div className="grid grid-cols-2 gap-3">
+      {/* ── Responsive grid: Our | Enemy (stacks on mobile, side-by-side on desktop) ── */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-3">
 
         {/* ── Our column ── */}
         <div className="space-y-2">
           <p className="text-[11px] font-semibold text-emerald-400">Our Draft</p>
           {/* Ban circles */}
-          <div className="flex gap-1.5">
+          <div className="flex flex-wrap gap-1.5">
             {bansOur.map((hero, i) => (
               <BanSlotPicker
                 key={i}
@@ -349,7 +349,7 @@ const DraftSection = ({ draft, attendingPlayers, onOurChange, onEnemyChange, onB
         <div className="space-y-2">
           <p className="text-[11px] font-semibold text-rose-400">Enemy Draft</p>
           {/* Ban circles */}
-          <div className="flex gap-1.5">
+          <div className="flex flex-wrap gap-1.5">
             {bansEnemy.map((hero, i) => (
               <BanSlotPicker
                 key={i}
