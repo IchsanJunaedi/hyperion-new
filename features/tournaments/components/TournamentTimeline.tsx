@@ -5,8 +5,11 @@ import { useState, useTransition } from "react";
 
 import { NumberInput } from "@/components/ui/number-input";
 import { useNotify } from "@/features/dashboard/components/NotifyModal";
+import { ConfirmDeleteDialog } from "@/features/dashboard/components/ConfirmDeleteDialog";
 import {
   createTournamentStageAction,
+  updateTournamentStageAction,
+  deleteTournamentStageAction,
   toggleStageCompleteAction,
   addTournamentMatchAction,
   updateTournamentMatchAction,
@@ -118,8 +121,22 @@ function StageItem({
 }) {
   const [pending, startTransition] = useTransition();
   const [showMatchForm, setShowMatchForm] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [name, setName] = useState(stage.stage_name);
+  
+  // Convert ISO string to Asia/Jakarta local datetime-local value (YYYY-MM-DDTHH:MM)
+  const getLocalDateTimeLocalString = (isoString: string) => {
+    const d = new Date(isoString);
+    const tzOffset = 7 * 60 * 60 * 1000; // Jakarta is UTC+7
+    const localTime = new Date(d.getTime() + tzOffset);
+    return localTime.toISOString().slice(0, 16);
+  };
+  
+  const [scheduledAt, setScheduledAt] = useState(getLocalDateTimeLocalString(stage.scheduled_at));
+  const [notes, setNotes] = useState(stage.notes ?? "");
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const { success, error } = useNotify();
-
+ 
   function handleToggle() {
     startTransition(async () => {
       const res = await toggleStageCompleteAction(orgSlug, stage.id, !stage.is_completed);
@@ -128,6 +145,35 @@ function StageItem({
     });
   }
 
+  function handleSave() {
+    startTransition(async () => {
+      const res = await updateTournamentStageAction(orgSlug, {
+        id: stage.id,
+        stage_name: name,
+        scheduled_at: scheduledAt,
+        notes: notes || undefined,
+      });
+      if (res.ok) {
+        success("Tahap diperbarui!");
+        setEditing(false);
+      } else {
+        error(res.message);
+      }
+    });
+  }
+
+  function handleDelete() {
+    startTransition(async () => {
+      const res = await deleteTournamentStageAction(orgSlug, stage.id);
+      if (res.ok) {
+        success("Tahap dihapus!");
+        setShowDeleteConfirm(false);
+      } else {
+        error(res.message);
+      }
+    });
+  }
+ 
   const date = new Date(stage.scheduled_at).toLocaleDateString("id-ID", {
     day: "numeric",
     month: "short",
@@ -136,9 +182,62 @@ function StageItem({
     minute: "2-digit",
     timeZone: "Asia/Jakarta",
   });
-
+ 
   const wins = stage.matches.filter((m) => m.is_win === true).length;
   const losses = stage.matches.filter((m) => m.is_win === false).length;
+ 
+  if (editing) {
+    return (
+      <div className="relative space-y-2">
+        {!isLast && (
+          <div className="absolute left-[-16px] top-[15px] bottom-[-17px] w-[1px] bg-ui-border" />
+        )}
+        <div className="flex items-start gap-3">
+          <div className="absolute -left-[24px] top-0.5">
+            <Pencil className="h-4 w-4 text-yellow-400" />
+          </div>
+          <div className="flex-1 rounded-lg border border-yellow-400/30 bg-ui-surface p-3 space-y-2">
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Nama tahap (misal: Technical Meeting)"
+              className="h-8 w-full rounded-md border border-ui-border bg-ui-bg px-3 text-xs text-ui-text focus:border-yellow-400/50 focus:outline-none"
+            />
+            <input
+              type="datetime-local"
+              value={scheduledAt}
+              onChange={(e) => setScheduledAt(e.target.value)}
+              className="h-8 w-full rounded-md border border-ui-border bg-ui-bg px-3 text-xs text-ui-text focus:border-yellow-400/50 focus:outline-none"
+            />
+            <input
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Catatan (opsional)"
+              className="h-8 w-full rounded-md border border-ui-border bg-ui-bg px-3 text-xs text-ui-text focus:border-yellow-400/50 focus:outline-none"
+            />
+            <div className="flex gap-2">
+              <button
+                type="button"
+                disabled={pending || !name || !scheduledAt}
+                onClick={handleSave}
+                className="inline-flex h-7 items-center gap-1 rounded-md bg-yellow-400 px-3 text-xs font-semibold text-black hover:bg-yellow-300 disabled:opacity-50 cursor-pointer"
+              >
+                {pending && <Loader2 className="h-3 w-3 animate-spin" />}
+                Simpan
+              </button>
+              <button
+                type="button"
+                onClick={() => setEditing(false)}
+                className="h-7 rounded-md border border-ui-border px-3 text-xs text-ui-text-2 hover:bg-ui-hover cursor-pointer"
+              >
+                Batal
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative space-y-2">
@@ -179,6 +278,26 @@ function StageItem({
           {canManage && (
             <button
               type="button"
+              onClick={() => setEditing(true)}
+              className="text-xs text-ui-text-2 hover:text-yellow-400 cursor-pointer"
+              title="Edit tahap"
+            >
+              <Pencil className="h-3.5 w-3.5" />
+            </button>
+          )}
+          {canManage && (
+            <button
+              type="button"
+              onClick={() => setShowDeleteConfirm(true)}
+              className="text-xs text-ui-text-2 hover:text-red-400 cursor-pointer"
+              title="Hapus tahap"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+            </button>
+          )}
+          {canManage && (
+            <button
+              type="button"
               disabled={pending}
               onClick={handleToggle}
               className="text-xs text-ui-text-2 hover:text-ui-text disabled:opacity-50 cursor-pointer"
@@ -188,7 +307,7 @@ function StageItem({
           )}
         </div>
       </div>
-
+ 
       {/* Match results */}
       {stage.matches.length > 0 && (
         <div className="ml-1 space-y-1">
@@ -203,13 +322,24 @@ function StageItem({
           ))}
         </div>
       )}
-
+ 
       {showMatchForm && canManage && (
         <AddMatchForm
           stageId={stage.id}
           orgSlug={orgSlug}
           tournamentId={tournamentId}
           onDone={() => setShowMatchForm(false)}
+        />
+      )}
+
+      {showDeleteConfirm && (
+        <ConfirmDeleteDialog
+          open={showDeleteConfirm}
+          onCancel={() => setShowDeleteConfirm(false)}
+          onConfirm={handleDelete}
+          title="Hapus Tahap"
+          message={`Apakah Anda yakin ingin menghapus tahap "${stage.stage_name}"? Semua hasil match di tahap ini juga akan terhapus.`}
+          confirmPhrase="HAPUS"
         />
       )}
     </div>

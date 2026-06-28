@@ -51,3 +51,12 @@ export const createTournamentStageSchema = z.object({
 
 export type CreateTournamentStageInput = z.infer<typeof createTournamentStageSchema>;
 
+export const updateTournamentStageSchema = z.object({
+  id: z.string().uuid(),
+  stage_name: z.string().trim().min(1, "Nama tahap wajib diisi").max(200),
+  scheduled_at: z.string().min(1, "Jadwal wajib diisi"),
+  notes: z.string().trim().max(500).optional().transform((v) => (v && v.length > 0 ? v : null)),
+});
+
+export type UpdateTournamentStageInput = z.infer<typeof updateTournamentStageSchema>;
+

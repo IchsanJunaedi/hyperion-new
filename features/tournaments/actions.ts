@@ -12,6 +12,7 @@ import {
   createTournamentSchema,
   updateTournamentSchema,
   createTournamentStageSchema,
+  updateTournamentStageSchema,
 } from "@/lib/validations/tournament";
 import { shouldAutoCreateAchievement, buildAchievementTitle } from "./achievement-helpers";
 import { slugify } from "@/lib/utils/slugify";
@@ -404,14 +405,102 @@ export async function createTournamentStageAction(
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, message: "Anda harus login" };
 
-  const { error } = await supabase.from("tournament_stages").insert({
-    tournament_id: parsed.data.tournament_id,
-    stage_name: parsed.data.stage_name,
-    scheduled_at: new Date(parsed.data.scheduled_at).toISOString(),
-    notes: parsed.data.notes,
+  let scheduledAt = parsed.data.scheduled_at;
+  if (!scheduledAt.includes("Z") && !scheduledAt.match(/[+-]\d{2}:\d{2}$/)) {
+    scheduledAt = scheduledAt + "+07:00";
+  }
+
+  const { data: record, error } = await supabase
+    .from("tournament_stages")
+    .insert({
+      tournament_id: parsed.data.tournament_id,
+      stage_name: parsed.data.stage_name,
+      scheduled_at: new Date(scheduledAt).toISOString(),
+      notes: parsed.data.notes,
+    })
+    .select("id")
+    .single();
+
+  if (error || !record) return { ok: false, message: error?.message ?? "Gagal menyimpan" };
+
+  await logAudit({
+    actorId: user.id,
+    action: "create",
+    entityType: "tournament_stages",
+    entityId: record.id,
+    metadata: { stage_name: parsed.data.stage_name, tournament_id: parsed.data.tournament_id },
   });
 
+  revalidatePath(`/${orgSlug}/tournaments`);
+  return { ok: true };
+}
+
+export async function updateTournamentStageAction(
+  orgSlug: string,
+  raw: unknown,
+): Promise<ActionError | { ok: true }> {
+  const parsed = updateTournamentStageSchema.safeParse(raw);
+  if (!parsed.success) {
+    return { ok: false, message: "Form belum lengkap" };
+  }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, message: "Anda harus login" };
+
+  let scheduledAt = parsed.data.scheduled_at;
+  if (!scheduledAt.includes("Z") && !scheduledAt.match(/[+-]\d{2}:\d{2}$/)) {
+    scheduledAt = scheduledAt + "+07:00";
+  }
+
+  const { error } = await supabase
+    .from("tournament_stages")
+    .update({
+      stage_name: parsed.data.stage_name,
+      scheduled_at: new Date(scheduledAt).toISOString(),
+      notes: parsed.data.notes,
+    })
+    .eq("id", parsed.data.id);
+
   if (error) return { ok: false, message: error.message };
+
+  await logAudit({
+    actorId: user.id,
+    action: "update",
+    entityType: "tournament_stages",
+    entityId: parsed.data.id,
+    metadata: { stage_name: parsed.data.stage_name },
+  });
+
+  revalidatePath(`/${orgSlug}/tournaments`);
+  return { ok: true };
+}
+
+export async function deleteTournamentStageAction(
+  orgSlug: string,
+  stageId: string,
+): Promise<ActionError | { ok: true }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, message: "Anda harus login" };
+
+  const { error } = await supabase
+    .from("tournament_stages")
+    .delete()
+    .eq("id", stageId);
+
+  if (error) return { ok: false, message: error.message };
+
+  await logAudit({
+    actorId: user.id,
+    action: "delete",
+    entityType: "tournament_stages",
+    entityId: stageId,
+  });
 
   revalidatePath(`/${orgSlug}/tournaments`);
   return { ok: true };
