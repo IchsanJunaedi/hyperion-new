@@ -23,6 +23,10 @@ ARG NEXT_PUBLIC_SUPABASE_ANON_KEY=placeholder
 ENV NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
 ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
 
+# Skip server-only env var validation during build — these secrets are
+# injected at runtime by Railway and are not needed at build time.
+ENV SKIP_ENV_CHECK=1
+
 RUN npm run build
 
 # Stage 3: Production image, copy all the files and run next
