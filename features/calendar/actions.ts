@@ -87,9 +87,9 @@ export async function createCalendarEventAction(
       title: parsed.data.title,
       description: parsed.data.description,
       event_type: parsed.data.event_type,
-      starts_at: new Date(parsed.data.starts_at).toISOString(),
+      starts_at: new Date(parsed.data.starts_at + "+07:00").toISOString(),
       ends_at: parsed.data.ends_at
-        ? new Date(parsed.data.ends_at).toISOString()
+        ? new Date(parsed.data.ends_at + "+07:00").toISOString()
         : null,
       is_all_day: parsed.data.is_all_day,
       location: parsed.data.location,
