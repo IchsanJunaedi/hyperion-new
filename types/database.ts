@@ -3146,7 +3146,12 @@ export type Database = {
         Returns: Json
       }
       get_hero_detail_v2: {
-        Args: { p_hero_name: string; p_org_id: string; p_patch_id?: string }
+        Args: {
+          p_hero_name: string
+          p_org_id: string
+          p_patch_id?: string
+          p_start_date?: string
+        }
         Returns: Json
       }
       get_hero_statistics: {
@@ -3167,7 +3172,7 @@ export type Database = {
         }[]
       }
       get_hero_statistics_v2: {
-        Args: { p_org_id: string; p_patch_id?: string }
+        Args: { p_org_id: string; p_patch_id?: string; p_start_date?: string }
         Returns: {
           enemy_ban_pct: number
           enemy_ban_total: number

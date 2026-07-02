@@ -41,17 +41,19 @@ describe("getHeroStatistics", () => {
     expect(mockSupabase.rpc).toHaveBeenCalledWith("get_hero_statistics_v2", {
       p_org_id: "org-1",
       p_patch_id: null,
+      p_start_date: null,
     });
   });
  
-  it("passes patchId to get_hero_statistics_v2 rpc when provided", async () => {
+  it("passes patchId and startDate to get_hero_statistics_v2 rpc when provided", async () => {
     mockSupabase.rpc.mockResolvedValue({ data: [], error: null });
  
-    await getHeroStatistics("org-1", "patch-123");
+    await getHeroStatistics("org-1", "patch-123", "2026-07-01");
  
     expect(mockSupabase.rpc).toHaveBeenCalledWith("get_hero_statistics_v2", {
       p_org_id: "org-1",
       p_patch_id: "patch-123",
+      p_start_date: "2026-07-01",
     });
   });
 
@@ -122,7 +124,7 @@ describe("getHeroDetail", () => {
   it("returns structured hero detail from rpc", async () => {
     const mockData = {
       played_by_player: [
-        { display_name: "Player A", total: 5, wins: 3, losses: 2, win_rate: 60 },
+        { display_name: "Player A", role: "gold_lane", total: 5, wins: 3, losses: 2, win_rate: 60 },
       ],
       played_with: [
         { hero_name: "Tigreal", total: 4, wins: 3, losses: 1, win_rate: 75 },
@@ -140,6 +142,20 @@ describe("getHeroDetail", () => {
       p_org_id: "org-1",
       p_hero_name: "Layla",
       p_patch_id: null,
+      p_start_date: null,
+    });
+  });
+
+  it("passes patchId and startDate to get_hero_detail_v2 rpc when provided", async () => {
+    mockSupabase.rpc.mockResolvedValue({ data: null, error: null });
+
+    await getHeroDetail("org-1", "Layla", "patch-123", "2026-07-01");
+
+    expect(mockSupabase.rpc).toHaveBeenCalledWith("get_hero_detail_v2", {
+      p_org_id: "org-1",
+      p_hero_name: "Layla",
+      p_patch_id: "patch-123",
+      p_start_date: "2026-07-01",
     });
   });
 
@@ -178,6 +194,7 @@ describe("getHeroDetail", () => {
       p_org_id: "org-5",
       p_hero_name: "Karina",
       p_patch_id: null,
+      p_start_date: null,
     });
   });
  
@@ -190,6 +207,7 @@ describe("getHeroDetail", () => {
       p_org_id: "org-5",
       p_hero_name: "Karina",
       p_patch_id: "patch-456",
+      p_start_date: null,
     });
   });
 });

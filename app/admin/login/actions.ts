@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 
 export interface AdminSignInResult {
@@ -23,12 +24,21 @@ export async function adminSignInAction(formData: FormData): Promise<AdminSignIn
     return { error: error.message };
   }
 
+  const cookieStore = await cookies();
+  cookieStore.set("last_activity", String(Date.now()), {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: 7 * 24 * 60 * 60, // 7 days
+  });
+
   const adminEmail = process.env.ADMIN_EMAIL;
   const ownerEmail = process.env.OWNER_EMAIL;
   const userEmail = data.user?.email;
 
   if (userEmail !== adminEmail && userEmail !== ownerEmail) {
     await supabase.auth.signOut();
+    cookieStore.delete("last_activity");
     return { error: "Akses ditolak. Akun ini tidak memiliki akses admin." };
   }
 

@@ -218,12 +218,14 @@ export interface HeroDetailData {
 export async function getHeroStatistics(
   orgId: string,
   patchId?: string | null,
+  startDate?: string | null,
 ): Promise<HeroStatRow[]> {
   const supabase = await createClient();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data, error } = await (supabase as any).rpc("get_hero_statistics_v2", {
     p_org_id: orgId,
     p_patch_id: patchId || null,
+    p_start_date: startDate || null,
   });
   if (error) throw new Error(error.message);
   return (data ?? []) as HeroStatRow[];
@@ -233,6 +235,7 @@ export async function getHeroDetail(
   orgId: string,
   heroName: string,
   patchId?: string | null,
+  startDate?: string | null,
 ): Promise<HeroDetailData> {
   const supabase = await createClient();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -240,6 +243,7 @@ export async function getHeroDetail(
     p_org_id: orgId,
     p_hero_name: heroName,
     p_patch_id: patchId || null,
+    p_start_date: startDate || null,
   });
   if (error) throw new Error(error.message);
   const result = data as HeroDetailData | null;

@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
@@ -133,6 +134,14 @@ export async function signInAction(
 
   // 3. Success — clear rate limit record
   await clearRateLimit(email);
+
+  const cookieStore = await cookies();
+  cookieStore.set("last_activity", String(Date.now()), {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: 7 * 24 * 60 * 60, // 7 days
+  });
 
   // If explicit next param, honor it
   const next = sanitizeNext(input.next);

@@ -181,6 +181,7 @@ export async function middleware(request: NextRequest) {
         } catch (e) {
           console.error("[Session] signOut failed:", e);
         }
+        mwRes.cookies.delete("last_activity");
         return redirectWithCookies(new URL("/login", request.url), mwRes);
       }
     }

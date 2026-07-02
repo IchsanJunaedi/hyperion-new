@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -110,6 +111,13 @@ export async function dashboardLoginAction(input: {
   }
 
   await clearRateLimit(email);
+  const cookieStore = await cookies();
+  cookieStore.set("last_activity", String(Date.now()), {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: 7 * 24 * 60 * 60, // 7 days
+  });
   return {};
 }
 

@@ -398,7 +398,7 @@ const FinishScrimForm = ({
                 side: "our" as const,
                 role,
                 hero_name: slot.hero,
-                player_id: roleToPlayer.get(role)?.userId ?? null,
+                player_id: slot.playerId || roleToPlayer.get(role)?.userId || null,
               })),
             ...Object.entries(g.draft.enemy)
               .filter(([, hero]) => hero)

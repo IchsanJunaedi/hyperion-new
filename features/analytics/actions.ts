@@ -209,9 +209,10 @@ export async function fetchPlayerHeroHistory(
 export async function getHeroStatisticsAction(
   orgId: string,
   patchId?: string | null,
+  startDate?: string | null,
 ): Promise<{ ok: true; data: HeroStatRow[] } | { ok: false; message: string }> {
   try {
-    const data = await getHeroStatistics(orgId, patchId);
+    const data = await getHeroStatistics(orgId, patchId, startDate);
     return { ok: true, data };
   } catch (e) {
     return { ok: false, message: e instanceof Error ? e.message : "Gagal memuat statistik hero" };
@@ -222,9 +223,10 @@ export async function getHeroDetailAction(
   orgId: string,
   heroName: string,
   patchId?: string | null,
+  startDate?: string | null,
 ): Promise<{ ok: true; data: HeroDetailData } | { ok: false; message: string }> {
   try {
-    const data = await getHeroDetail(orgId, heroName, patchId);
+    const data = await getHeroDetail(orgId, heroName, patchId, startDate);
     return { ok: true, data };
   } catch (e) {
     return { ok: false, message: e instanceof Error ? e.message : "Gagal memuat detail hero" };
