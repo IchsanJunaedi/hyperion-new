@@ -35,6 +35,7 @@ interface AnalyticsDashboardProps {
   orgId: string;
   slug: string;
   patchId?: string | null;
+  startDate?: string | null;
 }
  
 const AnalyticsDashboard = ({
@@ -46,9 +47,10 @@ const AnalyticsDashboard = ({
   orgId,
   slug,
   patchId,
+  startDate,
 }: AnalyticsDashboardProps) => {
   const [activeTab, setActiveTab] = useState<TabKey>("overview");
-
+ 
   return (
     <div className="space-y-6">
       {/* Tab bar */}
@@ -79,7 +81,7 @@ const AnalyticsDashboard = ({
           Export PDF
         </button>
       </div>
-
+ 
       {/* Tab content */}
       {activeTab === "overview" && (
         <OverviewTab
@@ -89,7 +91,9 @@ const AnalyticsDashboard = ({
           slug={slug}
         />
       )}
-      {activeTab === "statistics" && <StatisticsTab orgId={orgId} patchId={patchId} />}
+      {activeTab === "statistics" && (
+        <StatisticsTab orgId={orgId} patchId={patchId} startDate={startDate} />
+      )}
       {activeTab === "draft" && <DraftAnalyticsTab data={draftData} />}
       {activeTab === "players" && <PlayerStatsTab playerStats={playerStats} orgId={orgId} />}
       {activeTab === "opponents" && <OpponentTab orgId={orgId} patchId={patchId} />}

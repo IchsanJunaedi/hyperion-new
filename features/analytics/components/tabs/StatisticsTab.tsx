@@ -73,7 +73,15 @@ function WrChip({ wr }: { wr: number }) {
 const GRID =
   "grid-cols-[180px_repeat(5,52px)_repeat(2,52px)_repeat(2,52px)_repeat(2,52px)_64px]";
 
-const StatisticsTab = ({ orgId, patchId }: { orgId: string; patchId?: string | null }) => {
+const StatisticsTab = ({
+  orgId,
+  patchId,
+  startDate,
+}: {
+  orgId: string;
+  patchId?: string | null;
+  startDate?: string | null;
+}) => {
   const [rows, setRows] = useState<HeroStatRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [sortKey, setSortKey] = useState<SortKey>("pb_total");
@@ -83,14 +91,16 @@ const StatisticsTab = ({ orgId, patchId }: { orgId: string; patchId?: string | n
   useEffect(() => {
     let mounted = true;
     setLoading(true);
-    getHeroStatisticsAction(orgId, patchId).then((res) => {
+    getHeroStatisticsAction(orgId, patchId, startDate).then((res) => {
       if (!mounted) return;
       if (res.ok) setRows(res.data);
       else toast.error(res.message);
       setLoading(false);
     });
-    return () => { mounted = false; };
-  }, [orgId, patchId]);
+    return () => {
+      mounted = false;
+    };
+  }, [orgId, patchId, startDate]);
 
   function handleSort(key: SortKey) {
     if (key === sortKey) setSortDir((d) => (d === "desc" ? "asc" : "desc"));
@@ -255,6 +265,7 @@ const StatisticsTab = ({ orgId, patchId }: { orgId: string; patchId?: string | n
         heroName={selectedHero}
         onClose={() => setSelectedHero(null)}
         patchId={patchId}
+        startDate={startDate}
       />
     </>
   );

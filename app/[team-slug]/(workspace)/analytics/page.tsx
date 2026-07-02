@@ -20,12 +20,13 @@ type RangeValue = "30d" | "3m" | "all";
  
 function getStartDate(range: RangeValue): string | null {
   const now = new Date();
+  now.setUTCHours(0, 0, 0, 0);
   if (range === "30d") {
-    now.setDate(now.getDate() - 30);
+    now.setUTCDate(now.getUTCDate() - 30);
     return now.toISOString();
   }
   if (range === "3m") {
-    now.setMonth(now.getMonth() - 3);
+    now.setUTCMonth(now.getUTCMonth() - 3);
     return now.toISOString();
   }
   return null;
@@ -92,6 +93,7 @@ const AnalyticsPage = async ({ params, searchParams }: AnalyticsPageProps) => {
         orgId={organization.id}
         slug={slug}
         patchId={selectedPatchId}
+        startDate={startDate}
       />
     </div>
   );
