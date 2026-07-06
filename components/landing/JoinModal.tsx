@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { NumberInput } from "@/components/ui/number-input";
 import { X } from "lucide-react";
 import { toast } from "sonner";
@@ -11,6 +12,24 @@ const INPUT_CLASS =
 const JoinModal = () => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    document.body.style.overflow = "hidden";
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [open]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -32,20 +51,18 @@ const JoinModal = () => {
         <span className="transition-transform group-hover:translate-x-1">→</span>
       </button>
 
-      {open && (
+      {open && mounted && createPortal(
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
           role="dialog"
           aria-modal="true"
+          onClick={() => setOpen(false)}
         >
-          {/* Backdrop */}
-          <div
-            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
-            onClick={() => setOpen(false)}
-          />
-
           {/* Panel */}
-          <div className="relative z-10 w-full max-w-md border border-white/10 bg-[#0D0D0D] p-8">
+          <div 
+            className="relative z-10 w-full max-w-md border border-white/10 bg-[#0D0D0D] p-8"
+            onClick={(e) => e.stopPropagation()}
+          >
             {/* Close */}
             <button
               type="button"
@@ -126,7 +143,8 @@ const JoinModal = () => {
               </button>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );

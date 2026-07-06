@@ -3,13 +3,17 @@ import { Handshake } from "lucide-react";
 import { Header } from "@/components/landing/Header";
 import { Footer } from "@/components/landing/Footer";
 import { InteractiveBackground } from "@/components/landing/InteractiveBackground";
-import { getPublicSponsors } from "@/features/admin/queries";
+import { getPublicSponsors, getSiteSettings } from "@/features/admin/queries";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = {
-  title: "Sponsors — Hyperion Team",
-  description: "Brand dan sponsor yang mendukung Hyperion Team.",
-};
+
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings();
+  return {
+    title: settings.seo_sponsors_title || "Sponsors — Hyperion Team",
+    description: settings.seo_sponsors_description || "Brand dan sponsor yang mendukung Hyperion Team.",
+  };
+}
 
 const SponsorsPage = async () => {
   const sponsors = await getPublicSponsors();

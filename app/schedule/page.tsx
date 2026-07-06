@@ -5,15 +5,18 @@ import { Header } from "@/components/landing/Header";
 import { Footer } from "@/components/landing/Footer";
 import { ScheduleCountdown } from "@/components/landing/ScheduleCountdown";
 import { InteractiveBackground } from "@/components/landing/InteractiveBackground";
-import { getScheduleTournaments } from "@/features/admin/queries";
+import { getScheduleTournaments, getSiteSettings } from "@/features/admin/queries";
 import type { PublicTournament } from "@/features/admin/queries";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
-  title: "Schedule — Hyperion Team",
-  description: "Jadwal turnamen mendatang Hyperion Team.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings();
+  return {
+    title: settings.seo_schedule_title || "Schedule — Hyperion Team",
+    description: settings.seo_schedule_description || "Jadwal turnamen mendatang Hyperion Team.",
+  };
+}
 
 function groupByMonth(tournaments: PublicTournament[]): Map<string, PublicTournament[]> {
   const map = new Map<string, PublicTournament[]>();

@@ -1,9 +1,18 @@
+import type { Metadata } from "next";
 import { Footer } from "@/components/landing/Footer";
 import { Header } from "@/components/landing/Header";
 import { GalleryCard } from "@/components/landing/GalleryCard";
 import { getGalleryEntries, getSiteSettings } from "@/features/admin/queries";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings();
+  return {
+    title: settings.seo_gallery_title || "Achievement — Hyperion Team",
+    description: settings.seo_gallery_description || "Prestasi dan pencapaian Hyperion Team di berbagai turnamen nasional dan regional.",
+  };
+}
 
 async function GalleryPage() {
   const [galleryEntries, settings] = await Promise.all([

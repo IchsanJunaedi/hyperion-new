@@ -8,6 +8,9 @@ const DEFAULT_NAV = [
   { label: "About", href: "/about" },
   { label: "Achievement", href: "/gallery" },
   { label: "Division", href: "/divisions" },
+  { label: "News", href: "/news" },
+  { label: "Schedule", href: "/schedule" },
+  { label: "Sponsors", href: "/sponsors" },
   { label: "Rekrutmen", href: "/rekrutmen" },
 ];
 

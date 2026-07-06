@@ -6,10 +6,13 @@ import { getPublishedNewsPosts, getSiteSettings } from "@/features/admin/queries
 import { NewsListClient } from "./_components/NewsListClient";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = {
-  title: "News — Hyperion Team",
-  description: "Berita dan update terbaru dari Hyperion Team.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings();
+  return {
+    title: settings.seo_news_title || "News — Hyperion Team",
+    description: settings.seo_news_description || "Berita dan update terbaru dari Hyperion Team.",
+  };
+}
 
 const NewsPage = async () => {
   const [posts, settings] = await Promise.all([
