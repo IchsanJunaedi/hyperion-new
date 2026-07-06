@@ -95,6 +95,23 @@ describe("createScrimSchema", () => {
     const r = createScrimSchema.safeParse({ ...valid, patch: "a".repeat(31) });
     expect(r.success).toBe(false);
   });
+
+  it("accepts optional opponent_id field", () => {
+    const r = createScrimSchema.safeParse({ ...valid, opponent_id: "@opponent123" });
+    expect(r.success).toBe(true);
+    if (r.success) expect(r.data.opponent_id).toBe("@opponent123");
+  });
+
+  it("transforms empty opponent_id to null", () => {
+    const r = createScrimSchema.safeParse({ ...valid, opponent_id: "" });
+    expect(r.success).toBe(true);
+    if (r.success) expect(r.data.opponent_id).toBeNull();
+  });
+
+  it("rejects opponent_id longer than 60 chars", () => {
+    const r = createScrimSchema.safeParse({ ...valid, opponent_id: "a".repeat(61) });
+    expect(r.success).toBe(false);
+  });
 });
 
 describe("submitResultSchema", () => {
@@ -268,6 +285,23 @@ describe("updateScrimSchema", () => {
     const result = updateScrimSchema.safeParse({ ...valid, opponent_contact: "+62812345678" });
     expect(result.success).toBe(true);
     if (result.success) expect(result.data.opponent_contact).toBe("+62812345678");
+  });
+
+  it("keeps non-empty opponent_id", () => {
+    const result = updateScrimSchema.safeParse({ ...valid, opponent_id: "@opponent123" });
+    expect(result.success).toBe(true);
+    if (result.success) expect(result.data.opponent_id).toBe("@opponent123");
+  });
+
+  it("transforms empty opponent_id to null", () => {
+    const result = updateScrimSchema.safeParse({ ...valid, opponent_id: "" });
+    expect(result.success).toBe(true);
+    if (result.success) expect(result.data.opponent_id).toBeNull();
+  });
+
+  it("rejects opponent_id longer than 60 chars", () => {
+    const result = updateScrimSchema.safeParse({ ...valid, opponent_id: "a".repeat(61) });
+    expect(result.success).toBe(false);
   });
 });
 
