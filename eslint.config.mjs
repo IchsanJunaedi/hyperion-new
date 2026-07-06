@@ -21,6 +21,11 @@ const eslintConfig = [
       "supabase/functions/**",
       "services/vision/venv/**",
       "scratch/**",
+      "nul",
+      "wa_webhook_log.txt",
+      "*.log",
+      "lib/vision/**",
+      "services/**",
     ],
   },
 ];

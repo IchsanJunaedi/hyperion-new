@@ -22,6 +22,12 @@
 .DS_Store
 *.pem
 
+# Windows device file artifacts
+nul
+
+# Local logs
+wa_webhook_log.txt
+
 # debug
 npm-debug.log*
 yarn-debug.log*
