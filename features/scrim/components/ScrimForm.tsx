@@ -43,6 +43,7 @@ const ScrimForm = ({ orgSlug, divisions, activePatchVersion }: ScrimFormProps) =
             division_id: fd.get("division_id"),
             opponent_name: fd.get("opponent_name"),
             opponent_contact: fd.get("opponent_contact"),
+            opponent_id: fd.get("opponent_id"),
             scheduled_at: fd.get("scheduled_at"),
             format: fd.get("format"),
             server_region: fd.get("server_region"),
@@ -109,12 +110,26 @@ const ScrimForm = ({ orgSlug, divisions, activePatchVersion }: ScrimFormProps) =
         >
           <input
             name="opponent_contact"
-            required
             maxLength={120}
+            placeholder="WA / Discord / email"
             className="h-10 w-full rounded-lg border border-ui-border bg-ui-bg/40 px-3 text-sm text-ui-text focus:border-yellow-400 focus:outline-none"
           />
         </Field>
       </div>
+
+      {/* ID Musuh (perwakilan) - Full Width */}
+      <Field
+        label="ID musuh (perwakilan) — opsional"
+        name="opponent_id"
+        errors={fieldErrors["opponent_id"]}
+      >
+        <input
+          name="opponent_id"
+          maxLength={60}
+          placeholder="ID in-game / username perwakilan lawan"
+          className="h-10 w-full rounded-lg border border-ui-border bg-ui-bg/40 px-3 text-sm text-ui-text placeholder:text-ui-text-muted focus:border-yellow-400 focus:outline-none"
+        />
+      </Field>
 
       {/* Jadwal - Full Width */}
       <Field

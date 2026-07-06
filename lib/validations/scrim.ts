@@ -28,6 +28,12 @@ export const createScrimSchema = z.object({
     .max(120)
     .optional()
     .transform((v) => (v && v.length > 0 ? v : null)),
+  opponent_id: z
+    .string()
+    .trim()
+    .max(60)
+    .optional()
+    .transform((v) => (v && v.length > 0 ? v : null)),
   scheduled_at: z
     .string()
     .min(1, "Jadwal wajib diisi")
@@ -124,6 +130,12 @@ export const updateScrimSchema = z.object({
     .string()
     .trim()
     .max(120)
+    .optional()
+    .transform((v) => (v && v.length > 0 ? v : null)),
+  opponent_id: z
+    .string()
+    .trim()
+    .max(60)
     .optional()
     .transform((v) => (v && v.length > 0 ? v : null)),
   scheduled_at: z
