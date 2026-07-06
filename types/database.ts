@@ -3468,3 +3468,13 @@ export const Constants = {
     },
   },
 } as const
+
+// --- Re-exported helpers used across features ---
+export type MemberRole = Database["public"]["Enums"]["member_role"];
+export type AttendanceStatus = Database["public"]["Enums"]["attendance_status"];
+export type ContentStatus = Database["public"]["Enums"]["content_status"];
+export type MatchFormat = Database["public"]["Enums"]["match_format"];
+export type ScrimStatus = Database["public"]["Enums"]["scrim_status"];
+export type MemberAvailability = Database["public"]["Enums"]["member_availability"];
+export type FinanceRow = Database["public"]["Tables"]["finances"]["Row"];
+export type ContentCalendarRow = Database["public"]["Tables"]["content_calendar"]["Row"];
