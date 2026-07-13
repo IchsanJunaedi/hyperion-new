@@ -51,7 +51,7 @@ const TournamentCompleteModal = ({
     if (initialResult && initialResult.placement !== null) {
       return String(initialResult.placement);
     }
-    return "";
+    return "1";
   });
   const [prizeRaw, setPrizeRaw] = useState(() => {
     if (initialResult && initialResult.prize_earned) {
@@ -116,6 +116,11 @@ const TournamentCompleteModal = ({
   function handleSubmit() {
     if (!isPastStartDate && !confirmEarly) {
       setConfirmEarly(true);
+      return;
+    }
+
+    if (won && !placement) {
+      notifyError("Masukkan posisi juara terlebih dahulu.");
       return;
     }
 
