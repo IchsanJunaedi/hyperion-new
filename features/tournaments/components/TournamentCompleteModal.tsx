@@ -146,7 +146,14 @@ const TournamentCompleteModal = ({
   if (confirmEarly) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" onClick={onClose}>
-        <div className="w-full max-w-sm rounded-xl border border-yellow-500/20 bg-ui-bg p-5 shadow-xl" onClick={(e) => e.stopPropagation()}>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleSubmit();
+          }}
+          className="w-full max-w-sm rounded-xl border border-yellow-500/20 bg-ui-bg p-5 shadow-xl"
+          onClick={(e) => e.stopPropagation()}
+        >
           <div className="flex items-center gap-3 mb-3">
             <div className="grid h-10 w-10 place-items-center rounded-full bg-yellow-500/10">
               <AlertTriangle className="h-5 w-5 text-yellow-400" />
@@ -164,20 +171,27 @@ const TournamentCompleteModal = ({
               className="h-9 rounded-md border border-ui-border px-4 text-xs font-medium text-ui-text-2 hover:bg-ui-hover cursor-pointer">
               Kembali
             </button>
-            <button type="button" disabled={pending} onClick={handleSubmit}
+            <button type="submit" disabled={pending}
               className="inline-flex h-9 items-center gap-1.5 rounded-md bg-yellow-400 px-4 text-xs font-semibold text-black hover:bg-yellow-300 disabled:opacity-50 cursor-pointer">
               {pending && <Loader2 className="h-3 w-3 animate-spin" />}
               Tetap Selesaikan
             </button>
           </div>
-        </div>
+        </form>
       </div>
     );
   }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" onClick={onClose}>
-      <div className="w-full max-w-md rounded-xl border border-ui-border bg-ui-bg p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSubmit();
+        }}
+        className="w-full max-w-md rounded-xl border border-ui-border bg-ui-bg p-6 shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-2.5">
@@ -320,7 +334,7 @@ const TournamentCompleteModal = ({
             className="h-9 rounded-md border border-ui-border px-4 text-xs font-medium text-ui-text-2 hover:bg-ui-hover cursor-pointer">
             Batal
           </button>
-          <button type="button" disabled={pending} onClick={handleSubmit}
+          <button type="submit" disabled={pending}
             className={`inline-flex h-9 items-center gap-1.5 rounded-md px-4 text-xs font-semibold transition disabled:opacity-50 cursor-pointer ${
               won
                 ? "bg-yellow-400 text-black hover:bg-yellow-300"
@@ -330,7 +344,7 @@ const TournamentCompleteModal = ({
             {won ? "Catat Kemenangan" : "Catat Hasil"}
           </button>
         </div>
-      </div>
+      </form>
     </div>
   );
 };
