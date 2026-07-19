@@ -254,76 +254,230 @@ export async function getHeroDetail(
   };
 }
 
+// ─── Tournament Analytics ─────────────────────────────────────────────────────
+
+export interface RecentTournamentMatch {
+  id: string;
+  round_label: string;
+  opponent_name: string | null;
+  match_format: string | null;
+  tournament_name: string;
+  is_win: boolean | null;
+  our_score: number | null;
+  opponent_score: number | null;
+  played_at: string | null;
+}
+
+export interface TournamentAnalyticsData {
+  total: number;
+  wins: number;
+  losses: number;
+  winRate: number;
+  recentMatches: RecentTournamentMatch[];
+}
+
+/**
+ * Aggregate tournament match stats for analytics.
+ * Uses tournament_game_results (not matches) for per-game accuracy.
+ */
+export async function getTournamentAnalytics(
+  orgId: string,
+): Promise<TournamentAnalyticsData> {
+  const supabase = await createClient();
+
+  // Get all tournaments for this org
+  const { data: tournaments, error: tourErr } = await supabase
+    .from("tournaments")
+    .select("id, name")
+    .eq("organization_id", orgId)
+    .limit(100);
+
+  if (tourErr) console.error("[getTournamentAnalytics] tournaments:", tourErr);
+  if (!tournaments?.length) return { total: 0, wins: 0, losses: 0, winRate: 0, recentMatches: [] };
+
+  const tournamentIds = tournaments.map((t) => t.id);
+  const tourMap = new Map(tournaments.map((t) => [t.id, t.name]));
+
+  // Get stages
+  const { data: stages } = await supabase
+    .from("tournament_stages")
+    .select("id, tournament_id")
+    .in("tournament_id", tournamentIds)
+    .limit(200);
+
+  if (!stages?.length) return { total: 0, wins: 0, losses: 0, winRate: 0, recentMatches: [] };
+
+  const stageIds = stages.map((s) => s.id);
+  const stageTourMap = new Map(stages.map((s) => [s.id, s.tournament_id]));
+
+  // Get matches with results
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: matches, error: matchErr } = await (supabase as any)
+    .from("tournament_matches")
+    .select("id, stage_id, round_label, opponent_name, match_format, is_win, our_score, opponent_score, played_at")
+    .in("stage_id", stageIds)
+    .not("is_win", "is", null)
+    .order("played_at", { ascending: false })
+    .limit(200);
+
+  if (matchErr) console.error("[getTournamentAnalytics] matches:", matchErr);
+
+  const allMatches = (matches ?? []) as Array<{
+    id: string;
+    stage_id: string;
+    round_label: string;
+    opponent_name: string | null;
+    match_format: string | null;
+    is_win: boolean | null;
+    our_score: number | null;
+    opponent_score: number | null;
+    played_at: string | null;
+  }>;
+
+  const wins = allMatches.filter((m) => m.is_win === true).length;
+  const losses = allMatches.filter((m) => m.is_win === false).length;
+  const total = wins + losses;
+  const winRate = total === 0 ? 0 : Math.round((wins / total) * 100);
+
+  const recentMatches: RecentTournamentMatch[] = allMatches.slice(0, 20).map((m) => {
+    const tourId = stageTourMap.get(m.stage_id) ?? "";
+    return {
+      id: m.id,
+      round_label: m.round_label,
+      opponent_name: m.opponent_name,
+      match_format: m.match_format,
+      tournament_name: tourMap.get(tourId) ?? "—",
+      is_win: m.is_win,
+      our_score: m.our_score,
+      opponent_score: m.opponent_score,
+      played_at: m.played_at,
+    };
+  });
+
+  return { total, wins, losses, winRate, recentMatches };
+}
+
 // ─── Draft Analytics (per-game win rate — more accurate for BO formats) ───────
+
+export type DraftDataSource = "all" | "scrim" | "tournament";
 
 export async function getDraftAnalytics(
   orgId: string,
   patchId?: string | null,
+  dataSource: DraftDataSource = "all",
 ): Promise<DraftAnalyticsData> {
   const supabase = await createClient();
- 
-  let q = supabase
-    .from("scrims")
-    .select("id")
-    .eq("organization_id", orgId)
-    .eq("status", "completed")
-    .order("scheduled_at", { ascending: false })
-    .limit(200);
- 
-  if (patchId) {
-    q = q.eq("patch_id", patchId);
-  }
- 
-  const { data: scrims } = await q;
- 
-  if (!scrims?.length) return { byRole: {}, topOverall: [] };
-
-  const scrimIds = scrims.map((s) => s.id);
-
-  // Use per-game results (more accurate than overall scrim result in BO formats)
-  const [picksRes, gameResultsRes] = await Promise.all([
-    supabase
-      .from("scrim_draft_picks")
-      .select("scrim_id, game_number, role, hero_name")
-      .in("scrim_id", scrimIds)
-      .eq("side", "our"),
-    supabase
-      .from("scrim_game_results")
-      .select("scrim_id, game_number, is_win")
-      .in("scrim_id", scrimIds),
-  ]);
-
-  if (picksRes.error) console.error("[getDraftAnalytics] picks:", picksRes.error);
-  if (gameResultsRes.error) console.error("[getDraftAnalytics] gameResults:", gameResultsRes.error);
-
-  const picks = picksRes.data ?? [];
-  if (!picks.length) return { byRole: {}, topOverall: [] };
-
-  // `${scrimId}:${gameNumber}` → is_win
-  const gameWinMap = new Map<string, boolean>(
-    (gameResultsRes.data ?? []).map((g) => [`${g.scrim_id}:${g.game_number}`, g.is_win]),
-  );
 
   const roleMap = new Map<string, Map<string, { picks: number; wins: number }>>();
   const overallMap = new Map<string, { picks: number; wins: number }>();
 
-  for (const pick of picks) {
-    const won = gameWinMap.get(`${pick.scrim_id}:${pick.game_number}`) === true;
-
-    // Per-role
-    if (!roleMap.has(pick.role)) roleMap.set(pick.role, new Map());
-    const roleHeroMap = roleMap.get(pick.role)!;
-    const re = roleHeroMap.get(pick.hero_name) ?? { picks: 0, wins: 0 };
+  function accumulate(heroName: string, role: string | null, won: boolean) {
+    const r = role ?? "unknown";
+    if (!roleMap.has(r)) roleMap.set(r, new Map());
+    const roleHeroMap = roleMap.get(r)!;
+    const re = roleHeroMap.get(heroName) ?? { picks: 0, wins: 0 };
     re.picks++;
     if (won) re.wins++;
-    roleHeroMap.set(pick.hero_name, re);
-
-    // Overall
-    const oe = overallMap.get(pick.hero_name) ?? { picks: 0, wins: 0 };
+    roleHeroMap.set(heroName, re);
+    const oe = overallMap.get(heroName) ?? { picks: 0, wins: 0 };
     oe.picks++;
     if (won) oe.wins++;
-    overallMap.set(pick.hero_name, oe);
+    overallMap.set(heroName, oe);
   }
+
+  // ── Scrim picks ─────────────────────────────────────────────────────────
+  if (dataSource === "scrim" || dataSource === "all") {
+    let q = supabase
+      .from("scrims")
+      .select("id")
+      .eq("organization_id", orgId)
+      .eq("status", "completed")
+      .order("scheduled_at", { ascending: false })
+      .limit(200);
+
+    if (patchId) q = q.eq("patch_id", patchId);
+    const { data: scrims } = await q;
+
+    if (scrims?.length) {
+      const scrimIds = scrims.map((s) => s.id);
+      const [picksRes, gameResultsRes] = await Promise.all([
+        supabase
+          .from("scrim_draft_picks")
+          .select("scrim_id, game_number, role, hero_name")
+          .in("scrim_id", scrimIds)
+          .eq("side", "our"),
+        supabase
+          .from("scrim_game_results")
+          .select("scrim_id, game_number, is_win")
+          .in("scrim_id", scrimIds),
+      ]);
+      if (picksRes.error) console.error("[getDraftAnalytics] scrim picks:", picksRes.error);
+      if (gameResultsRes.error) console.error("[getDraftAnalytics] scrim games:", gameResultsRes.error);
+      const winMap = new Map<string, boolean>(
+        (gameResultsRes.data ?? []).map((g) => [`${g.scrim_id}:${g.game_number}`, g.is_win]),
+      );
+      for (const p of picksRes.data ?? []) {
+        accumulate(p.hero_name, p.role, winMap.get(`${p.scrim_id}:${p.game_number}`) === true);
+      }
+    }
+  }
+
+  // ── Tournament picks ─────────────────────────────────────────────────────
+  if (dataSource === "tournament" || dataSource === "all") {
+    const { data: tournaments } = await supabase
+      .from("tournaments")
+      .select("id")
+      .eq("organization_id", orgId)
+      .limit(100);
+
+    if (tournaments?.length) {
+      const { data: stages } = await supabase
+        .from("tournament_stages")
+        .select("id")
+        .in("tournament_id", tournaments.map((t) => t.id))
+        .limit(200);
+
+      if (stages?.length) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data: matchesData } = await (supabase as any)
+          .from("tournament_matches")
+          .select("id")
+          .in("stage_id", stages.map((s) => s.id))
+          .limit(500);
+
+        if (matchesData?.length) {
+          const matchIds = (matchesData as { id: string }[]).map((m) => m.id);
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const { data: gameResultsData } = await (supabase as any)
+            .from("tournament_game_results")
+            .select("id, is_win")
+            .in("tournament_match_id", matchIds)
+            .limit(1000);
+
+          const gameResultIds = ((gameResultsData ?? []) as { id: string; is_win: boolean | null }[]).map((g) => g.id);
+          const gameWinMap = new Map<string, boolean>(
+            ((gameResultsData ?? []) as { id: string; is_win: boolean | null }[]).map((g) => [g.id, g.is_win === true]),
+          );
+
+          if (gameResultIds.length) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const { data: tourPicks, error: tourPicksErr } = await (supabase as any)
+              .from("tournament_draft_picks")
+              .select("game_result_id, hero_name, role")
+              .in("game_result_id", gameResultIds)
+              .eq("side", "our")
+              .limit(5000);
+            if (tourPicksErr) console.error("[getDraftAnalytics] tournament picks:", tourPicksErr);
+            for (const p of (tourPicks ?? []) as { game_result_id: string; hero_name: string; role: string | null }[]) {
+              accumulate(p.hero_name, p.role, gameWinMap.get(p.game_result_id) === true);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  if (overallMap.size === 0) return { byRole: {}, topOverall: [] };
 
   const byRole: Record<string, HeroStat[]> = {};
   for (const [role, map] of roleMap.entries()) byRole[role] = toHeroStats(map, 5);
