@@ -10,7 +10,9 @@ import {
   getRecentScrims,
   getEnterprisePlayerStats,
   getDraftAnalytics,
+  getTournamentAnalytics,
 } from "@/features/analytics/queries";
+
 import { getMetaPatches } from "@/features/meta/queries";
 import { getOrgBySlug } from "@/features/teams/queries";
  
@@ -52,12 +54,13 @@ const AnalyticsPage = async ({ params, searchParams }: AnalyticsPageProps) => {
   const activePatch = patches.find((p) => p.is_active);
   const selectedPatchId = rawPatchId ?? activePatch?.id ?? null;
  
-  const [{ stats, formatBreakdown }, recentScrims, playerStats, draftData] =
+  const [{ stats, formatBreakdown }, recentScrims, playerStats, draftData, tournamentData] =
     await Promise.all([
       getOverviewStats(organization.id, startDate, selectedPatchId),
       getRecentScrims(organization.id, startDate, selectedPatchId),
       getEnterprisePlayerStats(organization.id, selectedPatchId),
       getDraftAnalytics(organization.id, selectedPatchId),
+      getTournamentAnalytics(organization.id),
     ]);
  
   return (
@@ -90,6 +93,7 @@ const AnalyticsPage = async ({ params, searchParams }: AnalyticsPageProps) => {
         recentScrims={recentScrims}
         playerStats={playerStats}
         draftData={draftData}
+        tournamentData={tournamentData}
         orgId={organization.id}
         slug={slug}
         patchId={selectedPatchId}

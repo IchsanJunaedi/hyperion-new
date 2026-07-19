@@ -8,15 +8,19 @@ import { DraftAnalyticsTab } from "./tabs/DraftAnalyticsTab";
 import { PlayerStatsTab } from "./tabs/PlayerStatsTab";
 import { StatisticsTab } from "./tabs/StatisticsTab";
 import { OpponentTab } from "./tabs/OpponentTab";
+import { TournamentOverviewTab } from "./tabs/TournamentOverviewTab";
 import type {
   OverviewStats,
   FormatStat,
   RecentScrim,
   EnterprisePlayerStat,
   DraftAnalyticsData,
+  TournamentAnalyticsData,
+  DraftDataSource,
 } from "@/features/analytics/queries";
 
 type TabKey = "overview" | "statistics" | "draft" | "players" | "opponents";
+type DataSource = "all" | "scrim" | "tournament";
 
 const TABS: Array<{ key: TabKey; label: string }> = [
   { key: "overview",   label: "Overview" },
@@ -26,12 +30,19 @@ const TABS: Array<{ key: TabKey; label: string }> = [
   { key: "opponents",  label: "Lawan" },
 ];
 
+const DATA_SOURCE_OPTIONS: Array<{ value: DataSource; label: string }> = [
+  { value: "all",        label: "Semua" },
+  { value: "scrim",      label: "Scrim" },
+  { value: "tournament", label: "Turnamen" },
+];
+
 interface AnalyticsDashboardProps {
   overviewStats: OverviewStats;
   formatBreakdown: FormatStat[];
   recentScrims: RecentScrim[];
   playerStats: EnterprisePlayerStat[];
   draftData: DraftAnalyticsData;
+  tournamentData: TournamentAnalyticsData;
   orgId: string;
   slug: string;
   patchId?: string | null;
@@ -44,15 +55,39 @@ const AnalyticsDashboard = ({
   recentScrims,
   playerStats,
   draftData,
+  tournamentData,
   orgId,
   slug,
   patchId,
   startDate,
 }: AnalyticsDashboardProps) => {
   const [activeTab, setActiveTab] = useState<TabKey>("overview");
+  const [dataSource, setDataSource] = useState<DataSource>("all");
  
   return (
     <div className="space-y-6">
+      {/* Data source segment toggle */}
+      <div className="flex items-center gap-2">
+        <span className="text-xs text-ui-text-muted font-medium">Data:</span>
+        <div className="inline-flex rounded-lg border border-ui-border bg-ui-surface p-0.5 gap-0.5">
+          {DATA_SOURCE_OPTIONS.map((opt) => (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => setDataSource(opt.value)}
+              className={cn(
+                "rounded-md px-3 py-1 text-xs font-medium transition-colors cursor-pointer",
+                dataSource === opt.value
+                  ? "bg-yellow-400 text-black"
+                  : "text-ui-text-muted hover:text-ui-text",
+              )}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Tab bar */}
       <div className="print-hide flex items-center justify-between gap-2 border-b border-ui-border">
         <nav className="flex gap-1">
@@ -83,14 +118,16 @@ const AnalyticsDashboard = ({
       </div>
  
       {/* Tab content */}
-      {activeTab === "overview" && (
+      {activeTab === "overview" && dataSource === "tournament" ? (
+        <TournamentOverviewTab data={tournamentData} />
+      ) : activeTab === "overview" ? (
         <OverviewTab
           stats={overviewStats}
           formatBreakdown={formatBreakdown}
           recentScrims={recentScrims}
           slug={slug}
         />
-      )}
+      ) : null}
       {activeTab === "statistics" && (
         <StatisticsTab orgId={orgId} patchId={patchId} startDate={startDate} />
       )}

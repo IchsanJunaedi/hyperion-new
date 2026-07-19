@@ -13,6 +13,13 @@ interface TournamentCountdownProps {
   registrationDeadline?: string | null;
   /** "upcoming" = belum daftar, "ongoing" = sudah daftar */
   status?: string;
+  /** Active match info untuk tournament ongoing */
+  activeMatch?: {
+    roundLabel: string;
+    opponentName: string | null;
+    matchFormat: string | null;
+    scheduledAt: string | null;
+  } | null;
 }
 
 interface CountdownParts {
@@ -44,6 +51,7 @@ const TournamentCountdown = ({
   organizer,
   registrationDeadline,
   status,
+  activeMatch,
 }: TournamentCountdownProps) => {
   // Show reg deadline countdown when: upcoming + deadline exists + deadline hasn't passed
   const showRegDeadline =
@@ -184,6 +192,30 @@ const TournamentCountdown = ({
           </span>
         )}
       </div>
+
+      {/* Active match info — shown when ongoing */}
+      {activeMatch && status === "ongoing" && (
+        <div className="mt-3 rounded-lg border border-yellow-400/15 bg-yellow-400/5 px-3 py-2">
+          <p className="text-[10px] uppercase tracking-wider text-yellow-400/70 font-semibold mb-0.5">Match sedang berlangsung</p>
+          <p className="text-sm font-medium text-ui-text">
+            {activeMatch.roundLabel}
+            {activeMatch.opponentName && <span className="text-ui-text-muted"> vs {activeMatch.opponentName}</span>}
+            {activeMatch.matchFormat && (
+              <span className="ml-1.5 rounded px-1 py-0.5 text-[9px] font-bold border border-yellow-400/20 text-yellow-400/80 bg-yellow-400/5">
+                {activeMatch.matchFormat}
+              </span>
+            )}
+          </p>
+          {activeMatch.scheduledAt && (
+            <p className="text-[11px] text-ui-text-muted mt-0.5">
+              Jadwal: {new Date(activeMatch.scheduledAt).toLocaleString("id-ID", {
+                day: "numeric", month: "short", hour: "2-digit", minute: "2-digit",
+                timeZone: "Asia/Jakarta"
+              })} WIB
+            </p>
+          )}
+        </div>
+      )}
 
       <div className="mt-5 flex items-center gap-2">
         <Clock className="h-4 w-4 text-ui-text-2" />

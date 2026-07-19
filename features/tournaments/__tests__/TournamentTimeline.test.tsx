@@ -17,6 +17,7 @@ describe("TournamentTimeline", () => {
         tournamentId="t-1"
         orgSlug="team-1"
         canManage={false}
+        attendingPlayers={[]}
       />
     );
     expect(screen.getByText(/Belum ada tahapan/i)).toBeInTheDocument();
@@ -52,6 +53,7 @@ describe("TournamentTimeline", () => {
         tournamentId="t-1"
         orgSlug="team-1"
         canManage={false}
+        attendingPlayers={[]}
       />
     );
 

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { CalendarRange } from "lucide-react";
 
 import { Header } from "@/components/landing/Header";
@@ -117,11 +118,17 @@ const SchedulePage = async () => {
                       {formatMonthHeader(monthKey)}
                     </h2>
                     <div className="flex flex-col gap-4">
-                      {items.map((t) => (
-                        <div
+                      {items.map((t) => {
+                        // Compute effective status: if start_date is in the future, force "upcoming"
+                        const today = new Date().toISOString().substring(0, 10);
+                        const effectiveStatus = t.start_date > today && t.status === "ongoing" ? "upcoming" : t.status;
+
+                        return (
+                        <Link
+                          href={`/schedule/${t.id}`}
                           key={t.id}
                           className={`flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 sm:gap-6 bg-slate-800/40 backdrop-blur-md rounded-2xl border p-6 transition-all duration-300 ${
-                            t.status === "ongoing"
+                            effectiveStatus === "ongoing"
                               ? "border-white/10 shadow-[0_0_20px_rgba(255,255,255,0.02)] animate-pulse"
                               : "border-white/5 hover:border-white/10"
                           } hover:bg-slate-800/60 hover:scale-[1.01]`}
@@ -151,12 +158,12 @@ const SchedulePage = async () => {
 
                           {/* Sisi Kanan: Status Badge */}
                           <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-3 shrink-0">
-                            <span className={`rounded-full border px-3.5 py-1 text-[10px] font-bold uppercase tracking-wider ${STATUS_COLOR[t.status] ?? STATUS_COLOR.upcoming}`}>
-                              {STATUS_LABEL[t.status] ?? t.status.toUpperCase()}
+                            <span className={`rounded-full border px-3.5 py-1 text-[10px] font-bold uppercase tracking-wider ${STATUS_COLOR[effectiveStatus] ?? STATUS_COLOR.upcoming}`}>
+                              {STATUS_LABEL[effectiveStatus] ?? effectiveStatus.toUpperCase()}
                             </span>
                           </div>
-                        </div>
-                      ))}
+                        </Link>
+                      )})}
                     </div>
                   </div>
                 ))}

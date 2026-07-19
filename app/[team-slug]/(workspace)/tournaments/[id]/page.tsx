@@ -13,6 +13,7 @@ import { TournamentBracketCard } from "@/features/tournaments/components/Tournam
 import { TournamentTechMeetCard } from "@/features/tournaments/components/TournamentTechMeetCard";
 import { ContextFiles } from "@/features/files/components/ContextFiles";
 import { getLinkedFiles } from "@/features/files/queries";
+import { getRosterMembers } from "@/features/roster/queries";
 
 export const dynamic = "force-dynamic";
 
@@ -89,9 +90,10 @@ export default async function TournamentDetailPage({ params }: TournamentDetailP
   const detail = await getTournamentDetail(id);
   if (!detail) notFound();
 
-  const [currentUserRole, linkedFiles] = await Promise.all([
+  const [currentUserRole, linkedFiles, roster] = await Promise.all([
     getCurrentUserRole(organization.id),
     getLinkedFiles(organization.id, "tournament", id),
+    getRosterMembers(organization.id),
   ]);
   const canManage = ["captain", "coach", "manager", "owner"].includes(currentUserRole ?? "");
   const canManageBracket = ["captain", "manager", "owner", "coach"].includes(currentUserRole ?? "");
@@ -117,6 +119,13 @@ export default async function TournamentDetailPage({ params }: TournamentDetailP
     year: "numeric",
     timeZone: "Asia/Jakarta",
   });
+
+  const attendingPlayers = roster
+    .map((m) => ({
+      userId: m.user_id,
+      displayName: m.display_name ?? m.username ?? "Unknown",
+      mainRole: m.main_role,
+    }));
 
   return (
     <div className="space-y-6 px-4 py-6 sm:px-8">
@@ -282,6 +291,7 @@ export default async function TournamentDetailPage({ params }: TournamentDetailP
                 tournamentId={detail.id}
                 orgSlug={slug}
                 canManage={canManage}
+                attendingPlayers={attendingPlayers}
               />
             </article>
           )}

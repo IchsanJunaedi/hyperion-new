@@ -1,11 +1,11 @@
 "use client";
 
-import { CheckCircle2, Circle, Loader2, Pencil, Plus, Swords, Trash2, X, Send } from "lucide-react";
+import { CheckCircle2, ChevronDown, ChevronUp, Circle, Loader2, Pencil, Plus, Swords, Trash2, X, Send } from "lucide-react";
 import { useState, useTransition } from "react";
 
-import { NumberInput } from "@/components/ui/number-input";
 import { useNotify } from "@/features/dashboard/components/NotifyModal";
 import { ConfirmDeleteDialog } from "@/features/dashboard/components/ConfirmDeleteDialog";
+import { TournamentMatchDetail } from "@/features/tournaments/components/TournamentMatchDetail";
 import {
   createTournamentStageAction,
   updateTournamentStageAction,
@@ -16,16 +16,20 @@ import {
   deleteTournamentMatchAction,
   blastTournamentTimelineAction,
 } from "@/features/tournaments/actions";
-import type { TournamentStageWithMatches, TournamentMatch } from "@/features/tournaments/queries";
+import type { TournamentStageWithMatches, TournamentMatch, TournamentGameResult } from "@/features/tournaments/queries";
+import type { AttendingPlayer } from "@/features/scrim/components/DraftSection";
+
+const MATCH_FORMATS = ["BO1", "BO2", "BO3", "BO5", "BO7"] as const;
 
 interface TournamentTimelineProps {
   stages: TournamentStageWithMatches[];
   tournamentId: string;
   orgSlug: string;
   canManage: boolean;
+  attendingPlayers: AttendingPlayer[];
 }
 
-const TournamentTimeline = ({ stages, tournamentId, orgSlug, canManage }: TournamentTimelineProps) => {
+const TournamentTimeline = ({ stages, tournamentId, orgSlug, canManage, attendingPlayers }: TournamentTimelineProps) => {
   const [showForm, setShowForm] = useState(false);
   const { success, error } = useNotify();
   const [isBlasting, startBlastTransition] = useTransition();
@@ -97,6 +101,7 @@ const TournamentTimeline = ({ stages, tournamentId, orgSlug, canManage }: Tourna
               tournamentId={tournamentId}
               canManage={canManage}
               isLast={i === sortedStages.length - 1}
+              attendingPlayers={attendingPlayers}
             />
           ))}
         </div>
@@ -106,18 +111,35 @@ const TournamentTimeline = ({ stages, tournamentId, orgSlug, canManage }: Tourna
 };
 export { TournamentTimeline };
 
+function getMatchStatus(match: TournamentMatch): "win" | "loss" | "draw" | "pending" {
+  if (match.is_win === true) return "win";
+  if (match.is_win === false) return "loss";
+  
+  const games = match.game_results ?? [];
+  if (games.length === 0) return "pending";
+  
+  const w = games.filter(g => g.is_win === true).length;
+  const l = games.filter(g => g.is_win === false).length;
+  
+  if (w > l) return "win";
+  if (l > w) return "loss";
+  return "draw";
+}
+
 function StageItem({
   stage,
   orgSlug,
   tournamentId,
   canManage,
   isLast,
+  attendingPlayers,
 }: {
   stage: TournamentStageWithMatches;
   orgSlug: string;
   tournamentId: string;
   canManage: boolean;
   isLast: boolean;
+  attendingPlayers: AttendingPlayer[];
 }) {
   const [pending, startTransition] = useTransition();
   const [showMatchForm, setShowMatchForm] = useState(false);
@@ -183,8 +205,9 @@ function StageItem({
     timeZone: "Asia/Jakarta",
   });
  
-  const wins = stage.matches.filter((m) => m.is_win === true).length;
-  const losses = stage.matches.filter((m) => m.is_win === false).length;
+  const matchStatuses = stage.matches.map(getMatchStatus);
+  const wins = matchStatuses.filter((s) => s === "win").length;
+  const losses = matchStatuses.filter((s) => s === "loss").length;
  
   if (editing) {
     return (
@@ -318,6 +341,7 @@ function StageItem({
               orgSlug={orgSlug}
               tournamentId={tournamentId}
               canManage={canManage}
+              attendingPlayers={attendingPlayers}
             />
           ))}
         </div>
@@ -351,22 +375,27 @@ function MatchRow({
   orgSlug,
   tournamentId,
   canManage,
+  attendingPlayers,
 }: {
   match: TournamentMatch;
   orgSlug: string;
   tournamentId: string;
   canManage: boolean;
+  attendingPlayers: AttendingPlayer[];
 }) {
   const [editing, setEditing] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const [roundLabel, setRoundLabel] = useState(match.round_label);
   const [opponentName, setOpponentName] = useState(match.opponent_name ?? "");
-  const [ourScore, setOurScore] = useState(match.our_score?.toString() ?? "");
-  const [oppScore, setOppScore] = useState(match.opponent_score?.toString() ?? "");
-  const [isWin, setIsWin] = useState<string>(
-    match.is_win === true ? "win" : match.is_win === false ? "lose" : "",
-  );
+  const [opponentId, setOpponentId] = useState(match.opponent_id ?? "");
+  const [matchFormat, setMatchFormat] = useState(match.match_format ?? "");
+  const [scheduledAt, setScheduledAt] = useState(match.scheduled_at ? new Date(match.scheduled_at).toISOString().slice(0, 16) : "");
   const [pending, startTransition] = useTransition();
   const { success, error } = useNotify();
+
+  const gameResults = match.game_results ?? [];
+  const wins = gameResults.filter((g: TournamentGameResult) => g.is_win === true).length;
+  const losses = gameResults.filter((g: TournamentGameResult) => g.is_win === false).length;
 
   function handleDelete() {
     startTransition(async () => {
@@ -380,9 +409,9 @@ function MatchRow({
       const res = await updateTournamentMatchAction(orgSlug, tournamentId, match.id, {
         round_label: roundLabel,
         opponent_name: opponentName,
-        our_score: ourScore !== "" ? Number(ourScore) : null,
-        opponent_score: oppScore !== "" ? Number(oppScore) : null,
-        is_win: isWin === "win" ? true : isWin === "lose" ? false : null,
+        opponent_id: opponentId || undefined,
+        match_format: matchFormat || undefined,
+        scheduled_at: scheduledAt || undefined,
       });
       if (res.ok) {
         success("Match diperbarui!");
@@ -396,44 +425,40 @@ function MatchRow({
   if (editing) {
     return (
       <div className="rounded-md border border-yellow-400/30 bg-ui-surface p-2 space-y-1.5">
-        <input
-          value={roundLabel}
-          onChange={(e) => setRoundLabel(e.target.value)}
-          placeholder="Label ronde (misal: Babak Grup)"
-          className="h-7 w-full rounded-md border border-ui-border bg-ui-bg px-2 text-xs text-ui-text focus:border-yellow-400/50 focus:outline-none"
-        />
-        <input
-          value={opponentName}
-          onChange={(e) => setOpponentName(e.target.value)}
-          placeholder="Nama lawan (opsional)"
-          className="h-7 w-full rounded-md border border-ui-border bg-ui-bg px-2 text-xs text-ui-text focus:border-yellow-400/50 focus:outline-none"
-        />
-        <div className="grid grid-cols-3 gap-1.5">
-          <NumberInput
-            min={0}
-            value={ourScore}
-            onChange={(e) => setOurScore(e.target.value)}
-            placeholder="Skor kita"
-            className="h-7 text-xs focus:border-yellow-400/50"
-          />
-          <NumberInput
-            min={0}
-            value={oppScore}
-            onChange={(e) => setOppScore(e.target.value)}
-            placeholder="Skor lawan"
-            className="h-7 text-xs focus:border-yellow-400/50"
+        <div className="grid grid-cols-2 gap-1.5">
+          <input
+            value={roundLabel}
+            onChange={(e) => setRoundLabel(e.target.value)}
+            placeholder="Label ronde *"
+            className="h-7 w-full rounded-md border border-ui-border bg-ui-bg px-2 text-xs text-ui-text focus:border-yellow-400/50 focus:outline-none"
           />
           <select
-            value={isWin}
-            onChange={(e) => setIsWin(e.target.value)}
+            value={matchFormat}
+            onChange={(e) => setMatchFormat(e.target.value)}
             className="h-7 rounded-md border border-ui-border bg-ui-bg px-2 text-xs text-ui-text focus:border-yellow-400/50 focus:outline-none"
           >
-            <option value="">Hasil</option>
-            <option value="win">Menang</option>
-            <option value="lose">Kalah</option>
+            <option value="">Format match</option>
+            {MATCH_FORMATS.map((f) => (
+              <option key={f} value={f}>{f}</option>
+            ))}
           </select>
         </div>
-        <div className="flex gap-1.5">
+        <div className="grid grid-cols-2 gap-1.5">
+          <input
+            value={opponentName}
+            onChange={(e) => setOpponentName(e.target.value)}
+            placeholder="Nama lawan (opsional)"
+            className="h-7 w-full rounded-md border border-ui-border bg-ui-bg px-2 text-xs text-ui-text focus:border-yellow-400/50 focus:outline-none"
+          />
+          <input
+            value={opponentId}
+            onChange={(e) => setOpponentId(e.target.value)}
+            placeholder="ID lawan (opsional)"
+            className="h-7 w-full rounded-md border border-ui-border bg-ui-bg px-2 text-xs text-ui-text focus:border-yellow-400/50 focus:outline-none"
+          />
+        </div>
+
+        <div className="flex gap-1.5 mt-2">
           <button
             type="button"
             disabled={pending || !roundLabel.trim()}
@@ -457,40 +482,73 @@ function MatchRow({
   }
 
   return (
-    <div className="group flex items-center gap-2 rounded-md border border-ui-border bg-ui-bg px-2 py-1.5">
-      <span className={`shrink-0 text-[10px] font-bold ${match.is_win === true ? "text-green-400" : match.is_win === false ? "text-red-400" : "text-ui-text-muted"}`}>
-        {match.is_win === true ? "W" : match.is_win === false ? "L" : "—"}
-      </span>
-      <span className="flex-1 min-w-0 text-xs text-ui-text-2 truncate">
-        {match.round_label}
-        {match.opponent_name && (
-          <span className="text-ui-text-muted"> vs {match.opponent_name}</span>
-        )}
-        {match.our_score != null && match.opponent_score != null && (
-          <span className="ml-1 text-ui-text-muted">
-            {match.our_score}–{match.opponent_score}
+    <div className="rounded-md border border-ui-border bg-ui-bg overflow-hidden">
+      <div className="group flex items-center gap-2 px-2 py-1.5">
+        <span className={`shrink-0 text-[10px] font-bold ${getMatchStatus(match) === "win" ? "text-green-400" : getMatchStatus(match) === "loss" ? "text-red-400" : "text-ui-text-muted"}`}>
+          {getMatchStatus(match) === "win" ? "W" : getMatchStatus(match) === "loss" ? "L" : "—"}
+        </span>
+        <span className="flex-1 min-w-0 text-xs text-ui-text-2 truncate">
+          {match.round_label}
+          {match.opponent_name && (
+            <span className="text-ui-text-muted"> vs {match.opponent_name}</span>
+          )}
+        </span>
+        {/* Format badge */}
+        {match.match_format && (
+          <span className="shrink-0 rounded px-1.5 py-0.5 text-[9px] font-bold border border-yellow-400/20 text-yellow-400/80 bg-yellow-400/5">
+            {match.match_format}
           </span>
         )}
-      </span>
-      {canManage && (
-        <div className="opacity-0 group-hover:opacity-100 flex items-center gap-1 shrink-0 transition">
-          <button
-            type="button"
-            onClick={() => setEditing(true)}
-            className="text-ui-text-muted hover:text-yellow-400 cursor-pointer"
-            title="Edit match"
-          >
-            <Pencil className="h-3 w-3" />
-          </button>
-          <button
-            type="button"
-            disabled={pending}
-            onClick={handleDelete}
-            className="text-ui-text-muted hover:text-red-400 cursor-pointer"
-            title="Hapus match"
-          >
-            {pending ? <Loader2 className="h-3 w-3 animate-spin" /> : <Trash2 className="h-3 w-3" />}
-          </button>
+        {/* Game summary */}
+        {gameResults.length > 0 && (
+          <span className="text-[10px] text-ui-text-muted shrink-0">
+            {wins}W {losses}L
+          </span>
+        )}
+        {canManage && (
+          <div className="opacity-0 group-hover:opacity-100 flex items-center gap-1 shrink-0 transition">
+            <button
+              type="button"
+              onClick={() => setEditing(true)}
+              className="text-ui-text-muted hover:text-yellow-400 cursor-pointer"
+              title="Edit match"
+            >
+              <Pencil className="h-3 w-3" />
+            </button>
+            <button
+              type="button"
+              disabled={pending}
+              onClick={handleDelete}
+              className="text-ui-text-muted hover:text-red-400 cursor-pointer"
+              title="Hapus match"
+            >
+              {pending ? <Loader2 className="h-3 w-3 animate-spin" /> : <Trash2 className="h-3 w-3" />}
+            </button>
+          </div>
+        )}
+        {/* Expand toggle */}
+        <button
+          type="button"
+          onClick={() => setExpanded((v) => !v)}
+          className="shrink-0 text-ui-text-muted hover:text-ui-text cursor-pointer"
+          title={expanded ? "Tutup detail" : "Lihat / input game results"}
+        >
+          {expanded ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+        </button>
+      </div>
+
+      {/* Expandable game results */}
+      {expanded && (
+        <div className="border-t border-ui-border px-2 pb-2">
+          <TournamentMatchDetail
+            matchId={match.id}
+            tournamentId={tournamentId}
+            orgSlug={orgSlug}
+            matchFormat={match.match_format ?? null}
+            gameResults={gameResults}
+            canManage={canManage}
+            attendingPlayers={attendingPlayers}
+          />
         </div>
       )}
     </div>
@@ -509,10 +567,10 @@ function AddMatchForm({
   onDone: () => void;
 }) {
   const [roundLabel, setRoundLabel] = useState("");
+  const [matchFormat, setMatchFormat] = useState("");
   const [opponentName, setOpponentName] = useState("");
-  const [ourScore, setOurScore] = useState("");
-  const [oppScore, setOppScore] = useState("");
-  const [isWin, setIsWin] = useState<string>("");
+  const [opponentId, setOpponentId] = useState("");
+  const [scheduledAt, setScheduledAt] = useState("");
   const [pending, startTransition] = useTransition();
   const { success, error } = useNotify();
 
@@ -521,18 +579,18 @@ function AddMatchForm({
       const res = await addTournamentMatchAction(orgSlug, tournamentId, {
         stage_id: stageId,
         round_label: roundLabel,
-        opponent_name: opponentName,
-        our_score: ourScore !== "" ? Number(ourScore) : null,
-        opponent_score: oppScore !== "" ? Number(oppScore) : null,
-        is_win: isWin === "win" ? true : isWin === "lose" ? false : null,
+        opponent_name: opponentName || undefined,
+        opponent_id: opponentId || undefined,
+        match_format: matchFormat || undefined,
+        scheduled_at: scheduledAt || undefined,
       });
       if (res.ok) {
-        success("Hasil match disimpan!");
+        success("Match ditambahkan!");
         setRoundLabel("");
+        setMatchFormat("");
         setOpponentName("");
-        setOurScore("");
-        setOppScore("");
-        setIsWin("");
+        setOpponentId("");
+        setScheduledAt("");
         onDone();
       } else {
         error(res.message);
@@ -542,44 +600,41 @@ function AddMatchForm({
 
   return (
     <div className="rounded-lg border border-ui-border bg-ui-surface p-3 space-y-2">
-      <input
-        value={roundLabel}
-        onChange={(e) => setRoundLabel(e.target.value)}
-        placeholder="Label ronde (misal: Babak Grup)"
-        className="h-8 w-full rounded-md border border-ui-border bg-ui-bg px-3 text-xs text-ui-text focus:border-yellow-400/50 focus:outline-none"
-      />
-      <input
-        value={opponentName}
-        onChange={(e) => setOpponentName(e.target.value)}
-        placeholder="Nama lawan (opsional)"
-        className="h-8 w-full rounded-md border border-ui-border bg-ui-bg px-3 text-xs text-ui-text focus:border-yellow-400/50 focus:outline-none"
-      />
-      <div className="grid grid-cols-3 gap-2">
-        <NumberInput
-          min={0}
-          value={ourScore}
-          onChange={(e) => setOurScore(e.target.value)}
-          placeholder="Skor kita"
-          className="h-8 text-xs focus:border-yellow-400/50"
-        />
-        <NumberInput
-          min={0}
-          value={oppScore}
-          onChange={(e) => setOppScore(e.target.value)}
-          placeholder="Skor lawan"
-          className="h-8 text-xs focus:border-yellow-400/50"
+      <p className="text-[10px] uppercase tracking-wider font-semibold text-ui-text-muted">Tambah Match Baru</p>
+      <div className="grid grid-cols-2 gap-2">
+        <input
+          value={roundLabel}
+          onChange={(e) => setRoundLabel(e.target.value)}
+          placeholder="Label ronde * (misal: Babak 64)"
+          className="h-8 w-full rounded-md border border-ui-border bg-ui-bg px-3 text-xs text-ui-text focus:border-yellow-400/50 focus:outline-none"
         />
         <select
-          value={isWin}
-          onChange={(e) => setIsWin(e.target.value)}
-          className="h-8 rounded-md border border-ui-border bg-ui-bg px-2 text-xs text-ui-text focus:border-yellow-400/50 focus:outline-none"
+          value={matchFormat}
+          onChange={(e) => setMatchFormat(e.target.value)}
+          className="h-8 rounded-md border border-ui-border bg-ui-bg px-3 text-xs text-ui-text focus:border-yellow-400/50 focus:outline-none"
         >
-          <option value="">Hasil</option>
-          <option value="win">Menang</option>
-          <option value="lose">Kalah</option>
+          <option value="">Format match (opsional)</option>
+          {MATCH_FORMATS.map((f) => (
+            <option key={f} value={f}>{f}</option>
+          ))}
         </select>
       </div>
-      <div className="flex gap-2">
+      <div className="grid grid-cols-2 gap-2">
+        <input
+          value={opponentName}
+          onChange={(e) => setOpponentName(e.target.value)}
+          placeholder="Nama lawan (opsional)"
+          className="h-8 w-full rounded-md border border-ui-border bg-ui-bg px-3 text-xs text-ui-text focus:border-yellow-400/50 focus:outline-none"
+        />
+        <input
+          value={opponentId}
+          onChange={(e) => setOpponentId(e.target.value)}
+          placeholder="ID lawan (opsional)"
+          className="h-8 w-full rounded-md border border-ui-border bg-ui-bg px-3 text-xs text-ui-text focus:border-yellow-400/50 focus:outline-none"
+        />
+      </div>
+
+      <div className="flex gap-2 mt-2">
         <button
           type="button"
           disabled={pending || !roundLabel.trim()}

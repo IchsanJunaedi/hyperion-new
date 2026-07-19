@@ -2741,41 +2741,128 @@ export type Database = {
           },
         ]
       }
+      tournament_draft_picks: {
+        Row: {
+          id: string
+          game_result_id: string
+          hero_name: string
+          side: string
+          pick_type: string
+          role: string | null
+          player_id: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          game_result_id: string
+          hero_name: string
+          side: string
+          pick_type: string
+          role?: string | null
+          player_id?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          game_result_id?: string
+          hero_name?: string
+          side?: string
+          pick_type?: string
+          role?: string | null
+          player_id?: string | null
+          created_at?: string
+        }
+        Relationships: [{
+          foreignKeyName: "tournament_draft_picks_game_result_id_fkey"
+          columns: ["game_result_id"]
+          isOneToOne: false
+          referencedRelation: "tournament_game_results"
+          referencedColumns: ["id"]
+        }]
+      }
+      tournament_game_results: {
+        Row: {
+          id: string
+          tournament_match_id: string
+          game_number: number
+          is_win: boolean | null
+          our_score: number | null
+          opponent_score: number | null
+          notes: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          tournament_match_id: string
+          game_number: number
+          is_win?: boolean | null
+          our_score?: number | null
+          opponent_score?: number | null
+          notes?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          tournament_match_id?: string
+          game_number?: number
+          is_win?: boolean | null
+          our_score?: number | null
+          opponent_score?: number | null
+          notes?: string | null
+          created_at?: string
+        }
+        Relationships: [{
+          foreignKeyName: "tournament_game_results_tournament_match_id_fkey"
+          columns: ["tournament_match_id"]
+          isOneToOne: false
+          referencedRelation: "tournament_matches"
+          referencedColumns: ["id"]
+        }]
+      }
       tournament_matches: {
         Row: {
           created_at: string
           id: string
           is_win: boolean | null
+          match_format: string | null
           notes: string | null
+          opponent_id: string | null
           opponent_name: string | null
           opponent_score: number | null
           our_score: number | null
           played_at: string | null
           round_label: string
+          scheduled_at: string | null
           stage_id: string
         }
         Insert: {
           created_at?: string
           id?: string
           is_win?: boolean | null
+          match_format?: string | null
           notes?: string | null
+          opponent_id?: string | null
           opponent_name?: string | null
           opponent_score?: number | null
           our_score?: number | null
           played_at?: string | null
           round_label: string
+          scheduled_at?: string | null
           stage_id: string
         }
         Update: {
           created_at?: string
           id?: string
           is_win?: boolean | null
+          match_format?: string | null
           notes?: string | null
+          opponent_id?: string | null
           opponent_name?: string | null
           opponent_score?: number | null
           our_score?: number | null
           played_at?: string | null
           round_label?: string
+          scheduled_at?: string | null
           stage_id?: string
         }
         Relationships: [

@@ -384,6 +384,7 @@ describe("getDraftAnalytics", () => {
         select: vi.fn().mockReturnThis(),
         in: vi.fn().mockReturnThis(),
         eq: vi.fn().mockReturnThis(),
+        limit: vi.fn().mockReturnThis(),
         then: (resolve: any) => resolve({ data: [], error: null }),
       };
     });

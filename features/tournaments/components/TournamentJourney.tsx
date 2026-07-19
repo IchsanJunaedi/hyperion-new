@@ -1,16 +1,33 @@
 "use client";
 
 import { cn } from "@/lib/utils/cn";
-import type { TournamentStageWithMatches } from "../queries";
+import type { TournamentStageWithMatches, TournamentMatch, TournamentGameResult } from "../queries";
 
 interface TournamentJourneyProps {
   stages: TournamentStageWithMatches[];
   tournamentName: string;
 }
 
+function getMatchStatus(match: TournamentMatch): "win" | "loss" | "draw" | "pending" {
+  if (match.is_win === true) return "win";
+  if (match.is_win === false) return "loss";
+  
+  const games = match.game_results ?? [];
+  if (games.length === 0) return "pending";
+  
+  const w = games.filter((g: TournamentGameResult) => g.is_win === true).length;
+  const l = games.filter((g: TournamentGameResult) => g.is_win === false).length;
+  
+  if (w > l) return "win";
+  if (l > w) return "loss";
+  return "draw";
+}
+
 function stageResult(stage: TournamentStageWithMatches): "win" | "loss" | "draw" | "pending" {
-  const wins = stage.matches.filter((m) => m.is_win === true).length;
-  const losses = stage.matches.filter((m) => m.is_win === false).length;
+  const matchStatuses = stage.matches.map(getMatchStatus);
+  const wins = matchStatuses.filter((s) => s === "win").length;
+  const losses = matchStatuses.filter((s) => s === "loss").length;
+  
   if (stage.matches.length === 0 || (!stage.is_completed && wins === 0 && losses === 0)) return "pending";
   if (wins > losses) return "win";
   if (losses > wins) return "loss";
@@ -24,8 +41,8 @@ const TournamentJourney = ({ stages, tournamentName }: TournamentJourneyProps) =
     return new Date(a.scheduled_at).getTime() - new Date(b.scheduled_at).getTime();
   });
 
-  const totalWins = sortedStages.reduce((sum, s) => sum + s.matches.filter((m) => m.is_win === true).length, 0);
-  const totalLosses = sortedStages.reduce((sum, s) => sum + s.matches.filter((m) => m.is_win === false).length, 0);
+  const totalWins = sortedStages.reduce((sum, s) => sum + s.matches.map(getMatchStatus).filter((status) => status === "win").length, 0);
+  const totalLosses = sortedStages.reduce((sum, s) => sum + s.matches.map(getMatchStatus).filter((status) => status === "loss").length, 0);
   const completedStages = sortedStages.filter((s) => s.is_completed).length;
 
   const lastEliminated = sortedStages.findLast((s) => {
@@ -63,8 +80,9 @@ const TournamentJourney = ({ stages, tournamentName }: TournamentJourneyProps) =
       <div className="flex flex-wrap items-center gap-1">
         {sortedStages.map((stage, i) => {
           const result = stageResult(stage);
-          const wins = stage.matches.filter((m) => m.is_win === true).length;
-          const losses = stage.matches.filter((m) => m.is_win === false).length;
+          const matchStatuses = stage.matches.map(getMatchStatus);
+          const wins = matchStatuses.filter((s) => s === "win").length;
+          const losses = matchStatuses.filter((s) => s === "loss").length;
           return (
             <div key={stage.id} className="flex items-center gap-1">
               <div

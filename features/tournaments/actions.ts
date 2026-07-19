@@ -542,6 +542,9 @@ export async function addTournamentMatchAction(
   raw: {
     stage_id: string;
     round_label: string;
+    match_format?: string;
+    opponent_id?: string;
+    scheduled_at?: string;
     opponent_name?: string;
     our_score?: number | null;
     opponent_score?: number | null;
@@ -563,6 +566,9 @@ export async function addTournamentMatchAction(
   const { error } = await supabase.from("tournament_matches").insert({
     stage_id: raw.stage_id,
     round_label: raw.round_label.trim(),
+    match_format: raw.match_format || null,
+    opponent_id: raw.opponent_id || null,
+    scheduled_at: raw.scheduled_at ? new Date(raw.scheduled_at).toISOString() : null,
     opponent_name: raw.opponent_name?.trim() || null,
     our_score: raw.our_score ?? null,
     opponent_score: raw.opponent_score ?? null,
@@ -583,6 +589,9 @@ export async function updateTournamentMatchAction(
   matchId: string,
   raw: {
     round_label: string;
+    match_format?: string;
+    opponent_id?: string;
+    scheduled_at?: string;
     opponent_name?: string;
     our_score?: number | null;
     opponent_score?: number | null;
@@ -603,6 +612,9 @@ export async function updateTournamentMatchAction(
     .from("tournament_matches")
     .update({
       round_label: raw.round_label.trim(),
+      match_format: raw.match_format || null,
+      opponent_id: raw.opponent_id || null,
+      scheduled_at: raw.scheduled_at ? new Date(raw.scheduled_at).toISOString() : null,
       opponent_name: raw.opponent_name?.trim() || null,
       our_score: raw.our_score ?? null,
       opponent_score: raw.opponent_score ?? null,
@@ -1231,6 +1243,179 @@ export async function blastTournamentTimelineAction(
     );
   }
 
+  return { ok: true };
+}
+
+// ---------------------------------------------------------------------------
+// Tournament Game Results — CRUD
+// ---------------------------------------------------------------------------
+
+export async function addTournamentGameResultAction(
+  orgSlug: string,
+  tournamentId: string,
+  matchId: string,
+  raw: {
+    game_number: number;
+    is_win?: boolean | null;
+    our_score?: number | null;
+    opponent_score?: number | null;
+    notes?: string;
+  },
+): Promise<ActionError | { ok: true; id: string }> {
+  if (!raw.game_number || raw.game_number < 1) {
+    return { ok: false, message: 'Nomor game tidak valid' };
+  }
+
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { ok: false, message: 'Anda harus login' };
+
+  const { data: record, error } = await supabase
+    .from('tournament_game_results')
+    .insert({
+      tournament_match_id: matchId,
+      game_number: raw.game_number,
+      is_win: raw.is_win ?? null,
+      our_score: raw.our_score ?? null,
+      opponent_score: raw.opponent_score ?? null,
+      notes: raw.notes?.trim() || null,
+    })
+    .select('id')
+    .single();
+
+  if (error || !record) return { ok: false, message: error?.message ?? 'Gagal menyimpan game result' };
+
+  await logAudit({
+    actorId: user.id,
+    action: 'create',
+    entityType: 'tournament_game_results',
+    entityId: record.id,
+    metadata: { match_id: matchId, game_number: raw.game_number },
+  });
+
+  revalidatePath(`/${orgSlug}/tournaments/${tournamentId}`);
+  return { ok: true, id: record.id };
+}
+
+export async function updateTournamentGameResultAction(
+  orgSlug: string,
+  tournamentId: string,
+  gameResultId: string,
+  raw: {
+    is_win?: boolean | null;
+    our_score?: number | null;
+    opponent_score?: number | null;
+    notes?: string;
+  },
+): Promise<ActionError | { ok: true }> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { ok: false, message: 'Anda harus login' };
+
+  const { error } = await supabase
+    .from('tournament_game_results')
+    .update({
+      is_win: raw.is_win ?? null,
+      our_score: raw.our_score ?? null,
+      opponent_score: raw.opponent_score ?? null,
+      notes: raw.notes?.trim() || null,
+    })
+    .eq('id', gameResultId);
+
+  if (error) return { ok: false, message: error.message };
+
+  await logAudit({
+    actorId: user.id,
+    action: 'update',
+    entityType: 'tournament_game_results',
+    entityId: gameResultId,
+  });
+
+  revalidatePath(`/${orgSlug}/tournaments/${tournamentId}`);
+  return { ok: true };
+}
+
+export async function deleteTournamentGameResultAction(
+  orgSlug: string,
+  tournamentId: string,
+  gameResultId: string,
+): Promise<ActionError | { ok: true }> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { ok: false, message: 'Anda harus login' };
+
+  const { error } = await supabase
+    .from('tournament_game_results')
+    .delete()
+    .eq('id', gameResultId);
+
+  if (error) return { ok: false, message: error.message };
+
+  await logAudit({
+    actorId: user.id,
+    action: 'delete',
+    entityType: 'tournament_game_results',
+    entityId: gameResultId,
+  });
+
+  revalidatePath(`/${orgSlug}/tournaments/${tournamentId}`);
+  return { ok: true };
+}
+
+// ---------------------------------------------------------------------------
+// Tournament Draft Picks — save per game (replace all picks for a game)
+// ---------------------------------------------------------------------------
+
+export async function saveTournamentDraftPicksAction(
+  orgSlug: string,
+  tournamentId: string,
+  gameResultId: string,
+  picks: Array<{
+    hero_name: string;
+    side: 'our' | 'opponent';
+    pick_type: 'pick' | 'ban';
+    role?: string | null;
+    playerId?: string | null;
+  }>,
+): Promise<ActionError | { ok: true }> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { ok: false, message: 'Anda harus login' };
+
+  // Delete existing picks for this game first (replace strategy)
+  const { error: delError } = await supabase
+    .from('tournament_draft_picks')
+    .delete()
+    .eq('game_result_id', gameResultId);
+
+  if (delError) return { ok: false, message: delError.message };
+
+  // Insert new picks (skip empty hero_name)
+  const validPicks = picks.filter(p => p.hero_name.trim());
+  if (validPicks.length > 0) {
+    const { error: insertError } = await supabase
+      .from('tournament_draft_picks')
+      .insert(validPicks.map(p => ({
+        game_result_id: gameResultId,
+        hero_name: p.hero_name.trim(),
+        side: p.side,
+        pick_type: p.pick_type,
+        role: p.role || null,
+        player_id: p.playerId || null,
+      })));
+
+    if (insertError) return { ok: false, message: insertError.message };
+  }
+
+  await logAudit({
+    actorId: user.id,
+    action: 'update',
+    entityType: 'tournament_draft_picks',
+    entityId: gameResultId,
+    metadata: { picks_count: validPicks.length },
+  });
+
+  revalidatePath(`/${orgSlug}/tournaments/${tournamentId}`);
   return { ok: true };
 }
 
