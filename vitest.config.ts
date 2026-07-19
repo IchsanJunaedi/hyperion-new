@@ -61,14 +61,9 @@ export default defineConfig({
         functions: 80,
         lines: 80,
       },
-      // Human-readable report in CI artifacts + local browser view
       reporter: ["text", "lcov", "html"],
     },
-    poolOptions: {
-      threads: {
-        singleThread: true,
-      },
-    },
+
   },
   resolve: {
     alias: {

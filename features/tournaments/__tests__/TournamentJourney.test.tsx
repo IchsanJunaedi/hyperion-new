@@ -5,7 +5,7 @@ import { TournamentJourney } from "../components/TournamentJourney";
 describe("TournamentJourney", () => {
   it("renders empty stages gracefully", () => {
     const { container } = render(
-      <TournamentJourney stages={[]} tournamentName="Test Tournament" />
+      <TournamentJourney stages={[]} />
     );
     expect(container.firstChild).toBeNull();
   });
