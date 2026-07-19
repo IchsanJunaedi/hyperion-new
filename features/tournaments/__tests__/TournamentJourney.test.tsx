@@ -69,7 +69,7 @@ describe("TournamentJourney", () => {
     ];
 
     render(
-      <TournamentJourney stages={mockStages} tournamentName="Test Tournament" />
+      <TournamentJourney stages={mockStages} />
     );
 
     expect(screen.getByText("Babak 64")).toBeInTheDocument();

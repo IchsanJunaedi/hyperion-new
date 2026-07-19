@@ -5,7 +5,6 @@ import type { TournamentStageWithMatches, TournamentMatch, TournamentGameResult 
 
 interface TournamentJourneyProps {
   stages: TournamentStageWithMatches[];
-  tournamentName: string;
 }
 
 function getMatchStatus(match: TournamentMatch): "win" | "loss" | "draw" | "pending" {
@@ -34,7 +33,7 @@ function stageResult(stage: TournamentStageWithMatches): "win" | "loss" | "draw"
   return "draw";
 }
 
-const TournamentJourney = ({ stages, tournamentName }: TournamentJourneyProps) => {
+const TournamentJourney = ({ stages }: TournamentJourneyProps) => {
   if (stages.length === 0) return null;
 
   const sortedStages = [...stages].sort((a, b) => {

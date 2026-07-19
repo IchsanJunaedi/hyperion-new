@@ -389,7 +389,6 @@ function MatchRow({
   const [opponentName, setOpponentName] = useState(match.opponent_name ?? "");
   const [opponentId, setOpponentId] = useState(match.opponent_id ?? "");
   const [matchFormat, setMatchFormat] = useState(match.match_format ?? "");
-  const [scheduledAt, setScheduledAt] = useState(match.scheduled_at ? new Date(match.scheduled_at).toISOString().slice(0, 16) : "");
   const [pending, startTransition] = useTransition();
   const { success, error } = useNotify();
 
@@ -411,7 +410,6 @@ function MatchRow({
         opponent_name: opponentName,
         opponent_id: opponentId || undefined,
         match_format: matchFormat || undefined,
-        scheduled_at: scheduledAt || undefined,
       });
       if (res.ok) {
         success("Match diperbarui!");

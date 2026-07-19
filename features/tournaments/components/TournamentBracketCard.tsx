@@ -59,7 +59,7 @@ const TournamentBracketCard = ({
         return;
       }
       window.open(data.signedUrl, "_blank");
-    } catch (e) {
+    } catch {
       toast.error("Gagal membuka file bracket");
     } finally {
       setOpening(false);

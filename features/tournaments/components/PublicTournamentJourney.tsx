@@ -5,7 +5,6 @@ import type { TournamentStageWithMatches, TournamentMatch, TournamentGameResult 
 
 interface PublicTournamentJourneyProps {
   stages: TournamentStageWithMatches[];
-  tournamentName: string;
 }
 
 function getMatchScore(match: TournamentMatch): { teamScore: number; opponentScore: number; status: "win" | "loss" | "pending" } {
@@ -27,7 +26,7 @@ function getMatchScore(match: TournamentMatch): { teamScore: number; opponentSco
   return { teamScore, opponentScore, status };
 }
 
-export function PublicTournamentJourney({ stages, tournamentName }: PublicTournamentJourneyProps) {
+export function PublicTournamentJourney({ stages }: PublicTournamentJourneyProps) {
   return (
     <div className="space-y-12">
       {stages.map((stage) => {

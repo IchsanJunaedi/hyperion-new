@@ -279,7 +279,7 @@ export default async function TournamentDetailPage({ params }: TournamentDetailP
           {detail.stages.some((s) => s.matches.length > 0) && (
             <article className="rounded-2xl border border-ui-border bg-ui-surface/40 p-5">
               <h3 className="mb-3 text-sm font-semibold text-ui-text">Perjalanan Turnamen</h3>
-              <TournamentJourney stages={detail.stages} tournamentName={detail.name} />
+              <TournamentJourney stages={detail.stages} />
             </article>
           )}
 

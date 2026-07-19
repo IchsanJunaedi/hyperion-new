@@ -144,7 +144,7 @@ export default async function PublicTournamentPage({ params }: { params: Promise
             </h2>
             <div className="rounded-2xl border border-white/10 bg-slate-800/40 backdrop-blur-md p-6 sm:p-8">
               {stagesWithMatches.length > 0 ? (
-                <PublicTournamentJourney stages={stagesWithMatches} tournamentName={tournament.name} />
+                <PublicTournamentJourney stages={stagesWithMatches} />
               ) : (
                 <div className="text-center py-10">
                   <p className="text-sm text-white/40">Belum ada perjalanan turnamen.</p>
